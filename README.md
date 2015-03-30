@@ -9,8 +9,9 @@ Get-Process Exported to Excel
 
 ### PowerShell Excel EPPlus In Action
 
-<iframe width="1200" height="600" src="http://dougfinke.com/powershellvideos/ExportExcel/ExportExcel.html" frameborder="0" allowfullsc
-een></iframe>
+Click on this image to watch the short video.
+
+[![image](http://dougfinke.com/powershellvideos/ExportExcel/ExportExcel_First_Frame.png)](http://dougfinke.com/powershellvideos/ExportExcel/ExportExcel.html)
 
 ### Importing data from an Excel spreadsheet
 
