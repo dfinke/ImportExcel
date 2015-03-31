@@ -7,8 +7,8 @@ Get-Process Exported to Excel
 ### Total Physical Memory Grouped By Company
 ![image](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/PivotTablesAndCharts.png)
 
-### PowerShell Excel EPPlus In Action
-
+PowerShell Excel EPPlus Video
+-
 Click on this image to watch the short video.
 
 [![image](http://dougfinke.com/powershellvideos/ExportExcel/ExportExcel_First_Frame.png)](http://dougfinke.com/powershellvideos/ExportExcel/ExportExcel.html)
