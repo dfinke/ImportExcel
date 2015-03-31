@@ -52,8 +52,7 @@ function Export-Excel {
         [string[]]$PivotRows,
         [string[]]$PivotColumns,
         [string[]]$PivotData,
-        [ValidateSet("Area3D","AreaStacked3D","AreaStacked1003D","BarClustered3D","BarStacked3D","BarStacked1003D","Column3D","ColumnClustered3D","ColumnStacked3D","ColumnStacked1003D","Line3D","Pie3D","PieExploded3D","Area","AreaStacked","AreaStacked100","BarClustered","BarOfPie","BarStacked","BarStacked100","Bubble","Bubble3DEffect","ColumnClustered","ColumnStacked","ColumnStacked100","ConeBarClustered","ConeBarStacked","ConeBarStacked100","ConeCol","ConeColClustered","ConeColStacked","ConeColStacked100","CylinderBarClustered","CylinderBarStacked","CylinderBarStacked100","CylinderCol","CylinderColClustered","CylinderColStacked","CylinderColStacked100","Doughnut","DoughnutExploded","Line","LineMarkers","LineMarkersStacked","LineMarkersStacked100","LineStacked","LineStacked100","Pie","PieExploded","PieOfPie","PyramidBarClustered","PyramidBarStacked","PyramidBarStacked100","PyramidCol","PyramidColClustered","PyramidColStacked","PyramidColStacked100","Radar","RadarFilled","RadarMarkers","StockHLC","StockOHLC","StockVHLC","StockVOHLC","Surface","SurfaceTopView","SurfaceTopViewWireframe","SurfaceWireframe","XYScatter","XYScatterLines","XYScatterLinesNoMarkers","XYScatterSmooth","XYScatterSmoothNoMarkers")]
-        $ChartType="Pie",
+        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="Pie",
         [Switch]$IncludePivotTable,
         [Switch]$IncludePivotChart,
         [Switch]$AutoFitColumns,
