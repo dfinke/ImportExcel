@@ -49,6 +49,7 @@ function Export-Excel {
         $Path,
         [Parameter(ValueFromPipeline)]
         $TargetData,
+        $WorkSheetname="Sheet1",
         [string[]]$PivotRows,
         [string[]]$PivotColumns,
         [string[]]$PivotData,
@@ -61,20 +62,19 @@ function Export-Excel {
     )
 
     Begin {
+        try {
+            $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+            $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
 
-        $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
-
-        if(Test-Path $Path) {
-            if($Force) {
-                Remove-Item $Path
-            } else {
-                throw "$Path already exists"
+            if($pkg.Workbook.Worksheets[$WorkSheetname]) {
+                $pkg.Workbook.Worksheets.delete($WorkSheetname)
             }
-        }
 
-        $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
-        $ws = $pkg.Workbook.Worksheets.Add("Sheet1")
-        $Row = 1
+            $ws  = $pkg.Workbook.Worksheets.Add($WorkSheetname)
+            $Row = 1
+        } Catch {
+            throw $Error[0].Exception.InnerException
+        }
     }
 
     Process {
@@ -101,15 +101,16 @@ function Export-Excel {
 
     End {
 
-        if($AutoFitColumns) { $ws.Cells.AutoFitColumns()}
+        if($AutoFitColumns) {$ws.Cells.AutoFitColumns()}
 
         if($IncludePivotTable) {
+            $pivotTableName = $WorkSheetname + "PivotTable"
+            $wsPivot = $pkg.Workbook.Worksheets.Add($pivotTableName)
+            #$wsPivot.View.TabSelected = $true
 
-            $wsPivot = $pkg.Workbook.Worksheets.Add("PivotTable1")
-            $wsPivot.View.TabSelected = $true
-
+            $pivotTableDataName=$WorkSheetname + "PivotTableData"
             $range="{0}:{1}" -f $ws.Dimension.Start.Address, $ws.Dimension.End.Address
-            $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells["A1"], $ws.Cells[$range], "PivotTableData")
+            $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells["A1"], $ws.Cells[$range], $pivotTableDataName)
 
             if($PivotRows) {
                 foreach ($Row in $PivotRows) {
@@ -130,13 +131,12 @@ function Export-Excel {
             }
 
             if($IncludePivotChart) {
-                #$ChartType="Pie"
-                #$ChartType="PieExploded3D"
                 $chart = $wsPivot.Drawings.AddChart("PivotChart", $ChartType, $pivotTable)
                 $chart.SetPosition(1, 0, 6, 0)
                 $chart.SetSize(600, 400)
             }
         }
+
 
         $pkg.Save()
         $pkg.Dispose()
