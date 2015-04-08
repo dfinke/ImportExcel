@@ -62,6 +62,8 @@ function Export-Excel {
 
     Begin {
 
+        $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+
         if(Test-Path $Path) {
             if($Force) {
                 Remove-Item $Path
