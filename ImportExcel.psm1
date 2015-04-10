@@ -144,3 +144,29 @@ function Export-Excel {
         if($Show) {Invoke-Item $Path}
     }
 }
+
+function Export-MultipleExcelSheets {
+    param(
+        [Parameter(Mandatory)]
+        $Path,
+        [Parameter(Mandatory)]
+        [hashtable]$InfoMap,
+        [Switch]$Show,
+        [Switch]$AutoSize
+    )
+
+    $parameters = @{}+$PSBoundParameters
+    $parameters.Remove("InfoMap")
+    $parameters.Remove("Show")
+
+    $parameters.Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+
+    foreach ($entry in $InfoMap.GetEnumerator()) {
+        Write-Progress -Activity "Exporting" -Status "$($entry.Key)"
+        $parameters.WorkSheetname=$entry.Key
+
+        & $entry.Value | Export-Excel @parameters
+    }
+
+    if($Show) {Invoke-Item $Path}
+}
