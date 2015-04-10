@@ -59,7 +59,7 @@ function Export-Excel {
         [Switch]$IncludePivotChart,
         [Switch]$AutoSize,
         [Switch]$Show,
-        [Switch]$Force
+        [Switch]$NoClobber
     )
 
     Begin {
@@ -68,13 +68,22 @@ function Export-Excel {
             $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
 
             if($pkg.Workbook.Worksheets[$WorkSheetname]) {
-                $pkg.Workbook.Worksheets.delete($WorkSheetname)
+                if($NoClobber) {
+                    $AlreadyExists = $true
+                    throw ""
+                } else {
+                    $pkg.Workbook.Worksheets.delete($WorkSheetname)
+                }
             }
 
             $ws  = $pkg.Workbook.Worksheets.Add($WorkSheetname)
             $Row = 1
         } Catch {
-            throw $Error[0].Exception.InnerException
+            if($AlreadyExists) {
+                throw "$WorkSheetname already exists."
+            } else {
+                throw $Error[0].Exception.InnerException
+            }
         }
     }
 
