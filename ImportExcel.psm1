@@ -53,6 +53,7 @@ function Export-Excel {
         [string[]]$PivotRows,
         [string[]]$PivotColumns,
         [string[]]$PivotData,
+        [string]$Password,
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="Pie",
         [Switch]$IncludePivotTable,
         [Switch]$IncludePivotChart,
@@ -137,6 +138,7 @@ function Export-Excel {
             }
         }
 
+        $ws.Protection.SetPassword($Password)
 
         $pkg.Save()
         $pkg.Dispose()
@@ -151,6 +153,7 @@ function Export-MultipleExcelSheets {
         $Path,
         [Parameter(Mandatory)]
         [hashtable]$InfoMap,
+        [string]$Password,
         [Switch]$Show,
         [Switch]$AutoSize
     )
