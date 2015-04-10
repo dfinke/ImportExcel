@@ -14,7 +14,8 @@ What's new
 
 #### 4/10/2015
 * Renamed `AutoFitColumns` to `AutoSize`
-* Implemented `Export-MultipleExcelSheets` 
+* Implemented `Export-MultipleExcelSheets`
+* Implemented `-Password` for a worksheet 
 
 #### Examples 
 `gsv | Export-Excel .\test.xlsx -WorkSheetname Services`
