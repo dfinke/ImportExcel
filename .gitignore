@@ -44,3 +44,4 @@ Temporary Items
 InstallModule.ps1
 Export-Excel.ps1
 testExport.xlsx
+test.ps1
