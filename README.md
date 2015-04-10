@@ -11,13 +11,16 @@ What's new
 
 #### 4/8/2015
 * Implemented exporting data to **named sheets** via the -WorkSheename parameter.
+
 #### 4/10/2015
 * Renamed `AutoFitColumns` to `AutoSize`
 * Implemented `Export-MultipleExcelSheets` 
 
 #### Examples 
 `gsv | Export-Excel .\test.xlsx -WorkSheetname Services`
+
 `dir -file | Export-Excel .\test.xlsx -WorkSheetname Files`
+
 `ps | Export-Excel .\test.xlsx -WorkSheetname Processes -IncludePivotTable -Show -PivotRows Company -PivotData PM`
 
 #### Example Export-MultipleExcelSheets
