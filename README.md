@@ -16,7 +16,9 @@ What's new
 * Renamed `AutoFitColumns` to `AutoSize`
 * Implemented `Export-MultipleExcelSheets`
 * Implemented `-Password` for a worksheet
-* Replaced `-Force` switch with `-NoClobber` switch 
+* Replaced `-Force` switch with `-NoClobber` switch
+* Added examples for `Get-Help
+* If Pivot table is requested, that sheet becomes the tab selected
 
 #### Examples 
 `gsv | Export-Excel .\test.xlsx -WorkSheetname Services`

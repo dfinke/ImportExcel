@@ -46,6 +46,14 @@ function Import-Excel {
 function Export-Excel {
     <#
         .Synopsis
+        .Example
+        gsv | Export-Excel .\test.xlsx
+        .Example
+        ps | Export-Excel .\test.xlsx -show\
+        .Example
+        ps | Export-Excel .\test.xlsx -WorkSheetname Processes -IncludePivotTable -Show -PivotRows Company -PivotData PM
+        .Example
+        ps | Export-Excel .\test.xlsx -WorkSheetname Processes -ChartType PieExploded3D -IncludePivotChart -IncludePivotTable -Show -PivotRows Company -PivotData PM
     #>
     param(
         [Parameter(Mandatory)]
@@ -119,7 +127,7 @@ function Export-Excel {
         if($IncludePivotTable) {
             $pivotTableName = $WorkSheetname + "PivotTable"
             $wsPivot = $pkg.Workbook.Worksheets.Add($pivotTableName)
-            #$wsPivot.View.TabSelected = $true
+            $wsPivot.View.TabSelected = $true
 
             $pivotTableDataName=$WorkSheetname + "PivotTableData"
             $range="{0}:{1}" -f $ws.Dimension.Start.Address, $ws.Dimension.End.Address
