@@ -9,9 +9,6 @@ Know Issues
 What's new
 -
 
-#### 4/8/2015
-* Implemented exporting data to **named sheets** via the -WorkSheename parameter.
-
 #### 4/10/2015
 * Renamed `AutoFitColumns` to `AutoSize`
 * Implemented `Export-MultipleExcelSheets`
@@ -19,6 +16,9 @@ What's new
 * Replaced `-Force` switch with `-NoClobber` switch
 * Added examples for `Get-Help
 * If Pivot table is requested, that sheet becomes the tab selected
+
+#### 4/8/2015
+* Implemented exporting data to **named sheets** via the -WorkSheename parameter.
 
 #### Examples 
 `gsv | Export-Excel .\test.xlsx -WorkSheetname Services`
