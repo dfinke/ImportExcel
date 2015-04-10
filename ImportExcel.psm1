@@ -56,7 +56,7 @@ function Export-Excel {
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="Pie",
         [Switch]$IncludePivotTable,
         [Switch]$IncludePivotChart,
-        [Switch]$AutoFitColumns,
+        [Switch]$AutoSize,
         [Switch]$Show,
         [Switch]$Force
     )
@@ -101,7 +101,7 @@ function Export-Excel {
 
     End {
 
-        if($AutoFitColumns) {$ws.Cells.AutoFitColumns()}
+        if($AutoSize) {$ws.Cells.AutoFitColumns()}
 
         if($IncludePivotTable) {
             $pivotTableName = $WorkSheetname + "PivotTable"
