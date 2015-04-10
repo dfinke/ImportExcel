@@ -43,3 +43,4 @@ Temporary Items
 .apdisk
 InstallModule.ps1
 Export-Excel.ps1
+testExport.xlsx
