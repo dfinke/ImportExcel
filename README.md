@@ -16,7 +16,7 @@ What's new
 * Renamed `AutoFitColumns` to `AutoSize`
 * Implemented `Export-MultipleExcelSheets`
 * Implemented `-Password` for a worksheet
-* Repalce `-Force` switch with `-NoClobber` switch 
+* Replaced `-Force` switch with `-NoClobber` switch 
 
 #### Examples 
 `gsv | Export-Excel .\test.xlsx -WorkSheetname Services`

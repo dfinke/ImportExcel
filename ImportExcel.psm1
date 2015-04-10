@@ -44,6 +44,9 @@ function Import-Excel {
 }
 
 function Export-Excel {
+    <#
+        .Synopsis
+    #>
     param(
         [Parameter(Mandatory)]
         $Path,
