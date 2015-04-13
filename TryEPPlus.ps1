@@ -3,14 +3,14 @@ $xlFile = ".\testExport.xlsx"
 Remove-Item -ErrorAction Ignore $xlFile
 
 $ExportOptions = @{
-    Path = $xlFile 
-    Show=$true
-    IncludePivotTable=$true
-    IncludePivotChart=$true
-    PivotRows=echo Company Name    
-    PivotData="PM"
-    ChartType="BarClustered3D"
-    Password="Test"
+    Path              = $xlFile 
+    Show              = $true
+    IncludePivotTable = $true
+    IncludePivotChart = $true
+    PivotRows         = echo Company Name    
+    PivotData         = "PM"
+    ChartType         = "BarClustered3D"
+    #Password          = "Test"
 }
 
 Get-Process | 
