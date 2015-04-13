@@ -158,7 +158,7 @@ function Export-Excel {
             }
         }
 
-        $ws.Protection.SetPassword($Password)
+        if($Password) { $ws.Protection.SetPassword($Password) }
 
         $pkg.Save()
         $pkg.Dispose()
