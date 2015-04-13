@@ -7,11 +7,13 @@ $ExportOptions = @{
     Show=$true
     IncludePivotTable=$true
     IncludePivotChart=$true
-    PivotRows="Company"
+    PivotRows=echo Company Name    
     PivotData="PM"
-    ChartType="PieExploded3D"
+    ChartType="BarClustered3D"
+    Password="Test"
 }
 
 Get-Process | 
+    Where Company |
     Select Company, Name, Handles, PM | 
     Export-Excel @ExportOptions 
