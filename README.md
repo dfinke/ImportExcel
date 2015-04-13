@@ -14,7 +14,7 @@ What's new
 * Implemented `Export-MultipleExcelSheets`
 * Implemented `-Password` for a worksheet
 * Replaced `-Force` switch with `-NoClobber` switch
-* Added examples for `Get-Help
+* Added examples for `Get-Help`
 * If Pivot table is requested, that sheet becomes the tab selected
 
 #### 4/8/2015
