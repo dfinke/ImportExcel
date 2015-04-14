@@ -65,7 +65,7 @@ function Export-Excel {
         [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern="None",
         [bool]$TitleBold,
         [int]$TitleSize=22,
-        #[System.Drawing.Color]$TitleBackgroundColor,
+        [System.Drawing.Color]$TitleBackgroundColor,
         #[string]$TitleBackgroundColor,
         [string[]]$PivotRows,
         [string[]]$PivotColumns,
@@ -102,9 +102,9 @@ function Export-Excel {
                 $ws.Cells[$Row, 1].Style.Font.Size = $TitleSize
                 $ws.Cells[$Row, 1].Style.Font.Bold = $TitleBold
                 $ws.Cells[$Row, 1].Style.Fill.PatternType = $TitleFillPattern
-                #if($TitleBackgroundColor) {
-                #    $ws.Cells[$Row, 1].Style.Fill.BackgroundColor.SetColor([System.Drawing.Color]::Blue)
-                #}
+                if($TitleBackgroundColor) {
+                    $ws.Cells[$Row, 1].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
+                }
 
                 $Row = 2
             }
