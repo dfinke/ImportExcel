@@ -9,6 +9,11 @@ Know Issues
 What's new
 -
 
+#### 4/13/2015
+* You can add a title to the Excel "Report" `Title`, `TitleFillPattern`, `TitleBold`, `TitleSize`, `TitleBackgroundColor`
+	* Thanks to [Irwin Strachan](http://pshirwin.wordpress.com) for this and other great suggestions, testing and more
+
+
 #### 4/10/2015
 * Renamed `AutoFitColumns` to `AutoSize`
 * Implemented `Export-MultipleExcelSheets`
@@ -20,12 +25,33 @@ What's new
 #### 4/8/2015
 * Implemented exporting data to **named sheets** via the -WorkSheename parameter.
 
-#### Examples 
+Examples
+- 
 `gsv | Export-Excel .\test.xlsx -WorkSheetname Services`
 
 `dir -file | Export-Excel .\test.xlsx -WorkSheetname Files`
 
 `ps | Export-Excel .\test.xlsx -WorkSheetname Processes -IncludePivotTable -Show -PivotRows Company -PivotData PM`
+
+#### Example Adding a Title
+You can set the pattern, size and of if the title is bold.
+
+	$p=@{	    
+	    Title = "Process Report as of $(Get-Date)" 
+	    TitleFillPattern = "LightTrellis"
+	    TitleSize = 18
+	    TitleBold = $true
+
+		Path  = "$pwd\testExport.xlsx"
+	    Show = $true
+	    AutoSize = $true
+	}
+	
+	Get-Process |
+	    Where Company | Select Company, PM |
+	    Export-Excel @p
+
+![image](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/Title.png)
 
 #### Example Export-MultipleExcelSheets
 ![image](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/ExportMultiple.gif)

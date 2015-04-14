@@ -60,7 +60,13 @@ function Export-Excel {
         $Path,
         [Parameter(ValueFromPipeline)]
         $TargetData,
-        $WorkSheetname="Sheet1",
+        [string]$WorkSheetname="Sheet1",
+        [string]$Title,
+        [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern="None",
+        [bool]$TitleBold,
+        [int]$TitleSize=22,
+        #[System.Drawing.Color]$TitleBackgroundColor,
+        #[string]$TitleBackgroundColor,
         [string[]]$PivotRows,
         [string[]]$PivotColumns,
         [string[]]$PivotData,
@@ -88,12 +94,26 @@ function Export-Excel {
             }
 
             $ws  = $pkg.Workbook.Worksheets.Add($WorkSheetname)
+
             $Row = 1
+            if($Title) {
+                $ws.Cells[$Row, 1].Value = $Title
+
+                $ws.Cells[$Row, 1].Style.Font.Size = $TitleSize
+                $ws.Cells[$Row, 1].Style.Font.Bold = $TitleBold
+                $ws.Cells[$Row, 1].Style.Fill.PatternType = $TitleFillPattern
+                #if($TitleBackgroundColor) {
+                #    $ws.Cells[$Row, 1].Style.Fill.BackgroundColor.SetColor([System.Drawing.Color]::Blue)
+                #}
+
+                $Row = 2
+            }
+
         } Catch {
             if($AlreadyExists) {
                 throw "$WorkSheetname already exists."
             } else {
-                throw $Error[0].Exception.InnerException
+                throw $Error[0].Exception.Message
             }
         }
     }
@@ -130,7 +150,11 @@ function Export-Excel {
             $wsPivot.View.TabSelected = $true
 
             $pivotTableDataName=$WorkSheetname + "PivotTableData"
-            $range="{0}:{1}" -f $ws.Dimension.Start.Address, $ws.Dimension.End.Address
+
+            $startAddress=$ws.Dimension.Start.Address
+            if($Title) {$startAddress="A2"}
+
+            $range="{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
             $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells["A1"], $ws.Cells[$range], $pivotTableDataName)
 
             if($PivotRows) {
