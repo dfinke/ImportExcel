@@ -43,37 +43,78 @@ function Import-Excel {
     }
 }
 
+function Export-ExcelSheet {
+
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [String]
+        $Path,
+        [String]
+        $OutputPath = '.\',
+        [String]
+        $SheetName,
+        [string]
+        $Encoding = 'UTF8',
+        [string]
+        $Extension = '.txt',
+        [string]
+        $Delimiter = ';'
+    )
+
+    $Path = (Resolve-Path $Path).Path
+    $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
+    $workbook = $xl.Workbook
+
+    $targetSheets = $workbook.Worksheets | Where {$_.Name -Match $SheetName}
+
+    $params = @{} + $PSBoundParameters
+    $params.Remove("OutputPath")
+    $params.Remove("SheetName")
+    $params.NoTypeInformation = $true
+
+    Foreach ($sheet in $targetSheets)
+    {
+        Write-Verbose "Exporting sheet: $($sheet.Name)"
+
+        $params.Path = "$($OutputPath)\$($Sheet.Name)$($Extension)"
+
+        Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params
+    }
+}
+
 function Import-ExcelAllSheet
 {
-	[CmdletBinding()]
-	param
-	(
-		[Parameter(Mandatory = $true)]
-		[String]
-		$Path,
-		[String]
-		$OutputPath = '.\',
-		[string]
-		$Encoding = 'UTF8',
-		[string]
-		$Extension = '.txt',
-		[string]
-		$Delimiter = ';'
-	)
-	
-	$FullName = (Resolve-Path $Path).Path
-	$xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $FullName
-	$workbook = $xl.Workbook
-	
-	
-	Foreach ($sheet in $workbook.Worksheets)
-	{
-		Write-Verbose "Exporting sheet: $($sheet.name)"
-		
-			Import-Excel -FullName $FullName -Sheet $($sheet.Name) | Export-Csv -Path "$($OutputPath)\$($Sheet.Name)$($Extension)" -Delimiter $Delimiter -NoTypeInformation -Encoding $Encoding
-		
-	}
-	
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [String]
+        $Path,
+        [String]
+        $OutputPath = '.\',
+        [string]
+        $Encoding = 'UTF8',
+        [string]
+        $Extension = '.txt',
+        [string]
+        $Delimiter = ';'
+    )
+
+    $FullName = (Resolve-Path $Path).Path
+    $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $FullName
+    $workbook = $xl.Workbook
+
+
+    Foreach ($sheet in $workbook.Worksheets)
+    {
+        Write-Verbose "Exporting sheet: $($sheet.name)"
+
+            Import-Excel -FullName $FullName -Sheet $($sheet.Name) | Export-Csv -Path "$($OutputPath)\$($Sheet.Name)$($Extension)" -Delimiter $Delimiter -NoTypeInformation -Encoding $Encoding
+
+    }
+
 }
 
 function Export-Excel {
