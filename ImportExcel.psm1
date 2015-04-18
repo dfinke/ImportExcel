@@ -43,6 +43,39 @@ function Import-Excel {
     }
 }
 
+function Import-ExcelAllSheet
+{
+	[CmdletBinding()]
+	param
+	(
+		[Parameter(Mandatory = $true)]
+		[String]
+		$Path,
+		[String]
+		$OutputPath = '.\',
+		[string]
+		$Encoding = 'UTF8',
+		[string]
+		$Extension = '.txt',
+		[string]
+		$Delimiter = ';'
+	)
+	
+	$FullName = (Resolve-Path $Path).Path
+	$xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $FullName
+	$workbook = $xl.Workbook
+	
+	
+	Foreach ($sheet in $workbook.Worksheets)
+	{
+		Write-Verbose "Exporting sheet: $($sheet.name)"
+		
+			Import-Excel -FullName $FullName -Sheet $($sheet.Name) | Export-Csv -Path "$($OutputPath)\$($Sheet.Name)$($Extension)" -Delimiter $Delimiter -NoTypeInformation -Encoding $Encoding
+		
+	}
+	
+}
+
 function Export-Excel {
     <#
         .Synopsis
