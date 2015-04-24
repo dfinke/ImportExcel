@@ -2,7 +2,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 
 function Import-Excel {
     param(
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         $FullName,
         $Sheet=1,
         [string[]]$Header
@@ -97,9 +97,9 @@ function Export-Excel {
         ps | Export-Excel .\test.xlsx -WorkSheetname Processes -ChartType PieExploded3D -IncludePivotChart -IncludePivotTable -Show -PivotRows Company -PivotData PM
     #>
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory=$true)]
         $Path,
-        [Parameter(ValueFromPipeline)]
+        [Parameter(ValueFromPipeline=$true)]
         $TargetData,
         [string]$WorkSheetname="Sheet1",
         [string]$Title,
