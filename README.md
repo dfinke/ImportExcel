@@ -11,7 +11,7 @@ What's new
 
 #### 4/25/2015
 * Now you can create multiple Pivot tables in one pass
-	* Thanks to [pscookiemonster](https://twitter.com/pscookiemonster), he submitted a repro case the EPPlus CodePlex project and getting that fixed
+	* Thanks to [pscookiemonster](https://twitter.com/pscookiemonster), he submitted a repro case the EPPlus CodePlex project and got it fixed
 
 #### Example
 
