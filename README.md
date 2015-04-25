@@ -4,7 +4,7 @@ This PowerShell Module wraps the .NET EPPlus DLL (included). Easily integrate re
 
 Know Issues
 -
-* Only one pivot table can be added. Investigating how EPPlus saves the target file. 
+* You don't know what you don't know 
 
 What's new
 -
