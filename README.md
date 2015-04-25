@@ -9,6 +9,25 @@ Know Issues
 What's new
 -
 
+#### 4/25/2015
+* Now you can create multiple Pivot tables in one pass
+	* Thanks to [pscookiemonster](https://twitter.com/pscookiemonster), he submitted a repro case the EPPlus CodePlex project and getting that fixed
+
+#### Example
+
+	$ps = ps
+
+	$ps | 
+	    Export-Excel .\testExport.xlsx  -WorkSheetname memory `
+	        -IncludePivotTable -PivotRows Company -PivotData PM `
+	        -IncludePivotChart -ChartType PieExploded3D
+	$ps | 
+	    Export-Excel .\testExport.xlsx  -WorkSheetname handles `
+	        -IncludePivotTable -PivotRows Company -PivotData Handles `
+	        -IncludePivotChart -ChartType PieExploded3D -Show
+
+![image](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/MultiplePivotTables.png)
+
 #### 4/20/2015
 * Included and embellished [Claus Nielsen](https://github.com/Claustn) function to take all sheets in an Excel file workbook and create a text file for each `ConvertFrom-ExcelSheet`
 
