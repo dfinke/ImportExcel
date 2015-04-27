@@ -176,14 +176,19 @@ function Export-Excel {
         $ColumnIndex = 1
 
         foreach ($Name in $Header) {
-            $ws.Cells[$Row, $ColumnIndex].Value = $TargetData.$Name
+
+            $targetCell = $ws.Cells[$Row, $ColumnIndex]
+            $targetCell.Value = $TargetData.$Name
+            
+            switch ($TargetData.$Name) {
+                {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"} 
+            }
+            
             $ColumnIndex += 1
         }
     }
 
     End {
-
-        if($AutoSize) {$ws.Cells.AutoFitColumns()}
 
         if($IncludePivotTable) {
             $pivotTableName = $WorkSheetname + "PivotTable"
@@ -223,6 +228,7 @@ function Export-Excel {
             }
         }
 
+        if($AutoSize) { $ws.Cells.AutoFitColumns() }
         if($Password) { $ws.Protection.SetPassword($Password) }
 
         $pkg.Save()
