@@ -4,10 +4,13 @@ This PowerShell Module wraps the .NET EPPlus DLL (included). Easily integrate re
 
 Know Issues
 -
-* You don't know what you don't know 
+* You don't know what you don't know
 
 What's new
 -
+
+#### 4/27/2015
+* datetime properties were displaying as ints, now are formatted 
 
 #### 4/25/2015
 * Now you can create multiple Pivot tables in one pass
