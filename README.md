@@ -9,9 +9,6 @@ Know Issues
 What's new
 -
 
-#### 4/27/2015
-* datetime properties were displaying as ints, now are formatted 
-
 #### 4/25/2015
 * Now you can create multiple Pivot tables in one pass
 	* Thanks to [pscookiemonster](https://twitter.com/pscookiemonster), he submitted a repro case to the EPPlus CodePlex project and got it fixed
