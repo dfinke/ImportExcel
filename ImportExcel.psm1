@@ -179,11 +179,11 @@ function Export-Excel {
 
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
             $targetCell.Value = $TargetData.$Name
-            
+
             switch ($TargetData.$Name) {
-                {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"} 
+                {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
             }
-            
+
             $ColumnIndex += 1
         }
     }
@@ -289,4 +289,31 @@ function ConvertFrom-ExcelSheet {
 
         Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params
     }
+}
+
+function Export-MultipleExcelSheets {
+    param(
+        [Parameter(Mandatory)]
+        $Path,
+        [Parameter(Mandatory)]
+        [hashtable]$InfoMap,
+        [string]$Password,
+        [Switch]$Show,
+        [Switch]$AutoSize
+    )
+
+    $parameters = @{}+$PSBoundParameters
+    $parameters.Remove("InfoMap")
+    $parameters.Remove("Show")
+
+    $parameters.Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+
+    foreach ($entry in $InfoMap.GetEnumerator()) {
+        Write-Progress -Activity "Exporting" -Status "$($entry.Key)"
+        $parameters.WorkSheetname=$entry.Key
+
+        & $entry.Value | Export-Excel @parameters
+    }
+
+    if($Show) {Invoke-Item $Path}
 }
