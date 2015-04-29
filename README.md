@@ -33,6 +33,7 @@ What's new
 
 #### 4/20/2015
 * Included and embellished [Claus Nielsen](https://github.com/Claustn) function to take all sheets in an Excel file workbook and create a text file for each `ConvertFrom-ExcelSheet`
+* Renamed `Export-MultipleExcelSheets` `ConvertFrom-ExcelSheet`
 
 #### 4/13/2015
 * You can add a title to the Excel "Report" `Title`, `TitleFillPattern`, `TitleBold`, `TitleSize`, `TitleBackgroundColor`
