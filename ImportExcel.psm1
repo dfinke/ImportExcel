@@ -11,7 +11,7 @@ function Import-Excel {
     Process {
 
         $FullName = (Resolve-Path $FullName).Path
-        write-debug "target excel file $($FullName)"
+        write-debug "target excel file $FullName"
 
         $xl = New-Object OfficeOpenXml.ExcelPackage $FullName
 
@@ -78,10 +78,12 @@ function Export-ExcelSheet {
     {
         Write-Verbose "Exporting sheet: $($sheet.Name)"
 
-        $params.Path = "$($OutputPath)\$($Sheet.Name)$($Extension)"
+        $params.Path = "$OutputPath\$($Sheet.Name)$Extension"
 
-        Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params
+        Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params -Encoding $Encoding
     }
+    
+    $xl.Dispose()
 }
 
 function Export-Excel {
@@ -285,10 +287,12 @@ function ConvertFrom-ExcelSheet {
     {
         Write-Verbose "Exporting sheet: $($sheet.Name)"
 
-        $params.Path = "$($OutputPath)\$($Sheet.Name)$($Extension)"
+        $params.Path = "$OutputPath\$($Sheet.Name)$Extension"
 
-        Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params
+        Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params -Encoding $Encoding
     }
+    
+    $xl.Dispose()
 }
 
 function Export-MultipleExcelSheets {
