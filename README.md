@@ -4,10 +4,16 @@ This PowerShell Module wraps the .NET EPPlus DLL (included). Easily integrate re
 
 Know Issues
 -
-* You don't know what you don't know
+* Using `-IncludePivotTable`, if that pivot table name exists, you'll get an error.
+	* Investigating a soloution
+	* *Workaround* delete the Excel file first, then do the export   
 
 What's new
 -
+
+#### 5/4/2015
+* Published to PowerShell Gallery. In PowerShell v5 use	`Find-Module importexcel` then `Find-Module importexcel | Install-Module`
+
 
 #### 4/27/2015
 * datetime properties were displaying as ints, now are formatted 
