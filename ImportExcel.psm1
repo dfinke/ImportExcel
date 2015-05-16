@@ -2,7 +2,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 
 function Import-Excel {
     param(
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         $FullName,
         $Sheet=1,
         [string[]]$Header
@@ -11,7 +11,7 @@ function Import-Excel {
     Process {
 
         $FullName = (Resolve-Path $FullName).Path
-        write-debug "target excel file $($FullName)"
+        write-debug "target excel file $FullName"
 
         $xl = New-Object OfficeOpenXml.ExcelPackage $FullName
 
@@ -78,10 +78,12 @@ function Export-ExcelSheet {
     {
         Write-Verbose "Exporting sheet: $($sheet.Name)"
 
-        $params.Path = "$($OutputPath)\$($Sheet.Name)$($Extension)"
+        $params.Path = "$OutputPath\$($Sheet.Name)$Extension"
 
-        Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params
+        Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params -Encoding $Encoding
     }
+    
+    $xl.Dispose()
 }
 
 function Export-Excel {
@@ -97,9 +99,9 @@ function Export-Excel {
         ps | Export-Excel .\test.xlsx -WorkSheetname Processes -ChartType PieExploded3D -IncludePivotChart -IncludePivotTable -Show -PivotRows Company -PivotData PM
     #>
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory=$true)]
         $Path,
-        [Parameter(ValueFromPipeline)]
+        [Parameter(ValueFromPipeline=$true)]
         $TargetData,
         [string]$WorkSheetname="Sheet1",
         [string]$Title,
@@ -176,14 +178,19 @@ function Export-Excel {
         $ColumnIndex = 1
 
         foreach ($Name in $Header) {
-            $ws.Cells[$Row, $ColumnIndex].Value = $TargetData.$Name
+
+            $targetCell = $ws.Cells[$Row, $ColumnIndex]
+            $targetCell.Value = $TargetData.$Name
+
+            switch ($TargetData.$Name) {
+                {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
+            }
+
             $ColumnIndex += 1
         }
     }
 
     End {
-
-        if($AutoSize) {$ws.Cells.AutoFitColumns()}
 
         if($IncludePivotTable) {
             $pivotTableName = $WorkSheetname + "PivotTable"
@@ -223,6 +230,7 @@ function Export-Excel {
             }
         }
 
+        if($AutoSize) { $ws.Cells.AutoFitColumns() }
         if($Password) { $ws.Protection.SetPassword($Password) }
 
         $pkg.Save()
@@ -279,8 +287,37 @@ function ConvertFrom-ExcelSheet {
     {
         Write-Verbose "Exporting sheet: $($sheet.Name)"
 
-        $params.Path = "$($OutputPath)\$($Sheet.Name)$($Extension)"
+        $params.Path = "$OutputPath\$($Sheet.Name)$Extension"
 
-        Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params
+        Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params -Encoding $Encoding
     }
+    
+    $xl.Dispose()
+}
+
+function Export-MultipleExcelSheets {
+    param(
+        [Parameter(Mandatory)]
+        $Path,
+        [Parameter(Mandatory)]
+        [hashtable]$InfoMap,
+        [string]$Password,
+        [Switch]$Show,
+        [Switch]$AutoSize
+    )
+
+    $parameters = @{}+$PSBoundParameters
+    $parameters.Remove("InfoMap")
+    $parameters.Remove("Show")
+
+    $parameters.Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+
+    foreach ($entry in $InfoMap.GetEnumerator()) {
+        Write-Progress -Activity "Exporting" -Status "$($entry.Key)"
+        $parameters.WorkSheetname=$entry.Key
+
+        & $entry.Value | Export-Excel @parameters
+    }
+
+    if($Show) {Invoke-Item $Path}
 }

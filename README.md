@@ -4,13 +4,42 @@ This PowerShell Module wraps the .NET EPPlus DLL (included). Easily integrate re
 
 Know Issues
 -
-* Only one pivot table can be added. Investigating how EPPlus saves the target file. 
+* Using `-IncludePivotTable`, if that pivot table name exists, you'll get an error.
+	* Investigating a soloution
+	* *Workaround* delete the Excel file first, then do the export   
 
 What's new
 -
 
+#### 5/4/2015
+* Published to PowerShell Gallery. In PowerShell v5 use	`Find-Module importexcel` then `Find-Module importexcel | Install-Module`
+
+
+#### 4/27/2015
+* datetime properties were displaying as ints, now are formatted 
+
+#### 4/25/2015
+* Now you can create multiple Pivot tables in one pass
+	* Thanks to [pscookiemonster](https://twitter.com/pscookiemonster), he submitted a repro case to the EPPlus CodePlex project and got it fixed
+
+#### Example
+
+	$ps = ps
+
+	$ps | 
+	    Export-Excel .\testExport.xlsx  -WorkSheetname memory `
+	        -IncludePivotTable -PivotRows Company -PivotData PM `
+	        -IncludePivotChart -ChartType PieExploded3D
+	$ps | 
+	    Export-Excel .\testExport.xlsx  -WorkSheetname handles `
+	        -IncludePivotTable -PivotRows Company -PivotData Handles `
+	        -IncludePivotChart -ChartType PieExploded3D -Show
+
+![image](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/MultiplePivotTables.png)
+
 #### 4/20/2015
 * Included and embellished [Claus Nielsen](https://github.com/Claustn) function to take all sheets in an Excel file workbook and create a text file for each `ConvertFrom-ExcelSheet`
+* Renamed `Export-MultipleExcelSheets` to `ConvertFrom-ExcelSheet`
 
 #### 4/13/2015
 * You can add a title to the Excel "Report" `Title`, `TitleFillPattern`, `TitleBold`, `TitleSize`, `TitleBackgroundColor`
