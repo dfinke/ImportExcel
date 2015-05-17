@@ -82,7 +82,7 @@ function Export-ExcelSheet {
 
         Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params -Encoding $Encoding
     }
-    
+
     $xl.Dispose()
 }
 
@@ -119,7 +119,10 @@ function Export-Excel {
         [Switch]$IncludePivotChart,
         [Switch]$AutoSize,
         [Switch]$Show,
-        [Switch]$NoClobber
+        [Switch]$NoClobber,
+        [Switch]$FreezeTopRow,
+        [Switch]$AutoFilter,
+        [Switch]$BoldFirstRow
     )
 
     Begin {
@@ -230,8 +233,24 @@ function Export-Excel {
             }
         }
 
-        if($AutoSize) { $ws.Cells.AutoFitColumns() }
         if($Password) { $ws.Protection.SetPassword($Password) }
+
+        if($AutoFilter) {
+            $startAddress=$ws.Dimension.Start.Address
+            $range="{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
+            $ws.Cells[$range].AutoFilter=$true
+        }
+
+        if($FreezeTopRow) {
+            $ws.View.FreezePanes(2,1)
+        }
+
+        if($BoldFirstRow) {
+            $range=$ws.Dimension.Address -replace $ws.Dimension.Rows, "1"
+            $ws.Cells[$range].Style.Font.Bold=$true
+        }
+
+        if($AutoSize) { $ws.Cells.AutoFitColumns() }
 
         $pkg.Save()
         $pkg.Dispose()
@@ -291,7 +310,7 @@ function ConvertFrom-ExcelSheet {
 
         Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params -Encoding $Encoding
     }
-    
+
     $xl.Dispose()
 }
 

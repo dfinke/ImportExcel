@@ -19,6 +19,20 @@ Know Issues
 
 What's new
 -
+#### 5/17/2015
+* Added three parameters:
+	* FreezeTopRow - Freezes the first row of the data
+	* AutoFilter - Enables filtering for the data in the sheet
+	* BoldFirstRow - Bolds the first row of data, the column headers
+
+Example
+
+	Get-CimInstance win32_service |
+		select state, accept*, start*, caption |    
+		Export-Excel test.xlsx -Show -BoldFirstRow -AutoFilter -FreezeTopRow -AutoSize
+			
+![image](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/FilterFreezeBold.gif)
+
 
 #### 5/4/2015
 * Published to PowerShell Gallery. In PowerShell v5 use	`Find-Module importexcel` then `Find-Module importexcel | Install-Module`
