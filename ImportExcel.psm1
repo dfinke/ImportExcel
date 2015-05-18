@@ -122,7 +122,7 @@ function Export-Excel {
         [Switch]$NoClobber,
         [Switch]$FreezeTopRow,
         [Switch]$AutoFilter,
-        [Switch]$BoldFirstRow
+        [Switch]$BoldTopRow
     )
 
     Begin {
@@ -245,7 +245,7 @@ function Export-Excel {
             $ws.View.FreezePanes(2,1)
         }
 
-        if($BoldFirstRow) {
+        if($BoldTopRow) {
             $range=$ws.Dimension.Address -replace $ws.Dimension.Rows, "1"
             $ws.Cells[$range].Style.Font.Bold=$true
         }

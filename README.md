@@ -23,13 +23,13 @@ What's new
 * Added three parameters:
 	* FreezeTopRow - Freezes the first row of the data
 	* AutoFilter - Enables filtering for the data in the sheet
-	* BoldFirstRow - Bolds the first row of data, the column headers
+	* BoldTopRow - Bolds the top row of data, the column headers
 
 Example
 
 	Get-CimInstance win32_service |
 		select state, accept*, start*, caption |    
-		Export-Excel test.xlsx -Show -BoldFirstRow -AutoFilter -FreezeTopRow -AutoSize
+		Export-Excel test.xlsx -Show -BoldTopRow -AutoFilter -FreezeTopRow -AutoSize
 			
 ![image](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/FilterFreezeBold.gif)
 
