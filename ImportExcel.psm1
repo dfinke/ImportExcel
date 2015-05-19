@@ -136,7 +136,8 @@ function Export-Excel {
         #[string]$TitleBackgroundColor,
         [string[]]$PivotRows,
         [string[]]$PivotColumns,
-        [string[]]$PivotData,
+        #[string[]]$PivotData,
+        $PivotData,
         [string]$Password,
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="Pie",
         [Switch]$IncludePivotTable,
@@ -203,7 +204,15 @@ function Export-Excel {
         foreach ($Name in $Header) {
 
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
-            $targetCell.Value = $TargetData.$Name
+
+            $cellValue=$TargetData.$Name
+
+            $r=$null
+            if([double]::tryparse($cellValue, [ref]$r)) {
+                $targetCell.Value = $r
+            } else {
+                $targetCell.Value = $cellValue
+            }
 
             switch ($TargetData.$Name) {
                 {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
@@ -249,8 +258,15 @@ function Export-Excel {
             }
 
             if($PivotData) {
-                foreach ($Item in $PivotData) {
-                    $null=$pivotTable.DataFields.Add($pivotTable.Fields[$Item])
+                if($PivotData -is [hashtable]) {
+                    $PivotData.Keys | % {
+                        $df=$pivotTable.DataFields.Add($pivotTable.Fields[$_])
+                        $df.Function = $PivotData.$_
+                    }
+                } else {
+                    foreach ($Item in $PivotData) {
+                        $null=$pivotTable.DataFields.Add($pivotTable.Fields[$Item])
+                    }
                 }
             }
 
