@@ -23,6 +23,9 @@ Know Issues
 
 What's new
 -
+#### 5/25/2015
+* Fixed null header problem
+
 #### 5/17/2015
 * Added three parameters:
 	* FreezeTopRow - Freezes the first row of the data

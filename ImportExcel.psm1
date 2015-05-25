@@ -32,8 +32,10 @@ function Import-Excel {
         foreach ($Row in 2..$Rows) {
             $h=[Ordered]@{}
             foreach ($Column in 0..($Columns-1)) {
-                $Name    = $Header[$Column]
-                $h.$Name = $worksheet.Cells[$Row,($Column+1)].Text
+                if($Header[$Column].Length -gt 0) {
+                    $Name    = $Header[$Column]
+                    $h.$Name = $worksheet.Cells[$Row,($Column+1)].Text
+                }
             }
             [PSCustomObject]$h
         }
