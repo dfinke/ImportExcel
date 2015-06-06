@@ -265,7 +265,8 @@ function Export-Excel {
                     }
                 } else {
                     foreach ($Item in $PivotData) {
-                        $null=$pivotTable.DataFields.Add($pivotTable.Fields[$Item])
+                        $df=$pivotTable.DataFields.Add($pivotTable.Fields[$Item])
+                        $df.Function = 'Count'
                     }
                 }
             }
