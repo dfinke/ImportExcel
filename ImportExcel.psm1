@@ -147,7 +147,8 @@ function Export-Excel {
         [Switch]$FreezeTopRow,
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
-        [string]$RangeName
+        [string]$RangeName,
+        [string]$TableName
     )
 
     Begin {
@@ -216,6 +217,13 @@ function Export-Excel {
         $startAddress=$ws.Dimension.Start.Address
         $dataRange="{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
         Write-Debug "Data Range $dataRange"
+        
+        if (-not [string]::IsNullOrEmpty($RangeName)) {
+            $ws.Names.Add($RangeName, $ws.Cells[$dataRange]) | Out-Null
+        }
+        if (-not [string]::IsNullOrEmpty($TableName)) {
+            $ws.Tables.Add($ws.Cells[$dataRange], $TableName) | Out-Null
+        }
 
         if($IncludePivotTable) {
             $pivotTableName = $WorkSheetname + "PivotTable"
@@ -269,6 +277,8 @@ function Export-Excel {
         }
 
         if($AutoSize) { $ws.Cells.AutoFitColumns() }
+
+        #$pkg.Workbook.View.ActiveTab = $ws.SheetID
 
         $pkg.Save()
         $pkg.Dispose()
