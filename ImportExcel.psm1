@@ -88,6 +88,28 @@ function Export-ExcelSheet {
     $xl.Dispose()
 }
 
+function Add-WorkSheet {
+    param(
+        #TODO Use parametersets to allow a workbook to be passed instead of a package
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [OfficeOpenXml.ExcelPackage] $ExcelPackage,
+        [Parameter(Mandatory=$true)]
+        [string] $WorkSheetname,
+        [Switch] $NoClobber
+    )
+    if($ExcelPackage.Workbook.Worksheets[$WorkSheetname]) {
+        if($NoClobber) {
+            $AlreadyExists = $true
+            Write-Error "Worksheet `"$WorkSheetname`" already exists."
+        } else {
+            Write-Debug "Worksheet `"$WorkSheetname`" already exists. Deleting"
+            $ExcelPackage.Workbook.Worksheets.Delete($WorkSheetname)
+        }
+    }
+
+    $ExcelPackage.Workbook.Worksheets.Add($WorkSheetname)
+}
+
 function Export-Excel {
     <#
         .Synopsis
@@ -124,24 +146,20 @@ function Export-Excel {
         [Switch]$NoClobber,
         [Switch]$FreezeTopRow,
         [Switch]$AutoFilter,
-        [Switch]$BoldTopRow
+        [Switch]$BoldTopRow,
+        [string]$RangeName,
+        [string]$TableName
     )
 
     Begin {
         try {
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+            if (Test-Path $path) {
+                Write-Debug "File `"$Path`" already exists" 
+            }
             $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
 
-            if($pkg.Workbook.Worksheets[$WorkSheetname]) {
-                if($NoClobber) {
-                    $AlreadyExists = $true
-                    throw ""
-                } else {
-                    $pkg.Workbook.Worksheets.delete($WorkSheetname)
-                }
-            }
-
-            $ws  = $pkg.Workbook.Worksheets.Add($WorkSheetname)
+            $ws  = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber
 
             $Row = 1
             if($Title) {
@@ -196,19 +214,27 @@ function Export-Excel {
     }
 
     End {
+        $startAddress=$ws.Dimension.Start.Address
+        $dataRange="{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
+        Write-Debug "Data Range $dataRange"
+        
+        if (-not [string]::IsNullOrEmpty($RangeName)) {
+            $ws.Names.Add($RangeName, $ws.Cells[$dataRange]) | Out-Null
+        }
+        if (-not [string]::IsNullOrEmpty($TableName)) {
+            $ws.Tables.Add($ws.Cells[$dataRange], $TableName) | Out-Null
+        }
 
         if($IncludePivotTable) {
             $pivotTableName = $WorkSheetname + "PivotTable"
-            $wsPivot = $pkg.Workbook.Worksheets.Add($pivotTableName)
+            $wsPivot = $pkg | Add-WorkSheet -WorkSheetname $pivotTableName -NoClobber:$NoClobber
+
             $wsPivot.View.TabSelected = $true
 
             $pivotTableDataName=$WorkSheetname + "PivotTableData"
 
-            $startAddress=$ws.Dimension.Start.Address
             if($Title) {$startAddress="A2"}
-
-            $range="{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
-            $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells["A1"], $ws.Cells[$range], $pivotTableDataName)
+            $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells["A1"], $ws.Cells[$dataRange], $pivotTableDataName)
 
             if($PivotRows) {
                 foreach ($Row in $PivotRows) {
@@ -238,9 +264,7 @@ function Export-Excel {
         if($Password) { $ws.Protection.SetPassword($Password) }
 
         if($AutoFilter) {
-            $startAddress=$ws.Dimension.Start.Address
-            $range="{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
-            $ws.Cells[$range].AutoFilter=$true
+            $ws.Cells[$dataRange].AutoFilter=$true
         }
 
         if($FreezeTopRow) {
@@ -253,6 +277,8 @@ function Export-Excel {
         }
 
         if($AutoSize) { $ws.Cells.AutoFitColumns() }
+
+        #$pkg.Workbook.View.ActiveTab = $ws.SheetID
 
         $pkg.Save()
         $pkg.Dispose()
