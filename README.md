@@ -1,7 +1,6 @@
 PowerShell Import-Excel
 -
-This PowerShell Module wraps the .NET EPPlus DLL (included). Easily integrate reading and writing Excel spreadsheets into PowerShell, without launching Excel in the background. You can also automate the creation of Pivot Tables and Charts.
-
+This PowerShell Module wraps the .NET [EPPlus DLL](http://epplus.codeplex.com/) (included). Easily integrate reading and writing Excel spreadsheets into PowerShell, without launching Excel in the background. You can also automate the creation of Pivot Tables and Charts.
 
 Install
 -
@@ -23,6 +22,18 @@ Know Issues
 
 What's new
 -
+#### 6/16/2015 (Thanks Justin @zippy1981) 
+* Improvements to PivotTable overwriting
+* Added two parameters to Export-Excel
+	* RangeName - Turns the data piped to Export-Excel into a named range.
+	* TableName  - Turns the data piped to Export-Excel into an excel table.
+
+Examples
+
+	Get-Process|Export-Excel foo.xlsx -Verbose -IncludePivotTable -TableName "Processes" -Show
+	Get-Process|Export-Excel foo.xlsx -Verbose -IncludePivotTable -RangeName "Processes" -Show
+
+
 #### 5/25/2015
 * Fixed null header problem
 
