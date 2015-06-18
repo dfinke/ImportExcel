@@ -22,7 +22,7 @@ Know Issues
 
 What's new
 -
-#### 6/16/2015 (Thanks Justin @zippy1981) 
+#### 6/16/2015 (Thanks [Justin](https://github.com/zippy1981)) 
 * Improvements to PivotTable overwriting
 * Added two parameters to Export-Excel
 	* RangeName - Turns the data piped to Export-Excel into a named range.
