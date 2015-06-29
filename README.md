@@ -13,7 +13,7 @@ Otherwise
 To install in your personal modules folder (e.g. ~\Documents\WindowsPowerShell\Modules), run:
 
 ```powershell
-	iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfinke/ImportExcel/master/Install.ps1')
+iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfinke/ImportExcel/master/Install.ps1')
 ```
 
 Know Issues
