@@ -1,7 +1,7 @@
 PowerShell Import-Excel
 -
 
-https://gist.github.com/dfinke/fe19f796fdfcda90e5d6
+[gist fe19f796fdfcda90e5d6]
 
 This PowerShell Module wraps the .NET [EPPlus DLL](http://epplus.codeplex.com/) (included). Easily integrate reading and writing Excel spreadsheets into PowerShell, without launching Excel in the background. You can also automate the creation of Pivot Tables and Charts.
 
