@@ -19,11 +19,24 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 Know Issues
 -
 * Using `-IncludePivotTable`, if that pivot table name exists, you'll get an error.
-	* Investigating a soloution
+	* Investigating a solution
 	* *Workaround* delete the Excel file first, then do the export   
 
 What's new
 -
+
+#### 7/90/2015 
+* For -PivotRows you can pass a `hashtable` with the name of the property and the type of calculation. `Sum`, `Average`, `Max`, `Min`, `Product`, `StdDev`, `StdDevp`, `Var`, `Varp`
+
+```powershell
+Get-Service | 
+	Export-Excel "c:\temp\test.xlsx" `
+		-Show `
+		-IncludePivotTable `
+		-PivotRows status ` 
+		-PivotData @{status='count'}
+``` 
+
 #### 6/16/2015 (Thanks [Justin](https://github.com/zippy1981)) 
 * Improvements to PivotTable overwriting
 * Added two parameters to Export-Excel
