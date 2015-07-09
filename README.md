@@ -25,7 +25,7 @@ Know Issues
 What's new
 -
 
-#### 7/90/2015 
+#### 7/09/2015 
 * For -PivotRows you can pass a `hashtable` with the name of the property and the type of calculation. `Sum`, `Average`, `Max`, `Min`, `Product`, `StdDev`, `StdDevp`, `Var`, `Varp`
 
 ```powershell
