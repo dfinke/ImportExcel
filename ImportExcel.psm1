@@ -123,7 +123,7 @@ function Export-Excel {
         ps | Export-Excel .\test.xlsx -WorkSheetname Processes -ChartType PieExploded3D -IncludePivotChart -IncludePivotTable -Show -PivotRows Company -PivotData PM
         .Example
         Remove-Item "c:\temp\test.xlsx" -ErrorAction Ignore
-        Get-Service | Export-Excel "c:\temp\test.xlsx"  -Show -IncludePivotTable -PivotRows status, name -PivotData status
+        Get-Service | Export-Excel "c:\temp\test.xlsx"  -Show -IncludePivotTable -PivotRows status -PivotData @{status='count'}
     #>
     param(
         [Parameter(Mandatory=$true)]
@@ -159,7 +159,7 @@ function Export-Excel {
         try {
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
             if (Test-Path $path) {
-                Write-Debug "File `"$Path`" already exists" 
+                Write-Debug "File `"$Path`" already exists"
             }
             $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
 
@@ -229,7 +229,7 @@ function Export-Excel {
         $startAddress=$ws.Dimension.Start.Address
         $dataRange="{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
         Write-Debug "Data Range $dataRange"
-        
+
         if (-not [string]::IsNullOrEmpty($RangeName)) {
             $ws.Names.Add($RangeName, $ws.Cells[$dataRange]) | Out-Null
         }
