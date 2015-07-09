@@ -121,6 +121,9 @@ function Export-Excel {
         ps | Export-Excel .\test.xlsx -WorkSheetname Processes -IncludePivotTable -Show -PivotRows Company -PivotData PM
         .Example
         ps | Export-Excel .\test.xlsx -WorkSheetname Processes -ChartType PieExploded3D -IncludePivotChart -IncludePivotTable -Show -PivotRows Company -PivotData PM
+        .Example
+        Remove-Item "c:\temp\test.xlsx" -ErrorAction Ignore
+        Get-Service | Export-Excel "c:\temp\test.xlsx"  -Show -IncludePivotTable -PivotRows status, name -PivotData status
     #>
     param(
         [Parameter(Mandatory=$true)]
