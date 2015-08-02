@@ -152,7 +152,8 @@ function Export-Excel {
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
         [string]$RangeName,
-        [string]$TableName
+        [string]$TableName,
+        [string]$TableStyle
     )
 
     Begin {
@@ -234,7 +235,10 @@ function Export-Excel {
             $ws.Names.Add($RangeName, $ws.Cells[$dataRange]) | Out-Null
         }
         if (-not [string]::IsNullOrEmpty($TableName)) {
-            $ws.Tables.Add($ws.Cells[$dataRange], $TableName) | Out-Null
+           $Table = $ws.Tables.Add($ws.Cells[$dataRange], $TableName)
+         if($TableStyle) {
+           $Table.TableStyle = $TableStyle
+           }
         }
 
         if($IncludePivotTable) {
