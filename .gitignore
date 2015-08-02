@@ -42,7 +42,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 InstallModule.ps1
-Export-Excel.ps1
 testExport.xlsx
 test.ps1
 testPwd.xlsx
@@ -53,3 +52,5 @@ data/Sheet10.txt
 data/Sheet20.txt
 ImportExcel-Copy.psm1
 TryCCFmt.ps1
+test.xlsx
+testCCFMT.ps1
