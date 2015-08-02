@@ -25,6 +25,12 @@ Know Issues
 What's new
 -
 #### 7/31/2015 
+* Added Styles for Tables.
+
+Examples
+	Get-Process|Export-Excel foo.xlsx -TableName "Processes" -TableStyle "Medium17" -Show
+	
+#### 7/31/2015 
 * Added a tag to set the color of a Cell. you can set the Foreground color or the Background AND the foreground.
 * Just add the tag in the Cell value 
 
