@@ -24,7 +24,39 @@ Know Issues
 
 What's new
 -
+#### 7/31/2015 
+* Added Styles for Tables.
 
+Examples
+	Get-Process|Export-Excel foo.xlsx -TableName "Processes" -TableStyle "Medium17" -Show
+	
+#### 7/31/2015 
+* Added a tag to set the color of a Cell. you can set the Foreground color or the Background AND the foreground.
+* Just add the tag in the Cell value 
+
+Examples
+Set Foregroung
+[red]::This is my text
+
+Set Background and Foreground
+[red,white]::This is my text
+
+```powershell
+$usa_states=@{ "CA" = "California";
+  "NY" = "[red,white]::New York";
+  "IL" = "[red]::Illinois";
+  "NH" = "New Hampshire"}
+
+  $test = @()
+  foreach ($item in $usa_states.keys) {
+	$ObjFastping = New-Object pscustomobject
+    		Add-Member -InputObject $ObjFastping -MemberType NoteProperty -Name state -Value $item
+		Add-Member -InputObject $ObjFastping -MemberType NoteProperty -Name name -Value $usa_states[$item]
+ $test+=$ObjFastping
+  }
+  $test | Export-Excel -Path c:\temp\test.xlsx
+   ```
+  
 #### 7/09/2015 
 * For -PivotRows you can pass a `hashtable` with the name of the property and the type of calculation. `Sum`, `Average`, `Max`, `Min`, `Product`, `StdDev`, `StdDevp`, `Var`, `Varp`
 

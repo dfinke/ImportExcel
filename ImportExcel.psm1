@@ -152,7 +152,8 @@ function Export-Excel {
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
         [string]$RangeName,
-        [string]$TableName
+        [string]$TableName,
+        [string]$TableStyle
     )
 
     Begin {
@@ -234,7 +235,10 @@ function Export-Excel {
             $ws.Names.Add($RangeName, $ws.Cells[$dataRange]) | Out-Null
         }
         if (-not [string]::IsNullOrEmpty($TableName)) {
-            $ws.Tables.Add($ws.Cells[$dataRange], $TableName) | Out-Null
+           $Table = $ws.Tables.Add($ws.Cells[$dataRange], $TableName)
+         if($TableStyle) {
+           $Table.TableStyle = $TableStyle
+           }
         }
 
         if($IncludePivotTable) {
@@ -300,6 +304,46 @@ function Export-Excel {
 
         #$pkg.Workbook.View.ActiveTab = $ws.SheetID
 
+ if($Title) { 
+     $startRow = 3
+     } else {
+     $startRow = 2
+           }   
+        for ($y = $startRow; $y -le $ws.Dimension.Rows; $y += 1) 
+        {
+            for ($x = 1; $x -le $ColumnIndex; $x += 1) {
+
+                $TheValue = $ws.Cells[$y, $x].Value
+                               
+                 if ($TheValue -match '^\[(?<Color>.*)\]::(?<Value>.*)') {
+
+                    $WantedColor = $matches['Color']
+                    $WAntedValue = $matches['Value']
+                             
+                   if ($WantedColor -match '(?<ColorBackground>.*),(?<Colorforeground>.*)') {
+                   
+                   $WantedColorBackground = $matches['ColorBackground']
+                   $WantedColorForegroung = $matches['Colorforeground']
+                   
+                    ##For Cell Background Color
+                    $ws.Cells[$y, $x].Style.Fill.PatternType = 'Solid'
+                    $BckColor=[System.Drawing.Color]::$WantedColorBackground
+                    $ws.Cells[$y, $x].Style.Fill.BackgroundColor.SetColor($BckColor)
+                    
+                    ##For Txt Foreground Color
+                    $txtColor=[System.Drawing.Color]::$WantedColorForegroung
+                    $ws.Cells[$y, $x].Style.Font.Color.SetColor($txtColor)
+                   } else {
+                    ##For Txt Foreground Color
+                    $txtColor=[System.Drawing.Color]::$WantedColor
+                    $ws.Cells[$y, $x].Style.Font.Color.SetColor($txtColor)
+                    }
+                    ##Set the value without the color tag
+                   $ws.Cells[$y, $x].Value = $WAntedValue 
+                   
+                }
+            }
+        }
         $pkg.Save()
         $pkg.Dispose()
 
