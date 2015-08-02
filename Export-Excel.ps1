@@ -40,7 +40,8 @@ function Export-Excel {
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
         [string]$RangeName,
-        [string]$TableName
+        [string]$TableName,
+        [Object[]]$ConditionalFormat
     )
 
     Begin {
@@ -52,6 +53,18 @@ function Export-Excel {
             $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
 
             $ws  = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber
+
+            foreach($format in $ConditionalFormat ) {                
+                #$obj = [PSCustomObject]@{
+                #    Address   = $Address
+                #    Formatter = $ConditionalFormat
+                #    IconType  = $bp.IconType
+                #}
+
+                $target = "Add$($format.Formatter)"
+                $rule = ($ws.ConditionalFormatting).$target($format.Address, $format.IconType)
+                $rule.Reverse = $format.Reverse
+            }
 
             $Row = 1
             if($Title) {

@@ -3,7 +3,8 @@ function New-ConditionalFormattingIconSet {
         [Parameter(Mandatory=$true)]
         $Address,
         [ValidateSet("ThreeIconSet","FourIconSet","FiveIconSet")]
-        $ConditionalFormat        
+        $ConditionalFormat,
+        [bool]$Reverse
     )
     
     DynamicParam {       
@@ -44,6 +45,7 @@ function New-ConditionalFormattingIconSet {
             Address   = $Address
             Formatter = $ConditionalFormat
             IconType  = $bp.IconType
+            Reverse   = $Reverse
         }
 
         $obj.pstypenames.Clear()
