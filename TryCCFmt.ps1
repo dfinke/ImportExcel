@@ -150,7 +150,7 @@ function Set-ConditionalFormatting {
     }
 }
 
-$ws | Set-ConditionalFormatting -Address '3:3' -ConditionalFormat ThreeIconSet -IconType Symbols
+#$ws | Set-ConditionalFormatting -Address '3:3' -ConditionalFormat ThreeIconSet -IconType Symbols
 #$rulex = $ws.ConditionalFormatting.AddFourIconSet("B:C", 'RedToBlack')
 #$rulex.Reverse = $true
 
@@ -165,6 +165,19 @@ $ws | Set-ConditionalFormatting -Address '3:3' -ConditionalFormat ThreeIconSet -
 #$r = $ws.ConditionalFormatting.AddThreeIconSet("B:D", "Flags")
 
 #$rule2 = $ws.ConditionalFormatting.AddDatabar("b2:b10", "blue")
+
+$rule2 = $ws.ConditionalFormatting.AddNotEqual("a2:j10")
+$rule2.Formula="12"
+$rule2.Style.Fill.PatternType=[OfficeOpenXml.Style.ExcelFillStyle]::Gray0625
+#$rule2.Style.Font.Color.Color = "Green"
+
+$rule3 = $ws.ConditionalFormatting.AddEqual("a2:j10")
+$rule3.Formula="12"
+$rule3.Style.Fill.PatternType=[OfficeOpenXml.Style.ExcelFillStyle]::LightGray
+#$rule2.Style.Font.Color.Color = "Green"
+
+
+
 #$rule3 = $ws.ConditionalFormatting.AddNotEqual("c2:c10")
 #$rule3.Formula = "14"
 
