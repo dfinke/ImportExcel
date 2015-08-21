@@ -4,7 +4,7 @@ $p = @{
     NuGetApiKey = $NuGetApiKey
     LicenseUri = "https://github.com/dfinke/ImportExcel/blob/master/LICENSE.txt"
     Tag = "Excel","EPPlus","Export","Import"
-    ReleaseNote = "Added the ability to specify the PivotTable calculation count, sum, average and more"
+    ReleaseNote = "Now you can read Excel files even if they're open in Excel"
     ProjectUri = "https://github.com/dfinke/ImportExcel"
 }
 
