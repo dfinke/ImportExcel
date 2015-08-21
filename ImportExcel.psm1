@@ -2,20 +2,20 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 
 function Import-Excel {
     param(
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
-        $FullName,
+		[Alias("FullName")]
+        [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory)]
+        $Path,
         $Sheet=1,
         [string[]]$Header
     )
 
     Process {
 
-        $FullName = (Resolve-Path $FullName).Path
-        write-debug "target excel file $FullName"
+        $Path = (Resolve-Path $Path).Path
+        write-debug "target excel file $Path"
 		
-		$stream = New-Object System.IO.FileStream $FullName,"Open","Read","ReadWrite"
-
-        $xl = New-Object OfficeOpenXml.ExcelPackage $stream
+		$stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,"Open","Read","ReadWrite"
+        $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
 
         $workbook  = $xl.Workbook
 
@@ -344,7 +344,8 @@ function ConvertFrom-ExcelSheet {
     )
 
     $Path = (Resolve-Path $Path).Path
-    $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
+	$stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,"Open","Read","ReadWrite"
+    $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
     $workbook = $xl.Workbook
 
     $targetSheets = $workbook.Worksheets | Where {$_.Name -like $SheetName}
