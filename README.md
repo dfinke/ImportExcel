@@ -25,6 +25,9 @@ Know Issues
 What's new
 -
 
+#### 8/21/2015
+* Now import Excel sheets even if the file is open in Excel. Thank you [Francois Lachance-Guillemette](https://github.com/francoislg)
+
 #### 7/09/2015 
 * For -PivotRows you can pass a `hashtable` with the name of the property and the type of calculation. `Sum`, `Average`, `Max`, `Min`, `Product`, `StdDev`, `StdDevp`, `Var`, `Varp`
 
