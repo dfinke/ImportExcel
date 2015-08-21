@@ -328,6 +328,7 @@ function ConvertFrom-ExcelSheet {
     [CmdletBinding()]
     param
     (
+		[Alias("FullName")]
         [Parameter(Mandatory = $true)]
         [String]
         $Path,
@@ -363,7 +364,9 @@ function ConvertFrom-ExcelSheet {
 
         Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params -Encoding $Encoding
     }
-
+	
+	$stream.Close()
+	$stream.Dispose()
     $xl.Dispose()
 }
 
