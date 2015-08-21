@@ -12,8 +12,10 @@ function Import-Excel {
 
         $FullName = (Resolve-Path $FullName).Path
         write-debug "target excel file $FullName"
+		
+		$stream = New-Object System.IO.FileStream $FullName,"Open","Read","ReadWrite"
 
-        $xl = New-Object OfficeOpenXml.ExcelPackage $FullName
+        $xl = New-Object OfficeOpenXml.ExcelPackage $stream
 
         $workbook  = $xl.Workbook
 
@@ -39,7 +41,9 @@ function Import-Excel {
             }
             [PSCustomObject]$h
         }
-
+		
+		$stream.Close()
+		$stream.Dispose()
         $xl.Dispose()
         $xl = $null
     }
