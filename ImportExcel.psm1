@@ -36,7 +36,7 @@ function Import-Excel {
             foreach ($Column in 0..($Columns-1)) {
                 if($Header[$Column].Length -gt 0) {
                     $Name    = $Header[$Column]
-                    $h.$Name = $worksheet.Cells[$Row,($Column+1)].Text
+                    $h.$Name = $worksheet.Cells[$Row,($Column+1)].Value
                 }
             }
             [PSCustomObject]$h
