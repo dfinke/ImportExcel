@@ -5,7 +5,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 
 function Import-Excel {
     param(
-		[Alias("FullName")]
+        [Alias("FullName")]
         [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory)]
         $Path,
         $Sheet=1,
@@ -16,8 +16,8 @@ function Import-Excel {
 
         $Path = (Resolve-Path $Path).Path
         write-debug "target excel file $Path"
-		
-		$stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,"Open","Read","ReadWrite"
+
+        $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,"Open","Read","ReadWrite"
         $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
 
         $workbook  = $xl.Workbook
@@ -39,14 +39,14 @@ function Import-Excel {
             foreach ($Column in 0..($Columns-1)) {
                 if($Header[$Column].Length -gt 0) {
                     $Name    = $Header[$Column]
-                    $h.$Name = $worksheet.Cells[$Row,($Column+1)].Value
+                    $h.$Name = $worksheet.Cells[$Row,($Column+1)].Text
                 }
             }
             [PSCustomObject]$h
         }
-		
-		$stream.Close()
-		$stream.Dispose()
+
+        $stream.Close()
+        $stream.Dispose()
         $xl.Dispose()
         $xl = $null
     }
@@ -134,7 +134,7 @@ function ConvertFrom-ExcelSheet {
     [CmdletBinding()]
     param
     (
-		[Alias("FullName")]
+        [Alias("FullName")]
         [Parameter(Mandatory = $true)]
         [String]
         $Path,
@@ -151,7 +151,7 @@ function ConvertFrom-ExcelSheet {
     )
 
     $Path = (Resolve-Path $Path).Path
-	$stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,"Open","Read","ReadWrite"
+    $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,"Open","Read","ReadWrite"
     $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
     $workbook = $xl.Workbook
 
@@ -170,9 +170,9 @@ function ConvertFrom-ExcelSheet {
 
         Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params -Encoding $Encoding
     }
-	
-	$stream.Close()
-	$stream.Dispose()
+
+    $stream.Close()
+    $stream.Dispose()
     $xl.Dispose()
 }
 

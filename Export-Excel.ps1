@@ -24,10 +24,8 @@ function Export-Excel {
         [bool]$TitleBold,
         [int]$TitleSize=22,
         [System.Drawing.Color]$TitleBackgroundColor,
-        #[string]$TitleBackgroundColor,
         [string[]]$PivotRows,
         [string[]]$PivotColumns,
-        #[string[]]$PivotData,
         $PivotData,
         [string]$Password,
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="Pie",
@@ -54,7 +52,7 @@ function Export-Excel {
 
             $ws  = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber
 
-            foreach($format in $ConditionalFormat ) {                
+            foreach($format in $ConditionalFormat ) {
                 #$obj = [PSCustomObject]@{
                 #    Address   = $Address
                 #    Formatter = $ConditionalFormat
