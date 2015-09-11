@@ -1,5 +1,5 @@
 $xlFile = "c:\temp\testCF.xlsx"
-rm $xlFile
+rm $xlFile -ErrorAction Ignore
 
 $data = Get-Process | where Company | select Company,pm,handles,name
 
