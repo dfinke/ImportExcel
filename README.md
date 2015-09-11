@@ -24,6 +24,14 @@ Know Issues
 
 What's new
 -
+#### 9/11/2015 5:37:21 PM
+
+Added Conditional formatting. See [TryConditional.ps1](https://github.com/dfinke/ImportExcel/blob/master/TryConditional.ps1) as an example.
+
+Or, check out the short ***"How To"*** video.
+
+[![image](http://www.dougfinke.com/videos/excelpsmodule/ExcelPSModule_First_Frame.png)](http://www.dougfinke.com/videos/excelpsmodule/excelpsmodule.mp4)
+ 
 
 #### 8/21/2015
 * Now import Excel sheets even if the file is open in Excel. Thank you [Francois Lachance-Guillemette](https://github.com/francoislg)
