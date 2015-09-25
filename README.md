@@ -24,7 +24,31 @@ Know Issues
 
 What's new
 -
-#### 9/11/2015 5:37:21 PM
+
+#### 9/25/2015
+
+**Hide worksheets**
+Got a great request from [forensicsguy20012004](https://github.com/forensicsguy20012004) to hide worksheets. You create a few pivotables, generate charts and then pivotable worksheets don't need to be visible.
+
+`Export-Excel` now has a `-HideSheet` parameter that takes and array of worksheet names and hides them.
+
+##### Example
+Here, you create four worksheets named `PM`,`Handles`,`Services` and `Files`.
+
+The last line creates the `Files` sheet and then hides the `Handles`,`Services` 
+
+	$p = Get-Process	
+	
+	$p|select company, pm | Export-Excel $xlFile -WorkSheetname PM 
+	$p|select company, handles| Export-Excel $xlFile -WorkSheetname Handles 
+	Get-Service| Export-Excel $xlFile -WorkSheetname Services 
+	
+	dir -File | Export-Excel $xlFile -WorkSheetname Files -Show -HideSheet Handles, Services 
+
+
+**Note** There is a bug in EPPlus that does not let you hide the first worksheet created. Hopefully it'll resolved soon.  
+  
+#### 9/11/2015 
 
 Added Conditional formatting. See [TryConditional.ps1](https://github.com/dfinke/ImportExcel/blob/master/TryConditional.ps1) as an example.
 

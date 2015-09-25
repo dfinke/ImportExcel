@@ -39,7 +39,8 @@ function Export-Excel {
         [Switch]$BoldTopRow,
         [string]$RangeName,
         [string]$TableName,
-        [Object[]]$ConditionalFormat
+        [Object[]]$ConditionalFormat,
+        [string[]]$HideSheet
     )
 
     Begin {
@@ -198,6 +199,10 @@ function Export-Excel {
         if($AutoSize) { $ws.Cells.AutoFitColumns() }
 
         #$pkg.Workbook.View.ActiveTab = $ws.SheetID
+
+        foreach($Sheet in $HideSheet) {
+            $pkg.Workbook.WorkSheets[$Sheet].Hidden="Hidden"
+        }
 
         $pkg.Save()
         $pkg.Dispose()
