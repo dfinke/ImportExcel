@@ -24,6 +24,14 @@ Know Issues
 
 What's new
 -
+#### 9/30/2015
+
+Export-Excel can now handle data that is **not** an object 
+
+	echo a b c 1 $true 2.1 1/1/2015 | Export-Excel c:\temp\test.xlsx -Show
+Or
+
+	dir -Name | Export-Excel c:\temp\test.xlsx -Show 
 
 #### 9/25/2015
 
@@ -35,7 +43,7 @@ Got a great request from [forensicsguy20012004](https://github.com/forensicsguy2
 ##### Example
 Here, you create four worksheets named `PM`,`Handles`,`Services` and `Files`.
 
-The last line creates the `Files` sheet and then hides the `Handles`,`Services` 
+The last line creates the `Files` sheet and then hides the `Handles`,`Services` sheets. 
 
 	$p = Get-Process	
 	

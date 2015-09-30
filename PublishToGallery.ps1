@@ -4,7 +4,7 @@ $p = @{
     NuGetApiKey = $NuGetApiKey
     LicenseUri = "https://github.com/dfinke/ImportExcel/blob/master/LICENSE.txt"
     Tag = "Excel","EPPlus","Export","Import"
-    ReleaseNote = "Now you can hide worksheets using the -HideSheet paramater"
+    ReleaseNote = "Can now handle data that is _not_ an object"
     ProjectUri = "https://github.com/dfinke/ImportExcel"
 }
 

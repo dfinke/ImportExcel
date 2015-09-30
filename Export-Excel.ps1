@@ -86,31 +86,25 @@ function Export-Excel {
                 throw $Error[0].Exception.Message
             }
         }
+        
+        $firstTimeThru = $true
+        $isDataTypeValueType=$false
+        $pattern = "string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort"
     }
 
     Process {
-
-        if(!$Header) {
-
-            $ColumnIndex = 1
-            $Header = $TargetData.psobject.properties.name
-
-            foreach ($Name in $Header) {
-                $ws.Cells[$Row, $ColumnIndex].Value = $name
-                $ColumnIndex += 1
-            }
+        if($firstTimeThru) {
+            $firstTimeThru=$false
+            $isDataTypeValueType = $TargetData.GetType().name -match "string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort"
         }
 
-        $Row += 1
-        $ColumnIndex = 1
-
-        foreach ($Name in $Header) {
-
+        if($isDataTypeValueType) {
+            $ColumnIndex = 1
+            
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-            $cellValue=$TargetData.$Name
-
             $r=$null
+            $cellValue=$TargetData
             if([double]::tryparse($cellValue, [ref]$r)) {
                 $targetCell.Value = $r
             } else {
@@ -122,7 +116,43 @@ function Export-Excel {
             }
 
             $ColumnIndex += 1
-        }
+            $Row += 1
+
+        } else {
+            if(!$Header) {
+
+                $ColumnIndex = 1
+                $Header = $TargetData.psobject.properties.name
+
+                foreach ($Name in $Header) {
+                    $ws.Cells[$Row, $ColumnIndex].Value = $name
+                    $ColumnIndex += 1
+                }
+            }
+
+            $Row += 1
+            $ColumnIndex = 1
+
+            foreach ($Name in $Header) {
+
+                $targetCell = $ws.Cells[$Row, $ColumnIndex]
+
+                $cellValue=$TargetData.$Name
+
+                $r=$null
+                if([double]::tryparse($cellValue, [ref]$r)) {
+                    $targetCell.Value = $r
+                } else {
+                    $targetCell.Value = $cellValue
+                }
+
+                switch ($TargetData.$Name) {
+                    {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
+                }
+
+                $ColumnIndex += 1
+            }       
+        } 
     }
 
     End {
