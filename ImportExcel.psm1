@@ -64,10 +64,13 @@ function Export-ExcelSheet {
         $OutputPath = '.\',
         [String]
         $SheetName,
+        [ValidateSet('ASCII', 'BigEndianUniCode','Default','OEM','UniCode','UTF32','UTF7','UTF8')]
         [string]
         $Encoding = 'UTF8',
+        [ValidateSet('.txt', '.log','.csv')]
         [string]
-        $Extension = '.txt',
+        $Extension = '.csv',
+        [ValidateSet(';', ',')]
         [string]
         $Delimiter = ';'
     )
@@ -81,6 +84,7 @@ function Export-ExcelSheet {
     $params = @{} + $PSBoundParameters
     $params.Remove("OutputPath")
     $params.Remove("SheetName")
+    $params.Remove('Extension')
     $params.NoTypeInformation = $true
 
     Foreach ($sheet in $targetSheets)
@@ -89,7 +93,7 @@ function Export-ExcelSheet {
 
         $params.Path = "$OutputPath\$($Sheet.Name)$Extension"
 
-        Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params -Encoding $Encoding
+        Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params
     }
 
     $xl.Dispose()
@@ -142,10 +146,13 @@ function ConvertFrom-ExcelSheet {
         $OutputPath = '.\',
         [String]
         $SheetName="*",
+        [ValidateSet('ASCII', 'BigEndianUniCode','Default','OEM','UniCode','UTF32','UTF7','UTF8')]
         [string]
         $Encoding = 'UTF8',
+        [ValidateSet('.txt', '.log','.csv')]
         [string]
-        $Extension = '.txt',
+        $Extension = '.csv',
+        [ValidateSet(';', ',')]
         [string]
         $Delimiter = ';'
     )
@@ -160,6 +167,7 @@ function ConvertFrom-ExcelSheet {
     $params = @{} + $PSBoundParameters
     $params.Remove("OutputPath")
     $params.Remove("SheetName")
+    $params.Remove('Extension')
     $params.NoTypeInformation = $true
 
     Foreach ($sheet in $targetSheets)
@@ -168,7 +176,7 @@ function ConvertFrom-ExcelSheet {
 
         $params.Path = "$OutputPath\$($Sheet.Name)$Extension"
 
-        Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params -Encoding $Encoding
+        Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params
     }
 
     $stream.Close()
