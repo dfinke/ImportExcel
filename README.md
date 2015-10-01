@@ -24,6 +24,11 @@ Know Issues
 
 What's new
 -
+
+#### 10/1/2015 
+
+Merged ValidateSet for Encoding and Extension. Thank you [Irwin Strachan](https://github.com/irwins).
+
 #### 9/30/2015
 
 Export-Excel can now handle data that is **not** an object 
