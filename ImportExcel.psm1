@@ -10,7 +10,8 @@ function Import-Excel {
         [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory)]
         $Path,
         $Sheet=1,
-        [string[]]$Header
+        [string[]]$Header,
+        [switch]$NoHeader
     )
 
     Process {
@@ -29,21 +30,33 @@ function Import-Excel {
         $Rows=$dimension.Rows
         $Columns=$dimension.Columns
 
-        if(!$Header) {
-            $Header = foreach ($Column in 1..$Columns) {
-                $worksheet.Cells[1,$Column].Text
-            }
-        }
+        if($NoHeader) {
+            foreach ($Row in 0..($Rows-1)) {
+                $newRow = [Ordered]@{}
+                foreach ($Column in 0..($Columns-1)) {
+                    $propertyName = "P$($Column+1)"
+                    $newRow.$propertyName = $worksheet.Cells[($Row+1),($Column+1)].Value
+                }
 
-        foreach ($Row in 2..$Rows) {
-            $h=[Ordered]@{}
-            foreach ($Column in 0..($Columns-1)) {
-                if($Header[$Column].Length -gt 0) {
-                    $Name    = $Header[$Column]
-                    $h.$Name = $worksheet.Cells[$Row,($Column+1)].Text
+                [PSCustomObject]$newRow
+            }
+        } else {
+            if(!$Header) {
+                $Header = foreach ($Column in 1..$Columns) {
+                    $worksheet.Cells[1,$Column].Text
                 }
             }
-            [PSCustomObject]$h
+
+            foreach ($Row in 2..$Rows) {
+                $h=[Ordered]@{}
+                foreach ($Column in 0..($Columns-1)) {
+                    if($Header[$Column].Length -gt 0) {
+                        $Name    = $Header[$Column]
+                        $h.$Name = $worksheet.Cells[$Row,($Column+1)].Value
+                    }
+                }
+                [PSCustomObject]$h
+            }
         }
 
         $stream.Close()
