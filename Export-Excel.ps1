@@ -37,6 +37,7 @@ function Export-Excel {
         [Switch]$FreezeTopRow,
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
+        [Switch]$NoHeader,
         [string]$RangeName,
         [string]$TableName,
         [Object[]]$ConditionalFormat,
@@ -58,6 +59,7 @@ function Export-Excel {
                 $rule = ($ws.ConditionalFormatting).$target($format.Address, $format.IconType)
                 $rule.Reverse = $format.Reverse
             }
+
             # Force at least one cell value
             $ws.Cells[1, 1].Value = ""
 
@@ -120,9 +122,14 @@ function Export-Excel {
                 $ColumnIndex = 1
                 $Header = $TargetData.psobject.properties.name
 
-                foreach ($Name in $Header) {
-                    $ws.Cells[$Row, $ColumnIndex].Value = $name
-                    $ColumnIndex += 1
+                if($NoHeader) {
+                    # Don't push the headers to the spread sheet
+                    $Row -= 1
+                } else {
+                    foreach ($Name in $Header) {
+                        $ws.Cells[$Row, $ColumnIndex].Value = $name
+                        $ColumnIndex += 1
+                    }
                 }
             }
 
