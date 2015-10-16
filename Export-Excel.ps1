@@ -54,16 +54,12 @@ function Export-Excel {
             $ws  = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber
 
             foreach($format in $ConditionalFormat ) {
-                #$obj = [PSCustomObject]@{
-                #    Address   = $Address
-                #    Formatter = $ConditionalFormat
-                #    IconType  = $bp.IconType
-                #}
-
                 $target = "Add$($format.Formatter)"
                 $rule = ($ws.ConditionalFormatting).$target($format.Address, $format.IconType)
                 $rule.Reverse = $format.Reverse
             }
+            # Force at least one cell value
+            $ws.Cells[1, 1].Value = ""
 
             $Row = 1
             if($Title) {
@@ -86,7 +82,7 @@ function Export-Excel {
                 throw $Error[0].Exception.Message
             }
         }
-        
+
         $firstTimeThru = $true
         $isDataTypeValueType=$false
         $pattern = "string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort"
@@ -100,7 +96,7 @@ function Export-Excel {
 
         if($isDataTypeValueType) {
             $ColumnIndex = 1
-            
+
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
             $r=$null
@@ -151,8 +147,8 @@ function Export-Excel {
                 }
 
                 $ColumnIndex += 1
-            }       
-        } 
+            }
+        }
     }
 
     End {
