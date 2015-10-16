@@ -24,6 +24,11 @@ Know Issues
 
 What's new
 -
+
+#### 10/16/2015
+
+Fixes [Export-Excel generates corrupt Excel file](https://github.com/dfinke/ImportExcel/issues/46) 
+
 #### 10/15/2015
 
 `Import-Excel` has a new parameter `NoHeader`. If data in the sheet does not have headers and you don't want to supply your own, `Import-Excel` will generate the property name.  
