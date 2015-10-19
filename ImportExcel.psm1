@@ -10,6 +10,7 @@ function Import-Excel {
         [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory)]
         $Path,
         $Sheet=1,
+        [int]$HeaderRow=1,
         [string[]]$Header,
         [switch]$NoHeader
     )
@@ -43,11 +44,11 @@ function Import-Excel {
         } else {
             if(!$Header) {
                 $Header = foreach ($Column in 1..$Columns) {
-                    $worksheet.Cells[1,$Column].Text
+                    $worksheet.Cells[$HeaderRow,$Column].Text
                 }
             }
 
-            foreach ($Row in 2..$Rows) {
+            foreach ($Row in ($HeaderRow+1)..$Rows) {
                 $h=[Ordered]@{}
                 foreach ($Column in 0..($Columns-1)) {
                     if($Header[$Column].Length -gt 0) {
