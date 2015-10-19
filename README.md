@@ -25,6 +25,10 @@ Know Issues
 What's new
 -
 
+#### 10/19/2015
+
+Added `-HeaderRow` parameter. Sometimes the heading does not start in Row 1.
+ 
 #### 10/16/2015
 
 Fixes [Export-Excel generates corrupt Excel file](https://github.com/dfinke/ImportExcel/issues/46) 
