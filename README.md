@@ -27,7 +27,7 @@ What's new
 
 #### 10/20/2015
 
-Big bug for version 3.0 PowerShell folks!
+Big bug fix for version 3.0 PowerShell folks!
 
 This technique fails in 3.0 and works in 4.0 and later.
 ```powershell
