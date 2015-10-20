@@ -25,9 +25,27 @@ Know Issues
 What's new
 -
 
-#### 10/19/2015
+#### 10/20/2015
+
+Big bug for version 3.0 PowerShell folks!
+
+This technique fails in 3.0 and works in 4.0 and later.
+```powershell
+$m="substring"
+"hello".$m(2,1)
+```
+
+Adding `.invoke` works in 3.0 and later.
+
+```powershell
+$m="substring"
+"hello".$m.invoke(2,1)
+```
+
+A ***big thank you*** to [DarkLite1](https://github.com/DarkLite1) for adding the help to Export-Excel. 
 
 Added `-HeaderRow` parameter. Sometimes the heading does not start in Row 1.
+
  
 #### 10/16/2015
 
