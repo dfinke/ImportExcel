@@ -200,7 +200,7 @@ Function Export-Excel {
 
             foreach($format in $ConditionalFormat ) {
                 $target = "Add$($format.Formatter)"
-                $rule = ($ws.ConditionalFormatting).$target($format.Address, $format.IconType)
+                $rule = ($ws.ConditionalFormatting).$target.Invoke($format.Address, $format.IconType)
                 $rule.Reverse = $format.Reverse
             }
 
