@@ -58,7 +58,7 @@ Function Export-Excel {
         Do not overwrite (replace the contents) of an existing worksheet. By default, if a file exists in the specified path, Export-Excel overwrites the worksheet without warning.
 
     .PARAMETER FreezeTopRow
-        Freezes the first row of the Excel worksheet. This is convenient when working with lots of rows, so the the headers will always be visible when scrolling downwards in the worksheet.
+        Freezes the first row of the Excel worksheet. This is convenient when working with lots of rows, so the headers will always be visible when scrolling downwards in the worksheet.
 
     .PARAMETER AutoFilter
         Sets the auto filter on the first row. This allows you to view specific rows in an Excel spreadsheet, while hiding other rows in the worksheet. When the auto filter is added to the header row of a worksheet, a drop-down menu appears on each cell of the header row. This provides you with a number of filter options that can be used to specify which rows of the worksheet are to be displayed.
@@ -84,8 +84,8 @@ Function Export-Excel {
         Generates an Excel worksheet containing all the services on the system. The worksheet content will be presented in the Excel data table format for easy filtering, sorting and manipulation.
 
     .EXAMPLE
-        Get-Service | Select-Object Status, Name, DisplayName | Export-Excel .\Test.xlsx -AutoSize -BoldTopRow -Show
-        Generates an Excel worksheet containing all the services on the system. The worksheet will contain the headers 'Status', 'DisplayName' and 'Name' in bold. The column width will be adjusted to the cells content and the worksheet will be opened automatically once it's created.
+        Get-Service | Select-Object Status, Name, DisplayName | Export-Excel .\Test.xlsx -AutoSize -BoldTopRow -FreezeTopRow -Show 
+        Generates an Excel worksheet containing all the services on the system. The worksheet will contain the headers 'Status', 'DisplayName' and 'Name' in bold, this row will be frozen so it's always visible. The column width will be adjusted to the cells content and the worksheet will be opened automatically once it's created.
         
         It will look like this:
         
@@ -142,23 +142,36 @@ Function Export-Excel {
         Grand Total	| 183
     
     .EXAMPLE
-        Get-Process | Export-Excel .\Test.xlsx -WorksheetName Processes -ChartType PieExploded3D -IncludePivotChart -IncludePivotTable -Show -PivotRows Company -PivotData PM
-        Creates an Excel workbook containing two worksheets, one worksheet with a PieExploded3D chart and a pivot table, and one worksheet with the source data.
+        Get-Process | Export-Excel .\Test.xlsx -WorksheetName Processes -ChartType PieExploded3D -IncludePivotChart -IncludePivotTable -PivotRows Company -PivotData PM -Show
+        Creates an Excel workbook containing two worksheets, one worksheet with a PieExploded3D chart and a pivot table, and one worksheet with the source data. After the file is generated it will be opened.
 
     .NOTES
         CHANGELOG
         2015/10/20 Added help text
         2015/10/20 Changed 'TitleBold' from [BOOL] to [Switch]
-                   (Makes more sense then providing $true or $false)
+                   (Makes more sense than providing $true or $false)
+        2015/10/21 Reformatted code to be consistent
+        2015/10/21 Added 'ValidateScript' for the 'Path' parameter
 
     .LINK
         https://github.com/dfinke/ImportExcel
-
     #> 
     
     [CmdletBinding()]
-    Param(
+    Param (
         [Parameter(Mandatory=$true)]
+        [ValidateScript({
+            if (-not (Test-Path (Split-Path -Path $_))) {
+                throw "Could not find a part of the path '$_'"} 
+            else {
+                $true
+            }
+            if ($_ -notmatch '[\w]\.xlsx$|[\w]\.xls$') {
+                throw "File extension not valid, valid file extension for Excel files are '.xls' or '.xlsx' - '$_'"} 
+            else {
+                $true
+            }
+        })]
         [String]$Path,
         [Parameter(ValueFromPipeline=$true)]
         $TargetData,
@@ -189,87 +202,89 @@ Function Export-Excel {
     )
 
     Begin {
-        try {
+        Try {
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
-            if (Test-Path $path) {
+            if (Test-Path -Path $path -PathType Leaf) {
                 Write-Debug "File `"$Path`" already exists"
             }
             $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
 
-            $ws  = $pkg | Add-WorkSheet -WorksheetName $WorksheetName -NoClobber:$NoClobber
+            $ws = $pkg | Add-WorkSheet -WorksheetName $WorksheetName -NoClobber:$NoClobber
 
-            foreach($format in $ConditionalFormat ) {
+            foreach ($format in $ConditionalFormat ) {
                 $target = "Add$($format.Formatter)"
                 $rule = ($ws.ConditionalFormatting).$target.Invoke($format.Address, $format.IconType)
                 $rule.Reverse = $format.Reverse
             }
 
             # Force at least one cell value
-            $ws.Cells[1, 1].Value = ""
+            $ws.Cells[1, 1].Value = ''
 
             $Row = 1
             if($Title) {
                 $ws.Cells[$Row, 1].Value = $Title
-
                 $ws.Cells[$Row, 1].Style.Font.Size = $TitleSize
                 $ws.Cells[$Row, 1].Style.Font.Bold = $TitleBold
                 $ws.Cells[$Row, 1].Style.Fill.PatternType = $TitleFillPattern
-                if($TitleBackgroundColor) {
+
+                if ($TitleBackgroundColor) {
                     $ws.Cells[$Row, 1].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
                 }
 
                 $Row = 2
             }
 
-        } Catch {
-            if($AlreadyExists) {
+        }
+        Catch {
+            if ($AlreadyExists) {
                 throw "$WorksheetName already exists."
-            } else {
+            }
+            else {
                 throw $Error[0].Exception.Message
             }
         }
 
         $firstTimeThru = $true
-        $isDataTypeValueType=$false
-        $pattern = "string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort"
+        $isDataTypeValueType = $false
+        $pattern = 'string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
     }
 
     Process {
-        if($firstTimeThru) {
-            $firstTimeThru=$false
-            $isDataTypeValueType = $TargetData.GetType().name -match "string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort"
+        if ($firstTimeThru) {
+            $firstTimeThru = $false
+            $isDataTypeValueType = $TargetData.GetType().name -match 'string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
         }
 
-        if($isDataTypeValueType) {
+        if ($isDataTypeValueType) {
             $ColumnIndex = 1
+            $targetCell = $ws.Cells[$Row, $ColumnIndex]            
+            $cellValue = $TargetData
 
-            $targetCell = $ws.Cells[$Row, $ColumnIndex]
-
-            $r=$null
-            $cellValue=$TargetData
-            if([double]::tryparse($cellValue, [ref]$r)) {
+            $r = $null
+            if ([Double]::TryParse($cellValue, [Ref]$r)) {
                 $targetCell.Value = $r
-            } else {
+            } 
+            else {
                 $targetCell.Value = $cellValue
             }
 
             switch ($TargetData.$Name) {
-                {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
+                {$_ -is [DateTime]} {$targetCell.Style.Numberformat.Format = 'm/d/yy h:mm'}
             }
 
             $ColumnIndex += 1
             $Row += 1
-
-        } else {
-            if(!$Header) {
-
+        } 
+        else {
+            if (!$Header) {
                 $ColumnIndex = 1
                 $Header = $TargetData.psobject.properties.name
 
-                if($NoHeader) {
+                if ($NoHeader) {
                     # Don't push the headers to the spread sheet
                     $Row -= 1
-                } else {
+                } 
+                else {
                     foreach ($Name in $Header) {
                         $ws.Cells[$Row, $ColumnIndex].Value = $name
                         $ColumnIndex += 1
@@ -281,20 +296,21 @@ Function Export-Excel {
             $ColumnIndex = 1
 
             foreach ($Name in $Header) {
-
                 $targetCell = $ws.Cells[$Row, $ColumnIndex]
+                $cellValue = $TargetData.$Name
 
-                $cellValue=$TargetData.$Name
-
-                $r=$null
-                if([double]::tryparse($cellValue, [ref]$r)) {
+                $r = $null
+                if ([Double]::TryParse($cellValue, [Ref]$r)) {
                     $targetCell.Value = $r
-                } else {
+                }
+                else {
                     $targetCell.Value = $cellValue
                 }
 
                 switch ($TargetData.$Name) {
-                    {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
+                    {$_ -is [DateTime]} {
+                        $targetCell.Style.Numberformat.Format = 'm/d/yy h:mm'
+                    }
                 }
 
                 $ColumnIndex += 1
@@ -303,8 +319,8 @@ Function Export-Excel {
     }
 
     End {
-        $startAddress=$ws.Dimension.Start.Address
-        $dataRange="{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
+        $startAddress = $ws.Dimension.Start.Address
+        $dataRange = '{0}:{1}' -f $startAddress, $ws.Dimension.End.Address
         Write-Debug "Data Range $dataRange"
 
         if (-not [string]::IsNullOrEmpty($RangeName)) {
@@ -314,76 +330,81 @@ Function Export-Excel {
             $ws.Tables.Add($ws.Cells[$dataRange], $TableName) | Out-Null
         }
 
-        if($IncludePivotTable) {
-            $pivotTableName = $WorksheetName + "PivotTable"
-            $wsPivot = $pkg | Add-WorkSheet -WorksheetName $pivotTableName -NoClobber:$NoClobber
-
+        if ($IncludePivotTable) {
+            $wsPivot = $pkg | Add-WorkSheet -WorksheetName ($WorksheetName + 'PivotTable') -NoClobber:$NoClobber
             $wsPivot.View.TabSelected = $true
 
-            $pivotTableDataName=$WorksheetName + "PivotTableData"
+            if ($Title) {
+                $startAddress = 'A2'
+            }
+            $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $ws.Cells[$dataRange], ($WorksheetName + 'PivotTableData'))
 
-            if($Title) {$startAddress="A2"}
-            $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells["A1"], $ws.Cells[$dataRange], $pivotTableDataName)
-
-            if($PivotRows) {
+            if ($PivotRows) {
                 foreach ($Row in $PivotRows) {
-                    $null=$pivotTable.RowFields.Add($pivotTable.Fields[$Row])
+                    $null = $pivotTable.RowFields.Add($pivotTable.Fields[$Row])
                 }
             }
 
-            if($PivotColumns) {
+            if ($PivotColumns) {
                 foreach ($Column in $PivotColumns) {
-                    $null=$pivotTable.ColumnFields.Add($pivotTable.Fields[$Column])
+                    $null = $pivotTable.ColumnFields.Add($pivotTable.Fields[$Column])
                 }
             }
 
-            if($PivotData) {
-                if($PivotData -is [hashtable]) {
-                    $PivotData.Keys | % {
-                        $df=$pivotTable.DataFields.Add($pivotTable.Fields[$_])
+            if ($PivotData) {
+                if($PivotData -is [HashTable]) {
+                    $PivotData.Keys | ForEach-Object {
+                        $df = $pivotTable.DataFields.Add($pivotTable.Fields[$_])
                         $df.Function = $PivotData.$_
                     }
-                } else {
+                }
+                else {
                     foreach ($Item in $PivotData) {
-                        $df=$pivotTable.DataFields.Add($pivotTable.Fields[$Item])
+                        $df = $pivotTable.DataFields.Add($pivotTable.Fields[$Item])
                         $df.Function = 'Count'
                     }
                 }
             }
 
-            if($IncludePivotChart) {
-                $chart = $wsPivot.Drawings.AddChart("PivotChart", $ChartType, $pivotTable)
+            if ($IncludePivotChart) {
+                $chart = $wsPivot.Drawings.AddChart('PivotChart', $ChartType, $pivotTable)
                 $chart.SetPosition(1, 0, 6, 0)
                 $chart.SetSize(600, 400)
             }
         }
 
-        if($Password) { $ws.Protection.SetPassword($Password) }
-
-        if($AutoFilter) {
-            $ws.Cells[$dataRange].AutoFilter=$true
+        if ($Password) {
+            $ws.Protection.SetPassword($Password)
         }
 
-        if($FreezeTopRow) {
+        if ($AutoFilter) {
+            $ws.Cells[$dataRange].AutoFilter = $true
+        }
+
+        if ($FreezeTopRow) {
             $ws.View.FreezePanes(2,1)
         }
 
-        if($BoldTopRow) {
-            $range=$ws.Dimension.Address -replace $ws.Dimension.Rows, "1"
-            $ws.Cells[$range].Style.Font.Bold=$true
+        if ($BoldTopRow) {
+            $range=$ws.Dimension.Address -replace $ws.Dimension.Rows, '1'
+            $ws.Cells[$range].Style.Font.Bold = $true
         }
 
-        if($AutoSize) { $ws.Cells.AutoFitColumns() }
+        if ($AutoSize) {
+            $ws.Cells.AutoFitColumns()
+        }
 
         #$pkg.Workbook.View.ActiveTab = $ws.SheetID
 
-        foreach($Sheet in $HideSheet) {
-            $pkg.Workbook.WorkSheets[$Sheet].Hidden="Hidden"
+        foreach ($Sheet in $HideSheet) {
+            $pkg.Workbook.WorkSheets[$Sheet].Hidden = 'Hidden'
         }
 
         $pkg.Save()
         $pkg.Dispose()
 
-        if($Show) {Invoke-Item $Path}
+        if ($Show) {
+            Invoke-Item $Path
+        }
     }
 }
