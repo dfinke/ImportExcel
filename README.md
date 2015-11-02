@@ -16,7 +16,7 @@ To install in your personal modules folder (e.g. ~\Documents\WindowsPowerShell\M
 iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfinke/ImportExcel/master/Install.ps1')
 ```
 
-Know Issues
+Known Issues
 -
 * Using `-IncludePivotTable`, if that pivot table name exists, you'll get an error.
 	* Investigating a solution
