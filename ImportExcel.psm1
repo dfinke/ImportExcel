@@ -9,7 +9,8 @@ function Import-Excel {
         [Alias("FullName")]
         [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory)]
         $Path,
-        $Sheet=1,
+        [Alias("Sheet")]
+        $WorkSheetname=1,
         [int]$HeaderRow=1,
         [string[]]$Header,
         [switch]$NoHeader
@@ -25,7 +26,7 @@ function Import-Excel {
 
         $workbook  = $xl.Workbook
 
-        $worksheet=$workbook.Worksheets[$Sheet]
+        $worksheet=$workbook.Worksheets[$WorkSheetname]
         $dimension=$worksheet.Dimension
 
         $Rows=$dimension.Rows
