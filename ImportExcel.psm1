@@ -7,7 +7,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 function Import-Excel {
     param(
         [Alias("FullName")]
-        [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory)]
+        [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory=$true)]
         $Path,
         [Alias("Sheet")]
         $WorkSheetname=1,
@@ -155,9 +155,9 @@ function ConvertFrom-ExcelSheet {
 
 function Export-MultipleExcelSheets {
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory=$true)]
         $Path,
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory=$true)]
         [hashtable]$InfoMap,
         [string]$Password,
         [Switch]$Show,
