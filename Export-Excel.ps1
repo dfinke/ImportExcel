@@ -40,11 +40,22 @@ function Export-Excel {
         [Switch]$NoHeader,
         [string]$RangeName,
         [string]$TableName,
+        [OfficeOpenXml.Table.TableStyles]$TableStyle="Medium6",
         [Object[]]$ConditionalFormat,
-        [string[]]$HideSheet
+        [Object[]]$ExcelChartDefinition,
+        [string[]]$HideSheet,
+        [Switch]$KillExcel,
+        [Switch]$AutoNameRange,
+        $StartRow=1,
+        $StartColumn=1
     )
 
     Begin {
+        if($KillExcel) {
+            Get-Process excel -ErrorAction Ignore | Stop-Process
+            while (Get-Process excel -ErrorAction Ignore) {}
+        }
+
         try {
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
             if (Test-Path $path) {
@@ -56,25 +67,26 @@ function Export-Excel {
 
             foreach($format in $ConditionalFormat ) {
                 $target = "Add$($format.Formatter)"
-                $rule = ($ws.ConditionalFormatting).$target.Invoke($format.Address, $format.IconType)
+                $rule = ($ws.ConditionalFormatting).$target($format.Address, $format.IconType)
                 $rule.Reverse = $format.Reverse
             }
 
             # Force at least one cell value
-            $ws.Cells[1, 1].Value = ""
+            #$ws.Cells[1, 1].Value = ""
 
-            $Row = 1
+
+            $Row = $StartRow
             if($Title) {
-                $ws.Cells[$Row, 1].Value = $Title
+                $ws.Cells[$Row, $StartColumn].Value = $Title
 
-                $ws.Cells[$Row, 1].Style.Font.Size = $TitleSize
-                $ws.Cells[$Row, 1].Style.Font.Bold = $TitleBold
-                $ws.Cells[$Row, 1].Style.Fill.PatternType = $TitleFillPattern
+                $ws.Cells[$Row, $StartColumn].Style.Font.Size = $TitleSize
+                $ws.Cells[$Row, $StartColumn].Style.Font.Bold = $TitleBold
+                $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
                 if($TitleBackgroundColor) {
-                    $ws.Cells[$Row, 1].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
+                    $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
                 }
 
-                $Row = 2
+                $Row += 1
             }
 
         } Catch {
@@ -97,7 +109,7 @@ function Export-Excel {
         }
 
         if($isDataTypeValueType) {
-            $ColumnIndex = 1
+            $ColumnIndex = $StartColumn
 
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
@@ -119,7 +131,8 @@ function Export-Excel {
         } else {
             if(!$Header) {
 
-                $ColumnIndex = 1
+                $ColumnIndex = $StartColumn
+
                 $Header = $TargetData.psobject.properties.name
 
                 if($NoHeader) {
@@ -134,7 +147,7 @@ function Export-Excel {
             }
 
             $Row += 1
-            $ColumnIndex = 1
+            $ColumnIndex = $StartColumn
 
             foreach ($Name in $Header) {
 
@@ -142,11 +155,16 @@ function Export-Excel {
 
                 $cellValue=$TargetData.$Name
 
-                $r=$null
-                if([double]::tryparse($cellValue, [ref]$r)) {
-                    $targetCell.Value = $r
+                if($cellValue -is [string] -and $cellValue.StartsWith('=')) {
+                    $targetCell.Formula = $cellValue
                 } else {
-                    $targetCell.Value = $cellValue
+
+                    $r=$null
+                    if([double]::tryparse($cellValue, [ref]$r)) {
+                        $targetCell.Value = $r
+                    } else {
+                        $targetCell.Value = $cellValue
+                    }
                 }
 
                 switch ($TargetData.$Name) {
@@ -159,15 +177,43 @@ function Export-Excel {
     }
 
     End {
+        if($AutoNameRange) {
+            $totalRows=$ws.Dimension.Rows
+            $totalColumns=$ws.Dimension.Columns
+
+            foreach($c in 0..($totalColumns-1)) {
+                $targetRangeName = "$($Header[$c])"
+                $targetColumn = $c+1
+                $theCell = $ws.Cells[2,$targetColumn,$totalRows,$targetColumn ]
+                $ws.Names.Add($targetRangeName, $theCell) | Out-Null
+            }
+        }
+
         $startAddress=$ws.Dimension.Start.Address
         $dataRange="{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
+
         Write-Debug "Data Range $dataRange"
 
         if (-not [string]::IsNullOrEmpty($RangeName)) {
             $ws.Names.Add($RangeName, $ws.Cells[$dataRange]) | Out-Null
         }
+
         if (-not [string]::IsNullOrEmpty($TableName)) {
-            $ws.Tables.Add($ws.Cells[$dataRange], $TableName) | Out-Null
+            #$ws.Tables.Add($ws.Cells[$dataRange], $TableName) | Out-Null
+            #"$($StartRow),$($StartColumn),$($ws.Dimension.End.Row-$StartRow),$($Header.Count)"
+
+            $csr=$StartRow
+            $csc=$StartColumn
+            $cer=$ws.Dimension.End.Row #-$StartRow+1
+            $cec=$Header.Count
+
+            $targetRange=$ws.Cells[$csr, $csc, $cer,$cec]
+
+            $tbl = $ws.Tables.Add($targetRange, $TableName)
+
+            $tbl.TableStyle=$TableStyle
+
+            $idx
         }
 
         if($IncludePivotTable) {
@@ -235,6 +281,27 @@ function Export-Excel {
 
         foreach($Sheet in $HideSheet) {
             $pkg.Workbook.WorkSheets[$Sheet].Hidden="Hidden"
+
+        }
+
+        $chartCount=0
+        foreach ($chartDef in $ExcelChartDefinition) {
+            $ChartName = "Chart"+(Split-Path -Leaf ([System.IO.path]::GetTempFileName())) -replace 'tmp|\.',''
+            $chart = $ws.Drawings.AddChart($ChartName, $chartDef.ChartType)
+            $chart.Title.Text = $chartDef.Title
+            $chart.SetPosition($chartDef.Row, $chartDef.RowOffsetPixels,$chartDef.Column, $chartDef.ColumnOffsetPixels)
+            $chart.SetSize($chartDef.Width, $chartDef.Height)
+
+            $chartDefCount = @($chartDef.XRange).Count
+            if($chartDefCount -eq 1) {                
+                $Series=$chart.Series.Add($chartDef.YRange, $chartDef.XRange)
+                $Series.Header = $chartDef.Header
+            } else {
+                for($idx=0; $idx -lt $chartDefCount; $idx+=1) {                    
+                    $Series=$chart.Series.Add($chartDef.YRange[$idx], $chartDef.XRange)
+                    $Series.Header = $chartDef.Header[$idx]
+                }
+            }
         }
 
         $pkg.Save()

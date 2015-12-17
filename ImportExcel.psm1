@@ -3,6 +3,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Export-Excel.ps1
 . $PSScriptRoot\New-ConditionalFormattingIconSet.ps1
 . $PSScriptRoot\Export-ExcelSheet.ps1
+. $PSScriptRoot\New-ExcelChart.ps1
 
 function Import-Excel {
     param(
@@ -77,17 +78,14 @@ function Add-WorkSheet {
         [string] $WorkSheetname,
         [Switch] $NoClobber
     )
-    if($ExcelPackage.Workbook.Worksheets[$WorkSheetname]) {
-        if($NoClobber) {
-            $AlreadyExists = $true
-            Write-Error "Worksheet `"$WorkSheetname`" already exists."
-        } else {
-            Write-Debug "Worksheet `"$WorkSheetname`" already exists. Deleting"
-            $ExcelPackage.Workbook.Worksheets.Delete($WorkSheetname)
-        }
+
+    $ws = $ExcelPackage.Workbook.Worksheets[$WorkSheetname]
+
+    if(!$ws) {
+        $ws=$ExcelPackage.Workbook.Worksheets.Add($WorkSheetname)
     }
 
-    $ExcelPackage.Workbook.Worksheets.Add($WorkSheetname)
+    return $ws
 }
 
 function ConvertFrom-ExcelSheet {

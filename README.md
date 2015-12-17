@@ -25,6 +25,16 @@ Known Issues
 What's new
 -
 
+#### 12/17/2015
+These new features open the door for really sophisticated work sheet creation.
+  
+Stay tuned for a [blog post](http://www.dougfinke.com/blog/) and examples.
+
+***Quick List***
+* StartRow, StartColumn for placing data anywhere in a sheet
+* New-ExcelChart - Add charts to a sheet, multiple series for a chart, locate the chart anywhere on the sheet
+* AutoNameRange, Use functions and/or calculations in a cell
+
 #### 10/20/2015
 
 Big bug fix for version 3.0 PowerShell folks!
