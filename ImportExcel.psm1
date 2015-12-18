@@ -4,6 +4,12 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\New-ConditionalFormattingIconSet.ps1
 . $PSScriptRoot\Export-ExcelSheet.ps1
 . $PSScriptRoot\New-ExcelChart.ps1
+. $PSScriptRoot\Invoke-Sum.ps1
+. $PSScriptRoot\InferData.ps1
+. $PSScriptRoot\Get-ExcelColumnName.ps1
+. $PSScriptRoot\Get-XYRange.ps1
+. $PSScriptRoot\Charting.ps1
+. $PSScriptRoot\New-PSItem.ps1
 
 function Import-Excel {
     param(
