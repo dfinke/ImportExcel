@@ -34,6 +34,9 @@ Stay tuned for a [blog post](http://www.dougfinke.com/blog/) and examples.
 * StartRow, StartColumn for placing data anywhere in a sheet
 * New-ExcelChart - Add charts to a sheet, multiple series for a chart, locate the chart anywhere on the sheet
 * AutoNameRange, Use functions and/or calculations in a cell
+* Quick charting using PieChart, BarChart, ColumnChart and more
+
+![](https://raw.githubusercontent.com/dfinke/GifCam/master/JustCharts.gif)
 
 #### 10/20/2015
 
