@@ -1,0 +1,1 @@
+BarChart (.\TargetData.ps1) "A BarChart"
