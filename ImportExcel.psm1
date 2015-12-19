@@ -10,6 +10,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Get-XYRange.ps1
 . $PSScriptRoot\Charting.ps1
 . $PSScriptRoot\New-PSItem.ps1
+. $PSScriptRoot\Pivot.ps1
 
 function Import-Excel {
     param(
