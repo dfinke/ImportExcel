@@ -4,7 +4,11 @@ function Invoke-Sum {
     $h=@{}
 
     foreach ($item in $data){
-        $h.$($item.$dimension)+=$item.$measure
+        $key=$item.$dimension
+        
+        if(!$key) {$key="[missing]"}
+        
+        $h.$key+=$item.$measure
     }
 
     foreach ($entry in $h.GetEnumerator()){
