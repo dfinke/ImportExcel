@@ -170,6 +170,21 @@ function Export-Excel {
                 switch ($TargetData.$Name) {
                     {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
                 }
+                
+                [ref]$uriResult=$null
+                if ([uri]::TryCreate($cellValue, [System.UriKind]::Absolute, $uriResult)) {                    
+
+                    $targetCell.Hyperlink = [uri]$cellValue
+
+                    $namedStyle=$ws.Workbook.Styles.NamedStyles | where {$_.Name -eq 'HyperLink'}
+                    if(!$namedStyle) {
+                        $namedStyle=$ws.Workbook.Styles.CreateNamedStyle("HyperLink")
+                        $namedStyle.Style.Font.UnderLine = $true
+                        $namedStyle.Style.Font.Color.SetColor("Blue")
+                    }
+
+                    $targetCell.StyleName = "HyperLink"
+                }
 
                 $ColumnIndex += 1
             }
