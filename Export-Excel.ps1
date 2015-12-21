@@ -170,21 +170,21 @@ function Export-Excel {
                 switch ($TargetData.$Name) {
                     {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
                 }
-                
-                [ref]$uriResult=$null
-                if ([uri]::TryCreate($cellValue, [System.UriKind]::Absolute, $uriResult)) {                    
 
-                    $targetCell.Hyperlink = [uri]$cellValue
+                #[ref]$uriResult=$null
+                #if ([uri]::TryCreate($cellValue, [System.UriKind]::Absolute, $uriResult)) {
 
-                    $namedStyle=$ws.Workbook.Styles.NamedStyles | where {$_.Name -eq 'HyperLink'}
-                    if(!$namedStyle) {
-                        $namedStyle=$ws.Workbook.Styles.CreateNamedStyle("HyperLink")
-                        $namedStyle.Style.Font.UnderLine = $true
-                        $namedStyle.Style.Font.Color.SetColor("Blue")
-                    }
+                #    $targetCell.Hyperlink = [uri]$cellValue
 
-                    $targetCell.StyleName = "HyperLink"
-                }
+                #    $namedStyle=$ws.Workbook.Styles.NamedStyles | where {$_.Name -eq 'HyperLink'}
+                #    if(!$namedStyle) {
+                #        $namedStyle=$ws.Workbook.Styles.CreateNamedStyle("HyperLink")
+                #        $namedStyle.Style.Font.UnderLine = $true
+                #        $namedStyle.Style.Font.Color.SetColor("Blue")
+                #    }
+
+                #    $targetCell.StyleName = "HyperLink"
+                #}
 
                 $ColumnIndex += 1
             }
@@ -308,11 +308,11 @@ function Export-Excel {
             $chart.SetSize($chartDef.Width, $chartDef.Height)
 
             $chartDefCount = @($chartDef.XRange).Count
-            if($chartDefCount -eq 1) {                
+            if($chartDefCount -eq 1) {
                 $Series=$chart.Series.Add($chartDef.YRange, $chartDef.XRange)
                 $Series.Header = $chartDef.Header
             } else {
-                for($idx=0; $idx -lt $chartDefCount; $idx+=1) {                    
+                for($idx=0; $idx -lt $chartDefCount; $idx+=1) {
                     $Series=$chart.Series.Add($chartDef.YRange[$idx], $chartDef.XRange)
                     $Series.Header = $chartDef.Header[$idx]
                 }
