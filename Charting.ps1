@@ -1,12 +1,15 @@
 function DoChart {
-     param(
-         $targetData,
+    param(
+        $targetData,
          $title,
-         $chartType
+         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType,
+         [Switch]$NoLegend,
+         [Switch]$ShowCategory,
+         [Switch]$ShowPercent
      )
 
      if($targetData[0] -is [System.ValueType]) {
-         $chart = New-ExcelChart -YRange "A1:A$($targetData.count)" -Title $title -ChartType $chartType
+         $chart = New-ExcelChart -YRange "A1:A$($targetData.count)" -Title $title -ChartType $ChartType
      } else {
          $xyRange = Get-XYRange $targetData
 
@@ -16,7 +19,8 @@ function DoChart {
          $Y = $xyRange.YRange.ExcelColumn
          $YRange = "{0}2:{0}{1}" -f $Y,($targetData.count+1)
 
-         $chart = New-ExcelChart -XRange $xRange -YRange $yRange -Title $title -ChartType $chartType
+         $chart = New-ExcelChart -XRange $xRange -YRange $yRange -Title $title -ChartType $ChartType `
+            -NoLegend:$NoLegend -ShowCategory:$ShowCategory -ShowPercent:$ShowPercent
      }
 
      $xlFile = (New-TemporaryFile).fullname -replace "tmp","xlsx"
@@ -24,26 +28,59 @@ function DoChart {
 
  }
 
- function BarChart {
-     param($targetData,$title)
+function BarChart {
+    param(
+        $targetData,
+        $title,
+        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="BarStacked",
+        [Switch]$NoLegend,
+        [Switch]$ShowCategory,
+        [Switch]$ShowPercent
+    )
 
-     DoChart $targetData $title BarStacked
+    DoChart $targetData $title -ChartType $ChartType `
+        -NoLegend:$NoLegend -ShowCategory:$ShowCategory -ShowPercent:$ShowPercent
+
  }
 
- function PieChart {
-     param($targetData,$title)
+function PieChart {
+    param(
+        $targetData,
+        $title,
+        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="PieExploded3D",
+        [Switch]$NoLegend,
+        [Switch]$ShowCategory,
+        [Switch]$ShowPercent
+    )
 
-     DoChart $targetData $title Pie
+    DoChart $targetData $title -ChartType $ChartType `
+        -NoLegend:$NoLegend -ShowCategory:$ShowCategory -ShowPercent:$ShowPercent
  }
 
- function LineChart {
-     param($targetData,$title)
+function LineChart {
+    param(
+        $targetData,
+        $title,
+        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="Line",
+        [Switch]$NoLegend,
+        [Switch]$ShowCategory,
+        [Switch]$ShowPercent
+    )
 
-     DoChart $targetData $title Line
- }
+    DoChart $targetData $title -ChartType $ChartType `
+        -NoLegend:$NoLegend -ShowCategory:$ShowCategory -ShowPercent:$ShowPercent
+}
 
- function ColumnChart {
-     param($targetData,$title)
+function ColumnChart {
+    param(
+        $targetData,
+        $title,
+        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="ColumnStacked",
+        [Switch]$NoLegend,
+        [Switch]$ShowCategory,
+        [Switch]$ShowPercent
+    )
 
-     DoChart $targetData $title ColumnStacked
- }
+    DoChart $targetData $title -ChartType $ChartType `
+        -NoLegend:$NoLegend -ShowCategory:$ShowCategory -ShowPercent:$ShowPercent
+}
