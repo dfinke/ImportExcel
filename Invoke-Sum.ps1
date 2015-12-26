@@ -1,14 +1,24 @@
 function Invoke-Sum {
-    param($data,$dimension,$measure)
+    param(
+        $data,
+        $dimension,
+        $measure
+    )
+
+    if(!$measure) {$measure = $dimension}
 
     $h=@{}
 
     foreach ($item in $data){
         $key=$item.$dimension
-        
+
         if(!$key) {$key="[missing]"}
-        
-        $h.$key+=$item.$measure
+
+        $value = $item.$measure
+        if($value -is [string] -or $value -is [System.Enum]) {
+            $value = 1
+        }
+        $h.$key+=$value
     }
 
     foreach ($entry in $h.GetEnumerator()){
@@ -17,5 +27,4 @@ function Invoke-Sum {
             $measure=$entry.value
         }
     }
-    
 }
