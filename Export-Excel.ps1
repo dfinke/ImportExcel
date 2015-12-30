@@ -24,6 +24,8 @@ function Export-Excel {
         [bool]$TitleBold,
         [int]$TitleSize=22,
         [System.Drawing.Color]$TitleBackgroundColor,
+        [string[]]$ColumnSortOrder,
+        [switch]$OnlyExplicitColumns,
         [string[]]$PivotRows,
         [string[]]$PivotColumns,
         $PivotData,
@@ -135,9 +137,24 @@ function Export-Excel {
             if(!$Header) {
 
                 $ColumnIndex = $StartColumn
-
-                $Header = $TargetData.psobject.properties.name
-
+				
+				#Sort columns 
+				If ($ColumnSortOrder) {
+				
+					$Header = $ColumnSortOrder
+					
+					#Remove any invalid (as in "not a property of the object") columns 
+                    $Header = Compare-Object $ColumnSortOrder $TargetData.psobject.properties.name -IncludeEqual -ExcludeDifferent -Passthru
+					
+					If (-Not $OnlyExplicitColumns) {	
+						#Add additional properties that weren't part of the ColumnSortOrder list to the end of the table
+                        $Header = Compare-Object $Header $TargetData.psobject.properties.name -IncludeEqual -Passthru
+					}
+					
+				} Else {
+					$Header = $TargetData.psobject.properties.name
+				}
+	
                 if($NoHeader) {
                     # Don't push the headers to the spread sheet
                     $Row -= 1
