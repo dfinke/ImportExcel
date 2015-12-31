@@ -24,8 +24,8 @@ function Export-Excel {
         [bool]$TitleBold,
         [int]$TitleSize=22,
         [System.Drawing.Color]$TitleBackgroundColor,
-        [string[]]$ColumnSortOrder,
-        [switch]$OnlyExplicitColumns,
+        [string[]]$PropertyNames=$TargetData.psobject.properties.name,
+        [switch]$OnlyExplicitProperties,
         [string[]]$PivotRows,
         [string[]]$PivotColumns,
         $PivotData,
@@ -138,21 +138,33 @@ function Export-Excel {
 
                 $ColumnIndex = $StartColumn
 				
-				#Sort columns 
-				If ($ColumnSortOrder) {
+				$Header = $PropertyNames
 				
-					$Header = $ColumnSortOrder
+				#Sort columns 
+				If ($PropertyNames) {				
 					
 					#Remove any invalid (as in "not a property of the object") columns 
-                    $Header = Compare-Object $ColumnSortOrder $TargetData.psobject.properties.name -IncludeEqual -ExcludeDifferent -Passthru
-					
-					If (-Not $OnlyExplicitColumns) {	
-						#Add additional properties that weren't part of the ColumnSortOrder list to the end of the table
-                        $Header = Compare-Object $Header $TargetData.psobject.properties.name -IncludeEqual -Passthru
+					$Header = {$PropertyNames}.Invoke()
+					$Remove = @()
+					ForEach ($Name in $TargetData.psobject.properties.name) {
+						If ($Header -notcontains $Name) {
+							$Remove += $Name
+						}
 					}
 					
-				} Else {
-					$Header = $TargetData.psobject.properties.name
+					ForEach ($Name in $Remove) {
+						$result = $Header.Remove($Name)
+					}
+	
+					If (-Not $OnlyExplicitProperties.IsPresent) {	
+						#Add additional properties that weren't part of the PropertyNames list to the end of the table
+						ForEach ($Name in $TargetData.psobject.properties.name) {
+							If ($Header -notcontains $Name) {
+								$Header += $Name
+							}
+						}
+					}
+					
 				}
 	
                 if($NoHeader) {
