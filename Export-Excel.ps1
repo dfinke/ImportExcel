@@ -24,6 +24,8 @@ function Export-Excel {
         [bool]$TitleBold,
         [int]$TitleSize=22,
         [System.Drawing.Color]$TitleBackgroundColor,
+        [string[]]$PropertyNames=$TargetData.psobject.properties.name,
+        [switch]$OnlyExplicitProperties,
         [string[]]$PivotRows,
         [string[]]$PivotColumns,
         $PivotData,
@@ -135,9 +137,36 @@ function Export-Excel {
             if(!$Header) {
 
                 $ColumnIndex = $StartColumn
-
-                $Header = $TargetData.psobject.properties.name
-
+				
+				$Header = $PropertyNames
+				
+				#Sort columns 
+				If ($PropertyNames) {				
+					
+					#Remove any invalid (as in "not a property of the object") columns 
+					$Header = {$PropertyNames}.Invoke()
+					$Remove = @()
+					ForEach ($Name in $TargetData.psobject.properties.name) {
+						If ($Header -notcontains $Name) {
+							$Remove += $Name
+						}
+					}
+					
+					ForEach ($Name in $Remove) {
+						$result = $Header.Remove($Name)
+					}
+	
+					If (-Not $OnlyExplicitProperties.IsPresent) {	
+						#Add additional properties that weren't part of the PropertyNames list to the end of the table
+						ForEach ($Name in $TargetData.psobject.properties.name) {
+							If ($Header -notcontains $Name) {
+								$Header += $Name
+							}
+						}
+					}
+					
+				}
+	
                 if($NoHeader) {
                     # Don't push the headers to the spread sheet
                     $Row -= 1

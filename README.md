@@ -25,6 +25,15 @@ Known Issues
 What's new
 -
 
+#### 12/31/2015
+
+*Added parameters `PropertyNames`,`OnlyExplicitProperties` to allow ordering and filtering of columns
+
+Example
+
+	#write only process name, PID and CPU load in that order to the output
+	Get-Process | Export-Excel .\processes_sorted_filtered.xlsx -PropertyNames ProcessName,Id,'CPU(s)' -OnlyExplicitProperties
+
 #### 12/26/2015
 
 * Added `NoLegend`, `Show-Category`, `ShowPercent` for all charts including Pivot Charts
