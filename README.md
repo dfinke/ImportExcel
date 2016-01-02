@@ -25,7 +25,13 @@ Known Issues
 What's new
 -
 
+#### 12/26/2015
+
+* Added `NoLegend`, `Show-Category`, `ShowPercent` for all charts including Pivot Charts
+* Updated PieChart, BarChart, ColumnChart and Line chart to work with the pipeline and added `NoLegend`, `Show-Category`, `ShowPercent`
+ 
 #### 12/17/2015
+
 These new features open the door for really sophisticated work sheet creation.
   
 Stay tuned for a [blog post](http://www.dougfinke.com/blog/) and examples.

@@ -10,7 +10,10 @@ function New-ExcelChart {
         $Row=0,
         $RowOffSetPixels=10,
         $Column=6,
-        $ColumnOffSetPixels=5
+        $ColumnOffSetPixels=5,
+        [Switch]$NoLegend,
+        [Switch]$ShowCategory,
+        [Switch]$ShowPercent
     )
 
     [PSCustomObject]@{
@@ -21,10 +24,12 @@ function New-ExcelChart {
         YRange=$YRange
         Width=$Width
         Height=$Height
-
         Row=$Row
         RowOffSetPixels=$RowOffSetPixels
         Column=$Column
         ColumnOffSetPixels=$ColumnOffSetPixels
-    }
+        NoLegend     = if($NoLegend)     {$true} else {$false}
+        ShowCategory = if($ShowCategory) {$true} else {$false}
+        ShowPercent  = if($ShowPercent)  {$true} else {$false}
+   }
 }

@@ -31,6 +31,9 @@ function Export-Excel {
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="Pie",
         [Switch]$IncludePivotTable,
         [Switch]$IncludePivotChart,
+        [Switch]$NoLegend,
+        [Switch]$ShowCategory,
+        [Switch]$ShowPercent,
         [Switch]$AutoSize,
         [Switch]$Show,
         [Switch]$NoClobber,
@@ -270,6 +273,12 @@ function Export-Excel {
 
             if($IncludePivotChart) {
                 $chart = $wsPivot.Drawings.AddChart("PivotChart", $ChartType, $pivotTable)
+
+                $chart.DataLabel.ShowCategory=$ShowCategory
+                $chart.DataLabel.ShowPercent=$ShowPercent
+
+                if($NoLegend) { $chart.Legend.Remove() }
+
                 $chart.SetPosition(1, 0, 6, 0)
                 $chart.SetSize(600, 400)
             }
@@ -304,6 +313,14 @@ function Export-Excel {
             $ChartName = "Chart"+(Split-Path -Leaf ([System.IO.path]::GetTempFileName())) -replace 'tmp|\.',''
             $chart = $ws.Drawings.AddChart($ChartName, $chartDef.ChartType)
             $chart.Title.Text = $chartDef.Title
+
+            if($chartDef.NoLegend) {
+                $chart.Legend.Remove()
+            }
+            #$chart.Datalabel.ShowLegendKey = $true
+            $chart.Datalabel.ShowCategory  = $chartDef.ShowCategory
+            $chart.Datalabel.ShowPercent   = $chartDef.ShowPercent
+
             $chart.SetPosition($chartDef.Row, $chartDef.RowOffsetPixels,$chartDef.Column, $chartDef.ColumnOffsetPixels)
             $chart.SetSize($chartDef.Width, $chartDef.Height)
 
