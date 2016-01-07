@@ -96,6 +96,7 @@ function Import-Excel {
          if($AllWorkSheets) {
           Write-Debug "Adding worksheet object $WorkSheetName to Workbook PSobject"
           $WorkBookObject.add($WorkSheetname,$SheetRows);
+          $Header = $null
          }
         }
         if($AllWorkSheets) {
