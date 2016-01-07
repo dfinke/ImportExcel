@@ -27,6 +27,8 @@ What's new
 ### 1/7/2016 
 * Added `Get-ExcelSheetInfo` - Great contribution from *Johan Åkerström* check him out on [GitHub](https://github.com/CosmosKey) and [Twitter](https://twitter.com/neptune443)
 
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/GetExcelSheetInfo.png)
+
 #### 12/26/2015
 
 * Added `NoLegend`, `Show-Category`, `ShowPercent` for all charts including Pivot Charts
