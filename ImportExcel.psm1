@@ -11,6 +11,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Charting.ps1
 . $PSScriptRoot\New-PSItem.ps1
 . $PSScriptRoot\Pivot.ps1
+. $PSScriptRoot\Get-ExcelSheetInfo.ps1
 
 function Import-Excel {
     param(

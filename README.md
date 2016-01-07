@@ -24,6 +24,8 @@ Known Issues
 
 What's new
 -
+### 1/7/2016 
+* Added `Get-ExcelSheetInfo` - Great contribution from *Johan Åkerström* [GitHub](https://github.com/CosmosKey) [Twitter](https://twitter.com/neptune443)
 
 #### 12/26/2015
 
