@@ -27,7 +27,7 @@ What's new
 
 ### 1/15/2016 
 
-* Added `Conditional Text Formatting`. [Boe Prox](https://twitter.com/proxb) posted about HTML reporting with PowerShell and colorized cells. Great idea, no part of the PowerShell Excel module. 
+* Added `Conditional Text Formatting`. [Boe Prox](https://twitter.com/proxb) posted about [HTML Reporting, Part 2: Take Your Reporting a Step Further](https://mcpmag.com/articles/2016/01/14/html-reporting-part-2.aspx) and colorized cells. Great idea, now part of the PowerShell Excel module. 
  
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/ConditionalText.gif)
  
