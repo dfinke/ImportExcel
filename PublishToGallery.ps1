@@ -4,7 +4,7 @@ $p = @{
     NuGetApiKey = $NuGetApiKey
     #LicenseUri = "https://github.com/dfinke/ImportExcel/blob/master/LICENSE.txt"
     #Tag = "Excel","EPPlus","Export","Import"
-    ReleaseNote = "Fixed parameters and explicitly marked as $true"
+    ReleaseNote = "Added Conditional Text Formatting"
     #ProjectUri = "https://github.com/dfinke/ImportExcel"
 }
 
