@@ -24,7 +24,14 @@ Known Issues
 
 What's new
 -
-### 1/7/2016 
+
+### 1/15/2016 
+
+* Added `Conditional Text Formatting`. [Boe Prox](https://twitter.com/proxb) posted about HTML reporting with PowerShell and colorized cells. Great idea, no part of the PowerShell Excel module. 
+ 
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/ConditionalText.gif)
+ 
+#### 1/7/2016 
 * Added `Get-ExcelSheetInfo` - Great contribution from *Johan Åkerström* check him out on [GitHub](https://github.com/CosmosKey) and [Twitter](https://twitter.com/neptune443)
 
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/GetExcelSheetInfo.png)
