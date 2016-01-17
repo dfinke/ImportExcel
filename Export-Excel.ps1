@@ -45,8 +45,7 @@ function Export-Excel {
         [string]$TableName,
         [OfficeOpenXml.Table.TableStyles]$TableStyle="Medium6",
         [Object[]]$ConditionalFormat,
-        [string]$ConditionalText,
-        [System.Drawing.Color]$ConditionalTextColor="Red",
+        [Object[]]$ConditionalText,        
         [Object[]]$ExcelChartDefinition,
         [string[]]$HideSheet,
         [Switch]$KillExcel,
@@ -338,10 +337,17 @@ function Export-Excel {
             }
         }
 
-        if($ConditionalText) {
-            $rule=$ws.Cells[$ws.Dimension.Address].ConditionalFormatting.AddContainsText();
-            $rule.Text = $ConditionalText
-            $rule.Style.Font.Color.Color = $ConditionalTextColor            
+        if($ConditionalText) {       
+            foreach ($targetConditionalText in $ConditionalText) {
+                $target = "Add$($targetConditionalText.ConditionalType)"                
+                
+                $rule=($ws.Cells[$ws.Dimension.Address].ConditionalFormatting).$target()
+                $rule.Text = $targetConditionalText.Text
+                $rule.Style.Font.Color.Color = $targetConditionalText.ConditionalTextColor
+                
+                $rule.Style.Fill.PatternType=$targetConditionalText.PatternType
+                $rule.Style.Fill.BackgroundColor.Color=$targetConditionalText.BackgroundColor
+           }
         }
         
         $pkg.Save()

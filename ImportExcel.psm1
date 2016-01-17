@@ -2,6 +2,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 
 . $PSScriptRoot\Export-Excel.ps1
 . $PSScriptRoot\New-ConditionalFormattingIconSet.ps1
+. $PSScriptRoot\New-ConditionalText.ps1
 . $PSScriptRoot\Export-ExcelSheet.ps1
 . $PSScriptRoot\New-ExcelChart.ps1
 . $PSScriptRoot\Invoke-Sum.ps1
