@@ -1,10 +1,11 @@
-$f = ".\conditionalTextFormatting.xlsx"
-rm $f -ErrorAction Ignore
+$file = ".\conditionalTextFormatting.xlsx"
+rm $file -ErrorAction Ignore
 
 Get-Service | 
     Select Status, Name, DisplayName, ServiceName |
-    Export-Excel $f -Show -AutoSize -ConditionalText $(
-        New-ConditionalText stop darkred
-        New-ConditionalText running darkblue
-        New-ConditionalText app DarkMagenta
+    Export-Excel $file -Show -AutoSize -AutoFilter -ConditionalText $(
+        New-ConditionalText stop 
+        New-ConditionalText runn darkblue cyan
+        New-ConditionalText -ConditionalType EndsWith svc wheat green 
+        New-ConditionalText -ConditionalType BeginsWith windows darkgreen wheat        
     )
