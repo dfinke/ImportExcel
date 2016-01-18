@@ -25,11 +25,11 @@ Known Issues
 What's new
 -
 
-### 1/15/2016 
+#### 1/18/2016
 
 * Added `Conditional Text Formatting`. [Boe Prox](https://twitter.com/proxb) posted about [HTML Reporting, Part 2: Take Your Reporting a Step Further](https://mcpmag.com/articles/2016/01/14/html-reporting-part-2.aspx) and colorized cells. Great idea, now part of the PowerShell Excel module. 
  
-![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/ConditionalText.gif)
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/ConditionalText2.gif)
  
 #### 1/7/2016 
 * Added `Get-ExcelSheetInfo` - Great contribution from *Johan Åkerström* check him out on [GitHub](https://github.com/CosmosKey) and [Twitter](https://twitter.com/neptune443)
