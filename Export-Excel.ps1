@@ -341,10 +341,16 @@ function Export-Excel {
             foreach ($targetConditionalText in $ConditionalText) {
                 $target = "Add$($targetConditionalText.ConditionalType)"                
                 
-                $rule=($ws.Cells[$ws.Dimension.Address].ConditionalFormatting).$target()
-                $rule.Text = $targetConditionalText.Text
-                $rule.Style.Font.Color.Color = $targetConditionalText.ConditionalTextColor
+                $Range=$targetConditionalText.Range
+                if(!$Range) { $Range=$ws.Dimension.Address }
+
+                $rule=($ws.Cells[$Range].ConditionalFormatting).$target()
                 
+                if($targetConditionalText.Text) {
+                    $rule.Text = $targetConditionalText.Text
+                }                
+                
+                $rule.Style.Font.Color.Color = $targetConditionalText.ConditionalTextColor
                 $rule.Style.Fill.PatternType=$targetConditionalText.PatternType
                 $rule.Style.Fill.BackgroundColor.Color=$targetConditionalText.BackgroundColor
            }
