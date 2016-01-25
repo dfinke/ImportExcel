@@ -119,7 +119,7 @@ function Export-Excel {
 
             $r=$null
             $cellValue=$TargetData
-            if([double]::tryparse($cellValue, [ref]$r)) {
+            if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
                 $targetCell.Value = $r
             } else {
                 $targetCell.Value = $cellValue
@@ -164,7 +164,7 @@ function Export-Excel {
                 } else {
 
                     $r=$null
-                    if([double]::tryparse($cellValue, [ref]$r)) {
+                    if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
                         $targetCell.Value = $r
                     } else {
                         $targetCell.Value = $cellValue
