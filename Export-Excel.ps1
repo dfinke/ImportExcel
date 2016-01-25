@@ -45,7 +45,7 @@ function Export-Excel {
         [string]$TableName,
         [OfficeOpenXml.Table.TableStyles]$TableStyle="Medium6",
         [Object[]]$ConditionalFormat,
-        [Object[]]$ConditionalText,        
+        [Object[]]$ConditionalText,
         [Object[]]$ExcelChartDefinition,
         [string[]]$HideSheet,
         [Switch]$KillExcel,
@@ -71,7 +71,7 @@ function Export-Excel {
 
             foreach($format in $ConditionalFormat ) {
                 $target = "Add$($format.Formatter)"
-                $rule = ($ws.ConditionalFormatting).$target($format.Address, $format.IconType)
+                $rule = ($ws.ConditionalFormatting).$target($format.Range, $format.IconType)
                 $rule.Reverse = $format.Reverse
             }
 
@@ -337,25 +337,25 @@ function Export-Excel {
             }
         }
 
-        if($ConditionalText) {       
+        if($ConditionalText) {
             foreach ($targetConditionalText in $ConditionalText) {
-                $target = "Add$($targetConditionalText.ConditionalType)"                
-                
+                $target = "Add$($targetConditionalText.ConditionalType)"
+
                 $Range=$targetConditionalText.Range
                 if(!$Range) { $Range=$ws.Dimension.Address }
 
                 $rule=($ws.Cells[$Range].ConditionalFormatting).$target()
-                
+
                 if($targetConditionalText.Text) {
                     $rule.Text = $targetConditionalText.Text
-                }                
-                
+                }
+
                 $rule.Style.Font.Color.Color = $targetConditionalText.ConditionalTextColor
                 $rule.Style.Fill.PatternType=$targetConditionalText.PatternType
                 $rule.Style.Fill.BackgroundColor.Color=$targetConditionalText.BackgroundColor
            }
         }
-        
+
         $pkg.Save()
         $pkg.Dispose()
 

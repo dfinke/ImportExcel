@@ -4,7 +4,7 @@ ps | where Company | select Company, Name, PM, Handles, *mem* |
 
     Export-Excel .\testExport.xlsx -Show -AutoSize -AutoNameRange `
         -ConditionalFormat $(
-            New-ConditionalFormattingIconSet -Address "C:C" `
+            New-ConditionalFormattingIconSet -Range "C:C" `
                 -ConditionalFormat ThreeIconSet -IconType Arrows
 
         ) -ConditionalText $(

@@ -1,7 +1,7 @@
 function New-ConditionalFormattingIconSet {
     param(
         [Parameter(Mandatory=$true)]
-        $Address,
+        $Range,
         [ValidateSet("ThreeIconSet","FourIconSet","FiveIconSet")]
         $ConditionalFormat,
         [Switch]$Reverse
@@ -42,7 +42,7 @@ function New-ConditionalFormattingIconSet {
         $bp = @{}+$PSBoundParameters
 
         $obj = [PSCustomObject]@{
-            Address   = $Address
+            Range     = $Range
             Formatter = $ConditionalFormat
             IconType  = $bp.IconType
             Reverse   = $Reverse
