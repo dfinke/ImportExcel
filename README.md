@@ -29,7 +29,6 @@ $xlPkg = $(
     New-PSItem south 40
 ) | Export-Excel $file -PassThru 
 
-
 $ws=$xlPkg.Workbook.Worksheets[1]
 
 $ws.Cells["A3"].Value = "Hello World"
@@ -38,12 +37,14 @@ $ws.Cells["D1:D5"].Value = "Data"
 
 $ws.Cells.AutoFitColumns() 
 
-$xlPkg.Save()                                                                                                                                    
+$xlPkg.Save()
 $xlPkg.Dispose()
-                                                                                                                              
+
 Invoke-Item $file
 ```
 
+## Result
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/PassThru.png)
 
 Known Issues
 -
