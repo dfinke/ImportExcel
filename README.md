@@ -23,7 +23,10 @@ Known Issues
 	* *Workaround* delete the Excel file first, then do the export   
 
 What's new
--
+
+#### 2/17/2016
+* Added Conditional Text types of `Equal` and `NotEqual`
+* Phone #'s like '+33 011 234 34' will be now be handled correctly
 
 #### 1/18/2016
 
