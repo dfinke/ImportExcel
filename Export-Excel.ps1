@@ -347,7 +347,11 @@ function Export-Excel {
                 $rule=($ws.Cells[$Range].ConditionalFormatting).$target()
 
                 if($targetConditionalText.Text) {
-                    $rule.Text = $targetConditionalText.Text
+                    if($targetConditionalText.ConditionalType -eq "equal") {
+                        $rule.Formula= $targetConditionalText.Text
+                    } else {
+                        $rule.Text = $targetConditionalText.Text
+                    }
                 }
 
                 $rule.Style.Font.Color.Color = $targetConditionalText.ConditionalTextColor

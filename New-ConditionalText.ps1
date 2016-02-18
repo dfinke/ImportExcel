@@ -7,7 +7,7 @@ function New-ConditionalText {
         [String]$Range,
         [OfficeOpenXml.Style.ExcelFillStyle]$PatternType=[OfficeOpenXml.Style.ExcelFillStyle]::Solid,
         [ValidateSet(
-            "ContainsText","NotContainsText","BeginsWith","EndsWith",
+            "Equal","ContainsText","NotContainsText","BeginsWith","EndsWith",
             "Last7Days","LastMonth","LastWeek",
             "NextMonth","NextWeek",
             "ThisMonth","ThisWeek",
