@@ -16,6 +16,35 @@ To install in your personal modules folder (e.g. ~\Documents\WindowsPowerShell\M
 iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfinke/ImportExcel/master/Install.ps1')
 ```
 
+## Try *PassThru*
+
+```powershell
+$file = "C:\Temp\passthru.xlsx"
+rm $file -ErrorAction Ignore
+
+$xlPkg = $(
+    New-PSItem north 10
+    New-PSItem east  20
+    New-PSItem west  30
+    New-PSItem south 40
+) | Export-Excel $file -PassThru 
+
+
+$ws=$xlPkg.Workbook.Worksheets[1]
+
+$ws.Cells["A3"].Value = "Hello World"
+$ws.Cells["B3"].Value = "Updating cells"
+$ws.Cells["D1:D5"].Value = "Data"
+
+$ws.Cells.AutoFitColumns() 
+
+$xlPkg.Save()                                                                                                                                    
+$xlPkg.Dispose()
+                                                                                                                              
+Invoke-Item $file
+```
+
+
 Known Issues
 -
 * Using `-IncludePivotTable`, if that pivot table name exists, you'll get an error.

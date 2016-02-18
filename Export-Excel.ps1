@@ -51,7 +51,8 @@ function Export-Excel {
         [Switch]$KillExcel,
         [Switch]$AutoNameRange,
         $StartRow=1,
-        $StartColumn=1
+        $StartColumn=1,
+        [Switch]$PassThru
     )
 
     Begin {
@@ -360,9 +361,13 @@ function Export-Excel {
            }
         }
 
-        $pkg.Save()
-        $pkg.Dispose()
+        if($PassThru) {
+            $pkg
+        } else {
+            $pkg.Save()
+            $pkg.Dispose()
 
-        if($Show) {Invoke-Item $Path}
+            if($Show) {Invoke-Item $Path}
+        }
     }
 }
