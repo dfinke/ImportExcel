@@ -2,7 +2,7 @@
 $p = @{
     Name = "ImportExcel"
     NuGetApiKey = $NuGetApiKey
-    ReleaseNote = "Added Equal,NotEqual conditional text and more"
+    ReleaseNote = "Added -PassThru. Returns the unsaved Excel Workbook"
 }
 
 Publish-Module @p
