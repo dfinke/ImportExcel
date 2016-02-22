@@ -1,0 +1,14 @@
+$ModuleName   = "ImportExcel"
+$ModulePath   = "C:\Program Files\WindowsPowerShell\Modules"
+$TargetPath = "$($ModulePath)\$($ModuleName)"
+
+if(!(Test-Path $TargetPath)) { md $TargetPath | out-null}
+
+Get-HtmlTable.ps1
+Import-Html.ps1
+
+$FilesToCopy = dir -erroraction ignore *.psm1, *.psd1, *.dll, New-ConditionalFormattingIconSet.ps1, Export-Excel.ps1, Export-ExcelSheet.ps1, New-ExcelChart.ps1, Invoke-Sum.ps1, InferData.ps1, Get-ExcelColumnName.ps1, Get-XYRange.ps1, Charting.ps1, New-PSItem.ps1, Pivot.ps1, Get-ExcelSheetInfo.ps1, New-ConditionalText.ps1
+
+$FilesToCopy | ForEach {
+    Copy-Item -Verbose -Path $_.FullName -Destination "$($TargetPath)\$($_.name)"
+}
