@@ -25,8 +25,9 @@ Known Issues
 What's new
 
 #### 2/22/2016
-* `Import-Html` leveraged Lee Holmes [Extracting Tables from PowerShell’s Invoke-WebRequest](http://www.leeholmes.com/blog/2015/01/05/extracting-tables-from-powershells-invoke-webrequest/)
+* `Import-Html` using Lee Holmes [Extracting Tables from PowerShell’s Invoke-WebRequest](http://www.leeholmes.com/blog/2015/01/05/extracting-tables-from-powershells-invoke-webrequest/)
 
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/ImportHtml.gif)
 
 #### 2/17/2016
 * Added Conditional Text types of `Equal` and `NotEqual`
