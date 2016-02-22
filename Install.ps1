@@ -1,6 +1,23 @@
 param([string]$InstallDirectory)
 
-$fileList = echo EPPlus.dll ImportExcel.psd1 ImportExcel.psm1 Export-Excel.ps1 New-ConditionalFormattingIconSet.ps1 Export-ExcelSheet.ps1 New-ExcelChart.ps1 Invoke-Sum.ps1 InferData.ps1 Get-ExcelColumnName.ps1 Get-XYRange.ps1 Charting.ps1 New-PSItem.ps1 Pivot.ps1 New-ConditionalText.ps1
+$fileList = echo `
+    EPPlus.dll `
+    ImportExcel.psd1 `
+    ImportExcel.psm1 `
+    Export-Excel.ps1 `
+    New-ConditionalFormattingIconSet.ps1 `
+    Export-ExcelSheet.ps1 `
+    New-ExcelChart.ps1 `
+    Invoke-Sum.ps1 `
+    InferData.ps1 `
+    Get-ExcelColumnName.ps1 `
+    Get-XYRange.ps1 `
+    Charting.ps1 `
+    New-PSItem.ps1 `
+    Pivot.ps1 `
+    New-ConditionalText.ps1 `
+    Get-HtmlTable.ps1 `
+    Import-Html.ps1
 
 if ('' -eq $InstallDirectory)
 {

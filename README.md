@@ -16,6 +16,22 @@ To install in your personal modules folder (e.g. ~\Documents\WindowsPowerShell\M
 iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfinke/ImportExcel/master/Install.ps1')
 ```
 
+Known Issues
+-
+* Using `-IncludePivotTable`, if that pivot table name exists, you'll get an error.
+	* Investigating a solution
+	* *Workaround* delete the Excel file first, then do the export   
+
+What's new
+
+#### 2/22/2016
+* `Import-Html` leveraged Lee Holmes [Extracting Tables from PowerShell’s Invoke-WebRequest](http://www.leeholmes.com/blog/2015/01/05/extracting-tables-from-powershells-invoke-webrequest/)
+
+
+#### 2/17/2016
+* Added Conditional Text types of `Equal` and `NotEqual`
+* Phone #'s like '+33 011 234 34' will be now be handled correctly
+
 ## Try *PassThru*
 
 ```powershell
@@ -45,18 +61,6 @@ Invoke-Item $file
 
 ## Result
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/PassThru.png)
-
-Known Issues
--
-* Using `-IncludePivotTable`, if that pivot table name exists, you'll get an error.
-	* Investigating a solution
-	* *Workaround* delete the Excel file first, then do the export   
-
-What's new
-
-#### 2/17/2016
-* Added Conditional Text types of `Equal` and `NotEqual`
-* Phone #'s like '+33 011 234 34' will be now be handled correctly
 
 #### 1/18/2016
 
