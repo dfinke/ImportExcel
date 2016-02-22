@@ -2,7 +2,7 @@
 $p = @{
     Name = "ImportExcel"
     NuGetApiKey = $NuGetApiKey
-    ReleaseNote = "Added -PassThru. Returns the unsaved Excel Workbook"
+    ReleaseNote = "Added Import-Html"
 }
 
 Publish-Module @p
