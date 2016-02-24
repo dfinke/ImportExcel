@@ -5,7 +5,7 @@ function Get-HtmlTable {
         $tableIndex=0
     )
 
-    $r = (Invoke-WebRequest $url)
+    $r = Invoke-WebRequest $url
     $table = $r.ParsedHtml.getElementsByTagName("table")[$tableIndex]
     $propertyNames = @()
     $totalRows=@($table.rows).count-1

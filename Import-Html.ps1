@@ -5,7 +5,7 @@ function Import-Html {
         $index
     )
     
-    $xlFile = (New-TemporaryFile).fullname -replace "tmp","xlsx"
+    $xlFile = [System.IO.Path]::GetTempFileName() -replace "tmp","xlsx"
     rm $xlFile -ErrorAction Ignore
 
     Write-Verbose "Exporting to Excel file $($xlFile)"

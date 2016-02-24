@@ -23,7 +23,7 @@ function DoChart {
             -NoLegend:$NoLegend -ShowCategory:$ShowCategory -ShowPercent:$ShowPercent
      }
 
-     $xlFile = (New-TemporaryFile).fullname -replace "tmp","xlsx"
+     $xlFile = [System.IO.Path]::GetTempFileName() -replace "tmp","xlsx"
      $targetData | Export-Excel $xlFile -ExcelChartDefinition $chart -Show -AutoSize
 }
 
