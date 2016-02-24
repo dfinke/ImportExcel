@@ -2,7 +2,7 @@
 $p = @{
     Name = "ImportExcel"
     NuGetApiKey = $NuGetApiKey
-    ReleaseNote = "Added Import-Html"
+    ReleaseNote = "Fix off by one error for Import-Html"
 }
 
 Publish-Module @p

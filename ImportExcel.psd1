@@ -4,7 +4,7 @@
 RootModule = 'ImportExcel.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.1.0'
+ModuleVersion = '2.1.2'
 
 # ID used to uniquely identify this module
 GUID = '60dd4136-feff-401a-ba27-a84458c57ede'
@@ -98,7 +98,7 @@ PrivateData = @{
         LicenseUri = "https://github.com/dfinke/ImportExcel/blob/master/LICENSE.txt"
 
         # Release notes for this particular version of the module
-        # ReleaseNotes = False
+        #ReleaseNotes = $True
 
         # If true, the LicenseUrl points to an end-user license (not just a source license) which requires the user agreement before use.
         # RequireLicenseAcceptance = ""
