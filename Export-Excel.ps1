@@ -347,8 +347,8 @@ function Export-Excel {
 
                 $rule=($ws.Cells[$Range].ConditionalFormatting).$target()
 
-                if($targetConditionalText.Text) {
-                    if($targetConditionalText.ConditionalType -match "equal|notequal") {
+                if($targetConditionalText.Text) {                
+                    if($targetConditionalText.ConditionalType -match "equal|notequal|lessthan|lessthanorequal|greaterthan|greaterthanorequal") {
                         $rule.Formula= $targetConditionalText.Text
                     } else {
                         $rule.Text = $targetConditionalText.Text
