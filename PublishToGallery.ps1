@@ -2,7 +2,7 @@
 $p = @{
     Name = "ImportExcel"
     NuGetApiKey = $NuGetApiKey
-    ReleaseNote = "Added more conditional types"
+    ReleaseNote = "Add Header param to Import-Html. Scope variabales Export-Excel"
 }
 
 Publish-Module @p

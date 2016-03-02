@@ -2,18 +2,19 @@ function Get-HtmlTable {
     param(
         [Parameter(Mandatory=$true)]
         $url,
-        $tableIndex=0
+        $tableIndex=0,
+        $Header
     )
 
     $r = Invoke-WebRequest $url
     $table = $r.ParsedHtml.getElementsByTagName("table")[$tableIndex]
-    $propertyNames = @()
+    $propertyNames=$Header
     $totalRows=@($table.rows).count
 
-    for ($idx = 0; $idx -lt $totalRows; $idx++) {
+    for ($idx = 1; $idx -lt $totalRows; $idx++) {
 
         $row = $table.rows[$idx]
-        $cells = @($row.cells)
+        $cells = @($row.cells)        
 
         if(!$propertyNames) {
             if($cells[0].tagName -eq 'th') {
@@ -22,7 +23,7 @@ function Get-HtmlTable {
                 $propertyNames =  @(1..($cells.Count + 2) | % { "P$_" })
             }
             continue
-        }
+        }        
 
         $result = [ordered]@{}
 

@@ -1,8 +1,10 @@
+
 function Import-Html {
     [CmdletBinding()]
     param(
         $url,        
-        $index
+        $index,
+        $Header
     )
     
     $xlFile = [System.IO.Path]::GetTempFileName() -replace "tmp","xlsx"
@@ -10,6 +12,7 @@ function Import-Html {
 
     Write-Verbose "Exporting to Excel file $($xlFile)"
 
-    Get-HtmlTable $url $index |
-        Export-Excel $xlFile -Show -AutoSize
+    $data = Get-HtmlTable -url $url -tableIndex $index -Header $Header
+    
+    $data | Export-Excel $xlFile -Show -AutoSize
 }

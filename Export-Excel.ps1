@@ -134,17 +134,17 @@ function Export-Excel {
             $Row += 1
 
         } else {
-            if(!$Header) {
+            if(!$script:Header) {
 
                 $ColumnIndex = $StartColumn
 
-                $Header = $TargetData.psobject.properties.name
+                $script:Header = $TargetData.psobject.properties.name
 
                 if($NoHeader) {
                     # Don't push the headers to the spread sheet
                     $Row -= 1
                 } else {
-                    foreach ($Name in $Header) {
+                    foreach ($Name in $script:Header) {
                         $ws.Cells[$Row, $ColumnIndex].Value = $name
                         $ColumnIndex += 1
                     }
@@ -154,7 +154,7 @@ function Export-Excel {
             $Row += 1
             $ColumnIndex = $StartColumn
 
-            foreach ($Name in $Header) {
+            foreach ($Name in $script:Header) {
 
                 $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
@@ -202,7 +202,7 @@ function Export-Excel {
             $totalColumns=$ws.Dimension.Columns
 
             foreach($c in 0..($totalColumns-1)) {
-                $targetRangeName = "$($Header[$c])"
+                $targetRangeName = "$($script:Header[$c])"
                 $targetColumn = $c+1
                 $theCell = $ws.Cells[2,$targetColumn,$totalRows,$targetColumn ]
                 $ws.Names.Add($targetRangeName, $theCell) | Out-Null
@@ -225,7 +225,7 @@ function Export-Excel {
             $csr=$StartRow
             $csc=$StartColumn
             $cer=$ws.Dimension.End.Row #-$StartRow+1
-            $cec=$Header.Count
+            $cec=$script:Header.Count
 
             $targetRange=$ws.Cells[$csr, $csc, $cer,$cec]
 
