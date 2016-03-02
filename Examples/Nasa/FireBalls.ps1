@@ -10,4 +10,4 @@ $header = echo `
     'Total Radiated Energy (J)' `
     'Calculated Total Impact Energy (kt)'
 
-Import-Html http://neo.jpl.nasa.gov/fireballs/ 5 -Header $header
+Import-Html http://neo.jpl.nasa.gov/fireballs/ 5 -Header $header -FirstDataRow 1

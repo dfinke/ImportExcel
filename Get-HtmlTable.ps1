@@ -3,7 +3,8 @@ function Get-HtmlTable {
         [Parameter(Mandatory=$true)]
         $url,
         $tableIndex=0,
-        $Header
+        $Header,
+        [int]$FirstDataRow=0
     )
 
     $r = Invoke-WebRequest $url
@@ -11,7 +12,7 @@ function Get-HtmlTable {
     $propertyNames=$Header
     $totalRows=@($table.rows).count
 
-    for ($idx = 1; $idx -lt $totalRows; $idx++) {
+    for ($idx = $FirstDataRow; $idx -lt $totalRows; $idx++) {
 
         $row = $table.rows[$idx]
         $cells = @($row.cells)        
