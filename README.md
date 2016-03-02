@@ -16,13 +16,17 @@ To install in your personal modules folder (e.g. ~\Documents\WindowsPowerShell\M
 iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfinke/ImportExcel/master/Install.ps1')
 ```
 
-Known Issues
--
-* Using `-IncludePivotTable`, if that pivot table name exists, you'll get an error.
-	* Investigating a solution
-	* *Workaround* delete the Excel file first, then do the export   
+# What's new
 
-What's new
+#### 3/2/
+* Added `GreaterThan`, `GreaterThanOrEqual`, `LessThan`, `LessThanOrEqual` to `New-ConditionalText`
+
+```
+echo 489 668 299 777 860 151 119 497 234 788 | 
+    Export-Excel c:\temp\test.xlsx -Show `
+    -ConditionalText (New-ConditionalText -ConditionalType GreaterThan 525)
+```      
+
 
 #### 2/22/2016
 * `Import-Html` using Lee Holmes [Extracting Tables from PowerShell’s Invoke-WebRequest](http://www.leeholmes.com/blog/2015/01/05/extracting-tables-from-powershells-invoke-webrequest/)
@@ -319,19 +323,19 @@ You can set the pattern, size and of if the title is bold.
 
 ***NOTE*** If the sheet exists when using *-WorkSheetname* parameter, it will be deleted and then added with the new data.
 
-Get-Process Exported to Excel 
--
+## Get-Process Exported to Excel 
+
 ### Total Physical Memory Grouped By Company
 ![image](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/PivotTablesAndCharts.png)
 
-PowerShell Excel EPPlus Video
--
-Click on this image to watch the short video.
-
-[![image](http://dougfinke.com/powershellvideos/ExportExcel/ExportExcel_First_Frame.png)](http://dougfinke.com/powershellvideos/ExportExcel/ExportExcel.html)
-
-### Importing data from an Excel spreadsheet
+## Importing data from an Excel spreadsheet
 
 ![image](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/TryImportExcel.gif)
 
 You can also find EPPLus on [Nuget](https://www.nuget.org/packages/EPPlus/).
+
+## Known Issues
+
+* Using `-IncludePivotTable`, if that pivot table name exists, you'll get an error.
+	* Investigating a solution
+	* *Workaround* delete the Excel file first, then do the export
