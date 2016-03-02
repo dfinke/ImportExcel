@@ -26,7 +26,7 @@ echo 489 668 299 777 860 151 119 497 234 788 |
     Export-Excel c:\temp\test.xlsx -Show `
     -ConditionalText (New-ConditionalText -ConditionalType GreaterThan 525)
 ```      
-
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/GTConditional.png)
 
 #### 2/22/2016
 * `Import-Html` using Lee Holmes [Extracting Tables from PowerShell’s Invoke-WebRequest](http://www.leeholmes.com/blog/2015/01/05/extracting-tables-from-powershells-invoke-webrequest/)
