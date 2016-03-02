@@ -21,7 +21,7 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 #### 3/2/2016
 * Added `GreaterThan`, `GreaterThanOrEqual`, `LessThan`, `LessThanOrEqual` to `New-ConditionalText`
 
-```
+```powershell
 echo 489 668 299 777 860 151 119 497 234 788 | 
     Export-Excel c:\temp\test.xlsx -Show `
     -ConditionalText (New-ConditionalText -ConditionalType GreaterThan 525)
