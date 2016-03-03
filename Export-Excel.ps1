@@ -56,6 +56,7 @@ function Export-Excel {
     )
 
     Begin {
+    	$script:Header = $null
         if($KillExcel) {
             Get-Process excel -ErrorAction Ignore | Stop-Process
             while (Get-Process excel -ErrorAction Ignore) {}
