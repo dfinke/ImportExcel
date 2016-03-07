@@ -17,8 +17,9 @@ $fileList = echo `
     Pivot.ps1 `
     New-ConditionalText.ps1 `
     Get-HtmlTable.ps1 `
-    Import-Html.ps1
-
+    Import-Html.ps1 `
+    Get-ExcelSheetInfo.ps1
+    
 if ('' -eq $InstallDirectory)
 {
     $personalModules = Join-Path -Path ([Environment]::GetFolderPath('MyDocuments')) -ChildPath WindowsPowerShell\Modules
