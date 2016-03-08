@@ -203,10 +203,15 @@ function Export-Excel {
             $totalColumns=$ws.Dimension.Columns
 
             foreach($c in 0..($totalColumns-1)) {
-                $targetRangeName = "$($script:Header[$c])"
+                $targetRangeName = "$($script:Header[$c])"                
+
                 $targetColumn = $c+1
                 $theCell = $ws.Cells[2,$targetColumn,$totalRows,$targetColumn ]
                 $ws.Names.Add($targetRangeName, $theCell) | Out-Null
+
+                if([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress($targetRangeName)) {
+                    Write-Warning "AutoNameRange: Property name '$targetRangeName' is also a valid Excel address and may cause issues. Consider renaming the property name."
+                }
             }
         }
 
