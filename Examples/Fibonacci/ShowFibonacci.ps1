@@ -1,10 +1,7 @@
 param ($fibonacciDigits=10)
 
-
 $file = "fib.xlsx"
 rm "fib.xlsx" -ErrorAction Ignore
-
-
 
 $(
     New-PSItem 0
