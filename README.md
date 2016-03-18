@@ -23,6 +23,8 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 * Updated EPPlus DLL. Allows markers to be changed and colored
 * Handles and warns if auto name range names are also valid Excel ranges
 
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/PSPlot.gif)
+
 #### 3/7/2016
 * Added `Header` and `FirstDataRow` for `Import-Html`
 
