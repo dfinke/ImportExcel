@@ -18,7 +18,7 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
-#### [ADD DATE]
+#### 3/18/2016
 * Added `Get-Range`, `New-Plot` and Plot Cos example
 * Updated EPPlus DLL. Allows markers to be changed and colored
 * Handles and warns if auto name range names are also valid Excel ranges
