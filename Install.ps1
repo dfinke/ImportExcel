@@ -18,7 +18,9 @@ $fileList = echo `
     New-ConditionalText.ps1 `
     Get-HtmlTable.ps1 `
     Import-Html.ps1 `
-    Get-ExcelSheetInfo.ps1
+    Get-ExcelSheetInfo.ps1 `
+    Get-Range.ps1 `
+    plot.ps1
 
 if ('' -eq $InstallDirectory)
 {

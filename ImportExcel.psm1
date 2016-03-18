@@ -15,6 +15,10 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Get-ExcelSheetInfo.ps1
 . $PSScriptRoot\Get-HtmlTable.ps1
 . $PSScriptRoot\Import-Html.ps1
+. $PSScriptRoot\Get-Range.ps1
+. $PSScriptRoot\plot.ps1
+
+function New-Plot { [psplot]::new() }
 
 function Import-Excel {
     param(
