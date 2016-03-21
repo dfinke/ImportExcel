@@ -4,7 +4,7 @@
 RootModule = 'ImportExcel.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.1.4'
+ModuleVersion = '2.2.0'
 
 # ID used to uniquely identify this module
 GUID = '60dd4136-feff-401a-ba27-a84458c57ede'

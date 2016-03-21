@@ -24,6 +24,21 @@ class PSPlot {
         $this.SetChartPosition($yCol)
     }
 
+    Plot($yValues,[string]$options) {
+        $this.NewChart()
+            
+        $xValues = 0..$yValues.Count
+
+        $xCol = 'A'
+        $yCol = 'B'
+
+        $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)        
+        $this.AddSeries($xCol,$yCol,$yValues)
+
+        $this.SetMarkerInfo($options)        
+        $this.SetChartPosition($yCol)
+    }
+
     Plot($xValues,$yValues) {
         
         $this.NewChart()        
@@ -33,6 +48,21 @@ class PSPlot {
 
         $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)        
         $this.AddSeries($xCol,$yCol,$yValues)
+
+        $this.SetChartPosition($yCol)
+    }
+    
+    Plot($xValues,$yValues,[string]$options) {
+        $this.NewChart()        
+
+        $xCol = 'A'
+        $yCol = 'B'
+
+        $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)        
+        $this.AddSeries($xCol,$yCol,$yValues)
+        
+        $this.SetMarkerInfo($options)
+
         $this.SetChartPosition($yCol)
     }
 
@@ -91,6 +121,18 @@ class PSPlot {
         $Series=$this.chart.Series.Add($yRange,$xRange)    
     }
 
+    hidden SetMarkerInfo([string]$options) {
+        $c=$options.Substring(0,1)
+        $m=$options.Substring(1)
+        
+        $cmap=@{r='red';g='green';b='blue';i='indigo';v='violet';c='cyan'}
+        $mmap=@{Ci='Circle';Da='Dash';di='diamond';do='dot';pl='plus';sq='square';tr='triangle'}
+        
+        $this.chart.Series[0].Marker = $mmap.$m
+        $this.chart.Series[0].MarkerColor = $cmap.$c
+        $this.chart.Series[0].MarkerLineColor = $cmap.$c
+    }
+
     hidden [string]GetNextColumnName($columnName) {
         return $this.GetColumnName($this.GetColumnNumber($columnName)+1)        
     }
@@ -142,6 +184,10 @@ class PSPlot {
 
     SetChartSize([int]$width,[int]$height){
         $this.chart.SetSize($width, $height)
+    }
+
+    Title($title) {
+        $this.chart.Title.Text = $title
     }
 
     Show() {

@@ -18,7 +18,12 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Get-Range.ps1
 . $PSScriptRoot\plot.ps1
 
-function New-Plot { [psplot]::new() }
+function New-Plot { 
+    [OutputType([PSPlot])]
+    param()
+
+    [psplot]::new() 
+}
 
 function Import-Excel {
     param(
