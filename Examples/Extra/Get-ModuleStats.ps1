@@ -1,3 +1,10 @@
+<#
+    .Synopsis
+    Chart download stats for modules/scripts published on the PowerShell Gallery
+    .Example
+    .\Get-ModuleStats.ps1 ImportExcel
+#>
+
 param(
     [Parameter(Mandatory=$true)]
     $moduleName,
