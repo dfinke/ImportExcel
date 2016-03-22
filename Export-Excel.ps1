@@ -38,6 +38,9 @@ function Export-Excel {
         [Switch]$Show,
         [Switch]$NoClobber,
         [Switch]$FreezeTopRow,
+        [Switch]$FreezeFirstColumn,
+        [Switch]$FreezeTopRowFirstColumn,
+        [int[]]$FreezePane,
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
         [Switch]$NoHeader,
@@ -298,8 +301,17 @@ function Export-Excel {
             $ws.Cells[$dataRange].AutoFilter=$true
         }
 
-        if($FreezeTopRow) {
-            $ws.View.FreezePanes(2,1)
+        if($FreezeTopRow) { $ws.View.FreezePanes(2,1) }
+        if($FreezeTopRowFirstColumn) { $ws.View.FreezePanes(2,2) }
+        if($FreezeFirstColumn) { $ws.View.FreezePanes(1,2) }
+
+        if($FreezePane) {
+            $freezeRow,$freezeColumn=$FreezePane
+            if(!$freezeColumn -or $freezeColumn -eq 0) {$freezeColumn=1}
+
+            if($freezeRow -gt 1) {
+                $ws.View.FreezePanes($freezeRow,$freezeColumn)
+            }
         }
 
         if($BoldTopRow) {
