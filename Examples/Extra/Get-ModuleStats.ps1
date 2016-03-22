@@ -9,7 +9,7 @@ param(
     [Parameter(Mandatory=$true)]
     $moduleName,
     [ValidateSet('Column','Bar','Line','Pie')]
-    $chartType="Line"    
+    $chartType="Line"
 )
 
 $galleryUrl = "https://www.powershellgallery.com/packages/$moduleName"
