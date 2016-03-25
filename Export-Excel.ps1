@@ -269,7 +269,7 @@ function Export-Excel {
             }
 
             if($PivotData) {
-                if($PivotData -is [hashtable]) {
+                if($PivotData -is [hashtable] -or $PivotData -is [System.Collections.Specialized.OrderedDictionary]) {
                     $PivotData.Keys | % {
                         $df=$pivotTable.DataFields.Add($pivotTable.Fields[$_])
                         $df.Function = $PivotData.$_
