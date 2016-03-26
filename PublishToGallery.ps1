@@ -1,8 +1,7 @@
-
 $p = @{
     Name = "ImportExcel"
     NuGetApiKey = $NuGetApiKey
-    ReleaseNote = "Add Header param to Import-Html. Scope variabales Export-Excel"
+    ReleaseNote = "Add NumberFormat parameter"
 }
 
 Publish-Module @p

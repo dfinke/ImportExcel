@@ -55,7 +55,8 @@ function Export-Excel {
         [Switch]$AutoNameRange,
         $StartRow=1,
         $StartColumn=1,
-        [Switch]$PassThru
+        [Switch]$PassThru,
+        [string]$Numberformat="General"
     )
 
     Begin {
@@ -126,6 +127,7 @@ function Export-Excel {
             $cellValue=$TargetData
             if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
                 $targetCell.Value = $r
+                $targetCell.Style.Numberformat.Format=$Numberformat
             } else {
                 $targetCell.Value = $cellValue
             }
@@ -171,6 +173,7 @@ function Export-Excel {
                     $r=$null
                     if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
                         $targetCell.Value = $r
+                        $targetCell.Style.Numberformat.Format=$Numberformat
                     } else {
                         $targetCell.Value = $cellValue
                     }
