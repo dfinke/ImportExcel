@@ -21,12 +21,12 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 #### 3/26/2016
 * Added `NumberFormat` parameter 
 
-
-
 ```
 $data | 
     Export-Excel -Path $file -Show -NumberFormat '[Blue]$#,##0.00;[Red]-$#,##0.00'
 ```
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/Formatting.png)
+
 
 #### 3/18/2016
 * Added `Get-Range`, `New-Plot` and Plot Cos example
