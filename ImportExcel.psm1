@@ -26,15 +26,20 @@ function New-Plot {
 }
 
 function Import-Excel {
+   [cmdletBinding(DefaultParameterSetName='SingleSheet')]
     param(
-        [Alias("FullName")]
-        [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory=$true)]
+        [Alias('FullName')]
+        [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory=$true,position=0)]
         $Path,
-        [Alias("Sheet")]
+        [Parameter(ParameterSetName='SingleSheet')]
+        [Alias('Sheet')]
         $WorkSheetname=1,
         [int]$HeaderRow=1,
         [string[]]$Header,
-        [switch]$NoHeader
+        [switch]$NoHeader,
+        [parameter(ParameterSetName='AllSheets')]
+        [Alias('AllSheets')]
+        [switch]$AllWorkSheets
     )
 
     Process {
@@ -42,18 +47,31 @@ function Import-Excel {
         $Path = (Resolve-Path $Path).Path
         write-debug "target excel file $Path"
 
-        $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,"Open","Read","ReadWrite"
+        $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,'Open','Read','ReadWrite'
         $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
 
         $workbook  = $xl.Workbook
+        if($AllWorkSheets) {
+         Write-Debug "Processing All $($xl.Workbook.Worksheets.Count) WorkSheets of the Workbook"
+         $worksheetsName = $xl.Workbook.worksheets.name
+         $WorkBookObject = [ordered]@{}
+        }
+        else {
+         $worksheetsName = $WorkSheetname
+        }
 
-        $worksheet=$workbook.Worksheets[$WorkSheetname]
-        $dimension=$worksheet.Dimension
+								
+        foreach ($WorkSheetname in $worksheetsName)
+        {
+         Write-Debug "Processing Worksheet $WorkSheetName"
+         $worksheet=$workbook.Worksheets[$WorkSheetname]
+         $dimension=$worksheet.Dimension
 
-        $Rows=$dimension.Rows
-        $Columns=$dimension.Columns
+         $Rows=$dimension.Rows
+         $Columns=$dimension.Columns
+         $SheetRows = @()
 
-        if($NoHeader) {
+         if($NoHeader) {
             foreach ($Row in 0..($Rows-1)) {
                 $newRow = [Ordered]@{}
                 foreach ($Column in 0..($Columns-1)) {
@@ -61,9 +79,12 @@ function Import-Excel {
                     $newRow.$propertyName = $worksheet.Cells[($Row+1),($Column+1)].Value
                 }
 
-                [PSCustomObject]$newRow
+             if($AllWorkSheets) { $SheetRows += [PSCustomObject]$newRow }
+             else {
+              [PSCustomObject]$newRow
+             }
             }
-        } else {
+         } else {
             if(!$Header) {
                 $Header = foreach ($Column in 1..$Columns) {
                     $worksheet.Cells[$HeaderRow,$Column].Text
@@ -78,10 +99,23 @@ function Import-Excel {
                         $h.$Name = $worksheet.Cells[$Row,($Column+1)].Value
                     }
                 }
-                [PSCustomObject]$h
+             if($AllWorkSheets) { $SheetRows += [PSCustomObject]$h }
+             else {
+              [PSCustomObject]$h
+             }
+																
             }
+         }
+         if($AllWorkSheets) {
+          Write-Debug "Adding worksheet object $WorkSheetName to Workbook PSobject"
+          $WorkBookObject.add($WorkSheetname,$SheetRows);
+          $Header = $null
+         }
         }
-
+        if($AllWorkSheets) {
+         Write-Debug 'Writing the WorkbookObject to the Pipeline'
+         [PSCustomObject]$WorkBookObject
+        }
         $stream.Close()
         $stream.Dispose()
         $xl.Dispose()
@@ -125,14 +159,14 @@ function ConvertFrom-ExcelSheet {
     [CmdletBinding()]
     param
     (
-        [Alias("FullName")]
+        [Alias('FullName')]
         [Parameter(Mandatory = $true)]
         [String]
         $Path,
         [String]
         $OutputPath = '.\',
         [String]
-        $SheetName="*",
+        $SheetName='*',
         [ValidateSet('ASCII', 'BigEndianUniCode','Default','OEM','UniCode','UTF32','UTF7','UTF8')]
         [string]
         $Encoding = 'UTF8',
@@ -145,15 +179,15 @@ function ConvertFrom-ExcelSheet {
     )
 
     $Path = (Resolve-Path $Path).Path
-    $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,"Open","Read","ReadWrite"
+    $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,'Open','Read','ReadWrite'
     $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
     $workbook = $xl.Workbook
 
     $targetSheets = $workbook.Worksheets | Where {$_.Name -like $SheetName}
 
     $params = @{} + $PSBoundParameters
-    $params.Remove("OutputPath")
-    $params.Remove("SheetName")
+    $params.Remove('OutputPath')
+    $params.Remove('SheetName')
     $params.Remove('Extension')
     $params.NoTypeInformation = $true
 
@@ -183,13 +217,13 @@ function Export-MultipleExcelSheets {
     )
 
     $parameters = @{}+$PSBoundParameters
-    $parameters.Remove("InfoMap")
-    $parameters.Remove("Show")
+    $parameters.Remove('InfoMap')
+    $parameters.Remove('Show')
 
     $parameters.Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
 
     foreach ($entry in $InfoMap.GetEnumerator()) {
-        Write-Progress -Activity "Exporting" -Status "$($entry.Key)"
+        Write-Progress -Activity 'Exporting' -Status "$($entry.Key)"
         $parameters.WorkSheetname=$entry.Key
 
         & $entry.Value | Export-Excel @parameters
