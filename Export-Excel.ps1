@@ -21,7 +21,7 @@ function Export-Excel {
         [string]$WorkSheetname="Sheet1",
         [string]$Title,
         [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern="None",
-        [bool]$TitleBold,
+        [Switch]$TitleBold,
         [int]$TitleSize=22,
         [System.Drawing.Color]$TitleBackgroundColor,
         [string[]]$PivotRows,
@@ -90,10 +90,19 @@ function Export-Excel {
                 $ws.Cells[$Row, $StartColumn].Value = $Title
 
                 $ws.Cells[$Row, $StartColumn].Style.Font.Size = $TitleSize
-                $ws.Cells[$Row, $StartColumn].Style.Font.Bold = $TitleBold
+                if ($TitleBold) {
+                    #set title to Bold if -TitleBold was specified.
+                    #Otherwise the default will be unbolded.
+                    $ws.Cells[$Row, $StartColumn].Style.Font.Bold = $True
+                }
                 $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
-                if($TitleBackgroundColor) {
+
+                #can only set TitleBackgroundColor if TitleFillPattern is something other than None
+                if($TitleBackgroundColor -AND ($TitleFillPattern -ne "None")) {
                     $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
+                }
+                else {
+                    Write-Warning "Title Background Color ignored. You must set the TitleFillPattern parameter to a value other than 'None'. Try 'Solid'."
                 }
 
                 $Row += 1
