@@ -245,8 +245,8 @@ function Export-Excel {
 
             $csr=$StartRow
             $csc=$StartColumn
-            $cer=$ws.Dimension.End.Row #-$StartRow+1
-            $cec=$script:Header.Count
+            $cer=$StartRow + $ws.Dimension.Rows - 1
+            $cec=$StartColumn + $ws.Dimension.Columns - 1
 
             $targetRange=$ws.Cells[$csr, $csc, $cer,$cec]
 
