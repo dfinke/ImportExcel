@@ -29,6 +29,7 @@ function Import-Excel {
     param(
         [Alias("FullName")]
         [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory=$true)]
+        [ValidateScript({ Test-Path $_ -PathType Leaf })]
         $Path,
         [Alias("Sheet")]
         $WorkSheetname=1,
