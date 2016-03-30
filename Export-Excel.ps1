@@ -356,7 +356,7 @@ function Export-Excel {
             $chart.SetPosition($chartDef.Row, $chartDef.RowOffsetPixels,$chartDef.Column, $chartDef.ColumnOffsetPixels)
             $chart.SetSize($chartDef.Width, $chartDef.Height)
 
-            $chartDefCount = @($chartDef.XRange).Count
+            $chartDefCount = @($chartDef.YRange).Count
             if($chartDefCount -eq 1) {
                 $Series=$chart.Series.Add($chartDef.YRange, $chartDef.XRange)
                 $Series.Header = $chartDef.Header
