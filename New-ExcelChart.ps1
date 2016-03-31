@@ -13,7 +13,8 @@ function New-ExcelChart {
         $ColumnOffSetPixels=5,
         [Switch]$NoLegend,
         [Switch]$ShowCategory,
-        [Switch]$ShowPercent
+        [Switch]$ShowPercent,
+        $SeriesHeader
     )
 
     [PSCustomObject]@{
@@ -31,5 +32,6 @@ function New-ExcelChart {
         NoLegend     = if($NoLegend)     {$true} else {$false}
         ShowCategory = if($ShowCategory) {$true} else {$false}
         ShowPercent  = if($ShowPercent)  {$true} else {$false}
+        SeriesHeader=$SeriesHeader
    }
 }

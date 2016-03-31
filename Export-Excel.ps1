@@ -362,11 +362,23 @@ function Export-Excel {
             $chartDefCount = @($chartDef.YRange).Count
             if($chartDefCount -eq 1) {
                 $Series=$chart.Series.Add($chartDef.YRange, $chartDef.XRange)
-                $Series.Header = $chartDef.Header
+                
+                $SeriesHeader=$chartDef.SeriesHeader
+                if(!$SeriesHeader) {$SeriesHeader="Series 1"}
+
+                $Series.Header = $SeriesHeader
             } else {
                 for($idx=0; $idx -lt $chartDefCount; $idx+=1) {
-                    $Series=$chart.Series.Add($chartDef.YRange[$idx], $chartDef.XRange)
-                    $Series.Header = $chartDef.Header[$idx]
+                    $Series=$chart.Series.Add($chartDef.YRange[$idx], $chartDef.XRange)                    
+
+                    if($chartDef.SeriesHeader.Count -gt 0) {
+                        $SeriesHeader=$chartDef.SeriesHeader[$idx]
+                    }
+                    
+                    if(!$SeriesHeader) {$SeriesHeader="Series $($idx)"}
+
+                    $Series.Header = $SeriesHeader
+                    $SeriesHeader=$null
                 }
             }
         }

@@ -9,7 +9,8 @@ A,B,C,Date
 $c = New-ExcelChart -Title Impressions `
     -ChartType Line -Header "Something" `
     -XRange "Impressions[Date]" `
-    -YRange @("Impressions[B]","Impressions[A]")
+    -YRange @("Impressions[B]","Impressions[A]") `
+    -SeriesHeader 'B data','A data'
 
 $data | 
     Export-Excel temp.xlsx -AutoSize -TableName Impressions -Show -ExcelChartDefinition $c
