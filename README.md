@@ -40,7 +40,7 @@ $c = New-ExcelChart -Title Impressions `
 $data | 
     Export-Excel temp.xlsx -AutoSize -TableName Impressions -Show -ExcelChartDefinition $c
 ```
-![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/MultiSeries.png)
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/MultiSeries.gif)
 
 #### 3/26/2016
 * Added `NumberFormat` parameter 
