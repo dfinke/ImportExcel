@@ -350,8 +350,11 @@ function Export-Excel {
                 $chart.Legend.Remove()
             }
             #$chart.Datalabel.ShowLegendKey = $true
-            $chart.Datalabel.ShowCategory  = $chartDef.ShowCategory
-            $chart.Datalabel.ShowPercent   = $chartDef.ShowPercent
+            
+            if ($chart.Datalabel -ne $null) {
+                $chart.Datalabel.ShowCategory  = $chartDef.ShowCategory
+                $chart.Datalabel.ShowPercent   = $chartDef.ShowPercent
+            }
 
             $chart.SetPosition($chartDef.Row, $chartDef.RowOffsetPixels,$chartDef.Column, $chartDef.ColumnOffsetPixels)
             $chart.SetSize($chartDef.Width, $chartDef.Height)
