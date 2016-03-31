@@ -20,6 +20,28 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 3/31/2016
+* Thanks to [redoz](https://github.com/redoz) Multi Series Charts are now working
+
+Also check out how you can create a table and then with Excel notation, index into the data for charting `"Impressions[A]"`
+
+```
+$data = @"
+A,B,C,Date
+2,1,1,2016-03-29
+5,10,1,2016-03-29
+"@ | ConvertFrom-Csv 
+
+$c = New-ExcelChart -Title Impressions `
+    -ChartType Line -Header "Something" `
+    -XRange "Impressions[Date]" `
+    -YRange @("Impressions[B]","Impressions[A]")
+
+$data | 
+    Export-Excel temp.xlsx -AutoSize -TableName Impressions -Show -ExcelChartDefinition $c
+```
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/Formatting.png)
+
 #### 3/26/2016
 * Added `NumberFormat` parameter 
 
