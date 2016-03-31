@@ -14,17 +14,28 @@ function Invoke-Sum {
 
         if(!$key) {$key="[missing]"}
 
-        $value = $item.$measure
-        if($value -is [string] -or $value -is [System.Enum]) {
-            $value = 1
+        if(!$h.ContainsKey($key)) {
+            $h.$key=[ordered]@{}
         }
-        $h.$key+=$value
-    }
 
-    foreach ($entry in $h.GetEnumerator()){
-        [PSCustomObject]@{
-            Name=$entry.key
-            $measure=$entry.value
+        foreach($m in $measure) {        
+            $value = $item.$m
+            if($value -is [string] -or $value -is [System.Enum]) {
+                $value = 1
+            }
+
+            $h.$key.$m+=$value
         }
+    }
+    
+    foreach ($entry in $h.GetEnumerator()){
+        
+        $nh=[ordered]@{Name=$entry.key}
+        
+        foreach ($item in $entry.value.getenumerator()) {
+            $nh.($item.key)=$item.value
+        }        
+        
+        [pscustomobject]$nh
     }
 }
