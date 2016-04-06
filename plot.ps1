@@ -10,7 +10,7 @@ class PSPlot {
         $this.ws=$this.pkg.Workbook.Worksheets.Add("plot")
     }
 
-    Plot($yValues) {
+    [PSPlot] Plot($yValues) {
         
         $this.NewChart()
             
@@ -22,9 +22,11 @@ class PSPlot {
         $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)        
         $this.AddSeries($xCol,$yCol,$yValues)
         $this.SetChartPosition($yCol)
+        
+        return $this
     }
 
-    Plot($yValues,[string]$options) {
+    [PSPlot] Plot($yValues,[string]$options) {
         $this.NewChart()
             
         $xValues = 0..$yValues.Count
@@ -37,9 +39,11 @@ class PSPlot {
 
         $this.SetMarkerInfo($options)        
         $this.SetChartPosition($yCol)
+
+        return $this
     }
 
-    Plot($xValues,$yValues) {
+    [PSPlot] Plot($xValues,$yValues) {
         
         $this.NewChart()        
 
@@ -50,9 +54,11 @@ class PSPlot {
         $this.AddSeries($xCol,$yCol,$yValues)
 
         $this.SetChartPosition($yCol)
+
+        return $this
     }
     
-    Plot($xValues,$yValues,[string]$options) {
+    [PSPlot] Plot($xValues,$yValues,[string]$options) {
         $this.NewChart()        
 
         $xCol = 'A'
@@ -64,9 +70,11 @@ class PSPlot {
         $this.SetMarkerInfo($options)
 
         $this.SetChartPosition($yCol)
+
+        return $this
     }
 
-    Plot($xValues,$yValues,$x1Values,$y1Values) {
+    [PSPlot] Plot($xValues,$yValues,$x1Values,$y1Values) {
         
         $this.NewChart()        
 
@@ -83,9 +91,11 @@ class PSPlot {
         $this.AddSeries($xCol,$yCol,$y1Values)
 
         $this.SetChartPosition($yCol)
+
+        return $this
     }
 
-    Plot($xValues,$yValues,$x1Values,$y1Values,$x2Values,$y2Values) {
+    [PSPlot] Plot($xValues,$yValues,$x1Values,$y1Values,$x2Values,$y2Values) {
         
         $this.NewChart()        
 
@@ -108,6 +118,8 @@ class PSPlot {
         $this.AddSeries($xCol,$yCol,$y2Values)
 
         $this.SetChartPosition($yCol)
+
+        return $this
     }
     
     SetChartPosition($yCol) {
