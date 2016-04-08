@@ -122,9 +122,11 @@ class PSPlot {
         return $this
     }
     
-    SetChartPosition($yCol) {
+    [PSPLot] SetChartPosition($yCol) {
         $columnNumber = $this.GetColumnNumber($yCol)+1
-        $this.chart.SetPosition(1,0,$columnNumber,0)        
+        $this.chart.SetPosition(1,0,$columnNumber,0)
+
+        return $this
     }
 
     AddSeries($xCol,$yCol,$yValues) {
@@ -194,12 +196,16 @@ class PSPlot {
         $this.SetChartSize(300,300)
     }
 
-    SetChartSize([int]$width,[int]$height){
+    [PSPlot] SetChartSize([int]$width,[int]$height){
         $this.chart.SetSize($width, $height)
+
+        return $this
     }
 
-    Title($title) {
+    [PSPlot] Title($title) {
         $this.chart.Title.Text = $title
+
+        return $this
     }
 
     Show() {

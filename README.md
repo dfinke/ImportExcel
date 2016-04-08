@@ -20,6 +20,21 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 4/7/2016
+Made more methods fluent
+```
+$t=Get-Range 0 5 .2
+
+$t2=$t|%{$_*$_}
+$t3=$t|%{$_*$_*$_}
+
+(New-Plot).
+    Plot($t,$t, $t,$t2, $t,$t3).
+    SetChartPosition("i").
+    SetChartSize(500,500).
+    Title("Hello World").
+    Show()
+```
 #### 3/31/2016
 * Thanks to [redoz](https://github.com/redoz) Multi Series Charts are now working
 
