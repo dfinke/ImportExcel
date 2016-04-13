@@ -1,3 +1,4 @@
+#Requires -Version 5
 class PSPlot {
     hidden $path
     hidden $pkg 

@@ -16,7 +16,10 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Get-HtmlTable.ps1
 . $PSScriptRoot\Import-Html.ps1
 . $PSScriptRoot\Get-Range.ps1
-. $PSScriptRoot\plot.ps1
+
+if ([double]::Parse($PSVersionTable.PSVersion) -gt 4) {
+    . $PSScriptRoot\plot.ps1
+}
 
 function New-Plot { 
     [OutputType([PSPlot])]
