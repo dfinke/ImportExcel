@@ -1,32 +1,32 @@
 <#
-    .SYNOPSIS
+.SYNOPSIS
 
-    Interprets the properties of a PSCustomObject and converts them to their
-    closest matching type. The supported types at this stage are: [string],
-    [double] and [datetime].
+Interprets the properties of a PSCustomObject and converts them to their
+closest matching type. The supported types at this stage are: [string],
+[double] and [datetime].
 
-    .PARAMETER TypeMap
+.PARAMETER TypeMap
 
-    A hashtable associating property names with their desired types, that
-    will be applied to the incoming objects.
+A hashtable associating property names with their desired types, that
+will be applied to the incoming objects.
 
-    .PARAMETER GlobalType
+.PARAMETER GlobalType
 
-    The desired type for every property of the incoming objects.
+The desired type for every property of the incoming objects.
 
-    .EXAMPLE
+.EXAMPLE
 
-    PS> $csvData | ConvertTo-TypedObject -TypeMap @{ ID=[string]; Quantity=[double] }
+PS> $csvData | ConvertTo-TypedObject -TypeMap @{ ID=[string]; Quantity=[double] }
 
-    This will ensure that all the ID property values will be of type [string],
-    and all Quantity property values will be of type double.
+This will ensure that all the ID property values will be of type [string],
+and all Quantity property values will be of type double.
 
-    .EXAMPLE
+.EXAMPLE
 
-    PS> $csvData | ConvertTo-TypedObject -GlobalType ([string])
+PS> $csvData | ConvertTo-TypedObject -GlobalType ([string])
 
-    This will ensure that every property value will be of type [string].
-    
+This will ensure that every property value will be of type [string].
+
 #>
 function ConvertTo-TypedObject {
     [CmdletBinding()]

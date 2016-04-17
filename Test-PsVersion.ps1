@@ -1,17 +1,18 @@
 <#
-    .SYNOPSIS
+.SYNOPSIS
 
-    Tests for a particular PowerShell version.
+Tests for a particular PowerShell version.
 
-    .PARAMETER Version
+.PARAMETER Version
 
-    The version to test for.
+The version to test for.
 
-    .EXAMPLE
+.EXAMPLE
 
-    PS> Test-PsVersion 4
+PS> Test-PsVersion 4
 
-    This will return true if the PowerShell version is 4 or greater.
+This will return true if the PowerShell version is 4 or greater.
+
 #>
 function Test-PsVersion {
     [CmdletBinding()]
