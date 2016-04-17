@@ -38,5 +38,35 @@ Describe "Export-Excel" {
         $xlPkg.Dispose()
     }
 
+    Context "When piping typed data to Export-Excel using -StrictTyping switch" {
+
+        It "Will export numeric strings that have leading zeroes as text" {
+            $xlPkg = $csvData | ConvertTo-TypedObject | Export-Excel -WorkSheetname 2 $workbook -PassThru -StrictTyping
+            $ws = $xlPkg.Workbook.WorkSheets[2]
+
+            $csvData[4] | Select-Object -ExpandProperty ID | Should Be "00120"
+            $ws.Cells["A6"].Value -is [string] | Should Be $true
+            $ws.Cells["A6"].Value | Should Be "00120"
+
+            $xlPkg.Save()
+            $xlPkg.Dispose()
+        }
+
+        It "Will export columns with their specified types" {
+            $xlPkg = $csvData | ConvertTo-TypedObject -TypeMap @{ ID = [string]; Quantity = [double] } | Export-Excel -WorkSheetname 3 $workbook -PassThru -StrictTyping
+            $ws = $xlPkg.Workbook.WorkSheets[3]
+
+            $ws.Cells["A6"].Value -is [string] | Should Be $true
+            $ws.Cells["A6"].Value | Should Be "00120"
+
+            $ws.Cells["C6"].Value -is [double] | Should Be $true
+            $ws.Cells["C6"].Value | Should Be 7
+
+            $xlPkg.Save()
+            $xlPkg.Dispose()
+        }
+
+    }
+
     Remove-TestWorkbook
 }

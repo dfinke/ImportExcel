@@ -5,6 +5,7 @@ Set-StrictMode -Version Latest
 $scriptRoot = Resolve-Path $PSScriptRoot\..
 
 . $scriptRoot\ConvertTo-TypedObject.ps1
+. $scriptRoot\Export-Excel.ps1
 
 function New-TestWorkbook {
     $testWorkbook = Join-Path $PSScriptRoot test.xlsx
