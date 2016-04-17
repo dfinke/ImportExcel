@@ -16,6 +16,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Get-HtmlTable.ps1
 . $PSScriptRoot\Import-Html.ps1
 . $PSScriptRoot\Get-Range.ps1
+. $PSScriptRoot\ConvertTo-TypedObject.ps1
 . $PSScriptRoot\Test-ImportExcel.ps1
 . $PSScriptRoot\Test-PsVersion.ps1
 
