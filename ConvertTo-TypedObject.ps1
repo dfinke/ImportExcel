@@ -19,7 +19,7 @@ The desired type for every property of the incoming objects.
 PS> $csvData | ConvertTo-TypedObject -TypeMap @{ ID=[string]; Quantity=[double] }
 
 This will ensure that all the ID property values will be of type [string],
-and all Quantity property values will be of type double.
+and all Quantity property values will be of type [double].
 
 .EXAMPLE
 

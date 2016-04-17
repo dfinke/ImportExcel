@@ -35,7 +35,7 @@ Describe "ConvertTo-TypedObject" {
             { $csvData | ConvertTo-TypedObject -TypeMap @{ ID=[double]; } } | Should Throw
         }
 
-        It "Will create a new PsCustomObject whever every property value can be forced to be of the same type" {
+        It "Will create a new PsCustomObject with every property value as the same type" {
             $excelData = $csvData | ConvertTo-TypedObject -GlobalType ([string])
             $excelData | % {
                 $_.PSObject.Properties | % {
