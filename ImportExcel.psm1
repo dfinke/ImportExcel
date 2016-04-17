@@ -16,8 +16,25 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Get-HtmlTable.ps1
 . $PSScriptRoot\Import-Html.ps1
 . $PSScriptRoot\Get-Range.ps1
+. $PSScriptRoot\ConvertTo-TypedObject.ps1
 
-if ([double]::Parse($PSVersionTable.PSVersion) -gt 4) {
+function Get-PsVersion {
+    [CmdletBinding()]
+    param(
+        [switch]$Major
+    )
+    $version = $PSVersionTable.PSVersion
+    $checkMajor = $null
+    if ($version.Major -ne $null) {
+        $checkMajor = $version.Major
+    }
+    else {
+        $checkMajor = $version
+    }
+    [double]"$checkMajor"
+}
+
+if ((Get-PsVersion -Major) -gt 4) {
     . $PSScriptRoot\plot.ps1
 }
 
