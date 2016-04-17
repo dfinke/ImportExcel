@@ -16,7 +16,27 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Get-HtmlTable.ps1
 . $PSScriptRoot\Import-Html.ps1
 . $PSScriptRoot\Get-Range.ps1
-. $PSScriptRoot\plot.ps1
+. $PSScriptRoot\ConvertTo-TypedObject.ps1
+
+function Get-PsVersion {
+    [CmdletBinding()]
+    param(
+        [switch]$Major
+    )
+    $version = $PSVersionTable.PSVersion
+    $checkMajor = $null
+    if ($version.Major -ne $null) {
+        $checkMajor = $version.Major
+    }
+    else {
+        $checkMajor = $version
+    }
+    [double]"$checkMajor"
+}
+
+if ((Get-PsVersion -Major) -gt 4) {
+    . $PSScriptRoot\plot.ps1
+}
 
 function New-Plot { 
     [OutputType([PSPlot])]
@@ -197,4 +217,40 @@ function Export-MultipleExcelSheets {
     }
 
     if($Show) {Invoke-Item $Path}
+}
+
+function Test-ImportExcel {
+    <#
+        .Synopsis
+        Runs the Pester tests for the ImportExcel module.
+
+        .Example
+        Test-ImportExcel
+        Runs every Pester test in the module (i.e. all files named *.Tests.ps1).
+
+        .Example
+        Test-ImportExcel -TestName ExportSimple
+        Runs the Pester test in the module that describes itself as ExportSimple.
+
+        .Description
+        This function depends on the Pester module, that can be installed via
+        Install-Module. It may be necessary to do an Import-Module Pester
+        before running this function. Alternatively, add Pester to the
+        RequiredModules section of your own script module (.psd1).
+
+        If changes are made to the ImportExcel module, it may be necessary to
+        run Import-Module ImportExcel -Force, before running this function, to
+        ensure that the latest changes are tested.
+    #>
+    [CmdletBinding()]
+    param([string]$TestName)
+    Push-Location $PSScriptRoot
+    try {
+        Invoke-Pester -TestName $TestName
+    }
+    catch {
+    }
+    finally {
+        Pop-Location
+    }
 }
