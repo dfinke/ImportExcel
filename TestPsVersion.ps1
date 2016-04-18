@@ -9,7 +9,7 @@ The version to test for.
 
 .EXAMPLE
 
-PS> . .\Test-PsVersion.ps1 4
+PS> . .\TestPsVersion.ps1 4
 
 This will return true if the PowerShell version is 4 or greater.
 
