@@ -56,8 +56,7 @@ function Export-Excel {
         $StartRow=1,
         $StartColumn=1,
         [Switch]$PassThru,
-        [string]$Numberformat="General",
-        [switch]$StrictTyping
+        [string]$Numberformat="General"
     )
 
     Begin {
@@ -135,30 +134,16 @@ function Export-Excel {
 
             $r=$null
             $cellValue=$TargetData
-            if ($StrictTyping.IsPresent) {
+            if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
+                $targetCell.Value = $r
+                $targetCell.Style.Numberformat.Format=$Numberformat
+            } else {
                 $targetCell.Value = $cellValue
-                if ($cellValue -is [double]) {
-                    $targetCell.Style.Numberformat.Format = $Numberformat
-                }
-                elseif ($cellValue -is [int]) {
-                    $targetCell.Style.Numberformat.Format = $Numberformat
-                }
-                elseif ($cellValue -is [datetime]) {
-                    $targetCell.Style.Numberformat.Format = "m/d/yy h:mm"
-                }
-            }
-            else {
-                if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
-                    $targetCell.Value = $r
-                    $targetCell.Style.Numberformat.Format=$Numberformat
-                } else {
-                    $targetCell.Value = $cellValue
-                }
-                switch ($TargetData.$Name) {
-                    {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
-                }
             }
 
+            switch ($TargetData.$Name) {
+                {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
+            }
 
             $ColumnIndex += 1
             $Row += 1
@@ -193,33 +178,18 @@ function Export-Excel {
                 if($cellValue -is [string] -and $cellValue.StartsWith('=')) {
                     $targetCell.Formula = $cellValue
                 } else {
-                    if ($StrictTyping.IsPresent) {
+
+                    $r=$null
+                    if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
+                        $targetCell.Value = $r
+                        $targetCell.Style.Numberformat.Format=$Numberformat
+                    } else {
                         $targetCell.Value = $cellValue
-                        if ($cellValue -is [double]) {
-                            $targetCell.Style.Numberformat.Format = $Numberformat
-                        }
-                        elseif ($cellValue -is [int]) {
-                            $targetCell.Style.Numberformat.Format = $Numberformat
-                        }
-                        elseif ($cellValue -is [datetime]) {
-                            $targetCell.Style.Numberformat.Format = "m/d/yy h:mm"
-                        }
-                    }
-                    else {
-                        $r=$null
-                        if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
-                            $targetCell.Value = $r
-                            $targetCell.Style.Numberformat.Format=$Numberformat
-                        } else {
-                            $targetCell.Value = $cellValue
-                        }
                     }
                 }
 
-                if (!$StrictTyping.IsPresent) {
-                    switch ($TargetData.$Name) {
-                        {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
-                    }
+                switch ($TargetData.$Name) {
+                    {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
                 }
 
                 #[ref]$uriResult=$null

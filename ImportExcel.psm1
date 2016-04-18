@@ -16,11 +16,8 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Get-HtmlTable.ps1
 . $PSScriptRoot\Import-Html.ps1
 . $PSScriptRoot\Get-Range.ps1
-. $PSScriptRoot\ConvertTo-TypedObject.ps1
-. $PSScriptRoot\Test-ImportExcel.ps1
-. $PSScriptRoot\Test-PsVersion.ps1
 
-if (Test-PsVersion 5) {
+if ([double]::Parse($PSVersionTable.PSVersion) -gt 4) {
     . $PSScriptRoot\plot.ps1
 }
 
@@ -204,4 +201,3 @@ function Export-MultipleExcelSheets {
 
     if($Show) {Invoke-Item $Path}
 }
-
