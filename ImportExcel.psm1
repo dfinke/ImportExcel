@@ -17,7 +17,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Import-Html.ps1
 . $PSScriptRoot\Get-Range.ps1
 
-if (. $PSScriptRoot\Test-PsVersion.ps1 5) {
+if (. $PSScriptRoot\TestPsVersion.ps1 5) {
     . $PSScriptRoot\plot.ps1
 }
 
