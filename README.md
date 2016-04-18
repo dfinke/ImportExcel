@@ -20,6 +20,45 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 4/18/2016 
+Thanks to [Paul Williams](https://github.com/pauldalewilliams) for this feature. Now data can be transposed to columns for better charting.
+
+```powershell
+$file = "C:\Temp\ps.xlsx"
+rm $file -ErrorAction Ignore
+
+ps | 
+    where company | 
+    select Company,PagedMemorySize,PeakPagedMemorySize |
+    Export-Excel $file -Show -AutoSize `
+        -IncludePivotTable `
+        -IncludePivotChart `
+        -ChartType ColumnClustered `
+        -PivotRows Company `
+        -PivotData @{PagedMemorySize='sum';PeakPagedMemorySize='sum'} 
+```
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/PivotAsRows.png)
+
+
+Add `-PivotDataToColumn`
+
+```powershell
+$file = "C:\Temp\ps.xlsx"
+rm $file -ErrorAction Ignore
+
+ps | 
+    where company | 
+    select Company,PagedMemorySize,PeakPagedMemorySize |
+    Export-Excel $file -Show -AutoSize `
+        -IncludePivotTable `
+        -IncludePivotChart `
+        -ChartType ColumnClustered `
+        -PivotRows Company `
+        -PivotData @{PagedMemorySize='sum';PeakPagedMemorySize='sum'} `
+        -PivotDataToColumn
+```
+And here is the new chart view
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/PivotAsColumns.png)
 #### 4/7/2016
 Made more methods fluent
 ```
