@@ -27,6 +27,7 @@ function Export-Excel {
         [string[]]$PivotRows,
         [string[]]$PivotColumns,
         $PivotData,
+        [Switch]$PivotDataToColumn,
         [string]$Password,
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="Pie",
         [Switch]$IncludePivotTable,
@@ -291,6 +292,9 @@ function Export-Excel {
                         $df=$pivotTable.DataFields.Add($pivotTable.Fields[$Item])
                         $df.Function = 'Count'
                     }
+                }
+                if($PivotDataToColumn) {
+                    $pivotTable.DataOnRows = $false
                 }
             }
 
