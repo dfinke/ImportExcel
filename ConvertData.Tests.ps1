@@ -100,4 +100,65 @@ Describe "ConvertData" {
         }
     }
 
+    Context "Piping CSV data" {
+        $csvData = @"
+        Name, ID, Age, Birthday
+        Aa, 123, 82, 12 January 1984
+        BB, 012, 34, 12 August 1955
+        CC, 901, 44, 30 May 1801
+"@ | ConvertFrom-Csv
+        It "Converts property values to appropriate types" {
+            $csvData | Select-Object -ExpandProperty Name | & $script | % {
+                $_.Value -is [string] | Should Be $true
+                $_.Format | Should Be "General"
+            }
+            $csvData | Select-Object -ExpandProperty ID | & $script -KeepText | % {
+                $_.Value -is [string] | Should Be $true
+                $_.Format | Should Be "General"
+            }
+            $csvData | Select-Object -ExpandProperty Age | & $script | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Format | Should Be "General"
+            }
+            $csvData | Select-Object -ExpandProperty Birthday | & $script | % {
+                $_.Value -is [datetime] | Should Be $true
+                $_.Format | Should Be "m/d/yy h:mm"
+            }
+        }
+    }
+
+    Context "Piping Get-Process data" {
+        $process = Get-Process powershell
+        It "Converts property values to appropriate types" {
+            $process | Select-Object -ExpandProperty StartTime | & $script | % {
+                $_.Value -is [datetime] | Should Be $true
+                $_.Format | Should Be "m/d/yy h:mm"
+            }
+            $process | Select-Object -ExpandProperty Id | & $script | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Format | Should Be "General"
+            }
+            $process | Select-Object -ExpandProperty Id | & $script -KeepText | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Format | Should Be "General"
+            }
+            $process | Select-Object Id, @{N="IdText";E={"$($_.Id)"}} | Select-Object -ExpandProperty IdText | & $script | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Format | Should Be "General"
+            }
+            $process | Select-Object Id, @{N="IdText";E={"$($_.Id)"}} | Select-Object -ExpandProperty IdText | & $script -KeepText | % {
+                $_.Value -is [string] | Should Be $true
+                $_.Format | Should Be "General"
+            }
+            $process | Select-Object -ExpandProperty ProcessName | & $script | % {
+                $_.Value -is [string] | Should Be $true
+                $_.Format | Should Be "General"
+            }
+            $process | Select-Object -ExpandProperty Handles | & $script | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Format | Should Be "General"
+            }
+        }
+    }
+
 }

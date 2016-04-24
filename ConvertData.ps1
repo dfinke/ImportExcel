@@ -26,6 +26,10 @@ converted, but the objects may still be interpreted to determine the
 formatting. Sometimes input numbers are actually identification strings that
 should be treated as strings and not as numbers.
 
+.PARAMETER KeepText
+
+Don't interpret the type of string data.
+
 .EXAMPLE
 
 PS> "123" | .\ConvertData.ps1 | Select-Object -ExpandProperty Value
