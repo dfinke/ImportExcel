@@ -2,8 +2,8 @@
 .SYNOPSIS
 
 This function receives arbitrary objects and returns the types and formats
-expected by EPPlus. This function always outputs a [string], [double] or
-[datetime], with a calculated or user-defined number format.
+expected by EPPlus. It tries not to loose too much information about the
+incoming type.
 
 .DESCRIPTION
 
@@ -11,24 +11,11 @@ This function receives arbitrary objects and returns the types and formats
 expected by EPPlus. It found inspiration in the LoadFrom and ConvertData
 methods of EPPlus/ExcelRangeBase.cs. The EPPlus type and format architecture
 is based on [string], [double] and [datetime] objects, further described by
-number formats ("General", etc.). This function then always outputs a
-[string], [double] or [datetime], and tries to determine the number format. 
+number formats ("General", etc.).
 
-If the input value is already a numeric type, it returns it as a [double]. If
-it is already a [datetime], it returns it as such, but tries to determine the
-date format. If it is not a number or a [datetime], it casts the object to a
-[string], then tries to interpret the value as a [double] or [datetime]. If
-all conversion attempts fail, it returns a [string] with number format
-"General".
+.PARAMETER SkipText
 
-If the $AsText switch is provided, then input objects are treated as [string]
-and returned as [string]. The objects may still be interpreted to determine
-the formatting. Sometimes input numbers are actually identification strings
-that should be treated as strings and not as numbers.
-
-.PARAMETER AsText
-
-Treats the input data as [string] and returns it without interpretation.
+Do not interpret strings.
 
 .EXAMPLE
 
@@ -85,12 +72,12 @@ param(
     [string]$DateTimeFormat="m/d/yy h:mm",
     [System.Globalization.DateTimeStyles]$DateTimeStyles=[System.Globalization.DateTimeStyles]::None,
     [string]$PercentageFormat="0.00##\%",
-    [switch]$AsText
+    [switch]$SkipText
 )
 begin {
     Set-StrictMode -Version Latest
     # A helper function that creates the output object.
-    function makeOut($Value, [string]$Format) {
+    function makeOut([object]$Value, [string]$Format) {
         [PSCustomObject][ordered]@{ Value = $Value; Format = $Format; }
     }
     # A helper that checks for a numeric value type.
@@ -99,85 +86,91 @@ begin {
            -or $Value -is [sbyte] -or $Value -is [uint16] -or $Value -is [uint32] -or $Value -is [uint64] `
            -or $Value -is [float] -or $Value -is [double] -or $Value -is [decimal]
     }
+    # A helper that detects if a string value represents a percentage.
+    function asPercentage([string]$Value) {
+        if ($Value -match "\s*%\s*$") {
+            $Value = $Value -replace "\s*%\s*$",""
+            $double = 0
+            if ([double]::TryParse($Value, $NumberStyles, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double)) {
+                makeOut ($double/100.0) $PercentageFormat
+            }
+        }
+    }
+    # A helper that detects if a string value represents a date.
+    function asDate([string]$Value) {
+        $dateTime = 0
+        if ([DateTime]::TryParse($Value, [System.Globalization.DateTimeFormatInfo]::InvariantInfo, $DateTimeStyles, [ref]$dateTime)) {
+            makeOut $dateTime $DateTimeFormat
+        }
+    }
+    # A helper that detects if a string value represents a double.
+    function asDouble([string]$Value) {
+        $double = 0
+        if ($Value -match "^\s+.*") {
+            # The string starts with whitespace.
+        }
+        elseif ($Value -match ".*\s+$") {
+            # The string ends with whitespace.
+        }
+        elseif ($Value.StartsWith("0")) {
+            # The string starts with zero. It could be a [DateTime] string.
+        }
+        elseif ([double]::TryParse($Value, $NumberStyles, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double)) {
+            makeOut $double $NumberFormat
+        }
+    }
+    # A helper that determines the formatting of a string.
+    function fromString([string]$Value) {
+        $out = asDate($Value)
+        if ($out -eq $null) {
+            $out = asPercentage($Value)
+            if ($out -eq $null) {
+                $out = asDouble($Value)
+                if ($out -eq $null) {
+                    $out = makeOut $Value $NumberFormat
+                }
+            }
+        }
+        $out
+    }
 }
 process {
     Set-StrictMode -Version Latest
     $itemList = $_
     $itemList | % {
         $itemObject = $_
-        $out = $null
+        $out = makeOut $itemObject $NumberFormat
 
-        if ($AsText.IsPresent) {
-            # The user explicitly requested text formatting.
-            $out = makeOut "$itemObject" $NumberFormat
-        }
-        elseif (isNumber $itemObject) {
-            $out = makeOut ([double]$itemObject) $NumberFormat
-        }
-        elseif ($itemObject -is [datetime]) {
-            $out = makeOut $itemObject $DateTimeFormat
-        }
-        else {
-            $itemString = "$itemObject" # Ensure that $itemObject is a string, relying on [object]'s ToString method.
-            $out = makeOut $itemString $NumberFormat # The default output is a string.
-            if ($itemString -match "^\s+.*") {
-                # If the string starts with whitespace, then treat it as a string, even if the rest of the characters are numbers.
+        $formatOnly = $false
+        if ($itemObject -is [valuetype]) {
+            if ($itemObject -is [DateTime]) {
+                $out = makeOut $itemObject $DateTimeFormat
             }
-            elseif ($itemString -match ".*\s+$") {
-                # If the string ends with whitespace, then treat it as a string, even if the rest of the characters are numbers.
-            }
-            elseif ($itemString.StartsWith("0")) {
-                # If the string starts with a zero, then don't treat it as a number. But maybe it can still be a [datetime].
-                # https://msdn.microsoft.com/en-us/library/9h21f14e(v=vs.110).aspx
-                $dateTime = 0
-                if ([DateTime]::TryParse($itemString, [System.Globalization.DateTimeFormatInfo]::InvariantInfo, $DateTimeStyles, [ref]$dateTime)) {
-                    $out = makeOut $dateTime $DateTimeFormat
-                }
+            elseif (isNumber $itemObject) {
+                $out = makeOut $itemObject $NumberFormat
             }
             else {
-                # Start interpreting [double] and [datetime] values.
-
-                # Try to interpret the string as a [datetime].
-                $outDateTime = & {
-                    $dateTime = 0
-                    if ([DateTime]::TryParse($itemString, [System.Globalization.DateTimeFormatInfo]::InvariantInfo, $DateTimeStyles, [ref]$dateTime)) {
-                        makeOut $dateTime $DateTimeFormat
-                    }
-                }
-                if ($outDateTime -ne $null) {
-                    # Succeeded as [datetime].
-                    $out = $outDateTime
-                }
-                else {
-                    # Not a [datetime]. Try a [double].
-
-                    # Try to iterpret the string as [double] percentage.
-                    $outDouble = & {
-                        $asPercentage = $false
-                        $itemNumber = $itemString
-                        if ($itemNumber -match "\s*%\s*$") {
-                            # $itemNumber = $itemNumber.Substring(0, $itemNumber.Length - 1)
-                            $itemNumber = $itemNumber -replace "\s*%\s*$",""
-                            $asPercentage = $true
-                        }
-
-                        $double = 0
-                        if ([double]::TryParse($itemNumber, $NumberStyles, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double)) {
-                            if ($asPercentage) {
-                                makeOut ($double/100.0) $PercentageFormat
-                            }
-                            else {
-                                makeOut $double $NumberFormat
-                            }
-                        }
-                    }
-                    if ($outDouble -ne $null) {
-                        # Succeeded as [double].
-                        $out = $outDouble
-                    }
-                }
+                $formatOnly = $true
             }
         }
+        elseif ($itemObject -is [string]) {
+            if ($SkipText.IsPresent) {
+                $formatOnly = $true
+            }
+            else {
+                $out = fromString $itemObject
+            }
+        }
+        else {
+            $formatOnly = $true
+        }
+
+        if ($formatOnly -eq $true) {
+            # Interpret the format. Leave the object as is.
+            $outData = fromString $itemObject
+            $out = makeOut $itemObject $outData.Format
+        }
+
         $out
     }
 }
