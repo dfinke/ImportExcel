@@ -21,36 +21,36 @@ date format. If it is not a number or a [datetime], it casts the object to a
 all conversion attempts fail, it returns a [string] with number format
 "General".
 
-If the $KeepText switch is provided, then [string] input objects are not
-converted, but the objects may still be interpreted to determine the
-formatting. Sometimes input numbers are actually identification strings that
-should be treated as strings and not as numbers.
+If the $AsText switch is provided, then input objects are treated as [string]
+and returned as [string]. The objects may still be interpreted to determine
+the formatting. Sometimes input numbers are actually identification strings
+that should be treated as strings and not as numbers.
 
-.PARAMETER KeepText
+.PARAMETER AsText
 
-Don't interpret the type of string data.
+Treats the input data as [string] and returns it without interpretation.
 
 .EXAMPLE
 
-PS> "123" | .\ConvertData.ps1 | Select-Object -ExpandProperty Value
+PS> "123" | .\NewCellData.ps1 | Select-Object -ExpandProperty Value
 
 Returns [double] 123.
 
 .EXAMPLE
 
-PS> "0123" | .\ConvertData.ps1 | Select-Object -ExpandProperty Value
+PS> "0123" | .\NewCellData.ps1 | Select-Object -ExpandProperty Value
 
 Returns [string] 0123.
 
 .EXAMPLE
 
-PS> "1/1/13 1:10" | .\ConvertData.ps1 | Select-Object -ExpandProperty Value
+PS> "1/1/13 1:10" | .\NewCellData.ps1 | Select-Object -ExpandProperty Value
 
 Returns [datetime]. 
 
 .EXAMPLE
 
-PS> [datetime]::Now() | .\ConvertData.ps1
+PS> Get-Date | .\NewCellData.ps1
 
 Returns [datetime].
 
@@ -85,7 +85,7 @@ param(
     [string]$DateTimeFormat="m/d/yy h:mm",
     [System.Globalization.DateTimeStyles]$DateTimeStyles=[System.Globalization.DateTimeStyles]::None,
     [string]$PercentageFormat="0.00##\%",
-    [switch]$KeepText
+    [switch]$AsText
 )
 begin {
     Set-StrictMode -Version Latest
@@ -106,7 +106,12 @@ process {
     $itemList | % {
         $itemObject = $_
         $out = $null
-        if (isNumber $itemObject) {
+
+        if ($AsText.IsPresent) {
+            # The user explicitly requested text formatting.
+            $out = makeOut "$itemObject" $NumberFormat
+        }
+        elseif (isNumber $itemObject) {
             $out = makeOut ([double]$itemObject) $NumberFormat
         }
         elseif ($itemObject -is [datetime]) {
@@ -115,10 +120,7 @@ process {
         else {
             $itemString = "$itemObject" # Ensure that $itemObject is a string, relying on [object]'s ToString method.
             $out = makeOut $itemString $NumberFormat # The default output is a string.
-            if ($KeepText.IsPresent) {
-                # The user explicitly requested to keep string values as text.
-            }
-            elseif ($itemString -match "^\s+.*") {
+            if ($itemString -match "^\s+.*") {
                 # If the string starts with whitespace, then treat it as a string, even if the rest of the characters are numbers.
             }
             elseif ($itemString -match ".*\s+$") {

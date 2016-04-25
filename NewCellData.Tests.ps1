@@ -1,6 +1,8 @@
+Set-StrictMode -Version Latest
+
 $script = Join-Path $PSScriptRoot "$(Split-Path -Leaf $PSCommandPath)".Replace(".Tests.ps1", ".ps1")
 
-Describe "ConvertData" {
+Describe "NewCellData" {
 
     Context "Piping [string] inputs" {
 
@@ -20,8 +22,8 @@ Describe "ConvertData" {
             }
         }
 
-        It "Leaves numeric strings as text when using -KeepText switch" {
-            "12345" | & $script -KeepText | % {
+        It "Leaves numeric strings as text when using -AsText switch" {
+            "12345" | & $script -AsText | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Value | Should Be "12345"
                 $_.Format | Should Be "General"
@@ -112,7 +114,7 @@ Describe "ConvertData" {
                 $_.Value -is [string] | Should Be $true
                 $_.Format | Should Be "General"
             }
-            $csvData | Select-Object -ExpandProperty ID | & $script -KeepText | % {
+            $csvData | Select-Object -ExpandProperty ID | & $script -AsText | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Format | Should Be "General"
             }
@@ -138,24 +140,22 @@ Describe "ConvertData" {
                 $_.Value -is [double] | Should Be $true
                 $_.Format | Should Be "General"
             }
-            $process | Select-Object -ExpandProperty Id | & $script -KeepText | % {
-                $_.Value -is [double] | Should Be $true
-                $_.Format | Should Be "General"
-            }
-            $process | Select-Object Id, @{N="IdText";E={"$($_.Id)"}} | Select-Object -ExpandProperty IdText | & $script | % {
-                $_.Value -is [double] | Should Be $true
-                $_.Format | Should Be "General"
-            }
-            $process | Select-Object Id, @{N="IdText";E={"$($_.Id)"}} | Select-Object -ExpandProperty IdText | & $script -KeepText | % {
-                $_.Value -is [string] | Should Be $true
-                $_.Format | Should Be "General"
-            }
             $process | Select-Object -ExpandProperty ProcessName | & $script | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Format | Should Be "General"
             }
             $process | Select-Object -ExpandProperty Handles | & $script | % {
                 $_.Value -is [double] | Should Be $true
+                $_.Format | Should Be "General"
+            }
+        }
+        It "Can interpret numbers as strings" {
+            $process | Select-Object -ExpandProperty Id | & $script | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Format | Should Be "General"
+            }
+            $process | Select-Object -ExpandProperty Id | & $script -AsText | % {
+                $_.Value -is [string] | Should Be $true
                 $_.Format | Should Be "General"
             }
         }
