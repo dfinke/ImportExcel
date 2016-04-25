@@ -69,7 +69,12 @@ param(
     [string]$NumberFormat="General",
     [System.Globalization.NumberStyles]$NumberStyles=[System.Globalization.NumberStyles]::Any,
     # [string]$DateTimeFormat=[System.Globalization.DateTimeFormatInfo]::CurrentInfo.ShortDatePattern,
-    [string]$DateTimeFormat="m/d/yy h:mm",
+    [string]$DateTimeFormat="mmm/dd/yyyy hh:mm",
+    # [string]$DateTimeFormat="mm/dd/yy hh:mm",
+    # [string]$DateTimeFormat="m/d/yy h:mm", # Doesn't work as expected.
+    # [string]$DateTimeFormat="yyyy/mm/dd hh:mm",
+    # [string]$DateTimeFormat="dd-mmm-yy",
+    [string]$TimeSpanFormat="hh:mm:ss",
     [System.Globalization.DateTimeStyles]$DateTimeStyles=[System.Globalization.DateTimeStyles]::None,
     [string]$PercentageFormat="0.00##\%",
     [switch]$SkipText
@@ -100,6 +105,7 @@ begin {
     function asDate([string]$Value) {
         $dateTime = 0
         if ([DateTime]::TryParse($Value, [System.Globalization.DateTimeFormatInfo]::InvariantInfo, $DateTimeStyles, [ref]$dateTime)) {
+            # https://msdn.microsoft.com/en-us/library/system.datetime.tooadate.aspx
             makeOut $dateTime $DateTimeFormat
         }
     }
@@ -144,7 +150,11 @@ process {
         $formatOnly = $false
         if ($itemObject -is [valuetype]) {
             if ($itemObject -is [DateTime]) {
+                # https://msdn.microsoft.com/en-us/library/system.datetime.tooadate.aspx
                 $out = makeOut $itemObject $DateTimeFormat
+            }
+            elseif ($itemObject -is [TimeSpan]) {
+                $out = makeOut $itemObject $TimeSpanFormat
             }
             elseif (isNumber $itemObject) {
                 $out = makeOut $itemObject $NumberFormat
