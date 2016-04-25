@@ -2,6 +2,8 @@
 #Requires -Module ImportExcel
 Set-StrictMode -Version Latest
 
+. $PSScriptRoot\Export-Excel.ps1
+
 $script = Join-Path $PSScriptRoot "$(Split-Path -Leaf $PSCommandPath)".Replace(".Tests.ps1", ".ps1")
 
 function New-TestWorkbook {
@@ -14,6 +16,10 @@ function New-TestWorkbook {
 
 function Remove-TestWorkbook {
     New-TestWorkbook | Out-Null
+}
+
+function Get-DateFormatDefault {
+    "mmm/dd/yyyy hh:mm"
 }
 
 Describe "NewCellData" {
@@ -49,7 +55,7 @@ Describe "NewCellData" {
             "$date" | & $script| % {
                 $_.Value -is [DateTime] | Should Be $true
                 "$($_.Value)" | Should Be "$date"
-                $_.Format | Should Be "m/d/yy h:mm"
+                $_.Format | Should Be (Get-DateFormatDefault)
             }
         }
 
@@ -81,7 +87,7 @@ Describe "NewCellData" {
             $date | & $script | % {
                 $_.Value -is [DateTime] | Should Be $true
                 $_.Value | Should Be $date
-                $_.Format | Should Be "m/d/yy h:mm"
+                $_.Format | Should Be (Get-DateFormatDefault)
             }
         }
     }
@@ -143,11 +149,11 @@ Describe "NewCellData" {
             }
             $csvData | Select-Object -ExpandProperty Birthday | & $script | % {
                 $_.Value -is [DateTime] | Should Be $true
-                $_.Format | Should Be "m/d/yy h:mm"
+                $_.Format | Should Be (Get-DateFormatDefault)
             }
             $csvData | Select-Object -ExpandProperty Birthday | & $script -SkipText | % {
                 $_.Value -is [string] | Should Be $true
-                $_.Format | Should Be "m/d/yy h:mm"
+                $_.Format | Should Be (Get-DateFormatDefault)
             }
         }
     }
@@ -157,7 +163,7 @@ Describe "NewCellData" {
         It "Converts property values to appropriate types" {
             $process | Select-Object -ExpandProperty StartTime | & $script | % {
                 $_.Value -is [DateTime] | Should Be $true
-                $_.Format | Should Be "m/d/yy h:mm"
+                $_.Format | Should Be (Get-DateFormatDefault)
             }
             $process | Select-Object -ExpandProperty Id | & $script | % {
                 $_.Value -is [int] | Should Be $true
@@ -174,7 +180,7 @@ Describe "NewCellData" {
         }
     }
 
-    Context "With Export-Excel" {
+    Context "With Export-Excel and PsCustomObject" {
         $workbook = New-TestWorkbook
         $process = Get-Process | Select-Object Id, StartTime, PriorityClass, TotalProcessorTime
         $xlPkg = $process | Export-Excel $workbook -PassThru
@@ -182,7 +188,7 @@ Describe "NewCellData" {
             $ws = $xlPkg.Workbook.WorkSheets[1]
             $col = $ws.Cells["A2:A"] # Id
             $col | Select-Object -ExpandProperty Value | % {
-                $_ -is [double] | Should Be $true
+                $_ -is [int] | Should Be $true
             }
             $col | Select-Object -ExpandProperty Style | % {
                 $_.NumberFormat.Format | Should Be "General"
@@ -193,7 +199,7 @@ Describe "NewCellData" {
             }
             $col | % {
                 if ($_.Value -ne $null) {
-                    $_.Style.NumberFormat.Format | Should Be "m/d/yy h:mm"
+                    $_.Style.NumberFormat.Format | Should Be (Get-DateFormatDefault)
                 }
                 else {
                     $_.Style.NumberFormat.Format | Should Be "General"
@@ -210,12 +216,101 @@ Describe "NewCellData" {
             $col | Select-Object -ExpandProperty Value | % {
                 $_ -is [TimeSpan] | Should Be $true
             }
+            $col | % {
+                if ($_.Value -ne $null) {
+                    $_.Style.NumberFormat.Format | Should Be "hh:mm:ss"
+                }
+                else {
+                    $_.Style.NumberFormat.Format | Should Be "General"
+                }
+            }
+        }
+        $xlPkg.Save()
+        $xlPkg.Dispose()
+        # Invoke-Item $workbook
+        Remove-TestWorkbook
+    }
+
+    Context "With Export-Excel and [valuetype]" {
+        $workbook = New-TestWorkbook
+        $xlPkg = "12 January 1984" | Export-Excel $workbook -PassThru
+        It "Produces [datetime] for date/time [string]" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            $col = $ws.Cells["A1"] # First cell.
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [DateTime] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be (Get-DateFormatDefault)
+            }
+        }
+        $xlPkg.Save()
+        $xlPkg.Dispose()
+        # Invoke-Item $workbook
+
+        $xlPkg = "0123" | Export-Excel $workbook -PassThru
+        It "Produces [string] for numeric [string] with leading zeroes" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            $col = $ws.Cells["A1"] # First cell.
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [string] | Should Be $true
+                $_ | Should Be "0123"
+            }
             $col | Select-Object -ExpandProperty Style | % {
                 $_.NumberFormat.Format | Should Be "General"
             }
         }
         $xlPkg.Save()
         $xlPkg.Dispose()
+        # Invoke-Item $workbook
+
+        $xlPkg = "123" | Export-Excel $workbook -PassThru
+        It "Produces [double] for numeric [string]" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            $col = $ws.Cells["A1"] # First cell.
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [double] | Should Be $true
+                $_ | Should Be 123
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+        }
+        $xlPkg.Save()
+        $xlPkg.Dispose()
+        # Invoke-Item $workbook
+
+        $xlPkg = ([long]123) | Export-Excel $workbook -PassThru
+        It "Produces [long] for [long] input" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            $col = $ws.Cells["A1"] # First cell.
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [long] | Should Be $true
+                $_ | Should Be 123
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+        }
+        $xlPkg.Save()
+        $xlPkg.Dispose()
+        # Invoke-Item $workbook
+
+        $xlPkg = 123 | Export-Excel $workbook -PassThru
+        It "Produces [int] for [int] input" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            $col = $ws.Cells["A1"] # First cell.
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [int] | Should Be $true
+                $_ | Should Be 123
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+        }
+        $xlPkg.Save()
+        $xlPkg.Dispose()
+
         # Invoke-Item $workbook
         Remove-TestWorkbook
     }

@@ -133,18 +133,9 @@ function Export-Excel {
 
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-            $r=$null
-            $cellValue=$TargetData
-            if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
-                $targetCell.Value = $r
-                $targetCell.Style.Numberformat.Format=$Numberformat
-            } else {
-                $targetCell.Value = $cellValue
-            }
-
-            switch ($TargetData.$Name) {
-                {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
-            }
+            $cellData = $TargetData | & $PSScriptRoot\NewCellData.ps1
+            $targetCell.Value = $cellData | Select-Object -ExpandProperty Value
+            $targetCell.Style.NumberFormat.Format = $cellData | Select-Object -ExpandProperty Format
 
             $ColumnIndex += 1
             $Row += 1
@@ -174,23 +165,14 @@ function Export-Excel {
 
                 $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-                $cellValue=$TargetData.$Name
+                $cellData = $TargetData | Select-Object -ExpandProperty $Name | & $PSScriptRoot\NewCellData.ps1
+                $cellValue = $cellData | Select-Object -ExpandProperty Value
 
-                if($cellValue -is [string] -and $cellValue.StartsWith('=')) {
+                if ($cellValue -is [string] -and $cellValue.StartsWith('=')) {
                     $targetCell.Formula = $cellValue
                 } else {
-
-                    $r=$null
-                    if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
-                        $targetCell.Value = $r
-                        $targetCell.Style.Numberformat.Format=$Numberformat
-                    } else {
-                        $targetCell.Value = $cellValue
-                    }
-                }
-
-                switch ($TargetData.$Name) {
-                    {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
+                    $targetCell.Value = $cellData | Select-Object -ExpandProperty Value
+                    $targetCell.Style.NumberFormat.Format = $cellData | Select-Object -ExpandProperty Format
                 }
 
                 #[ref]$uriResult=$null
