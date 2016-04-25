@@ -397,7 +397,7 @@ Describe "NewCellData" {
         # Invoke-Item $workbook
 
         $xlPkg = $csvData | Export-Excel $workbook -TextColumnList ID, 3 -DateTimeFormat "mmm/dd/yyyy" -PassThru
-        It "Produces Excel data with column formatting" {
+        It "Produces Excel data with -TextColumnList" {
             $ws = $xlPkg.Workbook.WorkSheets[1]
             $col = $ws.Cells["B2:B"] # ID
             $col | Select-Object -ExpandProperty Value | % {
