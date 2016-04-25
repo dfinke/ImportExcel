@@ -452,8 +452,8 @@ Describe "NewCellData" {
         }
         $xlPkg.Save()
         $xlPkg.Dispose()
-        Invoke-Item $workbook
+        # Invoke-Item $workbook
     }
 
-    # Remove-TestWorkbook
+    Remove-TestWorkbook
 }
