@@ -57,10 +57,24 @@ function Export-Excel {
         $StartRow=1,
         $StartColumn=1,
         [Switch]$PassThru,
-        [string]$Numberformat="General"
+        [string]$NumberFormat="General",
+        [string]$DateTimeFormat="mmm/dd/yyyy hh:mm:ss",
+        [string[]]$TextColumnList
     )
 
     Begin {
+        $TextColumnList = $TextColumnList | sort -Unique
+        function isTextColumn([string]$ColumnIndex, [string]$ColumnName) {
+            $isTextColumn = $false
+            if ($TextColumnList -ne $null) {
+                $isTextColumn = [array]::BinarySearch($TextColumnList, $ColumnIndex) -ge 0
+                if (!$isTextColumn) {
+                    $isTextColumn = [array]::BinarySearch($TextColumnList, $ColumnName) -ge 0
+                }
+            }
+            $isTextColumn
+        }
+
     	$script:Header = $null
         if($KillExcel) {
             Get-Process excel -ErrorAction Ignore | Stop-Process
@@ -133,18 +147,10 @@ function Export-Excel {
 
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-            $r=$null
-            $cellValue=$TargetData
-            if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
-                $targetCell.Value = $r
-                $targetCell.Style.Numberformat.Format=$Numberformat
-            } else {
-                $targetCell.Value = $cellValue
-            }
-
-            switch ($TargetData.$Name) {
-                {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
-            }
+            $skipText = isTextColumn $ColumnIndex
+            $cellData = $TargetData | & $PSScriptRoot\NewCellData.ps1 -SkipText:$skipText -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
+            $targetCell.Value = $cellData | Select-Object -ExpandProperty Value
+            $targetCell.Style.NumberFormat.Format = $cellData | Select-Object -ExpandProperty Format
 
             $ColumnIndex += 1
             $Row += 1
@@ -174,23 +180,15 @@ function Export-Excel {
 
                 $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-                $cellValue=$TargetData.$Name
+                $skipText = isTextColumn $ColumnIndex $Name
+                $cellData = $TargetData | Select-Object -ExpandProperty $Name | & $PSScriptRoot\NewCellData.ps1 -SkipText:$skipText -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
+                $cellValue = $cellData | Select-Object -ExpandProperty Value
 
-                if($cellValue -is [string] -and $cellValue.StartsWith('=')) {
+                if ($cellValue -is [string] -and $cellValue.StartsWith('=')) {
                     $targetCell.Formula = $cellValue
                 } else {
-
-                    $r=$null
-                    if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
-                        $targetCell.Value = $r
-                        $targetCell.Style.Numberformat.Format=$Numberformat
-                    } else {
-                        $targetCell.Value = $cellValue
-                    }
-                }
-
-                switch ($TargetData.$Name) {
-                    {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
+                    $targetCell.Value = $cellData | Select-Object -ExpandProperty Value
+                    $targetCell.Style.NumberFormat.Format = $cellData | Select-Object -ExpandProperty Format
                 }
 
                 #[ref]$uriResult=$null
