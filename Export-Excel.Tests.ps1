@@ -63,13 +63,6 @@ Describe "Export-Excel" {
             $ws.Cells["A4"].Value | Should Be 12003
         }
 
-        It "Exports numeric strings that have leading zeroes as numbers without the leading zeroes" {
-            $csvData[4] | Select-Object -ExpandProperty ID | Should Be "00120"
-            $ws.Cells["A6"].Value -is [double] | Should Be $true
-            $ws.Cells["A6"].Value | Should Be 120
-            $ws.Cells["A6"].Value | Should Not Be "00120"
-        }
-
         $xlPkg.Save()
         $xlPkg.Dispose()
     }
