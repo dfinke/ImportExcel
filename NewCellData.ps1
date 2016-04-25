@@ -69,7 +69,7 @@ param(
     [string]$NumberFormat="General",
     [System.Globalization.NumberStyles]$NumberStyles=[System.Globalization.NumberStyles]::Any,
     # [string]$DateTimeFormat=[System.Globalization.DateTimeFormatInfo]::CurrentInfo.ShortDatePattern,
-    [string]$DateTimeFormat="mmm/dd/yyyy hh:mm",
+    [string]$DateTimeFormat="mmm/dd/yyyy hh:mm:ss",
     # [string]$DateTimeFormat="mm/dd/yy hh:mm",
     # [string]$DateTimeFormat="m/d/yy h:mm", # Doesn't work as expected.
     # [string]$DateTimeFormat="yyyy/mm/dd hh:mm",

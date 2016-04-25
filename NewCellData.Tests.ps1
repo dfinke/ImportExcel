@@ -19,7 +19,7 @@ function Remove-TestWorkbook {
 }
 
 function Get-DateFormatDefault {
-    "mmm/dd/yyyy hh:mm"
+    "mmm/dd/yyyy hh:mm:ss"
 }
 
 Describe "NewCellData" {
@@ -313,6 +313,77 @@ Describe "NewCellData" {
 
         # Invoke-Item $workbook
         Remove-TestWorkbook
+    }
+
+    Context "With Export-Excel and CSV data" {
+        $workbook = New-TestWorkbook
+        $csvData = @"
+        Name, ID, Age, Birthday
+        Aa, 123, 82, 12 January 1984
+        BB, 012, 34, 12 August 1955
+        CC, 901, 44, 30 May 1901
+"@ | ConvertFrom-Csv
+        $xlPkg = $csvData | Export-Excel $workbook -DateTimeFormat "mmm/dd/yyyy" -PassThru
+        It "Produces Excel data with correct formatting" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            $col = $ws.Cells["A2:A"] # Name
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [string] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+            $col = $ws.Cells["B1"] # ID
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ | Should Be "ID"
+                $_ -is [string] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+            $col = $ws.Cells["B2"]
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ | Should Be 123
+                $_ -is [double] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+            $col = $ws.Cells["B3"]
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ | Should Be "012"
+                $_ -is [string] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+            $col = $ws.Cells["B4"]
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ | Should Be 901
+                $_ -is [double] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+            $col = $ws.Cells["C2:C"] # Age
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [double] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+            $col = $ws.Cells["D2:D"] # Birthday
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [DateTime] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "mmm/dd/yyyy"
+            }
+        }
+        $xlPkg.Save()
+        $xlPkg.Dispose()
+        Invoke-Item $workbook
+        # Remove-TestWorkbook
     }
 
 }

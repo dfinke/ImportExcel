@@ -57,7 +57,8 @@ function Export-Excel {
         $StartRow=1,
         $StartColumn=1,
         [Switch]$PassThru,
-        [string]$Numberformat="General"
+        [string]$NumberFormat="General",
+        [string]$DateTimeFormat="mmm/dd/yyyy hh:mm:ss"
     )
 
     Begin {
@@ -133,7 +134,7 @@ function Export-Excel {
 
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-            $cellData = $TargetData | & $PSScriptRoot\NewCellData.ps1
+            $cellData = $TargetData | & $PSScriptRoot\NewCellData.ps1 -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
             $targetCell.Value = $cellData | Select-Object -ExpandProperty Value
             $targetCell.Style.NumberFormat.Format = $cellData | Select-Object -ExpandProperty Format
 
@@ -165,7 +166,7 @@ function Export-Excel {
 
                 $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-                $cellData = $TargetData | Select-Object -ExpandProperty $Name | & $PSScriptRoot\NewCellData.ps1
+                $cellData = $TargetData | Select-Object -ExpandProperty $Name | & $PSScriptRoot\NewCellData.ps1 -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
                 $cellValue = $cellData | Select-Object -ExpandProperty Value
 
                 if ($cellValue -is [string] -and $cellValue.StartsWith('=')) {
