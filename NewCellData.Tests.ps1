@@ -228,7 +228,6 @@ Describe "NewCellData" {
         $xlPkg.Save()
         $xlPkg.Dispose()
         # Invoke-Item $workbook
-        Remove-TestWorkbook
     }
 
     Context "With Export-Excel and [valuetype]" {
@@ -280,6 +279,21 @@ Describe "NewCellData" {
         $xlPkg.Dispose()
         # Invoke-Item $workbook
 
+        $xlPkg = "123","456","034" | Export-Excel $workbook -TextColumnList 1 -PassThru
+        It "Produces [string] for numeric [string] with -TextColumnList" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            $col = $ws.Cells["A:A"] # First column.
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [string] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+        }
+        $xlPkg.Save()
+        $xlPkg.Dispose()
+        # Invoke-Item $workbook
+
         $xlPkg = ([long]123) | Export-Excel $workbook -PassThru
         It "Produces [long] for [long] input" {
             $ws = $xlPkg.Workbook.WorkSheets[1]
@@ -310,9 +324,7 @@ Describe "NewCellData" {
         }
         $xlPkg.Save()
         $xlPkg.Dispose()
-
         # Invoke-Item $workbook
-        Remove-TestWorkbook
     }
 
     Context "With Export-Excel and CSV data" {
@@ -382,8 +394,30 @@ Describe "NewCellData" {
         }
         $xlPkg.Save()
         $xlPkg.Dispose()
-        Invoke-Item $workbook
-        # Remove-TestWorkbook
+        # Invoke-Item $workbook
+
+        $xlPkg = $csvData | Export-Excel $workbook -TextColumnList ID, 3 -DateTimeFormat "mmm/dd/yyyy" -PassThru
+        It "Produces Excel data with column formatting" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            $col = $ws.Cells["B2:B"] # ID
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [string] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+            $col = $ws.Cells["C2:C"] # Age
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [string] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+        }
+        $xlPkg.Save()
+        $xlPkg.Dispose()
+        # Invoke-Item $workbook
     }
 
+    Remove-TestWorkbook
 }

@@ -58,10 +58,23 @@ function Export-Excel {
         $StartColumn=1,
         [Switch]$PassThru,
         [string]$NumberFormat="General",
-        [string]$DateTimeFormat="mmm/dd/yyyy hh:mm:ss"
+        [string]$DateTimeFormat="mmm/dd/yyyy hh:mm:ss",
+        [string[]]$TextColumnList
     )
 
     Begin {
+        $TextColumnList = $TextColumnList | sort -Unique
+        function isTextColumn([string]$ColumnIndex, [string]$ColumnName) {
+            $isTextColumn = $false
+            if ($TextColumnList -ne $null) {
+                $isTextColumn = [array]::BinarySearch($TextColumnList, $ColumnIndex) -ge 0
+                if (!$isTextColumn) {
+                    $isTextColumn = [array]::BinarySearch($TextColumnList, $ColumnName) -ge 0
+                }
+            }
+            $isTextColumn
+        }
+
     	$script:Header = $null
         if($KillExcel) {
             Get-Process excel -ErrorAction Ignore | Stop-Process
@@ -134,7 +147,8 @@ function Export-Excel {
 
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-            $cellData = $TargetData | & $PSScriptRoot\NewCellData.ps1 -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
+            $skipText = isTextColumn $ColumnIndex
+            $cellData = $TargetData | & $PSScriptRoot\NewCellData.ps1 -SkipText:$skipText -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
             $targetCell.Value = $cellData | Select-Object -ExpandProperty Value
             $targetCell.Style.NumberFormat.Format = $cellData | Select-Object -ExpandProperty Format
 
@@ -166,7 +180,8 @@ function Export-Excel {
 
                 $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-                $cellData = $TargetData | Select-Object -ExpandProperty $Name | & $PSScriptRoot\NewCellData.ps1 -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
+                $skipText = isTextColumn $ColumnIndex $Name
+                $cellData = $TargetData | Select-Object -ExpandProperty $Name | & $PSScriptRoot\NewCellData.ps1 -SkipText:$skipText -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
                 $cellValue = $cellData | Select-Object -ExpandProperty Value
 
                 if ($cellValue -is [string] -and $cellValue.StartsWith('=')) {
