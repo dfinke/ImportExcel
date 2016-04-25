@@ -145,9 +145,8 @@ process {
     $itemList = $_
     $itemList | % {
         $itemObject = $_
-        $out = makeOut $itemObject $NumberFormat
+        $out = makeOut $itemObject "General"
 
-        $formatOnly = $false
         if ($itemObject -is [valuetype]) {
             if ($itemObject -is [DateTime]) {
                 # https://msdn.microsoft.com/en-us/library/system.datetime.tooadate.aspx
@@ -160,25 +159,19 @@ process {
                 $out = makeOut $itemObject $NumberFormat
             }
             else {
-                $formatOnly = $true
+                # Accept the default.
             }
         }
         elseif ($itemObject -is [string]) {
-            if ($SkipText.IsPresent) {
-                $formatOnly = $true
+            if (!$SkipText.IsPresent) {
+                $out = fromString $itemObject
             }
             else {
-                $out = fromString $itemObject
+                # Accept the default.
             }
         }
         else {
-            $formatOnly = $true
-        }
-
-        if ($formatOnly -eq $true) {
-            # Interpret the format. Leave the object as is.
-            $outData = fromString $itemObject
-            $out = makeOut $itemObject $outData.Format
+            # Accept the default.
         }
 
         $out

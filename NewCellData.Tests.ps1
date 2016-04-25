@@ -153,7 +153,7 @@ Describe "NewCellData" {
             }
             $csvData | Select-Object -ExpandProperty Birthday | & $script -SkipText | % {
                 $_.Value -is [string] | Should Be $true
-                $_.Format | Should Be (Get-DateFormatDefault)
+                $_.Format | Should Be "General"
             }
         }
     }
@@ -417,7 +417,43 @@ Describe "NewCellData" {
         $xlPkg.Save()
         $xlPkg.Dispose()
         # Invoke-Item $workbook
+
+        $xlPkg = $csvData | Export-Excel $workbook -TextColumnList * -DateTimeFormat "mmm/dd/yyyy" -PassThru
+        It "Produces Excel data with -TextColumnList *" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            $col = $ws.Cells["A2:A"] # Name
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [string] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+            $col = $ws.Cells["B2:B"] # ID
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [string] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+            $col = $ws.Cells["C2:C"] # Age
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [string] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+            $col = $ws.Cells["D2:D"] # Birthday
+            $col | Select-Object -ExpandProperty Value | % {
+                $_ -is [string] | Should Be $true
+            }
+            $col | Select-Object -ExpandProperty Style | % {
+                $_.NumberFormat.Format | Should Be "General"
+            }
+        }
+        $xlPkg.Save()
+        $xlPkg.Dispose()
+        Invoke-Item $workbook
     }
 
-    Remove-TestWorkbook
+    # Remove-TestWorkbook
 }

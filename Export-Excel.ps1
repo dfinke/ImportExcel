@@ -67,9 +67,15 @@ function Export-Excel {
         function isTextColumn([string]$ColumnIndex, [string]$ColumnName) {
             $isTextColumn = $false
             if ($TextColumnList -ne $null) {
-                $isTextColumn = [array]::BinarySearch($TextColumnList, $ColumnIndex) -ge 0
+                # If the * is present, then all columns are always matched.
+                $isTextColumn = [array]::BinarySearch($TextColumnList, "*") -ge 0
                 if (!$isTextColumn) {
-                    $isTextColumn = [array]::BinarySearch($TextColumnList, $ColumnName) -ge 0
+                    # Try to match the column number.
+                    $isTextColumn = [array]::BinarySearch($TextColumnList, $ColumnIndex) -ge 0
+                    if (!$isTextColumn) {
+                        # Try to match the column name.
+                        $isTextColumn = [array]::BinarySearch($TextColumnList, $ColumnName) -ge 0
+                    }
                 }
             }
             $isTextColumn
