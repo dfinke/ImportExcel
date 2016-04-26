@@ -63,6 +63,9 @@ function Export-Excel {
     )
 
     Begin {
+        # Bring New-CellData helpers into scope.
+        . $PSScriptRoot\New-CellData.ps1
+
         $TextColumnList = $TextColumnList | Sort-Object -Unique
 
         # A helper function to determine if a column is marked as a text column.
@@ -156,7 +159,7 @@ function Export-Excel {
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
             $asText = isTextColumn $ColumnIndex
-            $cellData = $TargetData | & $PSScriptRoot\NewCellData.ps1 -ForceText:$asText -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
+            $cellData = $TargetData | New-CellData -ForceText:$asText -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
             $targetCell.Value = $cellData.Value
             $targetCell.Style.NumberFormat.Format = $cellData.Format
 
@@ -189,7 +192,7 @@ function Export-Excel {
                 $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
                 $asText = isTextColumn $ColumnIndex $Name
-                $cellData = $TargetData.$Name | & $PSScriptRoot\NewCellData.ps1 -ForceText:$asText -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
+                $cellData = $TargetData.$Name | New-CellData -ForceText:$asText -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
                 $cellValue = $cellData.Value
 
                 if ($cellValue -is [string] -and $cellValue.StartsWith('=')) {
