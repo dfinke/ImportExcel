@@ -63,7 +63,9 @@ function Export-Excel {
     )
 
     Begin {
-        $TextColumnList = $TextColumnList | sort -Unique
+        $TextColumnList = $TextColumnList | Sort-Object -Unique
+
+        # A helper function to determine if a column is marked as a text column.
         function isTextColumn([string]$ColumnIndex, [string]$ColumnName) {
             $isTextColumn = $false
             if ($TextColumnList -ne $null) {
@@ -74,7 +76,7 @@ function Export-Excel {
                     $isTextColumn = [array]::BinarySearch($TextColumnList, $ColumnIndex) -ge 0
                     if (!$isTextColumn) {
                         # Try to match the column name.
-                        $isTextColumn = [array]::BinarySearch($TextColumnList, $ColumnName) -ge 0
+                        $isTextColumn = @($TextColumnList -like $ColumnName).Count -gt 0
                     }
                 }
             }

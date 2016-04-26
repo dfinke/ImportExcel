@@ -13,9 +13,19 @@ methods of EPPlus/ExcelRangeBase.cs. The EPPlus type and format architecture
 is based on [string], [double] and [datetime] objects, further described by
 number formats ("General", etc.).
 
-.PARAMETER SkipText
+.PARAMETER AsText
 
-Do not interpret strings.
+This will treat incoming data as text. This automatically sets SkipTextAll.
+
+.PARAMETER SkipTextAll
+
+Do not interpret strings. This ensures that string inputs are not converted to
+their closest matching [DateTime] or [Double].
+
+.PARAMETER SkipTextDateTime
+
+Do not interpret string dates. This ensures that date/time strings will not be
+converted to [DateTime].
 
 .EXAMPLE
 
@@ -77,7 +87,11 @@ param(
     [string]$TimeSpanFormat="hh:mm:ss",
     [System.Globalization.DateTimeStyles]$DateTimeStyles=[System.Globalization.DateTimeStyles]::None,
     [string]$PercentageFormat="0.00##\%",
-    [switch]$SkipText
+    [switch]$AsText,
+    [switch]$SkipTextAll,
+    [switch]$SkipTextPercentage,
+    [switch]$SkipTextDateTime,
+    [switch]$SkipTextDouble,
 )
 begin {
     Set-StrictMode -Version Latest
@@ -93,51 +107,60 @@ begin {
     }
     # A helper that detects if a string value represents a percentage.
     function asPercentage([string]$Value) {
-        if ($Value -match "\s*%\s*$") {
-            $Value = $Value -replace "\s*%\s*$",""
-            $double = 0
-            if ([double]::TryParse($Value, $NumberStyles, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double)) {
-                makeOut ($double/100.0) $PercentageFormat
+        if (!$SkipTextPercentage.IsPresent) {
+            if ($Value -match "\s*%\s*$") {
+                $Value = $Value -replace "\s*%\s*$",""
+                $double = 0
+                if ([double]::TryParse($Value, $NumberStyles, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double)) {
+                    makeOut ($double/100.0) $PercentageFormat
+                }
             }
         }
     }
     # A helper that detects if a string value represents a date.
     function asDate([string]$Value) {
-        $dateTime = 0
-        if ([DateTime]::TryParse($Value, [System.Globalization.DateTimeFormatInfo]::InvariantInfo, $DateTimeStyles, [ref]$dateTime)) {
-            # https://msdn.microsoft.com/en-us/library/system.datetime.tooadate.aspx
-            makeOut $dateTime $DateTimeFormat
+        if (!$SkipTextDateTime.IsPresent) {
+            $dateTime = 0
+            if ([DateTime]::TryParse($Value, [System.Globalization.DateTimeFormatInfo]::InvariantInfo, $DateTimeStyles, [ref]$dateTime)) {
+                # https://msdn.microsoft.com/en-us/library/system.datetime.tooadate.aspx
+                makeOut $dateTime $DateTimeFormat
+            }
         }
     }
     # A helper that detects if a string value represents a double.
     function asDouble([string]$Value) {
-        $double = 0
-        if ($Value -match "^\s+.*") {
-            # The string starts with whitespace.
-        }
-        elseif ($Value -match ".*\s+$") {
-            # The string ends with whitespace.
-        }
-        elseif ($Value.StartsWith("0")) {
-            # The string starts with zero. It could be a [DateTime] string.
-        }
-        elseif ([double]::TryParse($Value, $NumberStyles, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double)) {
-            makeOut $double $NumberFormat
+        if (!$SkipTextDouble.IsPresent) {
+            $double = 0
+            if ($Value -match "^\s+.*") {
+                # The string starts with whitespace.
+            }
+            elseif ($Value -match ".*\s+$") {
+                # The string ends with whitespace.
+            }
+            elseif ($Value.StartsWith("0")) {
+                # The string starts with zero. 
+                # [DateTime] and [TimeSpan] strings can start with 0.
+            }
+            elseif ([double]::TryParse($Value, $NumberStyles, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double)) {
+                makeOut $double $NumberFormat
+            }
         }
     }
     # A helper that determines the formatting of a string.
     function fromString([string]$Value) {
-        $out = asDate($Value)
-        if ($out -eq $null) {
-            $out = asPercentage($Value)
+        if (!$SkipTextAll.IsPresent) {
+            $out = asDate($Value)
             if ($out -eq $null) {
-                $out = asDouble($Value)
+                $out = asPercentage($Value)
                 if ($out -eq $null) {
-                    $out = makeOut $Value $NumberFormat
+                    $out = asDouble($Value)
+                    if ($out -eq $null) {
+                        $out = makeOut $Value $NumberFormat
+                    }
                 }
             }
+            $out
         }
-        $out
     }
 }
 process {
@@ -145,8 +168,12 @@ process {
     $itemList = $_
     $itemList | % {
         $itemObject = $_
-        $out = makeOut $itemObject "General"
+        if ($AsText.IsPresent) {
+            $itemObject = "$itemObject" # Relies on the built-in ToString method of the object.
+            $SkipTextAll.IsPresent = $true
+        }
 
+        $out = $null
         if ($itemObject -is [valuetype]) {
             if ($itemObject -is [DateTime]) {
                 # https://msdn.microsoft.com/en-us/library/system.datetime.tooadate.aspx
@@ -158,20 +185,13 @@ process {
             elseif (isNumber $itemObject) {
                 $out = makeOut $itemObject $NumberFormat
             }
-            else {
-                # Accept the default.
-            }
         }
         elseif ($itemObject -is [string]) {
-            if (!$SkipText.IsPresent) {
-                $out = fromString $itemObject
-            }
-            else {
-                # Accept the default.
-            }
+            $out = fromString $itemObject
         }
-        else {
-            # Accept the default.
+
+        if ($out -eq $null) {
+            $out = makeOut $itemObject "General"
         }
 
         $out
