@@ -42,8 +42,8 @@ Describe "NewCellData" {
             }
         }
 
-        It "Leaves numeric strings as text when using -SkipText switch" {
-            "12345" | & $script -SkipText | % {
+        It "Leaves numeric strings as text when using -ForceText switch" {
+            "12345" | & $script -ForceText | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Value | Should Be "12345"
                 $_.Format | Should Be "General"
@@ -139,7 +139,7 @@ Describe "NewCellData" {
                 $_.Value -is [string] | Should Be $true
                 $_.Format | Should Be "General"
             }
-            $csvData | Select-Object -ExpandProperty ID | & $script -SkipText | % {
+            $csvData | Select-Object -ExpandProperty ID | & $script -ForceText | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Format | Should Be "General"
             }
@@ -151,7 +151,7 @@ Describe "NewCellData" {
                 $_.Value -is [DateTime] | Should Be $true
                 $_.Format | Should Be (Get-DateFormatDefault)
             }
-            $csvData | Select-Object -ExpandProperty Birthday | & $script -SkipText | % {
+            $csvData | Select-Object -ExpandProperty Birthday | & $script -ForceText | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Format | Should Be "General"
             }
@@ -330,10 +330,10 @@ Describe "NewCellData" {
     Context "With Export-Excel and CSV data" {
         $workbook = New-TestWorkbook
         $csvData = @"
-        Name, ID, Age, Birthday
-        Aa, 123, 82, 12 January 1984
-        BB, 012, 34, 12 August 1955
-        CC, 901, 44, 30 May 1901
+Name, ID, Age, Birthday
+Aa, 123, 82, 12 January 1984
+BB, 012, 34, 12 August 1955
+CC, 901, 44, 30 May 1901
 "@ | ConvertFrom-Csv
         $xlPkg = $csvData | Export-Excel $workbook -DateTimeFormat "mmm/dd/yyyy" -PassThru
         It "Produces Excel data with correct formatting" {

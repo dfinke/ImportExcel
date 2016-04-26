@@ -155,10 +155,10 @@ function Export-Excel {
 
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-            $skipText = isTextColumn $ColumnIndex
-            $cellData = $TargetData | & $PSScriptRoot\NewCellData.ps1 -SkipText:$skipText -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
-            $targetCell.Value = $cellData | Select-Object -ExpandProperty Value
-            $targetCell.Style.NumberFormat.Format = $cellData | Select-Object -ExpandProperty Format
+            $asText = isTextColumn $ColumnIndex
+            $cellData = $TargetData | & $PSScriptRoot\NewCellData.ps1 -ForceText:$asText -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
+            $targetCell.Value = $cellData.Value
+            $targetCell.Style.NumberFormat.Format = $cellData.Format
 
             $ColumnIndex += 1
             $Row += 1
@@ -188,15 +188,15 @@ function Export-Excel {
 
                 $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-                $skipText = isTextColumn $ColumnIndex $Name
-                $cellData = $TargetData | Select-Object -ExpandProperty $Name | & $PSScriptRoot\NewCellData.ps1 -SkipText:$skipText -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
-                $cellValue = $cellData | Select-Object -ExpandProperty Value
+                $asText = isTextColumn $ColumnIndex $Name
+                $cellData = $TargetData.$Name | & $PSScriptRoot\NewCellData.ps1 -ForceText:$asText -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
+                $cellValue = $cellData.Value
 
                 if ($cellValue -is [string] -and $cellValue.StartsWith('=')) {
                     $targetCell.Formula = $cellValue
                 } else {
-                    $targetCell.Value = $cellData | Select-Object -ExpandProperty Value
-                    $targetCell.Style.NumberFormat.Format = $cellData | Select-Object -ExpandProperty Format
+                    $targetCell.Value = $cellData.Value
+                    $targetCell.Style.NumberFormat.Format = $cellData.Format
                 }
 
                 #[ref]$uriResult=$null
