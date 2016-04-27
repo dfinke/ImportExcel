@@ -187,7 +187,7 @@ Describe "NewCellData" {
 
     Context "With Export-Excel and PsCustomObject" {
         $workbook = New-TestWorkbook
-        $process = Get-Process | Select-Object Id, StartTime, PriorityClass, TotalProcessorTime
+        $process = Get-Process powershell | Select-Object Id, StartTime, PriorityClass, TotalProcessorTime
         $xlPkg = $process | Export-Excel $workbook -PassThru
         It "Produces correctly formatted sheet for Get-Process" {
             $ws = $xlPkg.Workbook.WorkSheets[1]
@@ -224,6 +224,25 @@ Describe "NewCellData" {
             $col | % {
                 if ($_.Value -ne $null) {
                     $_.Style.NumberFormat.Format | Should Be "hh:mm:ss"
+                }
+                else {
+                    $_.Style.NumberFormat.Format | Should Be "General"
+                }
+            }
+        }
+        $xlPkg.Save()
+        $xlPkg.Dispose()
+
+        $columnOptions = @{
+            "*" = @{ ForceText = $true }
+        }
+        $xlPkg = $process | Export-Excel $workbook -PassThru -ColumnOptions $columnOptions
+        It "Responds to -ColumnOptions" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            $col = $ws.Cells["A:D"]
+            $col | Select-Object | % {
+                if ($_.Value -ne $null) {
+                    $_.Style.NumberFormat.Format | Should Be (Get-DateFormatDefault)
                 }
                 else {
                     $_.Style.NumberFormat.Format | Should Be "General"
@@ -284,8 +303,11 @@ Describe "NewCellData" {
         $xlPkg.Dispose()
         # Invoke-Item $workbook
 
-        $xlPkg = "123","456","034" | Export-Excel $workbook -TextColumnList 1 -PassThru
-        It "Produces [string] for numeric [string] with -TextColumnList" {
+        $columnOptions = @{
+            1 = @{ IgnoreText = $true }
+        }
+        $xlPkg = "123","456","034" | Export-Excel $workbook -ColumnOptions $columnOptions -PassThru
+        It "Produces [string] for numeric [string] with -ColumnOptions" {
             $ws = $xlPkg.Workbook.WorkSheets[1]
             $col = $ws.Cells["A:A"] # First column.
             $col | Select-Object -ExpandProperty Value | % {
@@ -401,8 +423,14 @@ CC, 901, 44, 30 May 1901
         $xlPkg.Dispose()
         # Invoke-Item $workbook
 
-        $xlPkg = $csvData | Export-Excel $workbook -TextColumnList ID, 3 -DateTimeFormat "mmm/dd/yyyy" -PassThru
-        It "Produces Excel data with -TextColumnList" {
+        $columnOptions = @{
+            ID = @{ IgnoreText = $true}
+            3 = @{ IgnoreText = $true }
+            Birthday = @{ DateTimeFormat = "mmm/dd/yyyy" }
+        }
+
+        $xlPkg = $csvData | Export-Excel $workbook -ColumnOptions $columnOptions -PassThru
+        It "Produces Excel data with -ColumnOptions" {
             $ws = $xlPkg.Workbook.WorkSheets[1]
             $col = $ws.Cells["B2:B"] # ID
             $col | Select-Object -ExpandProperty Value | % {
@@ -423,8 +451,12 @@ CC, 901, 44, 30 May 1901
         $xlPkg.Dispose()
         # Invoke-Item $workbook
 
-        $xlPkg = $csvData | Export-Excel $workbook -TextColumnList * -DateTimeFormat "mmm/dd/yyyy" -PassThru
-        It "Produces Excel data with -TextColumnList *" {
+        $columnOptions = @{
+            "*" = @{ IgnoreText = $true }
+        }
+
+        $xlPkg = $csvData | Export-Excel $workbook -ColumnOptions $columnOptions -PassThru
+        It "Produces Excel data with -ColumnOptions *" {
             $ws = $xlPkg.Workbook.WorkSheets[1]
             $col = $ws.Cells["A2:A"] # Name
             $col | Select-Object -ExpandProperty Value | % {
