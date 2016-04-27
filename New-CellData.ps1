@@ -11,6 +11,10 @@ This will treat incoming data as text, and won't interpret the string values.
 If this switch is not specified, then string inputs are tested to see if they
 match predefined patterns for dates, percentages and numbers.
 
+.PARAMETER IgnoreText
+
+This will not try to interpret incoming string values.
+
 .EXAMPLE
 
 PS> "123" | New-CellData | Select-Object -ExpandProperty Value
@@ -73,7 +77,8 @@ function New-CellData {
         [string]$DateTimeFormat="mmm/dd/yyyy hh:mm:ss",
         [string]$TimeSpanFormat="hh:mm:ss",
         [string]$PercentageFormat="0.00##\%",
-        [switch]$ForceText
+        [switch]$ForceText,
+        [switch]$IgnoreText
     )
     begin {
         Set-StrictMode -Version Latest
@@ -153,7 +158,7 @@ function New-CellData {
                     }
                 }
                 elseif ($itemObject -is [string]) {
-                    if (!$ForceText.IsPresent) {
+                    if (!$ForceText.IsPresent -and !$IgnoreText.IsPresent) {
                         $out = fromString $itemObject
                     }
                 }

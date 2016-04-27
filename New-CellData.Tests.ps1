@@ -148,6 +148,10 @@ Describe "NewCellData" {
                 $_.Value -is [double] | Should Be $true
                 $_.Format | Should Be "General"
             }
+            $csvData | Select-Object -ExpandProperty Age | New-CellData -IgnoreText | % {
+                $_.Value -is [string] | Should Be $true
+                $_.Format | Should Be "General"
+            }
             $csvData | Select-Object -ExpandProperty Birthday | New-CellData | % {
                 $_.Value -is [DateTime] | Should Be $true
                 $_.Format | Should Be (Get-DateFormatDefault)
