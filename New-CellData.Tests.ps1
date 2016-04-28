@@ -241,12 +241,7 @@ Describe "NewCellData" {
             $ws = $xlPkg.Workbook.WorkSheets[1]
             $col = $ws.Cells["A:D"]
             $col | Select-Object | % {
-                if ($_.Value -ne $null) {
-                    $_.Style.NumberFormat.Format | Should Be (Get-DateFormatDefault)
-                }
-                else {
-                    $_.Style.NumberFormat.Format | Should Be "General"
-                }
+                $_.Style.NumberFormat.Format | Should Be "General"
             }
         }
         $xlPkg.Save()
@@ -445,6 +440,10 @@ CC, 901, 44, 30 May 1901
             }
             $col | Select-Object -ExpandProperty Style | % {
                 $_.NumberFormat.Format | Should Be "General"
+            }
+            $col = $ws.Cells["D2:D"] # Birthday
+            $col | % {
+                $_.Style.NumberFormat.Format | Should Be "mmm/dd/yyyy"
             }
         }
         $xlPkg.Save()

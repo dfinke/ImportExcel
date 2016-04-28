@@ -63,61 +63,9 @@ function Export-Excel {
     )
 
     Begin {
-        # Bring New-CellData helpers into scope.
+        # Bring New-CellData and its helpers into scope.
         . $PSScriptRoot\New-CellData.ps1
-
-        # A cache that stores the column options. Used by getColumnOptions.
-        $colOptCache = @{}
-
-        # A helper function to retrieve the column options given the column name or index.
-        function getColumnOptions([string]$ColumnIndex, [string]$ColumnName) {
-            $colOptions = $colOptCache[$ColumnIndex]
-            if ($colOptions -eq $null) {
-                $colOptions = @{}
-                if ($ColumnOptions -ne $null) {
-                    $ColumnOptions | % {
-                        $opt = $_
-                        $opt | Get-Member | Out-Host
-                        $optKey = [string]($opt.Name)
-                        $optVal = [hashtable]($opt.Value)
-                        if ($ColumnIndex -like $optKey) {
-                            $optVal | % {
-                                $colOpt = $_
-                                "Adding $colOpt" | Out-Host
-                                $colOptions[$colOpt.Name] = $colOpt.Value
-                            }
-                        }
-                        if ($ColumnName -like $optKey) {
-                            $optVal | % {
-                                $colOpt = $_
-                                "Adding $colOpt" | Out-Host
-                                $colOptions[$colOpt.Name] = $colOpt.Value
-                            }
-                        }
-                    }
-                }
-                $colOptCache[$ColumnIndex] = $colOptions
-            }
-            $colOptions
-        }
-
-        # A helper function to determine if a column is marked as a text column.
-        function isTextColumn([string]$ColumnIndex, [string]$ColumnName) {
-            $isTextColumn = $false
-            if ($TextColumnList -ne $null) {
-                # If the * is present, then all columns are always matched.
-                $isTextColumn = [array]::BinarySearch($TextColumnList, "*") -ge 0
-                if (!$isTextColumn) {
-                    # Try to match the column number.
-                    $isTextColumn = [array]::BinarySearch($TextColumnList, $ColumnIndex) -ge 0
-                    if (!$isTextColumn) {
-                        # Try to match the column name.
-                        $isTextColumn = @($TextColumnList -like $ColumnName).Count -gt 0
-                    }
-                }
-            }
-            $isTextColumn
-        }
+        $colOptions = New-ColumnOptions -Table $ColumnOptions -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
 
     	$script:Header = $null
         if($KillExcel) {
@@ -191,9 +139,8 @@ function Export-Excel {
 
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-            $colOpts = getColumnOptions $ColumnIndex
-            $forceText = $false
-            $cellData = $TargetData | New-CellData -ForceText:$forceText -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
+            $opts = Get-ColumnOptions -Options $colOptions -ColumnIndex $ColumnIndex
+            $cellData = $TargetData | New-CellData -ForceText:$opts.ForceText -IgnoreText:$opts.IgnoreText -DateTimeFormat $opts.DateTimeFormat -NumberFormat $opts.NumberFormat
             $targetCell.Value = $cellData.Value
             $targetCell.Style.NumberFormat.Format = $cellData.Format
 
@@ -225,9 +172,8 @@ function Export-Excel {
 
                 $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-                $colOpts = getColumnOptions $ColumnIndex $Name
-                $forceText = $false
-                $cellData = $TargetData.$Name | New-CellData -ForceText:$forceText -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
+                $opts = Get-ColumnOptions -Options $colOptions -ColumnIndex $ColumnIndex -ColumnName $Name
+                $cellData = $TargetData.$Name | New-CellData -ForceText:$opts.ForceText -IgnoreText:$opts.IgnoreText -DateTimeFormat $opts.DateTimeFormat -NumberFormat $opts.NumberFormat
                 $cellValue = $cellData.Value
 
                 if ($cellValue -is [string] -and $cellValue.StartsWith('=')) {

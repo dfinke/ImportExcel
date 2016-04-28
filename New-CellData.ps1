@@ -1,19 +1,96 @@
 <#
 .SYNOPSIS
 
-This script interprets the cell format and type (as supported by EPPlus) for
-the incoming data. It found inspiration from the LoadFrom and ConvertData
+Create a new column options table.
+
+#>
+function New-ColumnOptions {
+    [CmdletBinding()]
+    param(
+        [hashtable]$Table=@{},
+        [string]$NumberFormat="General",
+        [string]$DateTimeFormat="mmm/dd/yyyy hh:mm:ss"
+    )
+    [pscustomobject]@{
+        Cache = [ordered]@{}
+        Options = $Table
+        Default = [ordered]@{
+            IgnoreText = $false
+            ForceText = $false
+            DateTimeFormat = $DateTimeFormat
+            NumberFormat = $NumberFormat
+        }
+    }
+}
+<#
+.SYNOPSIS
+
+Returns the column options for a particular column.
+
+#>
+function Get-ColumnOptions {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [pscustomobject]$Options,
+        [string]$ColumnIndex,
+        [string]$ColumnName
+    )
+
+    $opts = [pscustomobject]($Options.Cache[$ColumnIndex])
+    if ($opts -eq $null) {
+        $opts = [pscustomobject]($Options.Default)
+        $optsTable = $Options.Options
+        if ($optsTable -ne $null) {
+            foreach ($optPair in $optsTable.GetEnumerator()) {
+                $optKey = $optPair.Name
+                $optVal = $optPair.Value
+                if ($ColumnIndex -like $optKey) {
+                    foreach ($optValPair in $optVal.GetEnumerator()) {
+                        # "by index $optKey $optValPair" | Out-Host
+                        $opts."$($optValPair.Name)" = $optValPair.Value
+                    }
+                }
+                if ($ColumnName -like $optKey) {
+                    foreach ($optValPair in $optVal.GetEnumerator()) {
+                        # "by name $optKey $optValPair" | Out-Host
+                        $opts."$($optValPair.Name)" = $optValPair.Value
+                    }
+                }
+            }
+            $Options.Cache[$ColumnIndex] = $opts
+        }
+    }
+    else {
+        # "Found $opts" | Out-Host
+    }
+    $opts
+}
+
+<#
+.SYNOPSIS
+
+This function determines the desired cell value and format for the incoming
+data. Incoming strings can be interpreted as [DateTime], [double], percentages
+etc, unless the -IgnoreText switch is used. Incoming objects that are not
+strings, can have their formatting detected to some degree, or they can be
+converted to string without further interpretation using the -ForceText
+switch. This function found inspiration from the LoadFrom and ConvertData
 methods of EPPlus/ExcelRangeBase.cs.
 
 .PARAMETER ForceText
 
-This will treat incoming data as text, and won't interpret the string values.
-If this switch is not specified, then string inputs are tested to see if they
-match predefined patterns for dates, percentages and numbers.
+This means that incoming objects (string or non-string) will be treated as
+text, and their string values will not be interpreted. The cell value will be
+a string and the format will be "General" Useful when piping non-string
+objects, like [DateTime] etc.
 
 .PARAMETER IgnoreText
 
-This will not try to interpret incoming string values.
+This means that incoming string objects will not be converted to their
+interpreted type and they won't be formatted. The cell value will be a string
+and the format will be "General". Useful when you don't like the interpreted
+results or have to keep strings as strings.
 
 .EXAMPLE
 
@@ -136,12 +213,18 @@ function New-CellData {
         Set-StrictMode -Version Latest
 
         if (($Objects -eq $null) -or ($Objects.Count -eq 0)) {
-            makeOut $null "General"
+            if ($ForceText.IsPresent) {
+                makeOut "" "General"
+            }
+            else {
+                makeOut $null "General"
+            }
         }
         else {
             foreach ($itemObject in $Objects) {
+
                 if ($ForceText.IsPresent) {
-                    $itemObject = "$itemObject" # Relies on the built-in ToString method of the object.
+                    $itemObject = $itemObject.ToString()
                 }
 
                 $out = $null
@@ -157,10 +240,8 @@ function New-CellData {
                         $out = makeOut $itemObject $NumberFormat
                     }
                 }
-                elseif ($itemObject -is [string]) {
-                    if (!$ForceText.IsPresent -and !$IgnoreText.IsPresent) {
-                        $out = fromString $itemObject
-                    }
+                elseif ($itemObject -is [string] -and !$ForceText.IsPresent -and !$IgnoreText.IsPresent) {
+                    $out = fromString $itemObject
                 }
 
                 if ($out -eq $null) {
