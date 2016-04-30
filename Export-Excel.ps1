@@ -64,8 +64,10 @@ function Export-Excel {
     )
 
     Begin {
-        # Bring New-CellData and its helpers into scope.
-        . $PSScriptRoot\New-CellData.ps1
+        # Import the Export-Excel implementation helpers.
+        . $PSScriptRoot\Export-Excel.Impl.ps1
+
+        # Create the options cache that will be used to format columns.
         $colOptCache = New-ColumnOptionsCache -Table $ColumnOptions -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
 
     	$script:Header = $null
