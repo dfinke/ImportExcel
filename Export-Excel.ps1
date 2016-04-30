@@ -13,6 +13,7 @@ function Export-Excel {
         Remove-Item "c:\temp\test.xlsx" -ErrorAction Ignore
         Get-Service | Export-Excel "c:\temp\test.xlsx"  -Show -IncludePivotTable -PivotRows status -PivotData @{status='count'}
     #>
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
         $Path,
@@ -65,7 +66,7 @@ function Export-Excel {
     Begin {
         # Bring New-CellData and its helpers into scope.
         . $PSScriptRoot\New-CellData.ps1
-        $colOptions = New-ColumnOptions -Table $ColumnOptions -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
+        $colOptCache = New-ColumnOptionsCache -Table $ColumnOptions -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
 
     	$script:Header = $null
         if($KillExcel) {
@@ -131,7 +132,7 @@ function Export-Excel {
     Process {
         if($firstTimeThru) {
             $firstTimeThru=$false
-            $isDataTypeValueType = $TargetData.GetType().name -match "string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort"
+            $isDataTypeValueType = $TargetData.GetType().name -match $pattern
         }
 
         if($isDataTypeValueType) {
@@ -139,10 +140,14 @@ function Export-Excel {
 
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-            $opts = Get-ColumnOptions -Options $colOptions -ColumnIndex $ColumnIndex
+            Write-Verbose "At column '$ColumnIndex' with data '$TargetData' and type '$($TargetData.GetType())'."
+
+            $opts = Get-ColumnOptions -CacheObject $colOptCache -ColumnIndex $ColumnIndex
+            Write-Verbose "Using options '$opts'."
             $cellData = $TargetData | New-CellData -ForceText:$opts.ForceText -IgnoreText:$opts.IgnoreText -DateTimeFormat $opts.DateTimeFormat -NumberFormat $opts.NumberFormat
             $targetCell.Value = $cellData.Value
             $targetCell.Style.NumberFormat.Format = $cellData.Format
+            Write-Verbose "Cell data is '$cellData' with type '$($cellData.Value.GetType())'."
 
             $ColumnIndex += 1
             $Row += 1
@@ -172,7 +177,7 @@ function Export-Excel {
 
                 $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-                $opts = Get-ColumnOptions -Options $colOptions -ColumnIndex $ColumnIndex -ColumnName $Name
+                $opts = Get-ColumnOptions -CacheObject $colOptCache -ColumnIndex $ColumnIndex -ColumnName $Name
                 $cellData = $TargetData.$Name | New-CellData -ForceText:$opts.ForceText -IgnoreText:$opts.IgnoreText -DateTimeFormat $opts.DateTimeFormat -NumberFormat $opts.NumberFormat
                 $cellValue = $cellData.Value
 

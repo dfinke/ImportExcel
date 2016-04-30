@@ -1,10 +1,29 @@
 <#
 .SYNOPSIS
 
-Create a new column options table.
+Create a new column options cache object.
+
+.DESCRIPTION
+
+The properties of the returned object are:
+
+Cache - Stores the overrides for each column. Calculated once.
+
+Options - A reference to the incoming table. Used to create the cache.
+
+Prototype - The prototype for cache entries:
+
+    IgnoreText - Determines if column text will be converted to appropriate
+    objects, or ignored.
+
+    ForceText - Determines whether column data should be treated as strings.
+
+    DateTimeFormat - The format for DateTime objects.
+
+    NumberFormat - The format for numeric data types.
 
 #>
-function New-ColumnOptions {
+function New-ColumnOptionsCache {
     [CmdletBinding()]
     param(
         [hashtable]$Table=@{},
@@ -14,7 +33,7 @@ function New-ColumnOptions {
     [pscustomobject]@{
         Cache = [ordered]@{}
         Options = $Table
-        Default = [ordered]@{
+        Prototype = [ordered]@{
             IgnoreText = $false
             ForceText = $false
             DateTimeFormat = $DateTimeFormat
@@ -25,46 +44,75 @@ function New-ColumnOptions {
 <#
 .SYNOPSIS
 
-Returns the column options for a particular column.
+Returns the column options for a particular column, given a cache created by
+New-ColumnOptionsCache. Column options are strongly associated with the column
+index.
+
+.PARAMETER CacheObject
+
+A cache object created by New-ColumnOptionsCache.
+
+.PARAMETER ColumnIndex
+
+The index of the column whose options we are requesting.
+
+.PARAMETER ColumnName
+
+The optional name of the property associated with the column.
 
 #>
 function Get-ColumnOptions {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$true)]
-        [pscustomobject]$Options,
+        [Parameter(Mandatory=$true, HelpMessage="A cache object created by New-ColumnOptionsCache.")]
+        [pscustomobject]$CacheObject,
+        [Parameter(Mandatory=$true, HelpMessage="The index of the column whose options we are requesting.")]
         [string]$ColumnIndex,
         [string]$ColumnName
     )
 
-    $opts = [pscustomobject]($Options.Cache[$ColumnIndex])
-    if ($opts -eq $null) {
-        $opts = [pscustomobject]($Options.Default)
-        $optsTable = $Options.Options
-        if ($optsTable -ne $null) {
-            foreach ($optPair in $optsTable.GetEnumerator()) {
-                $optKey = $optPair.Name
-                $optVal = $optPair.Value
-                if ($ColumnIndex -like $optKey) {
-                    foreach ($optValPair in $optVal.GetEnumerator()) {
-                        # "by index $optKey $optValPair" | Out-Host
-                        $opts."$($optValPair.Name)" = $optValPair.Value
+    $colOpts = [pscustomobject]($CacheObject.Cache[$ColumnIndex])
+    if ($colOpts -eq $null) {
+        $colOpts = [pscustomobject]($CacheObject.Prototype)
+        if ($CacheObject.Options -ne $null) {
+            # The cache contains no options associated for the particular column
+            # index. Let's create the options for it based on the cache prototype.
+            $colOptsTable = $CacheObject.Options
+            foreach ($colPatternOptsPair in $colOptsTable.GetEnumerator()) {
+                # Iterate through every option pair in the options table, and find
+                # all options associated with the given $ColumnIndex and
+                # $ColumnName. Use those options to update our prototype. If an
+                # option exists in the option table that does not exist in the
+                # prototype, then throw an error, but make sure that handle
+                # -ErrorAction SilentlyContinue won't break anything.
+                $colPattern = $colPatternOptsPair.Name
+                if ($ColumnIndex -like $colPattern) {
+                    # An option entry was found for the $ColumnIndex.
+                    $colPatternOptsTable = $colPatternOptsPair.Value
+                    foreach ($patternOptsPair in $colPatternOptsTable.GetEnumerator()) {
+                        # $colOpts is a PsCustomObject, not a table, so
+                        # $assignments to non-existing properties will throw an
+                        # $exception.
+                        $optName = $patternOptsPair.Name
+                        $colOpts.$optName = $patternOptsPair.Value
                     }
                 }
-                if ($ColumnName -like $optKey) {
-                    foreach ($optValPair in $optVal.GetEnumerator()) {
-                        # "by name $optKey $optValPair" | Out-Host
-                        $opts."$($optValPair.Name)" = $optValPair.Value
+                elseif ($ColumnName -like $colPattern) {
+                    # An option entry was found for the $ColumnName.
+                    $colPatternOptsTable = $colPatternOptsPair.Value
+                    foreach ($patternOptsPair in $colPatternOptsTable.GetEnumerator()) {
+                        # $colOpts is a PsCustomObject, not a table, so
+                        # $assignments to non-existing properties will throw an
+                        # $exception.
+                        $optName = $patternOptsPair.Name
+                        $colOpts.$optName = $patternOptsPair.Value
                     }
                 }
             }
-            $Options.Cache[$ColumnIndex] = $opts
         }
+        $CacheObject.Cache[$ColumnIndex] = $colOpts
     }
-    else {
-        # "Found $opts" | Out-Host
-    }
-    $opts
+    $colOpts
 }
 
 <#

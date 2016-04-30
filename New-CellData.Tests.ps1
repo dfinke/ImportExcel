@@ -298,18 +298,127 @@ Describe "NewCellData" {
         $xlPkg.Dispose()
         # Invoke-Item $workbook
 
+        $xlPkg = "123", 456, "034", $true, (Get-Date), [long]678, "12 January 1984" | Export-Excel $workbook -PassThru
+        It "Supports multi-valuetype array (with automatic string conversions)" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            & {
+                $col = $ws.Cells["A1"]
+                $col.Value -is [double] | Should Be $true # Automatic conversion from string to double.
+                $col.Value | Should Be 123
+                $col.Style.NumberFormat.Format | Should Be "General"
+            }
+            & {
+                $col = $ws.Cells["A2"]
+                $col.Value -is [int] | Should Be $true # No conversion.
+                $col.Value | Should Be 456
+                $col.Style.NumberFormat.Format | Should Be "General"
+            }
+            & {
+                $col = $ws.Cells["A3"]
+                $col.Value -is [string] | Should Be $true # Automatic conversion chose to remain as string.
+                $col.Value | Should Be "034"
+                $col.Style.NumberFormat.Format | Should Be "General"
+            }
+            & {
+                $col = $ws.Cells["A4"]
+                $col.Value -is [bool] | Should Be $true
+                $col.Value | Should Be $true # No conversion.
+                $col.Style.NumberFormat.Format | Should Be "General"
+            }
+            & {
+                $col = $ws.Cells["A5"]
+                $col.Value -is [datetime] | Should Be $true # No conversion.
+                $col.Style.NumberFormat.Format | Should Be (Get-DateFormatDefault)
+            }
+            & {
+                $col = $ws.Cells["A6"]
+                $col.Value -is [long] | Should Be $true
+                $col.Value | Should Be 678 # No conversion.
+                $col.Style.NumberFormat.Format | Should Be "General"
+            }
+            & {
+                $col = $ws.Cells["A7"]
+                $col.Value -is [datetime] | Should Be $true # Automatic conversion from string to datetime.
+                $col.Style.NumberFormat.Format | Should Be (Get-DateFormatDefault)
+            }
+        }
+        $xlPkg.Save()
+        $xlPkg.Dispose()
+        # Invoke-Item $workbook
+
         $columnOptions = @{
             1 = @{ IgnoreText = $true }
         }
-        $xlPkg = "123","456","034" | Export-Excel $workbook -ColumnOptions $columnOptions -PassThru
+        $xlPkg = "123", 456, "034", $true, (Get-Date), [long]678, "12 January 1984" | Export-Excel $workbook -ColumnOptions $columnOptions -PassThru
+        It "Supports multi-valuetype array (with no string conversions)" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            & {
+                $col = $ws.Cells["A1"]
+                $col.Value -is [string] | Should Be $true
+                $col.Value | Should Be "123" # No automatic conversion of strings.
+                $col.Style.NumberFormat.Format | Should Be "General"
+            }
+            & {
+                $col = $ws.Cells["A2"]
+                $col.Value -is [int] | Should Be $true
+                $col.Value | Should Be 456
+                $col.Style.NumberFormat.Format | Should Be "General"
+            }
+            & {
+                $col = $ws.Cells["A3"]
+                $col.Value -is [string] | Should Be $true
+                $col.Value | Should Be "034" # No automatic conversion of strings.
+                $col.Style.NumberFormat.Format | Should Be "General"
+            }
+            & {
+                $col = $ws.Cells["A4"]
+                $col.Value -is [bool] | Should Be $true
+                $col.Value | Should Be $true
+                $col.Style.NumberFormat.Format | Should Be "General"
+            }
+            & {
+                $col = $ws.Cells["A5"]
+                $col.Value -is [datetime] | Should Be $true
+                $col.Style.NumberFormat.Format | Should Be (Get-DateFormatDefault)
+            }
+            & {
+                $col = $ws.Cells["A6"]
+                $col.Value -is [long] | Should Be $true
+                $col.Value | Should Be 678
+                $col.Style.NumberFormat.Format | Should Be "General"
+            }
+            & {
+                $col = $ws.Cells["A7"]
+                $col.Value -is [string] | Should Be $true
+                $col.Value | Should Be "12 January 1984" # No automatic conversion of strings.
+                $col.Style.NumberFormat.Format | Should Be "General"
+            }
+        }
+        $xlPkg.Save()
+        $xlPkg.Dispose()
+        # Invoke-Item $workbook
+
+
+        $columnOptions = @{
+            1 = @{ IgnoreText = $true }
+        }
+        $xlPkg = "123", "456", "034" | Export-Excel $workbook -ColumnOptions $columnOptions -PassThru
         It "Produces [string] for numeric [string] with -ColumnOptions" {
             $ws = $xlPkg.Workbook.WorkSheets[1]
-            $col = $ws.Cells["A:A"] # First column.
-            $col | Select-Object -ExpandProperty Value | % {
-                $_ -is [string] | Should Be $true
+            & {
+                $col = $ws.Cells["A1"]
+                $col.Value -is [string] | Should Be $true
+                $col.Style.NumberFormat.Format | Should Be "General"
             }
-            $col | Select-Object -ExpandProperty Style | % {
-                $_.NumberFormat.Format | Should Be "General"
+            & {
+                $col = $ws.Cells["A2"]
+                $col.Value -is [string] | Should Be $true
+                $col.Style.NumberFormat.Format | Should Be "General"
+            }
+            & {
+                $col = $ws.Cells["A3"]
+                $col.Value -is [string] | Should Be $true
+                $col.Style.NumberFormat.Format | Should Be "General"
             }
         }
         $xlPkg.Save()
