@@ -233,9 +233,16 @@ function New-CellData {
     param(
         [Parameter(ValueFromPipeline=$true)]
         [object[]]$Objects,
+        # https://msdn.microsoft.com/en-us/library/system.globalization.numberstyles(v=vs.110).aspx
         [System.Globalization.NumberStyles]$NumberStyles=[System.Globalization.NumberStyles]::Any,
+        # https://msdn.microsoft.com/en-us/library/system.globalization.datetimestyles(v=vs.110).aspx
         [System.Globalization.DateTimeStyles]$DateTimeStyles=[System.Globalization.DateTimeStyles]::None,
+        # https://msdn.microsoft.com/en-us/library/system.globalization.numberformatinfo(v=vs.110).aspx
+        [System.Globalization.NumberFormatInfo]$NumberFormatInfo=[System.Globalization.NumberFormatInfo]::InvariantInfo,
+        # https://msdn.microsoft.com/en-us/library/system.globalization.datetimeformatinfo(v=vs.110).aspx
+        [System.Globalization.DateTimeFormatInfo]$DateTimeFormatInfo=[System.Globalization.DateTimeFormatInfo]::InvariantInfo,
         [string]$NumberFormat="General",
+        # https://support.office.com/en-us/article/Format-a-date-the-way-you-want-8e10019e-d5d8-47a1-ba95-db95123d273e?ui=en-US&rs=en-US&ad=US&fromAR=1
         [string]$DateTimeFormat="mmm/dd/yyyy hh:mm:ss",
         [string]$TimeSpanFormat="hh:mm:ss",
         [switch]$ForceText,
@@ -280,12 +287,19 @@ function New-CellData {
                     # Is $itemObject a double?
                     if ($out -eq $null) {
                         $out = & {
-                            if ($itemObject -notmatch "^[0]+|^[\s]+|[\s]+$") {
-                                # The value does not start with a zero, and has no
-                                # whitespace at the beginning and end. Let's try to
-                                # parse it as a number.
+                            if ($itemObject -notmatch "^[0][^\.]+|^[\s]+|[\s]+$") {
+
+                                # "001" is not a valid number, but "0.01" is.
+                                # "123" can be interpeted as a number, but the
+                                # values " 123"  or "123 " are intentional
+                                # strings due to the whitespace. Try to
+                                # support these cases.
+
                                 $double = 0
-                                if ([double]::TryParse($itemObject, $NumberStyles, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double)) {
+                                if ([double]::TryParse($itemObject, $NumberStyles, $NumberFormatInfo, [ref]$double)) {
+                                    if ("$double" -ne $itemObject) {
+                                        Write-Warning "Conversion from '$itemObject' to '$double' may have lost precision."
+                                    }
                                     New-ValueFormatPair -Value $double -Format $NumberFormat
                                 }
                             }
@@ -296,7 +310,7 @@ function New-CellData {
                     if ($out -eq $null) {
                         $out = & {
                             $dateTime = 0
-                            if ([DateTime]::TryParse($itemObject, [System.Globalization.DateTimeFormatInfo]::InvariantInfo, $DateTimeStyles, [ref]$dateTime)) {
+                            if ([DateTime]::TryParse($itemObject, $DateTimeFormatInfo, $DateTimeStyles, [ref]$dateTime)) {
                                 # https://msdn.microsoft.com/en-us/library/system.datetime.tooadate.aspx
                                 New-ValueFormatPair -Value $dateTime -Format $DateTimeFormat
                             }

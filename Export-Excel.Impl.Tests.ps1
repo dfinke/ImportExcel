@@ -24,6 +24,31 @@ function Get-DateFormatDefault {
     "mmm/dd/yyyy hh:mm:ss"
 }
 
+Describe "DoubleTryParse" {
+    Context "Parsing decimal strings" {
+        It "Converts 0.1 to 0.1" {
+            $double = 0
+            # https://msdn.microsoft.com/en-us/library/system.globalization.numberstyles(v=vs.110).aspx
+            [double]::TryParse("0.1", [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double) | Should Be $true
+            $double | Should Be 0.1
+            "$double" | Should Be "0.1"
+            # $double | Out-String -Stream | Should Be "0,1" # Depending on the host, numbers may be displayed differently based on [System.Globalization.NumberFormatInfo]::CurrentInfo.
+        }
+        It "Converts 0,1 to 1" {
+            $double = 0
+            [double]::TryParse("0,1", [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double) | Should Be $true
+            $double | Should Be 1
+            "$double" | Should Be "1"
+        }
+        It "Converts 0,3 to 3" {
+            $double = 0
+            [double]::TryParse("0,3", [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double) | Should Be $true
+            $double | Should Be 3
+            "$double" | Should Be "3"
+        }
+    }
+}
+
 Describe "NewCellData" {
 
     Context "Piping [string] inputs" {
@@ -40,6 +65,14 @@ Describe "NewCellData" {
             "012345" | New-CellData | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Value | Should Be "012345"
+                $_.Format | Should Be "General"
+            }
+        }
+
+        It "Numeric strings with leading zeroes that are non-integers are treated as numbers" {
+            "0.01" | New-CellData | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Value | Should Be 0.01
                 $_.Format | Should Be "General"
             }
         }
