@@ -1,4 +1,41 @@
 <#
+
+.SYNOPSIS
+
+A helper function that creates a cell value format pair.
+
+#>
+function New-ValueFormatPair {
+    [CmdletBinding()]
+    param(
+        [object]$Value,
+        [string]$Format
+    )
+    [PSCustomObject][ordered]@{ Value = $Value; Format = $Format; }
+}
+
+<#
+.SYNOPSIS
+
+Tests to see if an object is a numeric type.
+
+#>
+function Test-NumericType {
+    [CmdletBinding()]
+    param(
+        [object]$Object
+    )
+    if ($Object -is [ValueType]) {
+        $Object -is [double] -or $Object -is [int16]  -or $Object -is [int32]  -or $Object -is [int64]  `
+           -or $Object -is [sbyte] -or $Object -is [uint16] -or $Object -is [uint32] -or $Object -is [uint64] `
+           -or $Object -is [float] -or $Object -is [byte] -or $Object -is [decimal]
+    }
+    else {
+        $false
+    }
+}
+
+<#
 .SYNOPSIS
 
 Create a new column options cache object.
@@ -119,12 +156,12 @@ function Get-ColumnOptions {
 .SYNOPSIS
 
 This function determines the desired cell value and format for the incoming
-data. Incoming strings can be interpreted as [DateTime], [double], percentages
-etc, unless the -IgnoreText switch is used. Incoming objects that are not
-strings, can have their formatting detected to some degree, or they can be
-converted to string without further interpretation using the -ForceText
-switch. This function found inspiration from the LoadFrom and ConvertData
-methods of EPPlus/ExcelRangeBase.cs.
+data. Incoming strings can be interpreted as [DateTime], [double], etc, unless
+the -IgnoreText switch is used. Incoming objects that are not strings, can
+have their formatting detected to some degree, or they can be converted to
+string without further interpretation using the -ForceText switch. This
+function found inspiration from the LoadFrom and ConvertData methods of
+EPPlus/ExcelRangeBase.cs.
 
 .PARAMETER ForceText
 
@@ -201,71 +238,21 @@ function New-CellData {
         [string]$NumberFormat="General",
         [string]$DateTimeFormat="mmm/dd/yyyy hh:mm:ss",
         [string]$TimeSpanFormat="hh:mm:ss",
-        [string]$PercentageFormat="0.00##\%",
         [switch]$ForceText,
         [switch]$IgnoreText
     )
     begin {
         Set-StrictMode -Version Latest
-        # A helper function that creates the output object.
-        function makeOut([object]$Value, [string]$Format) {
-            [PSCustomObject][ordered]@{ Value = $Value; Format = $Format; }
-        }
-        # A helper that checks for a numeric value type.
-        function isNumber($Value) {
-            $Value -is [byte]  -or $Value -is [int16]  -or $Value -is [int32]  -or $Value -is [int64]  `
-               -or $Value -is [sbyte] -or $Value -is [uint16] -or $Value -is [uint32] -or $Value -is [uint64] `
-               -or $Value -is [float] -or $Value -is [double] -or $Value -is [decimal]
-        }
-        # A helper that detects if a string value represents a percentage.
-        function asPercentage([string]$Value) {
-            if ($Value -match "\s*%\s*$") {
-                $Value = $Value -replace "\s*%\s*$",""
-                $double = 0
-                if ([double]::TryParse($Value, $NumberStyles, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double)) {
-                    makeOut ($double/100.0) $PercentageFormat
-                }
-            }
-        }
-        # A helper that detects if a string value represents a date.
-        function asDate([string]$Value) {
-            $dateTime = 0
-            if ([DateTime]::TryParse($Value, [System.Globalization.DateTimeFormatInfo]::InvariantInfo, $DateTimeStyles, [ref]$dateTime)) {
-                # https://msdn.microsoft.com/en-us/library/system.datetime.tooadate.aspx
-                makeOut $dateTime $DateTimeFormat
-            }
-        }
-        # A helper that detects if a string value represents a double.
-        function asDouble([string]$Value) {
-            if ($Value -match "^[1-9].*[0-9]$") {
-                # The string starts with 1-9 and ends with 0-9. This looks like a number.
-                $double = 0
-                if ([double]::TryParse($Value, $NumberStyles, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double)) {
-                    makeOut $double $NumberFormat
-                }
-            }
-        }
-        # A helper that determines the formatting of a string.
-        function fromString([string]$Value) {
-            $out = asDate($Value)
-            if ($out -eq $null) {
-                $out = asPercentage($Value)
-                if ($out -eq $null) {
-                    $out = asDouble($Value)
-                }
-            }
-            $out
-        }
     }
     process {
         Set-StrictMode -Version Latest
 
         if (($Objects -eq $null) -or ($Objects.Count -eq 0)) {
             if ($ForceText.IsPresent) {
-                makeOut "" "General"
+                New-ValueFormatPair -Value "" -Format "General"
             }
             else {
-                makeOut $null "General"
+                New-ValueFormatPair -Value $null -Format "General"
             }
         }
         else {
@@ -276,24 +263,49 @@ function New-CellData {
                 }
 
                 $out = $null
-                if ($itemObject -is [valuetype]) {
+                if ($itemObject -is [ValueType]) {
                     if ($itemObject -is [DateTime]) {
                         # https://msdn.microsoft.com/en-us/library/system.datetime.tooadate.aspx
-                        $out = makeOut $itemObject $DateTimeFormat
+                        $out = New-ValueFormatPair -Value $itemObject -Format $DateTimeFormat
                     }
                     elseif ($itemObject -is [TimeSpan]) {
-                        $out = makeOut $itemObject $TimeSpanFormat
+                        $out = New-ValueFormatPair -Value $itemObject -Format $TimeSpanFormat
                     }
-                    elseif (isNumber $itemObject) {
-                        $out = makeOut $itemObject $NumberFormat
+                    elseif (Test-NumericType -Object $itemObject) {
+                        $out = New-ValueFormatPair -Value $itemObject -Format $NumberFormat
                     }
                 }
                 elseif ($itemObject -is [string] -and !$ForceText.IsPresent -and !$IgnoreText.IsPresent) {
-                    $out = fromString $itemObject
+
+                    # Is $itemObject a double?
+                    if ($out -eq $null) {
+                        $out = & {
+                            if ($itemObject -notmatch "^[0]+|^[\s]+|[\s]+$") {
+                                # The value does not start with a zero, and has no
+                                # whitespace at the beginning and end. Let's try to
+                                # parse it as a number.
+                                $double = 0
+                                if ([double]::TryParse($itemObject, $NumberStyles, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double)) {
+                                    New-ValueFormatPair -Value $double -Format $NumberFormat
+                                }
+                            }
+                        }
+                    }
+
+                    # Is $itemObject a DateTime?
+                    if ($out -eq $null) {
+                        $out = & {
+                            $dateTime = 0
+                            if ([DateTime]::TryParse($itemObject, [System.Globalization.DateTimeFormatInfo]::InvariantInfo, $DateTimeStyles, [ref]$dateTime)) {
+                                # https://msdn.microsoft.com/en-us/library/system.datetime.tooadate.aspx
+                                New-ValueFormatPair -Value $dateTime -Format $DateTimeFormat
+                            }
+                        }
+                    }
                 }
 
                 if ($out -eq $null) {
-                    $out = makeOut $itemObject "General"
+                    $out = New-ValueFormatPair -Value $itemObject -Format "General"
                 }
 
                 $out

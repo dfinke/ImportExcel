@@ -2,6 +2,7 @@
 #Requires -Module ImportExcel
 Set-StrictMode -Version Latest
 
+# Import-Module $PSScriptRoot -Force -Scope Global
 . $PSScriptRoot\Export-Excel.ps1
 
 # Bring New-CellData helpers into scope.
@@ -73,11 +74,11 @@ Describe "NewCellData" {
             }
         }
 
-        It "Converts percentage strings to numbers" {
+        It "Keeps percentage strings as text" {
             "90%" | New-CellData | % {
-                $_.Value -is [double] | Should Be $true
-                $_.Value | Should Be 0.9
-                $_.Format | Should Not Be "General"
+                $_.Value -is [string] | Should Be $true
+                $_.Value | Should Be "90%"
+                $_.Format | Should Be "General"
             }
         }
     }
