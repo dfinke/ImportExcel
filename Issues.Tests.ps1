@@ -96,5 +96,91 @@ Describe "Issues" {
 
     }
 
+    Context "Numbers with leading zeros treated as numbers, not text #33" {
+        # https://github.com/dfinke/ImportExcel/issues/33
+
+        $csvData = 
+@"
+a,b,c
+01,002,3
+00u812,05150,abc
+123,456,098
+0123,456,098
+"@ | ConvertFrom-Csv
+
+        $xlPkg = $csvData | Export-Excel -Path $workbook -PassThru
+        It "Can accept CSV data with numeric strings that have leading zeroes" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            $cell = $ws.Cells["A2"]
+            $cell.Value -is [string] | Should Be $true 
+            $cell.Value | Should Be "01" 
+            $cell = $ws.Cells["A3"]
+            $cell.Value -is [string] | Should Be $true 
+            $cell.Value | Should Be "00u812" 
+            $cell = $ws.Cells["A4"]
+            $cell.Value -is [double] | Should Be $true 
+            $cell.Value | Should Be 123 
+            $cell = $ws.Cells["A5"]
+            $cell.Value | Should Be "0123" 
+            $cell = $ws.Cells["B2"]
+            $cell.Value | Should Be "002" 
+            $cell = $ws.Cells["B3"]
+            $cell.Value | Should Be "05150" 
+            $cell = $ws.Cells["B4"]
+            $cell.Value -is [double] | Should Be $true 
+            $cell.Value | Should Be 456 
+            $cell = $ws.Cells["B5"]
+            $cell.Value -is [double] | Should Be $true 
+            $cell.Value | Should Be 456 
+            $cell = $ws.Cells["C4"]
+            $cell.Value | Should Be "098" 
+            $cell = $ws.Cells["C5"]
+            $cell.Value | Should Be "098" 
+        }
+        $xlPkg.Save(); $xlPkg.Dispose();
+        # Invoke-Item $workbook; throw;
+
+        $columnOptions = @{ "*" = @{ IgnoreText = $true } }
+        $xlPkg = $csvData | Export-Excel -Path $workbook -ColumnOptions $columnOptions -PassThru
+        It "Can skip automatic conversion of CSV strings using -ColumnOptions and IgnoreText" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            $cols = $ws.Cells["A2:C"] # Skip the headings.
+            $cols | % {
+                $cell = $_
+                if ($cell -ne $null) {
+                    $cell.Value -is [string] | Should Be $true
+                }
+            }
+
+            $cell = $ws.Cells["A2"]
+            $cell.Value -is [string] | Should Be $true 
+            $cell.Value | Should Be "01" 
+            $cell = $ws.Cells["A3"]
+            $cell.Value -is [string] | Should Be $true 
+            $cell.Value | Should Be "00u812" 
+            $cell = $ws.Cells["A4"]
+            $cell.Value -is [string] | Should Be $true 
+            $cell.Value | Should Be "123"
+            $cell = $ws.Cells["A5"]
+            $cell.Value | Should Be "0123" 
+            $cell = $ws.Cells["B2"]
+            $cell.Value | Should Be "002" 
+            $cell = $ws.Cells["B3"]
+            $cell.Value | Should Be "05150" 
+            $cell = $ws.Cells["B4"]
+            $cell.Value -is [string] | Should Be $true 
+            $cell.Value | Should Be "456" 
+            $cell = $ws.Cells["B5"]
+            $cell.Value -is [string] | Should Be $true 
+            $cell.Value | Should Be "456"
+            $cell = $ws.Cells["C4"]
+            $cell.Value | Should Be "098" 
+            $cell = $ws.Cells["C5"]
+            $cell.Value | Should Be "098" 
+        }
+        $xlPkg.Save(); $xlPkg.Dispose();
+        # Invoke-Item $workbook; throw;
+    }
+
     Remove-TestWorkbook
 }
