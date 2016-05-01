@@ -78,5 +78,23 @@ Describe "Issues" {
         # Invoke-Item $workbook; throw;
     }
 
+    Context "Only length in the Excel sheet, not the string #41" {
+        # https://github.com/dfinke/ImportExcel/issues/41
+
+        $xlPkg = "test", "c:\whatever", "d:\whatever" | Export-Excel -Path $workbook -DateTimeFormat $cultureShortDatePattern -PassThru
+        It "Can accept an array of strings" {
+            $ws = $xlPkg.Workbook.WorkSheets[1]
+            $cell = $ws.Cells["A1"]
+            $cell.Value | Should Be "test" 
+            $cell = $ws.Cells["A2"]
+            $cell.Value | Should Be "c:\whatever" 
+            $cell = $ws.Cells["A3"]
+            $cell.Value | Should Be "d:\whatever" 
+        }
+        $xlPkg.Save(); $xlPkg.Dispose();
+        # Invoke-Item $workbook; throw;
+
+    }
+
     Remove-TestWorkbook
 }
