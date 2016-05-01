@@ -1,3 +1,4 @@
+Set-StrictMode -Version Latest
 Import-Module $PSScriptRoot -Force -Scope Global
 
 function New-TestWorkbook {

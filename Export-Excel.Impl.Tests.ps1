@@ -1,7 +1,4 @@
-#Requires -Module Pester
-#Requires -Module ImportExcel
 Set-StrictMode -Version Latest
-
 Import-Module $PSScriptRoot -Force -Scope Global
 
 # Bring New-CellData helpers into scope.
