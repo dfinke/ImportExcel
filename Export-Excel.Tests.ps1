@@ -1,6 +1,6 @@
 # Contributed by https://github.com/W1M0R
 
-Import-Module ImportExcel -Force 
+Import-Module $PSScriptRoot -Force -Scope Global
 
 function New-TestWorkbook {
     $testWorkbook = "$($PSScriptRoot)\test.xlsx"

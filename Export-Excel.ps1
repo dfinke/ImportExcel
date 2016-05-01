@@ -13,6 +13,7 @@ function Export-Excel {
         Remove-Item "c:\temp\test.xlsx" -ErrorAction Ignore
         Get-Service | Export-Excel "c:\temp\test.xlsx"  -Show -IncludePivotTable -PivotRows status -PivotData @{status='count'}
     #>
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
         $Path,
@@ -57,10 +58,18 @@ function Export-Excel {
         $StartRow=1,
         $StartColumn=1,
         [Switch]$PassThru,
-        [string]$Numberformat="General"
+        [string]$NumberFormat="General",
+        [string]$DateTimeFormat="mmm/dd/yyyy hh:mm:ss",
+        [hashtable]$ColumnOptions
     )
 
     Begin {
+        # Import the Export-Excel implementation helpers.
+        . $PSScriptRoot\Export-Excel.Impl.ps1
+
+        # Create the options cache that will be used to format columns.
+        $colOptCache = New-ColumnOptionsCache -Table $ColumnOptions -DateTimeFormat $DateTimeFormat -NumberFormat $NumberFormat
+
     	$script:Header = $null
         if($KillExcel) {
             Get-Process excel -ErrorAction Ignore | Stop-Process
@@ -125,7 +134,7 @@ function Export-Excel {
     Process {
         if($firstTimeThru) {
             $firstTimeThru=$false
-            $isDataTypeValueType = $TargetData.GetType().name -match "string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort"
+            $isDataTypeValueType = $TargetData.GetType().name -match $pattern
         }
 
         if($isDataTypeValueType) {
@@ -133,18 +142,14 @@ function Export-Excel {
 
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-            $r=$null
-            $cellValue=$TargetData
-            if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
-                $targetCell.Value = $r
-                $targetCell.Style.Numberformat.Format=$Numberformat
-            } else {
-                $targetCell.Value = $cellValue
-            }
+            # Write-Verbose "At column '$ColumnIndex' with data '$TargetData' and type '$($TargetData.GetType())'."
 
-            switch ($TargetData.$Name) {
-                {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
-            }
+            $opts = Get-ColumnOptions -CacheObject $colOptCache -ColumnIndex $ColumnIndex -TargetData $TargetData
+            # Write-Verbose "Using options '$opts'."
+            $cellData = $opts | New-CellData
+            $targetCell.Value = $cellData.Value
+            $targetCell.Style.NumberFormat.Format = $cellData.Format
+            # Write-Verbose "Cell data is '$cellData' with type '$($cellData.Value.GetType())'."
 
             $ColumnIndex += 1
             $Row += 1
@@ -174,23 +179,17 @@ function Export-Excel {
 
                 $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-                $cellValue=$TargetData.$Name
+                $opts = Get-ColumnOptions -CacheObject $colOptCache -ColumnIndex $ColumnIndex -ColumnName $Name -TargetData ($TargetData.$Name)
+                # Write-Verbose "Using options for column '$Name': $opts"
+                $cellData = $opts | New-CellData
+                # Write-Verbose "cellData is '$cellData'."
+                $cellValue = $cellData.Value
 
-                if($cellValue -is [string] -and $cellValue.StartsWith('=')) {
+                if ($cellValue -is [string] -and $cellValue.StartsWith('=')) {
                     $targetCell.Formula = $cellValue
                 } else {
-
-                    $r=$null
-                    if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
-                        $targetCell.Value = $r
-                        $targetCell.Style.Numberformat.Format=$Numberformat
-                    } else {
-                        $targetCell.Value = $cellValue
-                    }
-                }
-
-                switch ($TargetData.$Name) {
-                    {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
+                    $targetCell.Value = $cellData.Value
+                    $targetCell.Style.NumberFormat.Format = $cellData.Format
                 }
 
                 #[ref]$uriResult=$null
