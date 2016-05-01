@@ -26,25 +26,50 @@ function Get-DateFormatDefault {
 
 Describe "DoubleTryParse" {
     Context "Parsing decimal strings" {
-        It "Converts 0.1 to 0.1" {
+
+        $commaCulture = (0.3 | Out-String -Stream) -eq "0,3"
+
+        It "Converts 0.1 to 0.1 with Any/InvariantInfo" {
             $double = 0
             # https://msdn.microsoft.com/en-us/library/system.globalization.numberstyles(v=vs.110).aspx
             [double]::TryParse("0.1", [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double) | Should Be $true
             $double | Should Be 0.1
             "$double" | Should Be "0.1"
-            # $double | Out-String -Stream | Should Be "0,1" # Depending on the host, numbers may be displayed differently based on [System.Globalization.NumberFormatInfo]::CurrentInfo.
+            if ($commaCulture -eq $true) {
+                $double | Out-String -Stream | Should Be "0,1"
+            }
         }
-        It "Converts 0,1 to 1" {
+        It "Converts 0,1 to 1 with Any/InvariantInfo" {
             $double = 0
             [double]::TryParse("0,1", [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double) | Should Be $true
             $double | Should Be 1
             "$double" | Should Be "1"
+            $double | Out-String -Stream | Should Be "1"
         }
-        It "Converts 0,3 to 3" {
+        It "Converts 0,3 to 3 with Any/InvariantInfo" {
             $double = 0
             [double]::TryParse("0,3", [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$double) | Should Be $true
             $double | Should Be 3
             "$double" | Should Be "3"
+            if ($commaCulture -eq $true) {
+                $double | Out-String -Stream | Should Be "3"
+            }
+        }
+
+        if ($commaCulture -eq $true) {
+            It "Converts 0,3 to 0,3 with Any/CurrentInfo" {
+                $double = 0
+                [double]::TryParse("0,3", [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [ref]$double) | Should Be $true
+                $double | Should Be 0.3
+                "$double" | Should Be "0.3"
+                $double | Out-String -Stream | Should Be "0,3"
+            }
+            It "Fails to convert 0.3 to 0,3 with Any/CurrentInfo" {
+                $double = 0
+                [double]::TryParse("0.3", [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [ref]$double) | Should Be $false
+                $double | Should Be 0
+                "$double" | Should Be "0"
+            }
         }
     }
 }
@@ -114,6 +139,73 @@ Describe "NewCellData" {
                 $_.Format | Should Be "General"
             }
         }
+
+        $nfiZa = [CultureInfo]::GetCultureInfo("en-ZA").NumberFormat
+
+        It "Converts 12,34 to 12.34 with -NumberFormatInfo ZA" {
+            "12,34" | New-CellData -NumberFormatInfo $nfiZa | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Value | Should Be 12.34
+                $_.Format | Should Be "General"
+            }
+        }
+
+        It "Converts 12.34 to 12.34" {
+            "12.34" | New-CellData | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Value | Should Be 12.34
+                $_.Format | Should Be "General"
+            }
+        }
+
+        It "Converts 12,345 to 12.345 with -NumberFormatInfo ZA" {
+            "12,345" | New-CellData -NumberFormatInfo $nfiZa | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Value | Should Be 12.345
+                $_.Format | Should Be "General"
+            }
+        }
+
+        It "Converts 12.345 to 12.345" {
+            "12.345" | New-CellData | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Value | Should Be 12.345
+                $_.Format | Should Be "General"
+            }
+        }
+
+        It "Converts 0,1 to 0.1 with -NumberFormatInfo ZA" {
+            "0,1" | New-CellData -NumberFormatInfo $nfiZa | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Value | Should Be 0.1
+                $_.Format | Should Be "General"
+            }
+        }
+
+        It "Converts 0.1 to 0.1" {
+            "0.1" | New-CellData | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Value | Should Be 0.1
+                $_.Format | Should Be "General"
+            }
+        }
+
+        It "Converts 0,01 to 0.01 with -NumberFormatInfo ZA" {
+            "0,01" | New-CellData -NumberFormatInfo $nfiZa | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Value | Should Be 0.01
+                $_.Format | Should Be "General"
+            }
+        }
+
+        It "Converts 0.01 to 0.01" {
+            "0.01" | New-CellData | % {
+                $_.Value -is [double] | Should Be $true
+                $_.Value | Should Be 0.01
+                $_.Format | Should Be "General"
+            }
+        }
+
     }
 
     Context "Piping [DateTime] inputs" {

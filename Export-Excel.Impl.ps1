@@ -1,3 +1,5 @@
+Set-StrictMode -Version Latest
+
 <#
 
 .SYNOPSIS
@@ -12,6 +14,99 @@ function New-ValueFormatPair {
         [string]$Format
     )
     [PSCustomObject][ordered]@{ Value = $Value; Format = $Format; }
+}
+
+<#
+
+.SYNOPSIS
+
+A helper function that parses a double and returns some other helpful information.
+
+.LINK
+
+http://stackoverflow.com/questions/25211148/detect-iformatprovider-or-cultureinfo-from-string-using-vb-net
+
+#>
+function New-NumberFromText {
+    [CmdletBinding()]
+    param(
+        [string]$Text,
+        # https://msdn.microsoft.com/en-us/library/system.globalization.numberstyles(v=vs.110).aspx
+        [System.Globalization.NumberStyles]$NumberStyles=[System.Globalization.NumberStyles]::Any,
+        # https://msdn.microsoft.com/en-us/library/system.globalization.numberformatinfo(v=vs.110).aspx
+        [System.Globalization.NumberFormatInfo]$NumberFormatInfo=[System.Globalization.NumberFormatInfo]::InvariantInfo,
+        [switch]$Offer,
+        [string[]]$OfferCultures=@("en-US", "en-GB")
+    )
+
+    $result = [PSCustomObject]@{
+        Text = $Text
+        Number = 0
+        ParseOkay = $false
+        NumberStyles = $NumberStyles
+        NumberToString = $null
+        GoodMatch = $false
+    }
+
+    $double = 0
+    if ([double]::TryParse($result.Text, $result.NumberStyles, $NumberFormatInfo, [ref]$double)) {
+        $result.Number = $double
+        $result.ParseOkay = $true
+        $result.NumberToString = $result.Number.ToString($NumberFormatInfo)
+        if ($result.Text -eq $result.NumberToString) {
+            # Cheaper test for well-formed $Text values.
+            $result.GoodMatch = $true
+        }
+        else {
+
+            # More expensive test for trickier cases.
+
+            # The $NumberToString value will typically have more info than the
+            # $Text value, due to limitations in the binary representation of
+            # numbers. In some cases a $Text value of "0,3" produces a
+            # $NumberToString value of "3", which is not a good match for the
+            # $Text value. Guard against this. The $Text value might also
+            # include other symbols, like +, - or currency, that will not be
+            # included in NumberToString. Ideally, the incoming $Text value
+            # should already be cleaned up as much as possible.
+
+            if ($result.NumberToString -like "*$($result.Text)*") {
+                $result.GoodMatch = $true
+            }
+        }
+    }
+
+    # Offer recommendations.
+
+    if ($result.ParseOkay -and !$result.GoodMatch -and $Offer.IsPresent) {
+
+        Write-Warning "Information loss detected. Got number '$($result.Number)' with format '$($result.NumberToString)' for input '$Text'. Use -Verbose for NumberFormatInfo recommendations."
+
+        if ($VerbosePreference -ne "SilentlyContinue") {
+            # Check invariant culture.
+            if ($NumberFormatInfo -ne ([System.Globalization.NumberFormatInfo]::InvariantInfo)) {
+                $nft = New-NumberFromText -Text $Text -NumberStyles $NumberStyles -NumberFormatInfo ([System.Globalization.NumberFormatInfo]::InvariantInfo)
+                Write-Verbose "For number '$($nft.Number)' with format '$($nft.NumberToString)' use NumberFormatInfo 'InvariantInfo'."
+            }
+
+            # Check current culture.
+            if ($NumberFormatInfo -ne ([System.Globalization.NumberFormatInfo]::CurrentInfo)) {
+                $nft = New-NumberFromText -Text $Text -NumberStyles $NumberStyles -NumberFormatInfo ([System.Globalization.NumberFormatInfo]::CurrentInfo)
+                Write-Verbose "For number '$($nft.Number)' with format '$($nft.NumberToString)' use NumberFormatInfo 'CurrentInfo'."
+            }
+
+            # Check user provided cultures.
+            $OfferCultures | % {
+                $culture = $_
+                $nfi = [CultureInfo]::GetCultureInfo($culture).NumberFormat
+                $nft = New-NumberFromText -Text $Text -NumberStyles $NumberStyles -NumberFormatInfo $nfi
+                Write-Verbose "For number '$($nft.Number)' with format '$($nft.NumberToString)' use NumberFormatInfo '[CultureInfo]::GetCultureInfo('$culture').NumberFormat'."
+            }
+        }
+    }
+
+    # Write-Verbose $result
+    $result
 }
 
 <#
@@ -67,7 +162,7 @@ function New-ColumnOptionsCache {
         [string]$NumberFormat="General",
         [string]$DateTimeFormat="mmm/dd/yyyy hh:mm:ss"
     )
-    [pscustomobject]@{
+    [PSCustomObject]@{
         Cache = [ordered]@{}
         Options = $Table
         Prototype = [ordered]@{
@@ -102,15 +197,15 @@ function Get-ColumnOptions {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true, HelpMessage="A cache object created by New-ColumnOptionsCache.")]
-        [pscustomobject]$CacheObject,
+        [PSCustomObject]$CacheObject,
         [Parameter(Mandatory=$true, HelpMessage="The index of the column whose options we are requesting.")]
         [string]$ColumnIndex,
         [string]$ColumnName
     )
 
-    $colOpts = [pscustomobject]($CacheObject.Cache[$ColumnIndex])
+    $colOpts = [PSCustomObject]($CacheObject.Cache[$ColumnIndex])
     if ($colOpts -eq $null) {
-        $colOpts = [pscustomobject]($CacheObject.Prototype)
+        $colOpts = [PSCustomObject]($CacheObject.Prototype)
         if ($CacheObject.Options -ne $null) {
             # The cache contains no options associated for the particular column
             # index. Let's create the options for it based on the cache prototype.
@@ -127,7 +222,7 @@ function Get-ColumnOptions {
                     # An option entry was found for the $ColumnIndex.
                     $colPatternOptsTable = $colPatternOptsPair.Value
                     foreach ($patternOptsPair in $colPatternOptsTable.GetEnumerator()) {
-                        # $colOpts is a PsCustomObject, not a table, so
+                        # $colOpts is a PSCustomObject, not a table, so
                         # $assignments to non-existing properties will throw an
                         # $exception.
                         $optName = $patternOptsPair.Name
@@ -138,7 +233,7 @@ function Get-ColumnOptions {
                     # An option entry was found for the $ColumnName.
                     $colPatternOptsTable = $colPatternOptsPair.Value
                     foreach ($patternOptsPair in $colPatternOptsTable.GetEnumerator()) {
-                        # $colOpts is a PsCustomObject, not a table, so
+                        # $colOpts is a PSCustomObject, not a table, so
                         # $assignments to non-existing properties will throw an
                         # $exception.
                         $optName = $patternOptsPair.Name
@@ -287,7 +382,8 @@ function New-CellData {
                     # Is $itemObject a double?
                     if ($out -eq $null) {
                         $out = & {
-                            if ($itemObject -notmatch "^[0][^\.]+|^[\s]+|[\s]+$") {
+                            $decSep = $NumberFormatInfo.NumberDecimalSeparator
+                            if ($itemObject -notmatch "^[0][^\$decSep]+|^[\s]+|[\s]+$") {
 
                                 # "001" is not a valid number, but "0.01" is.
                                 # "123" can be interpeted as a number, but the
@@ -295,13 +391,43 @@ function New-CellData {
                                 # strings due to the whitespace. Try to
                                 # support these cases.
 
-                                $double = 0
-                                if ([double]::TryParse($itemObject, $NumberStyles, $NumberFormatInfo, [ref]$double)) {
-                                    if ("$double" -ne $itemObject) {
-                                        Write-Warning "Conversion from '$itemObject' to '$double' may have lost precision."
-                                    }
-                                    New-ValueFormatPair -Value $double -Format $NumberFormat
+                                # We also want to support different cultures
+                                # (i.e. 0.1 vs 0,1 or 1,200 vs 1.200). This
+                                # can already be explicitly set in the
+                                # parameters. It makes sense that users of the
+                                # library will be working with data formatted
+                                # in their CurrentCulture. Ideally, when
+                                # converting an initial string to double, the
+                                # reverse conversion from double to string
+                                # should lead to the same initial string. If
+                                # it doesn't, issue a warning, so that the
+                                # user can know that they should reformat
+                                # their data or use a different
+                                # $NumberFormatInfo value.
+
+                                # We also want to support + and -, and perhaps
+                                # even currency symbols. See $NumberStyles
+                                # documentation for the built-in method of
+                                # handling these situations. We might need to
+                                # extract the $NumberFormat from the string in
+                                # these cases.
+
+                                # If the conversion produces a value that is
+                                # not reversible, then don't prefer the
+                                # conversion, but retain the original
+                                # unconverted value.
+
+                                # Offer recommendations so that the user can
+                                # try more optimal $NumberFormatInfo
+                                # configurations.
+
+                                $nftUser = New-NumberFromText -Text $itemObject -NumberStyles $NumberStyles -NumberFormatInfo $NumberFormatInfo -Offer
+                                if ($nftUser.ParseOkay) {
+                                    New-ValueFormatPair -Value $nftUser.Number -Format $NumberFormat
                                 }
+                            }
+                            else {
+                                Write-Warning "Leading zeros or whitespace detected. Value '$itemObject' will not be treated as a number."
                             }
                         }
                     }
