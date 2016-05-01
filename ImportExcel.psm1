@@ -16,14 +16,22 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Get-HtmlTable.ps1
 . $PSScriptRoot\Import-Html.ps1
 . $PSScriptRoot\Get-Range.ps1
-. $PSScriptRoot\plot.ps1
 
-function New-Plot { 
-    [OutputType([PSPlot])]
-    param()
+if($Host.Version.Major -ge 5) {
+    . $PSScriptRoot\plot.ps1
 
-    [psplot]::new() 
+    function New-Plot { 
+        [OutputType([PSPlot])]
+        param()
+
+        [psplot]::new() 
+    }
+    
+} else {
+    Write-Warning "PowerShell 5 is required for plot.ps1"
+    Write-Warning "PowerShell Excel is ready, except for that functionality"
 }
+
 
 function Import-Excel {
     param(
