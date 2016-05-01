@@ -2,8 +2,7 @@
 #Requires -Module ImportExcel
 Set-StrictMode -Version Latest
 
-# Import-Module $PSScriptRoot -Force -Scope Global
-. $PSScriptRoot\Export-Excel.ps1
+Import-Module $PSScriptRoot -Force -Scope Global
 
 # Bring New-CellData helpers into scope.
 . (Join-Path $PSScriptRoot "$(Split-Path -Leaf $PSCommandPath)".Replace(".Tests.ps1", ".ps1"))
