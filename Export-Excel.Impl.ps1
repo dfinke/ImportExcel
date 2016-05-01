@@ -1,6 +1,17 @@
 Set-StrictMode -Version Latest
 
 <#
+.SYNOPSIS
+
+A filter that selects a property as a new name.
+
+#>
+filter Select-TargetData([string]$Property) {
+    $prop = $_ | Select-Object -ExpandProperty $Property
+    [PSCustomObject]@{ TargetData = $prop }
+}
+
+<#
 
 .SYNOPSIS
 
@@ -143,24 +154,27 @@ Cache - Stores the overrides for each column. Calculated once.
 
 Options - A reference to the incoming table. Used to create the cache.
 
-Prototype - The prototype for cache entries:
-
-    IgnoreText - Determines if column text will be converted to appropriate
-    objects, or ignored.
-
-    ForceText - Determines whether column data should be treated as strings.
-
-    DateTimeFormat - The format for DateTime objects.
-
-    NumberFormat - The format for numeric data types.
+Prototype - The prototype for cache entries. It contains the default values.
 
 #>
 function New-ColumnOptionsCache {
     [CmdletBinding()]
     param(
         [hashtable]$Table=@{},
+        # Number
         [string]$NumberFormat="General",
-        [string]$DateTimeFormat="mmm/dd/yyyy hh:mm:ss"
+        # https://msdn.microsoft.com/en-us/library/system.globalization.numberstyles(v=vs.110).aspx
+        [System.Globalization.NumberStyles]$NumberStyles=[System.Globalization.NumberStyles]::Any,
+        # https://msdn.microsoft.com/en-us/library/system.globalization.numberformatinfo(v=vs.110).aspx
+        [System.Globalization.NumberFormatInfo]$NumberFormatInfo=[System.Globalization.NumberFormatInfo]::InvariantInfo,
+        # DateTime
+        [string]$DateTimeFormat="mmm/dd/yyyy hh:mm:ss",
+        # https://msdn.microsoft.com/en-us/library/system.globalization.datetimestyles(v=vs.110).aspx
+        [System.Globalization.DateTimeStyles]$DateTimeStyles=[System.Globalization.DateTimeStyles]::None,
+        # https://msdn.microsoft.com/en-us/library/system.globalization.datetimeformatinfo(v=vs.110).aspx
+        [System.Globalization.DateTimeFormatInfo]$DateTimeFormatInfo=[System.Globalization.DateTimeFormatInfo]::InvariantInfo,
+        # TimeSpan
+        [string]$TimeSpanFormat="hh:mm:ss"
     )
     [PSCustomObject]@{
         Cache = [ordered]@{}
@@ -170,6 +184,12 @@ function New-ColumnOptionsCache {
             ForceText = $false
             DateTimeFormat = $DateTimeFormat
             NumberFormat = $NumberFormat
+            NumberStyles = $NumberStyles
+            DateTimeStyles = $DateTimeStyles
+            NumberFormatInfo = $NumberFormatInfo
+            DateTimeFormatInfo = $DateTimeFormatInfo
+            TimeSpanFormat = $TimeSpanFormat
+            TargetData = $null
         }
     }
 }
@@ -200,7 +220,8 @@ function Get-ColumnOptions {
         [PSCustomObject]$CacheObject,
         [Parameter(Mandatory=$true, HelpMessage="The index of the column whose options we are requesting.")]
         [string]$ColumnIndex,
-        [string]$ColumnName
+        [string]$ColumnName,
+        [object]$TargetData
     )
 
     $colOpts = [PSCustomObject]($CacheObject.Cache[$ColumnIndex])
@@ -222,9 +243,6 @@ function Get-ColumnOptions {
                     # An option entry was found for the $ColumnIndex.
                     $colPatternOptsTable = $colPatternOptsPair.Value
                     foreach ($patternOptsPair in $colPatternOptsTable.GetEnumerator()) {
-                        # $colOpts is a PSCustomObject, not a table, so
-                        # $assignments to non-existing properties will throw an
-                        # $exception.
                         $optName = $patternOptsPair.Name
                         $colOpts.$optName = $patternOptsPair.Value
                     }
@@ -233,18 +251,20 @@ function Get-ColumnOptions {
                     # An option entry was found for the $ColumnName.
                     $colPatternOptsTable = $colPatternOptsPair.Value
                     foreach ($patternOptsPair in $colPatternOptsTable.GetEnumerator()) {
-                        # $colOpts is a PSCustomObject, not a table, so
-                        # $assignments to non-existing properties will throw an
-                        # $exception.
                         $optName = $patternOptsPair.Name
                         $colOpts.$optName = $patternOptsPair.Value
                     }
                 }
             }
         }
+
         $CacheObject.Cache[$ColumnIndex] = $colOpts
+
+        Write-Verbose "Column options for '$ColumnIndex'/'$ColumnName': $colOpts)"
     }
-    $colOpts
+    $newOpts = [PSCustomObject]$colOpts
+    $newOpts.TargetData = $TargetData
+    $newOpts
 }
 
 <#
@@ -326,21 +346,30 @@ https://msdn.microsoft.com/en-us/library/91hfhz89(v=vs.110).aspx
 function New-CellData {
     [CmdletBinding()]
     param(
-        [Parameter(ValueFromPipeline=$true)]
-        [object[]]$Objects,
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [object[]]$TargetData,
         # https://msdn.microsoft.com/en-us/library/system.globalization.numberstyles(v=vs.110).aspx
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [System.Globalization.NumberStyles]$NumberStyles=[System.Globalization.NumberStyles]::Any,
         # https://msdn.microsoft.com/en-us/library/system.globalization.datetimestyles(v=vs.110).aspx
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [System.Globalization.DateTimeStyles]$DateTimeStyles=[System.Globalization.DateTimeStyles]::None,
         # https://msdn.microsoft.com/en-us/library/system.globalization.numberformatinfo(v=vs.110).aspx
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [System.Globalization.NumberFormatInfo]$NumberFormatInfo=[System.Globalization.NumberFormatInfo]::InvariantInfo,
         # https://msdn.microsoft.com/en-us/library/system.globalization.datetimeformatinfo(v=vs.110).aspx
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [System.Globalization.DateTimeFormatInfo]$DateTimeFormatInfo=[System.Globalization.DateTimeFormatInfo]::InvariantInfo,
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string]$NumberFormat="General",
         # https://support.office.com/en-us/article/Format-a-date-the-way-you-want-8e10019e-d5d8-47a1-ba95-db95123d273e?ui=en-US&rs=en-US&ad=US&fromAR=1
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string]$DateTimeFormat="mmm/dd/yyyy hh:mm:ss",
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string]$TimeSpanFormat="hh:mm:ss",
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [switch]$ForceText,
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [switch]$IgnoreText
     )
     begin {
@@ -349,7 +378,7 @@ function New-CellData {
     process {
         Set-StrictMode -Version Latest
 
-        if (($Objects -eq $null) -or ($Objects.Count -eq 0)) {
+        if (($TargetData -eq $null) -or ($TargetData.Count -eq 0)) {
             if ($ForceText.IsPresent) {
                 New-ValueFormatPair -Value "" -Format "General"
             }
@@ -358,7 +387,8 @@ function New-CellData {
             }
         }
         else {
-            foreach ($itemObject in $Objects) {
+            foreach ($itemObject in $TargetData) {
+                # Write-Verbose "TargetData is $itemObject"
 
                 if ($ForceText.IsPresent) {
                     $itemObject = $itemObject.ToString()
@@ -442,6 +472,8 @@ function New-CellData {
                             }
                         }
                     }
+
+                    # TODO: Is $itemObject a TimeSpan?
                 }
 
                 if ($out -eq $null) {

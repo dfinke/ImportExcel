@@ -142,14 +142,14 @@ function Export-Excel {
 
             $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-            Write-Verbose "At column '$ColumnIndex' with data '$TargetData' and type '$($TargetData.GetType())'."
+            # Write-Verbose "At column '$ColumnIndex' with data '$TargetData' and type '$($TargetData.GetType())'."
 
-            $opts = Get-ColumnOptions -CacheObject $colOptCache -ColumnIndex $ColumnIndex
-            Write-Verbose "Using options '$opts'."
-            $cellData = $TargetData | New-CellData -ForceText:$opts.ForceText -IgnoreText:$opts.IgnoreText -DateTimeFormat $opts.DateTimeFormat -NumberFormat $opts.NumberFormat
+            $opts = Get-ColumnOptions -CacheObject $colOptCache -ColumnIndex $ColumnIndex -TargetData $TargetData
+            # Write-Verbose "Using options '$opts'."
+            $cellData = $opts | New-CellData
             $targetCell.Value = $cellData.Value
             $targetCell.Style.NumberFormat.Format = $cellData.Format
-            Write-Verbose "Cell data is '$cellData' with type '$($cellData.Value.GetType())'."
+            # Write-Verbose "Cell data is '$cellData' with type '$($cellData.Value.GetType())'."
 
             $ColumnIndex += 1
             $Row += 1
@@ -179,8 +179,10 @@ function Export-Excel {
 
                 $targetCell = $ws.Cells[$Row, $ColumnIndex]
 
-                $opts = Get-ColumnOptions -CacheObject $colOptCache -ColumnIndex $ColumnIndex -ColumnName $Name
-                $cellData = $TargetData.$Name | New-CellData -ForceText:$opts.ForceText -IgnoreText:$opts.IgnoreText -DateTimeFormat $opts.DateTimeFormat -NumberFormat $opts.NumberFormat
+                $opts = Get-ColumnOptions -CacheObject $colOptCache -ColumnIndex $ColumnIndex -ColumnName $Name -TargetData ($TargetData.$Name)
+                # Write-Verbose "Using options for column '$Name': $opts"
+                $cellData = $opts | New-CellData
+                # Write-Verbose "cellData is '$cellData'."
                 $cellValue = $cellData.Value
 
                 if ($cellValue -is [string] -and $cellValue.StartsWith('=')) {

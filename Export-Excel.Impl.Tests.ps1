@@ -79,7 +79,7 @@ Describe "NewCellData" {
     Context "Piping [string] inputs" {
 
         It "Converts numeric strings to [double]" {
-            "12345" | New-CellData | % {
+            New-CellData -TargetData "12345" | % {
                 $_.Value -is [double] | Should Be $true
                 $_.Value | Should Be 12345
                 $_.Format | Should Be "General"
@@ -87,7 +87,7 @@ Describe "NewCellData" {
         }
 
         It "Leaves numeric strings with leading zeroes as strings" {
-            "012345" | New-CellData | % {
+            New-CellData -TargetData "012345" | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Value | Should Be "012345"
                 $_.Format | Should Be "General"
@@ -95,7 +95,7 @@ Describe "NewCellData" {
         }
 
         It "Numeric strings with leading zeroes that are non-integers are treated as numbers" {
-            "0.01" | New-CellData | % {
+            New-CellData -TargetData "0.01" | % {
                 $_.Value -is [double] | Should Be $true
                 $_.Value | Should Be 0.01
                 $_.Format | Should Be "General"
@@ -103,7 +103,7 @@ Describe "NewCellData" {
         }
 
         It "Leaves numeric strings as text when using -ForceText switch" {
-            "12345" | New-CellData -ForceText | % {
+            New-CellData -TargetData "12345" -ForceText | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Value | Should Be "12345"
                 $_.Format | Should Be "General"
@@ -112,7 +112,7 @@ Describe "NewCellData" {
 
         It "Converts date strings to the default date format" {
             $date = Get-Date
-            "$date" | New-CellData| % {
+            New-CellData -TargetData "$date" | % {
                 $_.Value -is [DateTime] | Should Be $true
                 "$($_.Value)" | Should Be "$date"
                 $_.Format | Should Be (Get-DateFormatDefault)
@@ -120,12 +120,12 @@ Describe "NewCellData" {
         }
 
         It "Leaves numeric strings with starting and trailing whitespace as strings" {
-            " 12345" | New-CellData | % {
+            New-CellData -TargetData " 12345" | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Value | Should Be " 12345"
                 $_.Format | Should Be "General"
             }
-            "12345 " | New-CellData | % {
+            New-CellData -TargetData "12345 " | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Value | Should Be "12345 "
                 $_.Format | Should Be "General"
@@ -133,7 +133,7 @@ Describe "NewCellData" {
         }
 
         It "Keeps percentage strings as text" {
-            "90%" | New-CellData | % {
+            New-CellData -TargetData "90%" | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Value | Should Be "90%"
                 $_.Format | Should Be "General"
@@ -143,7 +143,7 @@ Describe "NewCellData" {
         $nfiZa = [CultureInfo]::GetCultureInfo("en-ZA").NumberFormat
 
         It "Converts 12,34 to 12.34 with -NumberFormatInfo ZA" {
-            "12,34" | New-CellData -NumberFormatInfo $nfiZa | % {
+            New-CellData -TargetData "12,34" -NumberFormatInfo $nfiZa | % {
                 $_.Value -is [double] | Should Be $true
                 $_.Value | Should Be 12.34
                 $_.Format | Should Be "General"
@@ -151,7 +151,7 @@ Describe "NewCellData" {
         }
 
         It "Converts 12.34 to 12.34" {
-            "12.34" | New-CellData | % {
+            New-CellData -TargetData "12.34" | % {
                 $_.Value -is [double] | Should Be $true
                 $_.Value | Should Be 12.34
                 $_.Format | Should Be "General"
@@ -159,7 +159,7 @@ Describe "NewCellData" {
         }
 
         It "Converts 12,345 to 12.345 with -NumberFormatInfo ZA" {
-            "12,345" | New-CellData -NumberFormatInfo $nfiZa | % {
+            New-CellData -TargetData "12,345" -NumberFormatInfo $nfiZa | % {
                 $_.Value -is [double] | Should Be $true
                 $_.Value | Should Be 12.345
                 $_.Format | Should Be "General"
@@ -167,7 +167,7 @@ Describe "NewCellData" {
         }
 
         It "Converts 12.345 to 12.345" {
-            "12.345" | New-CellData | % {
+            New-CellData -TargetData "12.345" | % {
                 $_.Value -is [double] | Should Be $true
                 $_.Value | Should Be 12.345
                 $_.Format | Should Be "General"
@@ -175,7 +175,7 @@ Describe "NewCellData" {
         }
 
         It "Converts 0,1 to 0.1 with -NumberFormatInfo ZA" {
-            "0,1" | New-CellData -NumberFormatInfo $nfiZa | % {
+            New-CellData -TargetData "0,1" -NumberFormatInfo $nfiZa | % {
                 $_.Value -is [double] | Should Be $true
                 $_.Value | Should Be 0.1
                 $_.Format | Should Be "General"
@@ -183,7 +183,7 @@ Describe "NewCellData" {
         }
 
         It "Converts 0.1 to 0.1" {
-            "0.1" | New-CellData | % {
+            New-CellData -TargetData "0.1" | % {
                 $_.Value -is [double] | Should Be $true
                 $_.Value | Should Be 0.1
                 $_.Format | Should Be "General"
@@ -191,7 +191,7 @@ Describe "NewCellData" {
         }
 
         It "Converts 0,01 to 0.01 with -NumberFormatInfo ZA" {
-            "0,01" | New-CellData -NumberFormatInfo $nfiZa | % {
+            New-CellData -TargetData "0,01" -NumberFormatInfo $nfiZa | % {
                 $_.Value -is [double] | Should Be $true
                 $_.Value | Should Be 0.01
                 $_.Format | Should Be "General"
@@ -199,7 +199,7 @@ Describe "NewCellData" {
         }
 
         It "Converts 0.01 to 0.01" {
-            "0.01" | New-CellData | % {
+            New-CellData -TargetData "0.01" | % {
                 $_.Value -is [double] | Should Be $true
                 $_.Value | Should Be 0.01
                 $_.Format | Should Be "General"
@@ -211,7 +211,7 @@ Describe "NewCellData" {
     Context "Piping [DateTime] inputs" {
         It "Outputs the same [DateTime]" {
             $date = Get-Date
-            $date | New-CellData | % {
+            New-CellData -TargetData $date | % {
                 $_.Value -is [DateTime] | Should Be $true
                 $_.Value | Should Be $date
                 $_.Format | Should Be (Get-DateFormatDefault)
@@ -221,21 +221,21 @@ Describe "NewCellData" {
 
     Context "Piping numeric value type inputs" {
         It "Outputs [int] for [int] input" {
-            123 | New-CellData | % {
+            New-CellData -TargetData 123 | % {
                 $_.Value -is [int] | Should Be $true
                 $_.Value | Should Be 123
                 $_.Format | Should Be "General"
             }
         }
         It "Outputs [double] for [double] input" {
-            ([double]123) | New-CellData | % {
+            New-CellData -TargetData ([double]123) | % {
                 $_.Value -is [double] | Should Be $true
                 $_.Value | Should Be 123
                 $_.Format | Should Be "General"
             }
         }
         It "Outputs [long] for [long] input" {
-            ([long]123) | New-CellData | % {
+             New-CellData -TargetData ([long]123) | % {
                 $_.Value -is [long] | Should Be $true
                 $_.Value | Should Be 123
                 $_.Format | Should Be "General"
@@ -245,7 +245,7 @@ Describe "NewCellData" {
 
     Context "Piping other value type inputs" {
         It "Outputs [bool] for [bool] input" {
-            $true | New-CellData | % {
+            New-CellData -TargetData $true | % {
                 $_.Value -is [bool] | Should Be $true
                 $_.Value | Should Be $true
                 "$($_.Value)" | Should Be "True"
@@ -262,27 +262,27 @@ Describe "NewCellData" {
         CC, 901, 44, 30 May 1801
 "@ | ConvertFrom-Csv
         It "Converts property values to appropriate types" {
-            $csvData | Select-Object -ExpandProperty Name | New-CellData | % {
+            $csvData | Select-TargetData Name | New-CellData | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Format | Should Be "General"
             }
-            $csvData | Select-Object -ExpandProperty ID | New-CellData -ForceText | % {
+            $csvData | Select-TargetData ID | New-CellData -ForceText | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Format | Should Be "General"
             }
-            $csvData | Select-Object -ExpandProperty Age | New-CellData | % {
+            $csvData | Select-TargetData Age | New-CellData | % {
                 $_.Value -is [double] | Should Be $true
                 $_.Format | Should Be "General"
             }
-            $csvData | Select-Object -ExpandProperty Age | New-CellData -IgnoreText | % {
+            $csvData | Select-TargetData Age | New-CellData -IgnoreText | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Format | Should Be "General"
             }
-            $csvData | Select-Object -ExpandProperty Birthday | New-CellData | % {
+            $csvData | Select-TargetData Birthday | New-CellData | % {
                 $_.Value -is [DateTime] | Should Be $true
                 $_.Format | Should Be (Get-DateFormatDefault)
             }
-            $csvData | Select-Object -ExpandProperty Birthday | New-CellData -ForceText | % {
+            $csvData | Select-TargetData Birthday | New-CellData -ForceText | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Format | Should Be "General"
             }
@@ -292,19 +292,19 @@ Describe "NewCellData" {
     Context "Piping Get-Process data" {
         $process = Get-Process powershell
         It "Converts property values to appropriate types" {
-            $process | Select-Object -ExpandProperty StartTime | New-CellData | % {
+            $process | Select-TargetData StartTime | New-CellData | % {
                 $_.Value -is [DateTime] | Should Be $true
                 $_.Format | Should Be (Get-DateFormatDefault)
             }
-            $process | Select-Object -ExpandProperty Id | New-CellData | % {
+            $process | Select-TargetData Id | New-CellData | % {
                 $_.Value -is [int] | Should Be $true
                 $_.Format | Should Be "General"
             }
-            $process | Select-Object -ExpandProperty ProcessName | New-CellData | % {
+            $process | Select-TargetData ProcessName | New-CellData | % {
                 $_.Value -is [string] | Should Be $true
                 $_.Format | Should Be "General"
             }
-            $process | Select-Object -ExpandProperty Handles | New-CellData | % {
+            $process | Select-TargetData Handles | New-CellData | % {
                 $_.Value -is [int] | Should Be $true
                 $_.Format | Should Be "General"
             }
@@ -318,11 +318,9 @@ Describe "NewCellData" {
         It "Produces correctly formatted sheet for Get-Process" {
             $ws = $xlPkg.Workbook.WorkSheets[1]
             $col = $ws.Cells["A2:A"] # Id
-            $col | Select-Object -ExpandProperty Value | % {
-                $_ -is [int] | Should Be $true
-            }
-            $col | Select-Object -ExpandProperty Style | % {
-                $_.NumberFormat.Format | Should Be "General"
+            $col | % {
+                $_.Value -is [int] | Should Be $true
+                $_.Style.NumberFormat.Format | Should Be "General"
             }
             $col = $ws.Cells["B2:B"] # StartTime
             $col | Select-Object -ExpandProperty Value | % {
