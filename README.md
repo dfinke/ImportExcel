@@ -5,14 +5,24 @@ This PowerShell Module wraps the .NET [EPPlus DLL](http://epplus.codeplex.com/) 
 
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/testimonial.png)
 
-Install
+Installation
 -
-There are two ways to install this module. If you are running PowerShell V5 
+####[Powershell V5](https://www.microsoft.com/en-us/download/details.aspx?id=50395) and Later
+You can install ImportExcel directly from the Powershell Gallery
 
-	Install-Module -Name ImportExcel
+* [Recommended] Install to your personal Powershell Modules folder
+```powershell
+Install-Module ImportExcel -scope CurrentUser
+```
+* [Requires Elevation] Install for Everyone (computer Powershell Modules folder)
+```powershell
+Install-Module ImportExcel
+```
 
-Otherwise
-To install in your personal modules folder (e.g. ~\Documents\WindowsPowerShell\Modules), run:
+
+
+####Powershell V4 and Earlier
+To install to your personal modules folder (e.g. ~\Documents\WindowsPowerShell\Modules), run:
 
 ```powershell
 iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfinke/ImportExcel/master/Install.ps1')
