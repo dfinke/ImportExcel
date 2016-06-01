@@ -30,6 +30,10 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 6/01/2016
+* Added -UseDefaultCredentials to both `Import-Html` and `Get-HtmlTable`
+* New functions, `Import-USPS` and `Import-UPS`
+
 #### 4/30/2016
 Huge thank you to [Willie Möller](https://github.com/W1M0R)
 
