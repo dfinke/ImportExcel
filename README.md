@@ -32,14 +32,15 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 #### 6/01/2016
 * Added -UseDefaultCredentials to both `Import-Html` and `Get-HtmlTable`
-* New functions, `Import-USPS` and `Import-UPS`
+* New functions, `Import-UPS` and `Import-USPS`. Pass in a valid tracking # and it scrapes the page for the delivery details
+
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/Tracking.gif)
 
 #### 4/30/2016
 Huge thank you to [Willie Möller](https://github.com/W1M0R)
 
 * He added a version check so the PowerShell Classes don't cause issues for downlevel version of PowerShell
 * He also contributed the first Pester tests for the module. Super! Check them out, they'll be the way tests will be implemented going forward
-
 
 #### 4/18/2016 
 Thanks to [Paul Williams](https://github.com/pauldalewilliams) for this feature. Now data can be transposed to columns for better charting.
