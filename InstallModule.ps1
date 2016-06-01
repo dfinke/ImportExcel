@@ -24,6 +24,7 @@ $targetFiles = echo `
     Get-HtmlTable.ps1 `
     Import-Html.ps1 `
     Get-Range.ps1 `
+    TrackingUtils.ps1 `
     plot.ps1
     
 ls $targetFiles | 

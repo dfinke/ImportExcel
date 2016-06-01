@@ -20,6 +20,7 @@ $fileList = echo `
     Import-Html.ps1 `
     Get-ExcelSheetInfo.ps1 `
     Get-Range.ps1 `
+    TrackingUtils.ps1 `    
     plot.ps1
 
 if ('' -eq $InstallDirectory)
