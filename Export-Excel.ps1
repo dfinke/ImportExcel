@@ -135,7 +135,7 @@ function Export-Excel {
 
             $r=$null
             $cellValue=$TargetData
-            if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
+            if([Double]::TryParse([string]$cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
                 $targetCell.Value = $r
                 $targetCell.Style.Numberformat.Format=$Numberformat
             } else {
@@ -181,7 +181,7 @@ function Export-Excel {
                 } else {
 
                     $r=$null
-                    if([Double]::TryParse($cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
+                    if([Double]::TryParse([string]$cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
                         $targetCell.Value = $r
                         $targetCell.Style.Numberformat.Format=$Numberformat
                     } else {

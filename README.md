@@ -19,8 +19,6 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
-
-
 ####Powershell V4 and Earlier
 To install to your personal modules folder (e.g. ~\Documents\WindowsPowerShell\Modules), run:
 
@@ -29,6 +27,9 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 ```
 
 # What's new
+
+#### 6/28/2016
+* Fixed [Casting Error in Export-Excel](https://github.com/dfinke/ImportExcel/issues/108)
 
 #### 6/01/2016
 * Added -UseDefaultCredentials to both `Import-Html` and `Get-HtmlTable`
@@ -42,22 +43,22 @@ Huge thank you to [Willie Möller](https://github.com/W1M0R)
 * He added a version check so the PowerShell Classes don't cause issues for downlevel version of PowerShell
 * He also contributed the first Pester tests for the module. Super! Check them out, they'll be the way tests will be implemented going forward
 
-#### 4/18/2016 
+#### 4/18/2016
 Thanks to [Paul Williams](https://github.com/pauldalewilliams) for this feature. Now data can be transposed to columns for better charting.
 
 ```powershell
 $file = "C:\Temp\ps.xlsx"
 rm $file -ErrorAction Ignore
 
-ps | 
-    where company | 
+ps |
+    where company |
     select Company,PagedMemorySize,PeakPagedMemorySize |
     Export-Excel $file -Show -AutoSize `
         -IncludePivotTable `
         -IncludePivotChart `
         -ChartType ColumnClustered `
         -PivotRows Company `
-        -PivotData @{PagedMemorySize='sum';PeakPagedMemorySize='sum'} 
+        -PivotData @{PagedMemorySize='sum';PeakPagedMemorySize='sum'}
 ```
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/PivotAsRows.png)
 
@@ -68,8 +69,8 @@ Add `-PivotDataToColumn`
 $file = "C:\Temp\ps.xlsx"
 rm $file -ErrorAction Ignore
 
-ps | 
-    where company | 
+ps |
+    where company |
     select Company,PagedMemorySize,PeakPagedMemorySize |
     Export-Excel $file -Show -AutoSize `
         -IncludePivotTable `
@@ -106,23 +107,23 @@ $data = @"
 A,B,C,Date
 2,1,1,2016-03-29
 5,10,1,2016-03-29
-"@ | ConvertFrom-Csv 
+"@ | ConvertFrom-Csv
 
 $c = New-ExcelChart -Title Impressions `
     -ChartType Line -Header "Something" `
     -XRange "Impressions[Date]" `
     -YRange @("Impressions[B]","Impressions[A]")
 
-$data | 
+$data |
     Export-Excel temp.xlsx -AutoSize -TableName Impressions -Show -ExcelChartDefinition $c
 ```
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/MultiSeries.gif)
 
 #### 3/26/2016
-* Added `NumberFormat` parameter 
+* Added `NumberFormat` parameter
 
 ```
-$data | 
+$data |
     Export-Excel -Path $file -Show -NumberFormat '[Blue]$#,##0.00;[Red]-$#,##0.00'
 ```
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/Formatting.png)
@@ -142,10 +143,10 @@ $data |
 * Added `GreaterThan`, `GreaterThanOrEqual`, `LessThan`, `LessThanOrEqual` to `New-ConditionalText`
 
 ```powershell
-echo 489 668 299 777 860 151 119 497 234 788 | 
+echo 489 668 299 777 860 151 119 497 234 788 |
     Export-Excel c:\temp\test.xlsx -Show `
     -ConditionalText (New-ConditionalText -ConditionalType GreaterThan 525)
-```      
+```
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/GTConditional.png)
 
 #### 2/22/2016
@@ -168,7 +169,7 @@ $xlPkg = $(
     New-PSItem east  20
     New-PSItem west  30
     New-PSItem south 40
-) | Export-Excel $file -PassThru 
+) | Export-Excel $file -PassThru
 
 $ws=$xlPkg.Workbook.Worksheets[1]
 
@@ -176,7 +177,7 @@ $ws.Cells["A3"].Value = "Hello World"
 $ws.Cells["B3"].Value = "Updating cells"
 $ws.Cells["D1:D5"].Value = "Data"
 
-$ws.Cells.AutoFitColumns() 
+$ws.Cells.AutoFitColumns()
 
 $xlPkg.Save()
 $xlPkg.Dispose()
@@ -189,11 +190,11 @@ Invoke-Item $file
 
 #### 1/18/2016
 
-* Added `Conditional Text Formatting`. [Boe Prox](https://twitter.com/proxb) posted about [HTML Reporting, Part 2: Take Your Reporting a Step Further](https://mcpmag.com/articles/2016/01/14/html-reporting-part-2.aspx) and colorized cells. Great idea, now part of the PowerShell Excel module. 
- 
+* Added `Conditional Text Formatting`. [Boe Prox](https://twitter.com/proxb) posted about [HTML Reporting, Part 2: Take Your Reporting a Step Further](https://mcpmag.com/articles/2016/01/14/html-reporting-part-2.aspx) and colorized cells. Great idea, now part of the PowerShell Excel module.
+
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/ConditionalText2.gif)
- 
-#### 1/7/2016 
+
+#### 1/7/2016
 * Added `Get-ExcelSheetInfo` - Great contribution from *Johan Åkerström* check him out on [GitHub](https://github.com/CosmosKey) and [Twitter](https://twitter.com/neptune443)
 
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/GetExcelSheetInfo.png)
@@ -202,11 +203,11 @@ Invoke-Item $file
 
 * Added `NoLegend`, `Show-Category`, `ShowPercent` for all charts including Pivot Charts
 * Updated PieChart, BarChart, ColumnChart and Line chart to work with the pipeline and added `NoLegend`, `Show-Category`, `ShowPercent`
- 
+
 #### 12/17/2015
 
 These new features open the door for really sophisticated work sheet creation.
-  
+
 Stay tuned for a [blog post](http://www.dougfinke.com/blog/) and examples.
 
 ***Quick List***
@@ -234,34 +235,34 @@ $m="substring"
 "hello".$m.invoke(2,1)
 ```
 
-A ***big thank you*** to [DarkLite1](https://github.com/DarkLite1) for adding the help to Export-Excel. 
+A ***big thank you*** to [DarkLite1](https://github.com/DarkLite1) for adding the help to Export-Excel.
 
 Added `-HeaderRow` parameter. Sometimes the heading does not start in Row 1.
 
- 
+
 #### 10/16/2015
 
-Fixes [Export-Excel generates corrupt Excel file](https://github.com/dfinke/ImportExcel/issues/46) 
+Fixes [Export-Excel generates corrupt Excel file](https://github.com/dfinke/ImportExcel/issues/46)
 
 #### 10/15/2015
 
-`Import-Excel` has a new parameter `NoHeader`. If data in the sheet does not have headers and you don't want to supply your own, `Import-Excel` will generate the property name.  
- 
-`Import-Excel` now returns `.Value` rather than `.Text`
- 
+`Import-Excel` has a new parameter `NoHeader`. If data in the sheet does not have headers and you don't want to supply your own, `Import-Excel` will generate the property name.
 
-#### 10/1/2015 
+`Import-Excel` now returns `.Value` rather than `.Text`
+
+
+#### 10/1/2015
 
 Merged ValidateSet for Encoding and Extension. Thank you [Irwin Strachan](https://github.com/irwins).
 
 #### 9/30/2015
 
-Export-Excel can now handle data that is **not** an object 
+Export-Excel can now handle data that is **not** an object
 
 	echo a b c 1 $true 2.1 1/1/2015 | Export-Excel c:\temp\test.xlsx -Show
 Or
 
-	dir -Name | Export-Excel c:\temp\test.xlsx -Show 
+	dir -Name | Export-Excel c:\temp\test.xlsx -Show
 
 #### 9/25/2015
 
@@ -273,44 +274,44 @@ Got a great request from [forensicsguy20012004](https://github.com/forensicsguy2
 ##### Example
 Here, you create four worksheets named `PM`,`Handles`,`Services` and `Files`.
 
-The last line creates the `Files` sheet and then hides the `Handles`,`Services` sheets. 
+The last line creates the `Files` sheet and then hides the `Handles`,`Services` sheets.
 
-	$p = Get-Process	
-	
-	$p|select company, pm | Export-Excel $xlFile -WorkSheetname PM 
-	$p|select company, handles| Export-Excel $xlFile -WorkSheetname Handles 
-	Get-Service| Export-Excel $xlFile -WorkSheetname Services 
-	
-	dir -File | Export-Excel $xlFile -WorkSheetname Files -Show -HideSheet Handles, Services 
+	$p = Get-Process
+
+	$p|select company, pm | Export-Excel $xlFile -WorkSheetname PM
+	$p|select company, handles| Export-Excel $xlFile -WorkSheetname Handles
+	Get-Service| Export-Excel $xlFile -WorkSheetname Services
+
+	dir -File | Export-Excel $xlFile -WorkSheetname Files -Show -HideSheet Handles, Services
 
 
-**Note** There is a bug in EPPlus that does not let you hide the first worksheet created. Hopefully it'll resolved soon.  
-  
-#### 9/11/2015 
+**Note** There is a bug in EPPlus that does not let you hide the first worksheet created. Hopefully it'll resolved soon.
+
+#### 9/11/2015
 
 Added Conditional formatting. See [TryConditional.ps1](https://github.com/dfinke/ImportExcel/blob/master/TryConditional.ps1) as an example.
 
 Or, check out the short ***"How To"*** video.
 
 [![image](http://www.dougfinke.com/videos/excelpsmodule/ExcelPSModule_First_Frame.png)](http://www.dougfinke.com/videos/excelpsmodule/excelpsmodule.mp4)
- 
+
 
 #### 8/21/2015
 * Now import Excel sheets even if the file is open in Excel. Thank you [Francois Lachance-Guillemette](https://github.com/francoislg)
 
-#### 7/09/2015 
+#### 7/09/2015
 * For -PivotRows you can pass a `hashtable` with the name of the property and the type of calculation. `Sum`, `Average`, `Max`, `Min`, `Product`, `StdDev`, `StdDevp`, `Var`, `Varp`
 
 ```powershell
-Get-Service | 
+Get-Service |
 	Export-Excel "c:\temp\test.xlsx" `
 		-Show `
 		-IncludePivotTable `
-		-PivotRows status ` 
+		-PivotRows status `
 		-PivotData @{status='count'}
-``` 
+```
 
-#### 6/16/2015 (Thanks [Justin](https://github.com/zippy1981)) 
+#### 6/16/2015 (Thanks [Justin](https://github.com/zippy1981))
 * Improvements to PivotTable overwriting
 * Added two parameters to Export-Excel
 	* RangeName - Turns the data piped to Export-Excel into a named range.
@@ -334,9 +335,9 @@ Examples
 Example
 
 	Get-CimInstance win32_service |
-		select state, accept*, start*, caption |    
+		select state, accept*, start*, caption |
 		Export-Excel test.xlsx -Show -BoldTopRow -AutoFilter -FreezeTopRow -AutoSize
-			
+
 ![image](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/FilterFreezeBold.gif)
 
 
@@ -345,7 +346,7 @@ Example
 
 
 #### 4/27/2015
-* datetime properties were displaying as ints, now are formatted 
+* datetime properties were displaying as ints, now are formatted
 
 #### 4/25/2015
 * Now you can create multiple Pivot tables in one pass
@@ -355,11 +356,11 @@ Example
 
 	$ps = ps
 
-	$ps | 
+	$ps |
 	    Export-Excel .\testExport.xlsx  -WorkSheetname memory `
 	        -IncludePivotTable -PivotRows Company -PivotData PM `
 	        -IncludePivotChart -ChartType PieExploded3D
-	$ps | 
+	$ps |
 	    Export-Excel .\testExport.xlsx  -WorkSheetname handles `
 	        -IncludePivotTable -PivotRows Company -PivotData Handles `
 	        -IncludePivotChart -ChartType PieExploded3D -Show
@@ -387,7 +388,7 @@ Example
 * Implemented exporting data to **named sheets** via the -WorkSheename parameter.
 
 Examples
-- 
+-
 `gsv | Export-Excel .\test.xlsx -WorkSheetname Services`
 
 `dir -file | Export-Excel .\test.xlsx -WorkSheetname Files`
@@ -395,20 +396,20 @@ Examples
 `ps | Export-Excel .\test.xlsx -WorkSheetname Processes -IncludePivotTable -Show -PivotRows Company -PivotData PM`
 
 #### Convert (All or Some) Excel Sheets to Text files
- 
+
 Reads each sheet in TestSheets.xlsx and outputs it to the data directory as the sheet name with the extension .txt
 
     ConvertFrom-ExcelSheet .\TestSheets.xlsx .\data
 
 Reads and outputs sheets like Sheet10 and Sheet20 form TestSheets.xlsx and outputs it to the data directory as the sheet name with the extension .txt
-	
+
 	ConvertFrom-ExcelSheet .\TestSheets.xlsx .\data sheet?0
 
 #### Example Adding a Title
 You can set the pattern, size and of if the title is bold.
 
-	$p=@{	    
-	    Title = "Process Report as of $(Get-Date)" 
+	$p=@{
+	    Title = "Process Report as of $(Get-Date)"
 	    TitleFillPattern = "LightTrellis"
 	    TitleSize = 18
 	    TitleBold = $true
@@ -417,7 +418,7 @@ You can set the pattern, size and of if the title is bold.
 	    Show = $true
 	    AutoSize = $true
 	}
-	
+
 	Get-Process |
 	    Where Company | Select Company, PM |
 	    Export-Excel @p
@@ -428,7 +429,7 @@ You can set the pattern, size and of if the title is bold.
 ![image](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/ExportMultiple.gif)
 
 	$p = Get-Process
-	
+
 	$DataToGather = @{
 	    PM        = {$p|select company, pm}
 	    Handles   = {$p|select company, handles}
@@ -436,14 +437,14 @@ You can set the pattern, size and of if the title is bold.
 	    Files     = {dir -File}
 	    Albums    = {(Invoke-RestMethod http://www.dougfinke.com/powershellfordevelopers/albums.js)}
 	}
-	
+
 	Export-MultipleExcelSheets -Show -AutoSize .\testExport.xlsx $DataToGather
 
 
 
 ***NOTE*** If the sheet exists when using *-WorkSheetname* parameter, it will be deleted and then added with the new data.
 
-## Get-Process Exported to Excel 
+## Get-Process Exported to Excel
 
 ### Total Physical Memory Grouped By Company
 ![image](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/PivotTablesAndCharts.png)
