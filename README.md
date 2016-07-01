@@ -28,8 +28,9 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
-#### 6/28/2016
+#### 7/1/2016
 * Fixed [Casting Error in Export-Excel](https://github.com/dfinke/ImportExcel/issues/108)
+* For `Import-Excel` change Resolve-Path to return ProviderPath for use with UNC
 
 #### 6/01/2016
 * Added -UseDefaultCredentials to both `Import-Html` and `Get-HtmlTable`
