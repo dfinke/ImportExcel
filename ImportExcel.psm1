@@ -21,13 +21,13 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 if($Host.Version.Major -ge 5) {
     . $PSScriptRoot\plot.ps1
 
-    function New-Plot { 
+    function New-Plot {
         [OutputType([PSPlot])]
         param()
 
-        [psplot]::new() 
+        [psplot]::new()
     }
-    
+
 } else {
     Write-Warning "PowerShell 5 is required for plot.ps1"
     Write-Warning "PowerShell Excel is ready, except for that functionality"
@@ -49,7 +49,7 @@ function Import-Excel {
 
     Process {
 
-        $Path = (Resolve-Path $Path).Path
+        $Path = (Resolve-Path $Path).ProviderPath
         write-debug "target excel file $Path"
 
         $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,"Open","Read","ReadWrite"
