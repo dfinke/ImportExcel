@@ -29,6 +29,7 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 # What's new
 
 #### 7/1/2016
+* Pushed 2.2.7 fixed resolve path in Get-ExcelSheetInfo
 * Fixed [Casting Error in Export-Excel](https://github.com/dfinke/ImportExcel/issues/108)
 * For `Import-Excel` change Resolve-Path to return ProviderPath for use with UNC
 

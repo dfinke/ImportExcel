@@ -1,16 +1,16 @@
 Function Get-ExcelSheetInfo {
-    <# 
-    .SYNOPSIS 
+    <#
+    .SYNOPSIS
         Get worksheet names and their indices of an Excel workbook.
- 
-    .DESCRIPTION 
+
+    .DESCRIPTION
         The Get-ExcelSheetInfo cmdlet gets worksheet names and their indices of an Excel workbook.
- 
-    .PARAMETER Path 
+
+    .PARAMETER Path
         Specifies the path to the Excel file. This parameter is required.
-             
+
     .EXAMPLE
-        Get-ExcelSheetInfo .\Test.xlsx 
+        Get-ExcelSheetInfo .\Test.xlsx
 
     .NOTES
         CHANGELOG
@@ -19,8 +19,8 @@ Function Get-ExcelSheetInfo {
     .LINK
         https://github.com/dfinke/ImportExcel
 
-    #> 
-    
+    #>
+
     [CmdletBinding()]
     param(
         [Alias("FullName")]
@@ -28,13 +28,13 @@ Function Get-ExcelSheetInfo {
         $Path
     )
     process {
-        $Path = (Resolve-Path $Path).Path
+        $Path = (Resolve-Path $Path).ProviderPath
         write-debug "target excel file $Path"
         $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,"Open","Read","ReadWrite"
         $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
         $workbook  = $xl.Workbook
         if($workbook -and $workbook.Worksheets) {
-            $workbook.Worksheets | 
+            $workbook.Worksheets |
                 Select-Object -Property name,index,hidden,@{
                     Label = "Path"
                     Expression = {$Path}
