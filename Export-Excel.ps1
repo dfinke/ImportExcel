@@ -254,8 +254,6 @@ function Export-Excel {
             $tbl = $ws.Tables.Add($targetRange, $TableName)
 
             $tbl.TableStyle=$TableStyle
-
-            $idx
         }
 
         if($IncludePivotTable) {
