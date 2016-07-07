@@ -28,6 +28,15 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 7/7/2016
+[Attila Mihalicz](https://github.com/attilamihalicz) fixed two issues
+
+* Removing extra spaces after the backtick
+* Uninitialized variable $idx leaks into the pipeline when `-TableName` parameter is used
+
+Thanks Attila.
+
+
 #### 7/1/2016
 * Pushed 2.2.7 fixed resolve path in Get-ExcelSheetInfo
 * Fixed [Casting Error in Export-Excel](https://github.com/dfinke/ImportExcel/issues/108)
