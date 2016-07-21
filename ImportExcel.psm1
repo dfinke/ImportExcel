@@ -80,15 +80,19 @@ function Import-Excel {
                 }
             }
 
-            foreach ($Row in ($HeaderRow+1)..$Rows) {
-                $h=[Ordered]@{}
-                foreach ($Column in 0..($Columns-1)) {
-                    if($Header[$Column].Length -gt 0) {
-                        $Name    = $Header[$Column]
-                        $h.$Name = $worksheet.Cells[$Row,($Column+1)].Value
+            if($Rows -eq 1) {                
+                $Header | ForEach {$h=[Ordered]@{}} {$h.$_=''} {[PSCustomObject]$h}
+            } else {
+                foreach ($Row in ($HeaderRow+1)..$Rows) {
+                    $h=[Ordered]@{}
+                    foreach ($Column in 0..($Columns-1)) {
+                        if($Header[$Column].Length -gt 0) {
+                            $Name    = $Header[$Column]
+                            $h.$Name = $worksheet.Cells[$Row,($Column+1)].Value
+                        }
                     }
+                    [PSCustomObject]$h
                 }
-                [PSCustomObject]$h
             }
         }
 

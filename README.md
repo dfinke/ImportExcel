@@ -28,6 +28,9 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 7/21/2016
+* Fixes `Import-Excel` #68
+
 #### 7/7/2016
 [Attila Mihalicz](https://github.com/attilamihalicz) fixed two issues
 
