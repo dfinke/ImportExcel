@@ -25,9 +25,10 @@ $targetFiles = echo `
     Import-Html.ps1 `
     Get-Range.ps1 `
     TrackingUtils.ps1 `
+    Copy-ExcelWorkSheet.ps1 `
     plot.ps1
-    
-ls $targetFiles | 
+
+ls $targetFiles |
     ForEach {
         Copy-Item -Verbose -Path $_.FullName -Destination "$($TargetPath)\$($_.name)"
     }

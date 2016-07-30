@@ -28,6 +28,9 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 7/30/2016
+* Added `Copy-ExcelWorksheet`. Let's you copy a work sheet from one Excel workbook to another.
+
 #### 7/21/2016
 * Fixes `Import-Excel` #68
 
