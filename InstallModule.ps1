@@ -8,6 +8,7 @@ $targetFiles = echo `
     *.psm1 `
     *.psd1 `
     *.dll `
+    New-ConditionalText.ps1 `
     New-ConditionalFormattingIconSet.ps1 `
     Export-Excel.ps1 `
     Export-ExcelSheet.ps1 `

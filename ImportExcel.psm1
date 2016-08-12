@@ -17,6 +17,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Import-Html.ps1
 . $PSScriptRoot\Get-Range.ps1
 . $PSScriptRoot\TrackingUtils.ps1
+. $PSScriptRoot\Copy-ExcelWorkSheet.ps1
 
 if($Host.Version.Major -ge 5) {
     . $PSScriptRoot\plot.ps1
@@ -76,11 +77,11 @@ function Import-Excel {
         } else {
             if(!$Header) {
                 $Header = foreach ($Column in 1..$Columns) {
-                    $worksheet.Cells[$HeaderRow,$Column].Text
+                    $worksheet.Cells[$HeaderRow,$Column].Value
                 }
             }
 
-            if($Rows -eq 1) {                
+            if($Rows -eq 1) {
                 $Header | ForEach {$h=[Ordered]@{}} {$h.$_=''} {[PSCustomObject]$h}
             } else {
                 foreach ($Row in ($HeaderRow+1)..$Rows) {

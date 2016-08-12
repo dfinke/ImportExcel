@@ -28,6 +28,9 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 8/12/2016
+[Fixed](https://github.com/dfinke/ImportExcel/issues/115) reading the headers from cells, moved from using `Text` property to `Value` property.
+
 #### 7/30/2016
 * Added `Copy-ExcelWorksheet`. Let's you copy a work sheet from one Excel workbook to another.
 
