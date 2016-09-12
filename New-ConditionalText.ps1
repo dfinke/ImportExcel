@@ -15,7 +15,7 @@ function New-ConditionalText {
             "Today","Tomorrow","Yesterday",
             "DuplicateValues",
             "AboveOrEqualAverage","BelowAverage","AboveAverage",
-            "Top", "TopPercent","ContainsBlanks"
+            "Top", "TopPercent", "ContainsBlanks"
         )]
         $ConditionalType="ContainsText"
     )
