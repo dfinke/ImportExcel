@@ -78,7 +78,7 @@ function Export-Excel {
 
             foreach($format in $ConditionalFormat ) {
                 $target = "Add$($format.Formatter)"
-                $rule = ($ws.ConditionalFormatting).PSObject.Methods[$target].Invoke($format.Address, $format.IconType)
+                $rule = ($ws.ConditionalFormatting).PSObject.Methods[$target].Invoke($format.Range, $format.IconType)
                 $rule.Reverse = $format.Reverse
             }
 
