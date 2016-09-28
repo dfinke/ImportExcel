@@ -19,7 +19,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\TrackingUtils.ps1
 . $PSScriptRoot\Copy-ExcelWorkSheet.ps1
 
-if($Host.Version.Major -ge 5) {
+if($PSVersionTable.PSVersion.Major -ge 5) {
     . $PSScriptRoot\plot.ps1
 
     function New-Plot {
