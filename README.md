@@ -28,6 +28,11 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 9/28/2016
+[Fixed](https://github.com/dfinke/ImportExcel/pull/126) Powershell 3.0 compatibility. Thanks to [headsphere](https://github.com/headsphere). He used `$obj.PSObject.Methods[$target]` snytax to make it backward compatible. PS v4.0 and later allow `$obj.$target`.
+
+Thank you to [xelsirko](https://github.com/xelsirko) for fixing - *Import-module importexcel" gives version warning if started inside background job*
+
 #### 8/12/2016
 [Fixed](https://github.com/dfinke/ImportExcel/issues/115) reading the headers from cells, moved from using `Text` property to `Value` property.
 
