@@ -78,7 +78,7 @@ function Export-Excel {
 
             foreach($format in $ConditionalFormat ) {
                 $target = "Add$($format.Formatter)"
-                $rule = ($ws.ConditionalFormatting).$target($format.Range, $format.IconType)
+                $rule = ($ws.ConditionalFormatting).PSObject.Methods[$target].Invoke($format.Range, $format.IconType)
                 $rule.Reverse = $format.Reverse
             }
 
@@ -392,7 +392,7 @@ function Export-Excel {
                 $Range=$targetConditionalText.Range
                 if(!$Range) { $Range=$ws.Dimension.Address }
 
-                $rule=($ws.Cells[$Range].ConditionalFormatting).$target()
+                $rule=($ws.Cells[$Range].ConditionalFormatting).PSObject.Methods[$target].Invoke()
 
                 if($targetConditionalText.Text) {                
                     if($targetConditionalText.ConditionalType -match "equal|notequal|lessthan|lessthanorequal|greaterthan|greaterthanorequal") {
