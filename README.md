@@ -58,7 +58,7 @@ Get-Process |
         }
     }
 ```
-![]()
+![](https://github.com/dfinke/ImportExcel/blob/master/images/CellFormatting.png?raw=true)
 
 
 #### 9/28/2016
