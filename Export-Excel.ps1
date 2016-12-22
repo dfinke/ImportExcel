@@ -51,6 +51,8 @@ function Export-Excel {
         [Object[]]$ConditionalFormat,
         [Object[]]$ConditionalText,
         [Object[]]$ExcelChartDefinition,
+        # [Object[]]$CellStyle,
+        [ScriptBlock]$CellStyleSB,
         [string[]]$HideSheet,
         [Switch]$KillExcel,
         [Switch]$AutoNameRange,
@@ -406,6 +408,12 @@ function Export-Excel {
                 $rule.Style.Fill.PatternType=$targetConditionalText.PatternType
                 $rule.Style.Fill.BackgroundColor.Color=$targetConditionalText.BackgroundColor
            }
+        }
+
+        if($CellStyleSB) {
+            $TotalRows=$ws.Dimension.Rows
+            $LastColumn=(Get-ExcelColumnName $ws.Dimension.Columns).ColumnName
+            & $CellStyleSB $ws $TotalRows $LastColumn
         }
 
         if($PassThru) {
