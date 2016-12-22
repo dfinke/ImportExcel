@@ -22,6 +22,7 @@ $fileList = echo `
     Get-Range.ps1 `
     TrackingUtils.ps1 `
     Copy-ExcelWorkSheet.ps1 `
+    Set-CellStyle.ps1 `
     plot.ps1
 
 if ('' -eq $InstallDirectory)

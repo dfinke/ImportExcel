@@ -28,6 +28,37 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 12/22/2016
+- Added `-Now` switch. This short cuts the process, automatically creating a temp file and enables the `-Show`, `-AutoFilter`, `-AutoSize` switches.
+
+```powershell
+Get-Process | Select Company, Handles | Export-Excel -Now
+```
+
+- Added ScriptBlocks for coloring cells. Check out
+
+```powershell
+Get-Process |
+    Select-Object Company,Handles,PM, NPM| 
+    Export-Excel $xlfile -Show  -AutoSize -CellStyleSB {
+        param(
+            $workSheet,
+            $totalRows,
+            $lastColumn
+        )
+                
+        Set-CellStyle $workSheet 1 $LastColumn Solid Cyan
+
+        foreach($row in (2..$totalRows | Where-Object {$_ % 2 -eq 0})) {
+            Set-CellStyle $workSheet $row $LastColumn Solid Gray
+        }
+
+        foreach($row in (2..$totalRows | Where-Object {$_ % 2 -eq 1})) {
+            Set-CellStyle $workSheet $row $LastColumn Solid LightGray
+        }
+    }
+```
+
 #### 9/28/2016
 [Fixed](https://github.com/dfinke/ImportExcel/pull/126) Powershell 3.0 compatibility. Thanks to [headsphere](https://github.com/headsphere). He used `$obj.PSObject.Methods[$target]` snytax to make it backward compatible. PS v4.0 and later allow `$obj.$target`.
 

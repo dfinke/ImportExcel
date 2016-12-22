@@ -14,7 +14,7 @@ function Export-Excel {
         Get-Service | Export-Excel "c:\temp\test.xlsx"  -Show -IncludePivotTable -PivotRows status -PivotData @{status='count'}
     #>
     param(
-        [Parameter(Mandatory=$true)]
+        #[Parameter(Mandatory=$true)]
         $Path,
         [Parameter(ValueFromPipeline=$true)]
         $TargetData,
@@ -51,13 +51,15 @@ function Export-Excel {
         [Object[]]$ConditionalFormat,
         [Object[]]$ConditionalText,
         [Object[]]$ExcelChartDefinition,
+        [ScriptBlock]$CellStyleSB,
         [string[]]$HideSheet,
         [Switch]$KillExcel,
         [Switch]$AutoNameRange,
         $StartRow=1,
         $StartColumn=1,
         [Switch]$PassThru,
-        [string]$Numberformat="General"
+        [string]$Numberformat="General",
+        [Switch]$Now
     )
 
     Begin {
@@ -68,7 +70,15 @@ function Export-Excel {
         }
 
         try {
+            if($Now) {
+                $Path=[System.IO.Path]::GetTempFileName() -replace "\.tmp",".xlsx"                
+                $Show=$true
+                $AutoSize=$true
+                $AutoFilter=$true
+            }
+
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+
             if (Test-Path $path) {
                 Write-Debug "File `"$Path`" already exists"
             }
@@ -406,6 +416,12 @@ function Export-Excel {
                 $rule.Style.Fill.PatternType=$targetConditionalText.PatternType
                 $rule.Style.Fill.BackgroundColor.Color=$targetConditionalText.BackgroundColor
            }
+        }
+
+        if($CellStyleSB) {
+            $TotalRows=$ws.Dimension.Rows
+            $LastColumn=(Get-ExcelColumnName $ws.Dimension.Columns).ColumnName
+            & $CellStyleSB $ws $TotalRows $LastColumn
         }
 
         if($PassThru) {
