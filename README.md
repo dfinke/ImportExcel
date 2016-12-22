@@ -35,7 +35,7 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 Get-Process | Select Company, Handles | Export-Excel -Now
 ```
 
-- Added ScriptBlocks for coloring cells. Check out
+- Added ScriptBlocks for coloring cells. Check out (Examples)[https://github.com/dfinke/ImportExcel/tree/master/Examples/FormatCellStyles]
 
 ```powershell
 Get-Process |
