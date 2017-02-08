@@ -78,7 +78,8 @@ function Import-Excel {
         $WorkSheetname=1,
         [int]$HeaderRow=1,
         [string[]]$Header,
-        [switch]$NoHeader
+        [switch]$NoHeader,
+        [switch]$DataOnly
     )
 
     Process {
@@ -98,14 +99,33 @@ function Import-Excel {
         $Columns=$dimension.Columns
 
         if($NoHeader) {
-            foreach ($Row in 0..($Rows-1)) {
-                $newRow = [Ordered]@{}
-                foreach ($Column in 0..($Columns-1)) {
-                    $propertyName = "P$($Column+1)"
-                    $newRow.$propertyName = $worksheet.Cells[($Row+1),($Column+1)].Value
-                }
+            if ($DataOnly) {
+                $CellsWithValues = $worksheet.Cells | where Value
 
-                [PSCustomObject]$newRow
+                $Script:i = 0
+                $ColumnReference = $CellsWithValues | Select-Object -ExpandProperty End | Group-Object Column |
+                    Select-Object @{L='Column';E={$_.Name}}, @{L='NewColumn';E={$Script:i++; $Script:i}}
+                
+                $CellsWithValues | Select-Object -ExpandProperty End | Group-Object Row | ForEach-Object {    
+                    $newRow = [Ordered]@{}
+                    
+                    foreach ($C in $ColumnReference) {
+                        $newRow."P$($C.NewColumn)" = $worksheet.Cells[($_.Name),($C.Column)].Value
+                    }
+
+                    [PSCustomObject]$newRow
+                }
+            }
+            else {
+                foreach ($Row in 0..($Rows-1)) {
+                    $newRow = [Ordered]@{}
+                    foreach ($Column in 0..($Columns-1)) {
+                        $propertyName = "P$($Column+1)"
+                        $newRow.$propertyName = $worksheet.Cells[($Row+1),($Column+1)].Value
+                    }
+
+                    [PSCustomObject]$newRow
+                }
             }
         } else {
             if(!$Header) {
@@ -116,16 +136,36 @@ function Import-Excel {
 
             if($Rows -eq 1) {
                 $Header | ForEach {$h=[Ordered]@{}} {$h.$_=''} {[PSCustomObject]$h}
-            } else {
-                foreach ($Row in ($HeaderRow+1)..$Rows) {
-                    $h=[Ordered]@{}
-                    foreach ($Column in 0..($Columns-1)) {
+            } 
+            else {
+                if ($DataOnly) {
+                    $CellsWithValues = $worksheet.Cells | where Value
+
+                    $Script:i = -1
+                    $ColumnReference = $CellsWithValues | Select-Object -ExpandProperty End | Group-Object Column |
+                        Select-Object @{L='Column';E={$_.Name}}, @{L='NewColumn';E={$Script:i++; $Header[$Script:i]}}
+                
+                    $CellsWithValues | Select-Object -ExpandProperty End | Group-Object Row | ForEach-Object {    
+                        $newRow = [Ordered]@{}
+                    
+                        foreach ($C in $ColumnReference) {
+                            $newRow."$($C.NewColumn)" = $worksheet.Cells[($_.Name),($C.Column)].Value
+                        }
+
+                        [PSCustomObject]$newRow
+                    }
+                }
+                else {
+                    foreach ($Row in ($HeaderRow+1)..$Rows) {
+                        $h=[Ordered]@{}
+                                            foreach ($Column in 0..($Columns-1)) {
                         if($Header[$Column].Length -gt 0) {
                             $Name    = $Header[$Column]
                             $h.$Name = $worksheet.Cells[$Row,($Column+1)].Value
                         }
                     }
-                    [PSCustomObject]$h
+                        [PSCustomObject]$h
+                    }
                 }
             }
         }
