@@ -37,6 +37,38 @@ if($PSVersionTable.PSVersion.Major -ge 5) {
 
 
 function Import-Excel {
+    <#
+    .SYNOPSIS
+        Read the content of an Excel sheet.
+ 
+    .DESCRIPTION 
+        The Import-Excel cmdlet reads the content of an Excel worksheet and creates one object for each row. This is done without using Microsoft Excel in the background but by using the .NET EPPLus.dll. You can also automate the creation of Pivot Tables and Charts.
+ 
+    .PARAMETER Path 
+        Specifies the path to the Excel file.
+ 
+    .PARAMETER WorkSheetname
+        Specifies the name of the worksheet in the Excel workbook. 
+        
+    .PARAMETER HeaderRow
+        Specifies custom header names for columns.
+
+    .PARAMETER Header
+        Specifies the title used in the worksheet. The title is placed on the first line of the worksheet.
+
+    .PARAMETER NoHeader
+        When used we generate our own headers (P1, P2, P3, ..) instead of the ones defined in the first row of the Excel worksheet.
+
+    .PARAMETER DataOnly
+        When used we will only generate objects for rows that contain text values, not for empty rows or columns.
+ 
+    .EXAMPLE
+        Import-Excel -WorkSheetname 'Statistics' -Path 'E:\Finance\Company results.xlsx'
+        Imports all the information found in the worksheet 'Statistics' of the Excel file 'Company results.xlsx'
+
+    .LINK
+        https://github.com/dfinke/ImportExcel
+    #>
     param(
         [Alias("FullName")]
         [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory=$true)]
