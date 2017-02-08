@@ -1,16 +1,19 @@
 Function Get-ExcelSheetInfo {
-    <#
-    .SYNOPSIS
+    <# 
+    .SYNOPSIS 
         Get worksheet names and their indices of an Excel workbook.
-
-    .DESCRIPTION
+ 
+    .DESCRIPTION 
         The Get-ExcelSheetInfo cmdlet gets worksheet names and their indices of an Excel workbook.
-
+ 
     .PARAMETER Path
         Specifies the path to the Excel file. This parameter is required.
 
+    .PARAMETER Type
+        Specifies which information to get, the one from the workbook or the one from the sheets.
+             
     .EXAMPLE
-        Get-ExcelSheetInfo .\Test.xlsx
+        Get-ExcelSheetInfo .\Test.xlsx 
 
     .NOTES
         CHANGELOG
@@ -18,27 +21,48 @@ Function Get-ExcelSheetInfo {
 
     .LINK
         https://github.com/dfinke/ImportExcel
-
-    #>
-
+    #> 
+    
     [CmdletBinding()]
-    param(
+    Param (
         [Alias("FullName")]
-        [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory=$true)]
-        $Path
+        [Parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Mandatory)]
+        [String]$Path,
+        [ValidateSet('Sheets', 'Workbook')] 
+        [String]$Type = 'Workbook'
     )
-    process {
-        $Path = (Resolve-Path $Path).ProviderPath
-        write-debug "target excel file $Path"
-        $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,"Open","Read","ReadWrite"
-        $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
-        $workbook  = $xl.Workbook
-        if($workbook -and $workbook.Worksheets) {
-            $workbook.Worksheets |
-                Select-Object -Property name,index,hidden,@{
-                    Label = "Path"
-                    Expression = {$Path}
+
+    Process {
+        Try {
+            $Path = (Resolve-Path $Path).ProviderPath
+
+            Write-Debug "target excel file $Path"
+            $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,"Open","Read","ReadWrite"
+            $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
+            $workbook  = $xl.Workbook
+
+            Switch ($Type) {
+                'Workbook' {
+                    if ($workbook) {
+                        $workbook.Properties
+                    }
                 }
+                'Sheets' {
+                    if ($workbook -and $workbook.Worksheets) {
+                        $workbook.Worksheets | 
+                            Select-Object -Property name,index,hidden,@{
+                                Label = "Path"
+                                Expression = {$Path}
+                            }
+                    }
+                }
+                Default {
+                    Write-Error 'Unrecogrnized type'
+                }
+            }
+        }    
+        Catch {
+            throw "Failed retrieving Excel sheet information for '$Path': $_"
         }
     }
 }
