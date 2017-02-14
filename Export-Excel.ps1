@@ -1,17 +1,18 @@
 function Export-Excel {
     <#
-        .Synopsis
-        .Example
-        gsv | Export-Excel .\test.xlsx
-        .Example
-        ps | Export-Excel .\test.xlsx -show\
-        .Example
-        ps | Export-Excel .\test.xlsx -WorkSheetname Processes -IncludePivotTable -Show -PivotRows Company -PivotData PM
-        .Example
-        ps | Export-Excel .\test.xlsx -WorkSheetname Processes -ChartType PieExploded3D -IncludePivotChart -IncludePivotTable -Show -PivotRows Company -PivotData PM
-        .Example
-        Remove-Item "c:\temp\test.xlsx" -ErrorAction Ignore
-        Get-Service | Export-Excel "c:\temp\test.xlsx"  -Show -IncludePivotTable -PivotRows status -PivotData @{status='count'}
+        .SYNOPSIS
+            Export data to an Excel work sheet.
+        .EXAMPLE
+            gsv | Export-Excel .\test.xlsx
+        .EXAMPLE
+            ps | Export-Excel .\test.xlsx -show\
+        .EXAMPLE
+            ps | Export-Excel .\test.xlsx -WorkSheetname Processes -IncludePivotTable -Show -PivotRows Company -PivotData PM
+        .EXAMPLE
+            ps | Export-Excel .\test.xlsx -WorkSheetname Processes -ChartType PieExploded3D -IncludePivotChart -IncludePivotTable -Show -PivotRows Company -PivotData PM
+        .EXAMPLE
+            Remove-Item "c:\temp\test.xlsx" -ErrorAction Ignore
+            Get-Service | Export-Excel "c:\temp\test.xlsx"  -Show -IncludePivotTable -PivotRows status -PivotData @{status='count'}
     #>
     param(
         #[Parameter(Mandatory=$true)]

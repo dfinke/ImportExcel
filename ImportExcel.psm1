@@ -13,6 +13,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\New-PSItem.ps1
 . $PSScriptRoot\Pivot.ps1
 . $PSScriptRoot\Get-ExcelSheetInfo.ps1
+. $PSScriptRoot\Get-ExcelWorkbookInfo.ps1
 . $PSScriptRoot\Get-HtmlTable.ps1
 . $PSScriptRoot\Import-Html.ps1
 . $PSScriptRoot\Get-Range.ps1
