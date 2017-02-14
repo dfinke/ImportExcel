@@ -19,6 +19,7 @@ $fileList = echo `
     Get-HtmlTable.ps1 `
     Import-Html.ps1 `
     Get-ExcelSheetInfo.ps1 `
+    Get-ExcelWorkbookInfo.ps1 `
     Get-Range.ps1 `
     TrackingUtils.ps1 `
     Copy-ExcelWorkSheet.ps1 `

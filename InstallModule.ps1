@@ -21,6 +21,7 @@ $targetFiles = echo `
     New-PSItem.ps1 `
     Pivot.ps1 `
     Get-ExcelSheetInfo.ps1 `
+    Get-ExcelWorkbookInfo.ps1 `
     New-ConditionalText.ps1 `
     Get-HtmlTable.ps1 `
     Import-Html.ps1 `
@@ -30,7 +31,7 @@ $targetFiles = echo `
     Set-CellStyle.ps1 `
     plot.ps1
 
-ls $targetFiles |
-    ForEach {
+Get-ChildItem $targetFiles |
+    ForEach-Object {
         Copy-Item -Verbose -Path $_.FullName -Destination "$($TargetPath)\$($_.name)"
     }
