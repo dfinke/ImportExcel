@@ -23,22 +23,28 @@ Function Get-ExcelSheetInfo {
 
     [CmdletBinding()]
     param(
-        [Alias("FullName")]
+        [Alias('FullName')]
         [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory=$true)]
         $Path
     )
     process {
         $Path = (Resolve-Path $Path).ProviderPath
-        write-debug "target excel file $Path"
-        $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,"Open","Read","ReadWrite"
+
+        $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,'Open','Read','ReadWrite'
         $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
         $workbook  = $xl.Workbook
-        if($workbook -and $workbook.Worksheets) {
+        
+        if ($workbook -and $workbook.Worksheets) {
             $workbook.Worksheets |
                 Select-Object -Property name,index,hidden,@{
-                    Label = "Path"
+                    Label = 'Path'
                     Expression = {$Path}
                 }
         }
+
+        $stream.Close()
+        $stream.Dispose()
+        $xl.Dispose()
+        $xl = $null
     }
 }

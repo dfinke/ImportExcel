@@ -13,6 +13,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\New-PSItem.ps1
 . $PSScriptRoot\Pivot.ps1
 . $PSScriptRoot\Get-ExcelSheetInfo.ps1
+. $PSScriptRoot\Get-ExcelWorkbookInfo.ps1
 . $PSScriptRoot\Get-HtmlTable.ps1
 . $PSScriptRoot\Import-Html.ps1
 . $PSScriptRoot\Get-Range.ps1
@@ -37,6 +38,38 @@ if($PSVersionTable.PSVersion.Major -ge 5) {
 
 
 function Import-Excel {
+    <#
+    .SYNOPSIS
+        Read the content of an Excel sheet.
+ 
+    .DESCRIPTION 
+        The Import-Excel cmdlet reads the content of an Excel worksheet and creates one object for each row. This is done without using Microsoft Excel in the background but by using the .NET EPPLus.dll. You can also automate the creation of Pivot Tables and Charts.
+ 
+    .PARAMETER Path 
+        Specifies the path to the Excel file.
+ 
+    .PARAMETER WorkSheetname
+        Specifies the name of the worksheet in the Excel workbook. 
+        
+    .PARAMETER HeaderRow
+        Specifies custom header names for columns.
+
+    .PARAMETER Header
+        Specifies the title used in the worksheet. The title is placed on the first line of the worksheet.
+
+    .PARAMETER NoHeader
+        When used we generate our own headers (P1, P2, P3, ..) instead of the ones defined in the first row of the Excel worksheet.
+
+    .PARAMETER DataOnly
+        When used we will only generate objects for rows that contain text values, not for empty rows or columns.
+ 
+    .EXAMPLE
+        Import-Excel -WorkSheetname 'Statistics' -Path 'E:\Finance\Company results.xlsx'
+        Imports all the information found in the worksheet 'Statistics' of the Excel file 'Company results.xlsx'
+
+    .LINK
+        https://github.com/dfinke/ImportExcel
+    #>
     param(
         [Alias("FullName")]
         [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory=$true)]
@@ -46,7 +79,8 @@ function Import-Excel {
         $WorkSheetname=1,
         [int]$HeaderRow=1,
         [string[]]$Header,
-        [switch]$NoHeader
+        [switch]$NoHeader,
+        [switch]$DataOnly
     )
 
     Process {
@@ -65,35 +99,75 @@ function Import-Excel {
         $Rows=$dimension.Rows
         $Columns=$dimension.Columns
 
-        if($NoHeader) {
-            foreach ($Row in 0..($Rows-1)) {
-                $newRow = [Ordered]@{}
-                foreach ($Column in 0..($Columns-1)) {
-                    $propertyName = "P$($Column+1)"
-                    $newRow.$propertyName = $worksheet.Cells[($Row+1),($Column+1)].Value
-                }
+        if ($NoHeader) {
+            if ($DataOnly) {
+                $CellsWithValues = $worksheet.Cells | where Value
 
-                [PSCustomObject]$newRow
+                $Script:i = 0
+                $ColumnReference = $CellsWithValues | Select-Object -ExpandProperty End | Group-Object Column |
+                    Select-Object @{L='Column';E={$_.Name}}, @{L='NewColumn';E={$Script:i++; $Script:i}}
+                
+                $CellsWithValues | Select-Object -ExpandProperty End | Group-Object Row | ForEach-Object {    
+                    $newRow = [Ordered]@{}
+                    
+                    foreach ($C in $ColumnReference) {
+                        $newRow."P$($C.NewColumn)" = $worksheet.Cells[($_.Name),($C.Column)].Value
+                    }
+
+                    [PSCustomObject]$newRow
+                }
             }
-        } else {
-            if(!$Header) {
+            else {
+                foreach ($Row in 0..($Rows-1)) {
+                    $newRow = [Ordered]@{}
+                    foreach ($Column in 0..($Columns-1)) {
+                        $propertyName = "P$($Column+1)"
+                        $newRow.$propertyName = $worksheet.Cells[($Row+1),($Column+1)].Value
+                    }
+
+                    [PSCustomObject]$newRow
+                }
+            }
+        } 
+        else {
+            if (!$Header) {
                 $Header = foreach ($Column in 1..$Columns) {
                     $worksheet.Cells[$HeaderRow,$Column].Value
                 }
             }
 
-            if($Rows -eq 1) {
+            if ($Rows -eq 1) {
                 $Header | ForEach {$h=[Ordered]@{}} {$h.$_=''} {[PSCustomObject]$h}
-            } else {
-                foreach ($Row in ($HeaderRow+1)..$Rows) {
-                    $h=[Ordered]@{}
-                    foreach ($Column in 0..($Columns-1)) {
+            } 
+            else {
+                if ($DataOnly) {
+                    $CellsWithValues = $worksheet.Cells | where {$_.Value -and ($_.End.Row -ne 1)}
+
+                    $Script:i = -1
+                    $ColumnReference = $CellsWithValues | Select-Object -ExpandProperty End | Group-Object Column |
+                        Select-Object @{L='Column';E={$_.Name}}, @{L='NewColumn';E={$Script:i++; $Header[$Script:i]}}
+                
+                    $CellsWithValues | Select-Object -ExpandProperty End | Group-Object Row | ForEach-Object {    
+                        $newRow = [Ordered]@{}
+                    
+                        foreach ($C in $ColumnReference) {
+                            $newRow."$($C.NewColumn)" = $worksheet.Cells[($_.Name),($C.Column)].Value
+                        }
+
+                        [PSCustomObject]$newRow
+                    }
+                }
+                else {
+                    foreach ($Row in ($HeaderRow+1)..$Rows) {
+                        $h=[Ordered]@{}
+                                            foreach ($Column in 0..($Columns-1)) {
                         if($Header[$Column].Length -gt 0) {
                             $Name    = $Header[$Column]
                             $h.$Name = $worksheet.Cells[$Row,($Column+1)].Value
                         }
                     }
-                    [PSCustomObject]$h
+                        [PSCustomObject]$h
+                    }
                 }
             }
         }
