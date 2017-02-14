@@ -99,7 +99,7 @@ function Import-Excel {
         $Rows=$dimension.Rows
         $Columns=$dimension.Columns
 
-        if($NoHeader) {
+        if ($NoHeader) {
             if ($DataOnly) {
                 $CellsWithValues = $worksheet.Cells | where Value
 
@@ -128,19 +128,20 @@ function Import-Excel {
                     [PSCustomObject]$newRow
                 }
             }
-        } else {
-            if(!$Header) {
+        } 
+        else {
+            if (!$Header) {
                 $Header = foreach ($Column in 1..$Columns) {
                     $worksheet.Cells[$HeaderRow,$Column].Value
                 }
             }
 
-            if($Rows -eq 1) {
+            if ($Rows -eq 1) {
                 $Header | ForEach {$h=[Ordered]@{}} {$h.$_=''} {[PSCustomObject]$h}
             } 
             else {
                 if ($DataOnly) {
-                    $CellsWithValues = $worksheet.Cells | where Value
+                    $CellsWithValues = $worksheet.Cells | where {$_.Value -and ($_.End.Row -ne 1)}
 
                     $Script:i = -1
                     $ColumnReference = $CellsWithValues | Select-Object -ExpandProperty End | Group-Object Column |
