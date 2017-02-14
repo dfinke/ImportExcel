@@ -28,6 +28,35 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 2/14/2017
+Big thanks to [DarkLite1](https://github.com/DarkLite1) for some great updates
+* `-DataOnly` switch added to `Import-Excel`. When used it will only generate objects for rows that contain text values, not for empty rows or columns.
+
+* `Get-ExcelWorkBookInfo` - retrieves information of an Excel workbook.
+```
+        Get-ExcelWorkbookInfo .\Test.xlsx
+
+        CorePropertiesXml     : #document
+        Title                 : 
+        Subject               : 
+        Author                : Konica Minolta User
+        Comments              : 
+        Keywords              : 
+        LastModifiedBy        : Bond, James (London) GBR
+        LastPrinted           : 2017-01-21T12:36:11Z
+        Created               : 17/01/2017 13:51:32
+        Category              : 
+        Status                : 
+        ExtendedPropertiesXml : #document
+        Application           : Microsoft Excel
+        HyperlinkBase         : 
+        AppVersion            : 14.0300
+        Company               : Secret Service
+        Manager               : 
+        Modified              : 10/02/2017 12:45:37
+        CustomPropertiesXml   : #document
+```
+
 #### 12/22/2016
 - Added `-Now` switch. This short cuts the process, automatically creating a temp file and enables the `-Show`, `-AutoFilter`, `-AutoSize` switches.
 
@@ -59,35 +88,6 @@ Get-Process |
     }
 ```
 ![](https://github.com/dfinke/ImportExcel/blob/master/images/CellFormatting.png?raw=true)
-
-#### 2/14/2017
-Big thanks to [DarkLite1](https://github.com/DarkLite1) for some great updates
-* `-DataOnly` switch added to `Import-Excel`. When used it will only generate objects for rows that contain text values, not for empty rows or columns.
-
-* `Get-ExcelWorkBookInfo` - retrieves information of an Excel workbook.
-```
-        Get-ExcelWorkbookInfo .\Test.xlsx
-
-        CorePropertiesXml     : #document
-        Title                 : 
-        Subject               : 
-        Author                : Konica Minolta User
-        Comments              : 
-        Keywords              : 
-        LastModifiedBy        : Bond, James (London) GBR
-        LastPrinted           : 2017-01-21T12:36:11Z
-        Created               : 17/01/2017 13:51:32
-        Category              : 
-        Status                : 
-        ExtendedPropertiesXml : #document
-        Application           : Microsoft Excel
-        HyperlinkBase         : 
-        AppVersion            : 14.0300
-        Company               : Secret Service
-        Manager               : 
-        Modified              : 10/02/2017 12:45:37
-        CustomPropertiesXml   : #document
-```
 
 #### 9/28/2016
 [Fixed](https://github.com/dfinke/ImportExcel/pull/126) Powershell 3.0 compatibility. Thanks to [headsphere](https://github.com/headsphere). He used `$obj.PSObject.Methods[$target]` snytax to make it backward compatible. PS v4.0 and later allow `$obj.$target`.
