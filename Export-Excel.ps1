@@ -19,7 +19,9 @@ Function Export-Excel {
             Remove-Item "c:\temp\test.xlsx" -ErrorAction Ignore
             Get-Service | Export-Excel "c:\temp\test.xlsx"  -Show -IncludePivotTable -PivotRows status -PivotData @{status='count'}
     #>
-    param(
+
+    [CmdLetBinding()]
+    Param(
         #[Parameter(Mandatory=$true)]
         $Path,
         [Parameter(ValueFromPipeline=$true)]
@@ -157,6 +159,7 @@ Function Export-Excel {
         if ($firstTimeThru) {
             $firstTimeThru=$false
             $isDataTypeValueType = $TargetData.GetType().name -match "string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort"
+            Write-Verbose "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType $isDataTypeValueType"
         }
 
         if ($isDataTypeValueType) {
@@ -166,7 +169,7 @@ Function Export-Excel {
 
             $r=$null
             $cellValue=$TargetData
-            if ([Double]::TryParse([string]$cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
+            if ([Double]::TryParse([string]$cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::CurrentInfo, [ref]$r)) {
                 $targetCell.Value = $r
                 $targetCell.Style.Numberformat.Format=$Numberformat
             } else {
@@ -192,7 +195,8 @@ Function Export-Excel {
                     $Row -= 1
                 } else {
                     foreach ($Name in $script:Header) {
-                        $ws.Cells[$Row, $ColumnIndex].Value = $name
+                        Write-Verbose "Add header '$Name'"
+                        $ws.Cells[$Row, $ColumnIndex].Value = $Name
                         $ColumnIndex += 1
                     }
                 }
@@ -210,16 +214,20 @@ Function Export-Excel {
                     $targetCell.Formula = $cellValue
                 } else {
                     $r=$null
-                    if ([Double]::TryParse([string]$cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::InvariantInfo, [ref]$r)) {
+                    if ([Double]::TryParse([string]$cellValue,[System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::CurrentInfo, [ref]$r)) {
                         $targetCell.Value = $r
                         $targetCell.Style.Numberformat.Format=$Numberformat
+                        Write-Verbose "Add cell value '$r' in Numberformat '$Numberformat'"
                     } else {
                         $targetCell.Value = $cellValue
+                        Write-Verbose "Add cell value '$cellValue' as String"
                     }
                 }
 
                 switch ($TargetData.$Name) {
-                    {$_ -is [datetime]} {$targetCell.Style.Numberformat.Format = "m/d/yy h:mm"}
+                    {$_ -is [datetime]} {
+                        $targetCell.Style.Numberformat.Format = "m/d/yy h:mm"
+                    }
                 }
 
                 #[ref]$uriResult=$null
