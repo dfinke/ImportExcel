@@ -192,6 +192,7 @@ function Add-WorkSheet {
     $ws = $ExcelPackage.Workbook.Worksheets[$WorkSheetname]
 
     if(!$ws) {
+        Write-Verbose "Add worksheet '$WorkSheetname'"
         $ws=$ExcelPackage.Workbook.Worksheets.Add($WorkSheetname)
     }
 
