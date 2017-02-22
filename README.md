@@ -28,6 +28,14 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 2/2/2017
+Thank you to [DarkLite1](https://github.com/DarkLite1) for more updates
+* TableName with parameter validation, throws an error when the TableName:
+    - Starts with something else then a letter
+    - Is NULL or empty
+    - Contains spaces
+- Numeric parsing now uses `CurrentInfo` to use the system settings
+
 #### 2/14/2017
 Big thanks to [DarkLite1](https://github.com/DarkLite1) for some great updates
 * `-DataOnly` switch added to `Import-Excel`. When used it will only generate objects for rows that contain text values, not for empty rows or columns.
