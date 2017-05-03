@@ -479,7 +479,7 @@ Example
 * If Pivot table is requested, that sheet becomes the tab selected
 
 #### 4/8/2015
-* Implemented exporting data to **named sheets** via the -WorkSheename parameter.
+* Implemented exporting data to **named sheets** via the -WorkSheetname parameter.
 
 Examples
 -
