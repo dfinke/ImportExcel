@@ -7,7 +7,7 @@ This PowerShell Module wraps the .NET [EPPlus DLL](http://epplus.codeplex.com/) 
 
 Installation
 -
-####[Powershell V5](https://www.microsoft.com/en-us/download/details.aspx?id=50395) and Later
+#### [Powershell V5](https://www.microsoft.com/en-us/download/details.aspx?id=50395) and Later
 You can install ImportExcel directly from the Powershell Gallery
 
 * [Recommended] Install to your personal Powershell Modules folder
@@ -19,7 +19,7 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
-####Powershell V4 and Earlier
+#### Powershell V4 and Earlier
 To install to your personal modules folder (e.g. ~\Documents\WindowsPowerShell\Modules), run:
 
 ```powershell
@@ -479,7 +479,7 @@ Example
 * If Pivot table is requested, that sheet becomes the tab selected
 
 #### 4/8/2015
-* Implemented exporting data to **named sheets** via the -WorkSheename parameter.
+* Implemented exporting data to **named sheets** via the -WorkSheetname parameter.
 
 Examples
 -
