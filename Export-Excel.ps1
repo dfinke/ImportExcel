@@ -320,6 +320,8 @@ Function Export-Excel {
                 [String]$Value
             )
 
+            $R = $null
+
             if ([Double]::TryParse([String]$Value,[System.Globalization.NumberStyles]::Any,
                         [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$R)) {
                 $R        
