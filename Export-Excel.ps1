@@ -417,8 +417,8 @@ Function Export-Excel {
                 else {
                     foreach ($Name in $script:Header) {
                         $ws.Cells[$Row, $ColumnIndex].Value = $Name
-                        $ColumnIndex += 1
                         Write-Verbose "Cell '$Row`:$ColumnIndex' add header '$Name'"
+                        $ColumnIndex += 1
                     }
                 }
             }
