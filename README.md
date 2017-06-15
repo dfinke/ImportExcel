@@ -27,6 +27,65 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 ```
 
 # What's new
+#### 6/15/2017
+Huge thank you to [DarkLite1](https://github.com/DarkLite1)! Refactoring of code, adding help, adding features, fixing bugs. Specifically this long outstanding one:
+
+[Export-Excel: Numeric values not correct](https://github.com/dfinke/ImportExcel/issues/168)
+
+It is fantasic to work with and have folks like `DarkLite1` in the community, helping make PowerShells so much better.
+A hat to you.
+
+Another shout out to [Damian Reeves](https://twitter.com/DamReev)! His questions turn into great features. He asked can you import and Excel sheet and transform the data into SQL Insert statements. The answer is now yes!
+
+```powershell
+ConvertFrom-ExcelToSQLInsert People .\testSQLGen.xlsx
+```
+
+```
+INSERT INTO People ('First', 'Last', 'The Zip') Values('John', 'Doe', '12345');
+INSERT INTO People ('First', 'Last', 'The Zip') Values('Jim', 'Doe', '12345');
+INSERT INTO People ('First', 'Last', 'The Zip') Values('Tom', 'Doe', '12345');
+INSERT INTO People ('First', 'Last', 'The Zip') Values('Harry', 'Doe', '12345');
+INSERT INTO People ('First', 'Last', 'The Zip') Values('Jane', 'Doe', '12345');
+```
+## Bonus Points
+Use the underlying `ConvertFrom-ExcelData` and you can use a scriptblock to transform the data your way.
+
+```powershell
+ConvertFrom-ExcelData .\testSQLGen.xlsx {
+    param($propertyNames, $record)
+
+    $reportRecord = @()
+    foreach ($pn in $propertyNames) {
+        $reportRecord += "{0}: {1}" -f $pn, $record.$pn
+    }
+    $reportRecord +=""
+    $reportRecord -join "`r`n"
+}
+```
+Prints
+
+```
+First: John
+Last: Doe
+The Zip: 12345
+
+First: Jim
+Last: Doe
+The Zip: 12345
+
+First: Tom
+Last: Doe
+The Zip: 12345
+
+First: Harry
+Last: Doe
+The Zip: 12345
+
+First: Jane
+Last: Doe
+The Zip: 12345
+```
 
 #### 2/2/2017
 Thank you to [DarkLite1](https://github.com/DarkLite1) for more updates
