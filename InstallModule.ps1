@@ -29,6 +29,8 @@ $targetFiles = echo `
     TrackingUtils.ps1 `
     Copy-ExcelWorkSheet.ps1 `
     Set-CellStyle.ps1 `
+    ConvertFromExcelToSQLInsert.ps1 `
+    ConvertFromExcelData.ps1 `
     plot.ps1
 
 Get-ChildItem $targetFiles |
