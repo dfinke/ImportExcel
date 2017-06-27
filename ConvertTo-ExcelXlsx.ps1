@@ -1,4 +1,4 @@
-Function Convert-XLSToXLSX {
+Function ConvertTo-ExcelXlsx {
 [CmdletBinding()]
 PARAM
 (
