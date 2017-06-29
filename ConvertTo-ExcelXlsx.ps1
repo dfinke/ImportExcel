@@ -20,7 +20,7 @@ PARAM
     $xlsFile = Get-Item -Path $Path
     $xlsxPath = "{0}x" -f $xlsFile.FullName
 
-    if($xlsFile.Extension.ToLower() -ne ".xls"){
+    if($xlsFile.Extension -ne ".xls"){
         throw "Expected .xls extension"
     }
 
