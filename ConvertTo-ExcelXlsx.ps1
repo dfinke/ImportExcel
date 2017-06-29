@@ -3,19 +3,17 @@ Function ConvertTo-ExcelXlsx {
 PARAM
 (
     [parameter(Mandatory=$true, ValueFromPipeline)]
-    [ValidateScript({
-        if(-Not ($_ | Test-Path) ){
-            throw "File not found" 
-        }
-        if(-Not ($_ | Test-Path -PathType Leaf) ){
-            throw "Folder paths are not allowed"
-        }
-        return $true
-    })]
     [string]$Path,
     [parameter(Mandatory=$false)]
     [switch]$Force
 )
+    if(-Not ($Path | Test-Path) ){
+        throw "File not found" 
+    }
+    if(-Not ($Path | Test-Path -PathType Leaf) ){
+        throw "Folder paths are not allowed"
+    }
+    
     $xlFixedFormat = 51 #Constant for XLSX Workbook
     $xlsFile = Get-Item -Path $Path
     $xlsxPath = "{0}x" -f $xlsFile.FullName
@@ -26,7 +24,11 @@ PARAM
 
     if(Test-Path -Path $xlsxPath){
         if($Force){
-            Remove-Item $xlsxPath -Force
+            try {
+                Remove-Item $xlsxPath -Force
+            } catch {
+                throw "{0} already exists and cannot be removed. The file may be locked by another application." -f $xlsxPath
+            }
             Write-Verbose $("Removed {0}" -f $xlsxPath)
         } else {
             throw "{0} already exists!" -f $xlsxPath
