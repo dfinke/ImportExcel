@@ -31,6 +31,7 @@ $targetFiles = echo `
     Set-CellStyle.ps1 `
     ConvertFromExcelToSQLInsert.ps1 `
     ConvertFromExcelData.ps1 `
+    ConvertToExcelXlsx.ps1 `
     plot.ps1
 
 Get-ChildItem $targetFiles |
