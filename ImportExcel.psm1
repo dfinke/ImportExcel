@@ -114,7 +114,7 @@ function Import-Excel {
                     $newRow = [Ordered]@{}
                     
                     foreach ($C in $ColumnReference) {
-                        $newRow."P$($C.NewColumn)" = $worksheet.Cells[($_.Name),($C.Column)].Value
+                        $newRow."P$($C.NewColumn)" = $worksheet.Cells[($_.Name),($C.Column)].Value -split "`n"
                     }
 
                     [PSCustomObject]$newRow
@@ -125,7 +125,7 @@ function Import-Excel {
                     $newRow = [Ordered]@{}
                     foreach ($Column in 0..($Columns-1)) {
                         $propertyName = "P$($Column+1)"
-                        $newRow.$propertyName = $worksheet.Cells[($Row+1),($Column+1)].Value
+                        $newRow.$propertyName = $worksheet.Cells[($Row+1),($Column+1)].Value -split "`n"
                     }
 
                     [PSCustomObject]$newRow
@@ -135,7 +135,7 @@ function Import-Excel {
         else {
             if (!$Header) {
                 $Header = foreach ($Column in 1..$Columns) {
-                    $worksheet.Cells[$HeaderRow,$Column].Value
+                    $worksheet.Cells[$HeaderRow,$Column].Value -split "`n"
                 }
             }
 
@@ -154,7 +154,7 @@ function Import-Excel {
                         $newRow = [Ordered]@{}
                     
                         foreach ($C in $ColumnReference) {
-                            $newRow."$($C.NewColumn)" = $worksheet.Cells[($_.Name),($C.Column)].Value
+                            $newRow."$($C.NewColumn)" = $worksheet.Cells[($_.Name),($C.Column)].Value -split "`n"
                         }
 
                         [PSCustomObject]$newRow
@@ -166,7 +166,7 @@ function Import-Excel {
                                             foreach ($Column in 0..($Columns-1)) {
                         if($Header[$Column].Length -gt 0) {
                             $Name    = $Header[$Column]
-                            $h.$Name = $worksheet.Cells[$Row,($Column+1)].Value
+                            $h.$Name = $worksheet.Cells[$Row,($Column+1)].Value -split "`n"
                         }
                     }
                         [PSCustomObject]$h
