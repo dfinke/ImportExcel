@@ -7,7 +7,7 @@ This PowerShell Module wraps the .NET [EPPlus DLL](http://epplus.codeplex.com/) 
 
 Installation
 -
-####[Powershell V5](https://www.microsoft.com/en-us/download/details.aspx?id=50395) and Later
+#### [Powershell V5](https://www.microsoft.com/en-us/download/details.aspx?id=50395) and Later
 You can install ImportExcel directly from the Powershell Gallery
 
 * [Recommended] Install to your personal Powershell Modules folder
@@ -19,7 +19,7 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
-####Powershell V4 and Earlier
+#### Powershell V4 and Earlier
 To install to your personal modules folder (e.g. ~\Documents\WindowsPowerShell\Modules), run:
 
 ```powershell
@@ -27,6 +27,76 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 ```
 
 # What's new
+#### 7/3/2017
+Thanks to [Mikkel Nordberg](https://www.linkedin.com/in/mikkelnordberg). He contributed a `ConvertTo-ExcelXlsx`. To use it, Excel needs to be installed. I converts older Excel files `xls` to 'xlsx'.
+
+#### 6/15/2017
+Huge thank you to [DarkLite1](https://github.com/DarkLite1)! Refactoring of code, adding help, adding features, fixing bugs. Specifically this long outstanding one:
+
+[Export-Excel: Numeric values not correct](https://github.com/dfinke/ImportExcel/issues/168)
+
+It is fantasic to work with and have folks like `DarkLite1` in the community, helping make PowerShells so much better.
+A hat to you.
+
+Another shout out to [Damian Reeves](https://twitter.com/DamReev)! His questions turn into great features. He asked can you import and Excel sheet and transform the data into SQL Insert statements. The answer is now yes!
+
+```powershell
+ConvertFrom-ExcelToSQLInsert People .\testSQLGen.xlsx
+```
+
+```
+INSERT INTO People ('First', 'Last', 'The Zip') Values('John', 'Doe', '12345');
+INSERT INTO People ('First', 'Last', 'The Zip') Values('Jim', 'Doe', '12345');
+INSERT INTO People ('First', 'Last', 'The Zip') Values('Tom', 'Doe', '12345');
+INSERT INTO People ('First', 'Last', 'The Zip') Values('Harry', 'Doe', '12345');
+INSERT INTO People ('First', 'Last', 'The Zip') Values('Jane', 'Doe', '12345');
+```
+## Bonus Points
+Use the underlying `ConvertFrom-ExcelData` and you can use a scriptblock to transform the data your way.
+
+```powershell
+ConvertFrom-ExcelData .\testSQLGen.xlsx {
+    param($propertyNames, $record)
+
+    $reportRecord = @()
+    foreach ($pn in $propertyNames) {
+        $reportRecord += "{0}: {1}" -f $pn, $record.$pn
+    }
+    $reportRecord +=""
+    $reportRecord -join "`r`n"
+}
+```
+Prints
+
+```
+First: John
+Last: Doe
+The Zip: 12345
+
+First: Jim
+Last: Doe
+The Zip: 12345
+
+First: Tom
+Last: Doe
+The Zip: 12345
+
+First: Harry
+Last: Doe
+The Zip: 12345
+
+First: Jane
+Last: Doe
+The Zip: 12345
+```
+
+#### 2/2/2017
+Thank you to [DarkLite1](https://github.com/DarkLite1) for more updates
+* TableName with parameter validation, throws an error when the TableName:
+    - Starts with something else then a letter
+    - Is NULL or empty
+    - Contains spaces
+- Numeric parsing now uses `CurrentInfo` to use the system settings
 
 #### 2/14/2017
 Big thanks to [DarkLite1](https://github.com/DarkLite1) for some great updates
@@ -471,7 +541,7 @@ Example
 * If Pivot table is requested, that sheet becomes the tab selected
 
 #### 4/8/2015
-* Implemented exporting data to **named sheets** via the -WorkSheename parameter.
+* Implemented exporting data to **named sheets** via the -WorkSheetname parameter.
 
 Examples
 -

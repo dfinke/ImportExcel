@@ -20,6 +20,9 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\TrackingUtils.ps1
 . $PSScriptRoot\Copy-ExcelWorkSheet.ps1
 . $PSScriptRoot\Set-CellStyle.ps1
+. $PSScriptRoot\ConvertFromExcelData.ps1
+. $PSScriptRoot\ConvertFromExcelToSQLInsert.ps1
+. $PSScriptRoot\ConvertToExcelXlsx.ps1
 
 if($PSVersionTable.PSVersion.Major -ge 5) {
     . $PSScriptRoot\plot.ps1
