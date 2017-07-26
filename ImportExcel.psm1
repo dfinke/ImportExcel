@@ -1,46 +1,49 @@
 Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 
-. $PSScriptRoot\Export-Excel.ps1
-. $PSScriptRoot\New-ConditionalFormattingIconSet.ps1
-. $PSScriptRoot\New-ConditionalText.ps1
-. $PSScriptRoot\Export-ExcelSheet.ps1
-. $PSScriptRoot\New-ExcelChart.ps1
-. $PSScriptRoot\Invoke-Sum.ps1
-. $PSScriptRoot\InferData.ps1
-. $PSScriptRoot\Get-ExcelColumnName.ps1
-. $PSScriptRoot\Get-XYRange.ps1
 . $PSScriptRoot\Charting.ps1
-. $PSScriptRoot\New-PSItem.ps1
-. $PSScriptRoot\Pivot.ps1
-. $PSScriptRoot\Get-ExcelSheetInfo.ps1
-. $PSScriptRoot\Get-ExcelWorkbookInfo.ps1
-. $PSScriptRoot\Get-HtmlTable.ps1
-. $PSScriptRoot\Import-Html.ps1
-. $PSScriptRoot\Get-Range.ps1
-. $PSScriptRoot\TrackingUtils.ps1
-. $PSScriptRoot\Copy-ExcelWorkSheet.ps1
-. $PSScriptRoot\Set-CellStyle.ps1
 . $PSScriptRoot\ConvertFromExcelData.ps1
 . $PSScriptRoot\ConvertFromExcelToSQLInsert.ps1
 . $PSScriptRoot\ConvertToExcelXlsx.ps1
+. $PSScriptRoot\Copy-ExcelWorkSheet.ps1
+. $PSScriptRoot\Export-Excel.ps1
+. $PSScriptRoot\Export-ExcelSheet.ps1
+. $PSScriptRoot\Get-ExcelColumnName.ps1
+. $PSScriptRoot\Get-ExcelSheetInfo.ps1
+. $PSScriptRoot\Get-ExcelWorkbookInfo.ps1
+. $PSScriptRoot\Get-HtmlTable.ps1
+. $PSScriptRoot\Get-Range.ps1
+. $PSScriptRoot\Get-XYRange.ps1
+. $PSScriptRoot\Import-Html.ps1
+. $PSScriptRoot\InferData.ps1
+. $PSScriptRoot\Invoke-Sum.ps1
+. $PSScriptRoot\New-ConditionalFormattingIconSet.ps1
+. $PSScriptRoot\New-ConditionalText.ps1
+. $PSScriptRoot\New-ExcelChart.ps1
+. $PSScriptRoot\New-PSItem.ps1
+. $PSScriptRoot\Pivot.ps1
+. $PSScriptRoot\Set-CellStyle.ps1
+. $PSScriptRoot\TrackingUtils.ps1
+. $PSScriptRoot\Update-FirstObjectProperties.ps1
 
-if($PSVersionTable.PSVersion.Major -ge 5) {
-    . $PSScriptRoot\plot.ps1
 
-    function New-Plot {
+if ($PSVersionTable.PSVersion.Major -ge 5) {
+    . $PSScriptRoot\Plot.ps1
+
+    Function New-Plot {
         [OutputType([PSPlot])]
-        param()
+        Param()
 
-        [psplot]::new()
+        [PSPlot]::new()
     }
 
-} else {
-    Write-Warning "PowerShell 5 is required for plot.ps1"
-    Write-Warning "PowerShell Excel is ready, except for that functionality"
+}
+else {
+    Write-Warning 'PowerShell 5 is required for plot.ps1'
+    Write-Warning 'PowerShell Excel is ready, except for that functionality'
 }
 
 
-function Import-Excel {
+Function Import-Excel {
     <#
     .SYNOPSIS
         Read the content of an Excel sheet.
@@ -73,12 +76,13 @@ function Import-Excel {
     .LINK
         https://github.com/dfinke/ImportExcel
     #>
-    param(
-        [Alias("FullName")]
+
+    Param(
+        [Alias('FullName')]
         [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory=$true)]
         [ValidateScript({ Test-Path $_ -PathType Leaf })]
         $Path,
-        [Alias("Sheet")]
+        [Alias('Sheet')]
         $WorkSheetname=1,
         [int]$HeaderRow=1,
         [string[]]$Header,
