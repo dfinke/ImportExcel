@@ -53,8 +53,10 @@ function Import-Excel {
  
     .PARAMETER WorkSheetname
         Specifies the name of the worksheet in the Excel workbook. 
+    
     .PARAMETER Table
         Specifies the name of the table in the Excel workbook.   
+    
     .PARAMETER HeaderRow
         Specifies custom header names for columns.
 
