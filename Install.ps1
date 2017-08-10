@@ -24,7 +24,10 @@ $fileList = echo `
     TrackingUtils.ps1 `
     Copy-ExcelWorkSheet.ps1 `
     Set-CellStyle.ps1 `
-    plot.ps1
+    plot.ps1 `
+    ConvertFromExcelData.ps1 `
+    ConvertFromExcelToSQLInsert.ps1 `
+    ConvertToExcelXlsx.ps1
 
 if ('' -eq $InstallDirectory)
 {
