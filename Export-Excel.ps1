@@ -41,7 +41,7 @@ Function Export-Excel {
             '#,##0.00'
 
             # number with 2 decimal places and thousand separator and money symbol
-            '€#,##0.00'
+            'ï¿½#,##0.00'
 
             # percentage (1 = 100%, 0.01 = 1%)
             '0%'
@@ -299,14 +299,15 @@ Function Export-Excel {
                 #Otherwise the default will be unbolded.
                 $ws.Cells[$Row, $StartColumn].Style.Font.Bold = $True
             }
-            $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
 
+            $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
+            
             #can only set TitleBackgroundColor if TitleFillPattern is something other than None
-            if ($TitleBackgroundColor -AND ($TitleFillPattern -ne 'None')) {
+            if ($TitleBackgroundColor -AND $TitleFillPattern -eq 'None') {
+                $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = "DarkDown"
                 $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
-            }
-            else {
-                Write-Warning "Title Background Color ignored. You must set the TitleFillPattern parameter to a value other than 'None'. Try 'Solid'."
+            } elseif ($TitleBackgroundColor) {
+                $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
             }
         }
 
