@@ -237,10 +237,10 @@ Function Import-Excel {
     [CmdLetBinding(DefaultParameterSetName)]
     Param (
         [Alias('FullName')]
-        [Parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Mandatory)]
+        [Parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Position=0, Mandatory)]
         [ValidateScript({Test-Path -Path $_ -PathType Leaf})]
         [String]$Path,
-        [Parameter(Mandatory)]
+        [Parameter(Position=1, Mandatory)]
         [Alias('Sheet')]
         [String]$WorksheetName,
         [Parameter(ParameterSetName='B', Mandatory)]
