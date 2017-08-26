@@ -177,15 +177,15 @@ Function Export-Excel {
 
             $Array = $Obj1, $Obj2, $Obj3
             $Array | Out-GridView -Title 'Not showing Member3 and Member4'
-            $Array | Update-FirstObjectProperties | Export-Excel @ExcelParams -WorkSheetname Numbers
+            $Array | Update-FirstObjectProperties | Export-Excel @ExcelParams -WorksheetName Numbers
             
             Updates the first object of the array by adding property 'Member3' and 'Member4'. Afterwards. all objects are exported to an Excel file and all column headers are visible.
 
         .EXAMPLE
-            Get-Process | Export-Excel .\test.xlsx -WorkSheetname Processes -IncludePivotTable -Show -PivotRows Company -PivotData PM
+            Get-Process | Export-Excel .\test.xlsx -WorksheetName Processes -IncludePivotTable -Show -PivotRows Company -PivotData PM
 
         .EXAMPLE
-            Get-Process | Export-Excel .\test.xlsx -WorkSheetname Processes -ChartType PieExploded3D -IncludePivotChart -IncludePivotTable -Show -PivotRows Company -PivotData PM
+            Get-Process | Export-Excel .\test.xlsx -WorksheetName Processes -ChartType PieExploded3D -IncludePivotChart -IncludePivotTable -Show -PivotRows Company -PivotData PM
 
         .EXAMPLE
             Get-Service | Export-Excel 'c:\temp\test.xlsx'  -Show -IncludePivotTable -PivotRows status -PivotData @{status='count'}
@@ -199,7 +199,7 @@ Function Export-Excel {
         $Path,
         [Parameter(ValueFromPipeline=$true)]
         $TargetData,
-        [String]$WorkSheetname = 'Sheet1',
+        [String]$WorksheetName = 'Sheet1',
         [String]$Title,
         [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern = 'None',
         [Switch]$TitleBold,
@@ -328,19 +328,19 @@ Function Export-Excel {
                 Add a title row to the Excel worksheet.
             #>
 
-            $ws.Cells[$Row, $StartColumn].Value = $Title
-            $ws.Cells[$Row, $StartColumn].Style.Font.Size = $TitleSize
+            $Worksheet.Cells[$Row, $StartColumn].Value = $Title
+            $Worksheet.Cells[$Row, $StartColumn].Style.Font.Size = $TitleSize
 
             if ($TitleBold) {
                 #set title to Bold if -TitleBold was specified.
                 #Otherwise the default will be unbolded.
-                $ws.Cells[$Row, $StartColumn].Style.Font.Bold = $True
+                $Worksheet.Cells[$Row, $StartColumn].Style.Font.Bold = $True
             }
-            $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
+            $Worksheet.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
 
             #can only set TitleBackgroundColor if TitleFillPattern is something other than None
             if ($TitleBackgroundColor -AND ($TitleFillPattern -ne 'None')) {
-                $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
+                $Worksheet.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
             }
             else {
                 Write-Warning "Title Background Color ignored. You must set the TitleFillPattern parameter to a value other than 'None'. Try 'Solid'."
@@ -376,7 +376,7 @@ Function Export-Excel {
         }
 
         Try {
-            $script:Header = $null
+            $script:header = $null
 
             if ($KillExcel) {
                 Stop-ExcelProcess
@@ -395,12 +395,12 @@ Function Export-Excel {
                 Write-Debug "Path '$Path' already exists"
             }
 
-            $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
-            $ws  = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber
+            $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
+            $Worksheet  = $Excel | Add-WorkSheet -WorksheetName $WorksheetName -NoClobber:$NoClobber
 
             foreach ($format in $ConditionalFormat ) {
                 $target = "Add$($format.Formatter)"
-                $rule = ($ws.ConditionalFormatting).PSObject.Methods[$target].Invoke($format.Range, $format.IconType)
+                $rule = ($Worksheet.ConditionalFormatting).PSObject.Methods[$target].Invoke($format.Range, $format.IconType)
                 $rule.Reverse = $format.Reverse
             }
 
@@ -409,7 +409,8 @@ Function Export-Excel {
             if ($Title) {
                 Add-Title
 
-                $Row += 1
+                $Row++
+                $StartRow++
             }
 
             $firstTimeThru = $true
@@ -418,10 +419,10 @@ Function Export-Excel {
         } 
         Catch {
             if ($AlreadyExists) {
-                throw "Failed exporting worksheet '$WorkSheetname' to '$Path': The worksheet '$WorkSheetname' already exists."
+                throw "Failed exporting worksheet '$WorksheetName' to '$Path': The worksheet '$WorksheetName' already exists."
             } 
             else {
-                throw "Failed exporting worksheet '$WorkSheetname' to '$Path': $_"
+                throw "Failed exporting worksheet '$WorksheetName' to '$Path': $_"
             }
         }
     }
@@ -437,7 +438,7 @@ Function Export-Excel {
             if ($isDataTypeValueType) {
                 $ColumnIndex = $StartColumn
 
-                Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData
+                Add-CellValue -TargetCell $Worksheet.Cells[$Row, $ColumnIndex] -CellValue $TargetData
 
                 $ColumnIndex += 1
                 $Row += 1
@@ -454,7 +455,7 @@ Function Export-Excel {
                     } 
                     else {
                         foreach ($Name in $script:Header) {
-                            $ws.Cells[$Row, $ColumnIndex].Value = $Name
+                            $Worksheet.Cells[$Row, $ColumnIndex].Value = $Name
                             Write-Verbose "Cell '$Row`:$ColumnIndex' add header '$Name'"
                             $ColumnIndex += 1
                         }
@@ -467,7 +468,7 @@ Function Export-Excel {
 
                 foreach ($Name in $script:Header) {
                     #region Add non header values
-                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData.$Name
+                    Add-CellValue -TargetCell $Worksheet.Cells[$Row, $ColumnIndex] -CellValue $TargetData.$Name
 
                     $ColumnIndex += 1
                     #endregion
@@ -475,22 +476,22 @@ Function Export-Excel {
             }
        }
         Catch {
-            throw "Failed exporting worksheet '$WorkSheetname' to '$Path': $_"
+            throw "Failed exporting worksheet '$WorksheetName' to '$Path': $_"
         }
     }
 
     End {
         Try {
             if ($AutoNameRange) {
-                $totalRows = $ws.Dimension.Rows
-                $totalColumns = $ws.Dimension.Columns
+                $totalRows = $Worksheet.Dimension.Rows
+                $totalColumns = $Worksheet.Dimension.Columns
 
                 foreach($c in 0..($totalColumns-1)) {
                     $targetRangeName = "$($script:Header[$c])"                
 
                     $targetColumn = $c+1
-                    $theCell = $ws.Cells[2,$targetColumn,$totalRows,$targetColumn ]
-                    $ws.Names.Add($targetRangeName, $theCell) | Out-Null
+                    $theCell = $Worksheet.Cells[2,$targetColumn,$totalRows,$targetColumn ]
+                    $Worksheet.Names.Add($targetRangeName, $theCell) | Out-Null
 
                     if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress($targetRangeName)) {
                         Write-Warning "AutoNameRange: Property name '$targetRangeName' is also a valid Excel address and may cause issues. Consider renaming the property name."
@@ -498,39 +499,41 @@ Function Export-Excel {
                 }
             }
 
-            $startAddress=$ws.Dimension.Start.Address
-            $dataRange="{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
+            $startAddress=$Worksheet.Dimension.Start.Address
+            $dataRange="{0}:{1}" -f $startAddress, $Worksheet.Dimension.End.Address
 
             Write-Debug "Data Range '$dataRange'"
 
             if (-not [String]::IsNullOrEmpty($RangeName)) {
-                $ws.Names.Add($RangeName, $ws.Cells[$dataRange]) | Out-Null
+                $Worksheet.Names.Add($RangeName, $Worksheet.Cells[$dataRange]) | Out-Null
             }
 
             if (-not [String]::IsNullOrEmpty($TableName)) {
                 $csr = $StartRow
                 $csc = $StartColumn
-                $cer = $ws.Dimension.End.Row
+                $cer = $Worksheet.Dimension.End.Row
                 $cec = $script:Header.Count
 
-                $targetRange = $ws.Cells[$csr, $csc, $cer,$cec]
-                $tbl = $ws.Tables.Add($targetRange, $TableName)
+                # Fix? $cec++
+
+                $targetRange = $Worksheet.Cells[$csr, $csc, $cer,$cec]
+                $tbl = $Worksheet.Tables.Add($targetRange, $TableName)
                 $tbl.TableStyle = $TableStyle
             }
 
             if ($IncludePivotTable) {
-                $pivotTableName = $WorkSheetname + 'PivotTable'
-                $wsPivot = $pkg | Add-WorkSheet -WorkSheetname $pivotTableName -NoClobber:$NoClobber
+                $pivotTableName = $WorksheetName + 'PivotTable'
+                $wsPivot = $Excel | Add-WorkSheet -WorksheetName $pivotTableName -NoClobber:$NoClobber
 
                 $wsPivot.View.TabSelected = $true
 
-                $pivotTableDataName=$WorkSheetname + 'PivotTableData'
+                $pivotTableDataName=$WorksheetName + 'PivotTableData'
 
                 if ($Title) {
                     $startAddress = 'A2'
                 }
 
-                $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $ws.Cells[$dataRange], $pivotTableDataName)
+                $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $Worksheet.Cells[$dataRange], $pivotTableDataName)
 
                 if ($PivotRows) {
                     foreach ($Row in $PivotRows) {
@@ -577,23 +580,23 @@ Function Export-Excel {
             }
 
             if ($Password) {
-                $ws.Protection.SetPassword($Password)
+                $Worksheet.Protection.SetPassword($Password)
             }
 
             if ($AutoFilter) {
-                $ws.Cells[$dataRange].AutoFilter=$true
+                $Worksheet.Cells[$dataRange].AutoFilter=$true
             }
 
             if ($FreezeTopRow) {
-                $ws.View.FreezePanes(2,1)
+                $Worksheet.View.FreezePanes(2,1)
             }
 
             if ($FreezeTopRowFirstColumn) {
-                $ws.View.FreezePanes(2,2)
+                $Worksheet.View.FreezePanes(2,2)
             }
 
             if ($FreezeFirstColumn) {
-                $ws.View.FreezePanes(1,2)
+                $Worksheet.View.FreezePanes(1,2)
             }
 
             if ($FreezePane) {
@@ -603,25 +606,25 @@ Function Export-Excel {
                 }
 
                 if ($freezeRow -gt 1) {
-                    $ws.View.FreezePanes($freezeRow,$freezeColumn)
+                    $Worksheet.View.FreezePanes($freezeRow,$freezeColumn)
                 }
             }
             if ($BoldTopRow) {
-                $range=$ws.Dimension.Address -replace $ws.Dimension.Rows, '1'
-                $ws.Cells[$range].Style.Font.Bold = $true
+                $range=$Worksheet.Dimension.Address -replace $Worksheet.Dimension.Rows, '1'
+                $Worksheet.Cells[$range].Style.Font.Bold = $true
             }
             if ($AutoSize) {
-                $ws.Cells.AutoFitColumns()
+                $Worksheet.Cells.AutoFitColumns()
             }
 
             foreach ($Sheet in $HideSheet) {
-                $pkg.Workbook.WorkSheets[$Sheet].Hidden = 'Hidden'
+                $Excel.Workbook.WorkSheets[$Sheet].Hidden = 'Hidden'
             }
 
             $chartCount=0
             foreach ($chartDef in $ExcelChartDefinition) {
                 $ChartName = 'Chart' + (Split-Path -Leaf ([System.IO.path]::GetTempFileName())) -replace 'tmp|\.',''
-                $chart = $ws.Drawings.AddChart($ChartName, $chartDef.ChartType)
+                $chart = $Worksheet.Drawings.AddChart($ChartName, $chartDef.ChartType)
                 $chart.Title.Text = $chartDef.Title
 
                 if ($chartDef.NoLegend) {
@@ -670,10 +673,10 @@ Function Export-Excel {
 
                     $Range=$targetConditionalText.Range
                     if (-not $Range) {
-                        $Range = $ws.Dimension.Address
+                        $Range = $Worksheet.Dimension.Address
                     }
 
-                    $rule=($ws.Cells[$Range].ConditionalFormatting).PSObject.Methods[$target].Invoke()
+                    $rule=($Worksheet.Cells[$Range].ConditionalFormatting).PSObject.Methods[$target].Invoke()
 
                     if ($targetConditionalText.Text) {                
                         if ($targetConditionalText.ConditionalType -match 'equal|notequal|lessthan|lessthanorequal|greaterthan|greaterthanorequal') {
@@ -691,17 +694,17 @@ Function Export-Excel {
             }
 
             if ($CellStyleSB) {
-                $TotalRows = $ws.Dimension.Rows
-                $LastColumn = (Get-ExcelColumnName $ws.Dimension.Columns).ColumnName
-                & $CellStyleSB $ws $TotalRows $LastColumn
+                $TotalRows = $Worksheet.Dimension.Rows
+                $LastColumn = (Get-ExcelColumnName $Worksheet.Dimension.Columns).ColumnName
+                & $CellStyleSB $Worksheet $TotalRows $LastColumn
             }
 
             if ($PassThru) {
-                $pkg
+                $Excel
             } 
             else {
-                $pkg.Save()
-                $pkg.Dispose()
+                $Excel.Save()
+                $Excel.Dispose()
 
                 if ($Show) {
                     Invoke-Item $Path
@@ -709,7 +712,7 @@ Function Export-Excel {
             }
         }
         Catch {
-            throw "Failed exporting worksheet '$WorkSheetname' to '$Path': $_"
+            throw "Failed exporting worksheet '$WorksheetName' to '$Path': $_"
         }
     }
 }

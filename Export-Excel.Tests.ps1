@@ -1,19 +1,17 @@
-# Contributed by https://github.com/W1M0R
+Import-Module $PSScriptRoot -Force
 
-Import-Module ImportExcel -Force 
-
-function New-TestWorkbook {
-    $testWorkbook = "$($PSScriptRoot)\test.xlsx"
+Function New-TestWorkbook {
+    $TestWorkbook = Join-Path $PSScriptRoot 'Test.xlsx'
     
-    Remove-Item $testWorkbook -ErrorAction Ignore
-    $testWorkbook
+    Remove-Item $TestWorkbook -ErrorAction Ignore
+    $TestWorkbook
 }
 
-function Remove-TestWorkbook {
+Function Remove-TestWorkbook {
     New-TestWorkbook | Out-Null
 }
 
-function New-TestDataCsv {
+Function New-TestDataCsv {
 @"
 ID,Product,Quantity,Price,Total
 12001,Nails,37,3.99,147.63
@@ -27,37 +25,43 @@ false,Bla,7,82,12
 "@ | ConvertFrom-Csv 
 }
 
-Describe "Export-Excel" {
+Describe 'Export-Excel' {
 
     $csvData  = New-TestDataCsv
-    $workbook = New-TestWorkbook
+    $Workbook = New-TestWorkbook
 
-    Context "Importing CSV data from a here string" {
-        It "All properties are type [string]" {
-            $csvData | % {
-                $_.PSObject.Properties | % {
-                    $_.Value -is [string] | Should Be $true
+    Context 'Importing CSV data from a here string' {
+        It 'All properties are type [string]' {
+            $csvData | ForEach-Object {
+                $_.PSObject.Properties | ForEach-Object {
+                    $_.Value -is [String] | Should Be $true
                 }
             }
         }
-        It "Leading zeroes are preserved" {
-            $csvData[4] | Select-Object -ExpandProperty ID | Should Be "00120"
+        It 'Leading zeroes are preserved' {
+            $csvData[4] | Select-Object -ExpandProperty ID | Should Be '00120'
         }
     }
 
-    Context "Piping CSV data to Export-Excel" {
+    Context 'Piping CSV data to Export-Excel' {
 
-        $xlPkg = $csvData | Export-Excel $workbook -PassThru
-        $ws = $xlPkg.Workbook.WorkSheets[1]
+        $Excel = $csvData | Export-Excel $Workbook -PassThru
+        $Worksheet = $Excel.Workbook.Worksheets[1]
 
-        It "Exports numeric strings as numbers" {
-            $csvData[2] | Select-Object -ExpandProperty ID | Should Be "12003"
-            $ws.Cells["A4"].Value -is [double] | Should Be $true
-            $ws.Cells["A4"].Value | Should Be 12003
+        It 'Exports numeric strings as numbers' {
+            $csvData[2] | Select-Object -ExpandProperty ID | Should Be '12003'
+            $Worksheet.Cells['A4'].Value -is [Double] | Should Be $true
+            $Worksheet.Cells['A4'].Value | Should Be 12003
         }
 
-        $xlPkg.Save()
-        $xlPkg.Dispose()
+        $Excel.Save()
+        $Excel.Dispose()
+    }
+
+    Context 'Test PR for Appvayor' {
+        it 'Test result of sum' {
+            1 + 1 | Should be '2'
+        }
     }
 
     Remove-TestWorkbook
