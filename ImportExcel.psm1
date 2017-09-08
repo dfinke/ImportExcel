@@ -247,6 +247,7 @@ Function Import-Excel {
         [String[]]$HeaderName,
         [Parameter(ParameterSetName='C', Mandatory)]
         [Switch]$NoHeader,
+        [Alias('HeaderRow')]
         [ValidateRange(1, 9999)]
         [Int]$TopRow,
         [Switch]$DataOnly
