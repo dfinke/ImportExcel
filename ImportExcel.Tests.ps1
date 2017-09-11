@@ -120,6 +120,8 @@ Context 'output' {
                 
                 $Result = Import-Excel -Path $Path -WorksheetName Test -TopRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+                
+                Import-Excel -Path $Path -WorksheetName Test -TopRow 4 | Should BeNullOrEmpty
             }
             it 'Default and DataOnly' {
                 $ExpectedResult = @(
@@ -145,6 +147,9 @@ Context 'output' {
 
                 $Result = Import-Excel -Path $Path -WorksheetName Test -DataOnly -TopRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                Import-Excel -Path $Path -WorksheetName Test  -DataOnly -TopRow 4 | Should BeNullOrEmpty
+                #{Import-Excel -Path $Path -WorksheetName Test -DataOnly -TopRow 4} | Should Throw 'No column headers found'
             }
             it 'NoHeader' {
                 $ExpectedResult = @(
@@ -184,6 +189,8 @@ Context 'output' {
 
                 $Result = Import-Excel -Path $Path -WorksheetName Test -NoHeader -TopRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                Import-Excel -Path $Path -WorksheetName Test -NoHeader -TopRow 4 | Should BeNullOrEmpty
             }
             it 'NoHeader and DataOnly' {
                 $ExpectedResult = @(
@@ -223,6 +230,8 @@ Context 'output' {
 
                 $Result = Import-Excel -Path $Path -WorksheetName Test -NoHeader -DataOnly -TopRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                Import-Excel -Path $Path -WorksheetName Test -NoHeader -DataOnly -TopRow 4 | Should BeNullOrEmpty
             }
             it 'HeaderName' {
                 $ExpectedResult = @(
@@ -314,6 +323,8 @@ Context 'output' {
 
                 $Result = Import-Excel -Path $Path -WorksheetName Test -HeaderName FirstName, SecondName, City, Rating, Country -TopRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                Import-Excel -Path $Path -WorksheetName Test -HeaderName FirstName, SecondName, City, Rating, Country -TopRow 4 | Should BeNullOrEmpty
             }
             it 'HeaderName and DataOnly' {
                 $ExpectedResult = @(
@@ -405,6 +416,8 @@ Context 'output' {
 
                 $Result = Import-Excel -Path $Path -WorksheetName Test -HeaderName FirstName, SecondName, City, Rating, Country -DataOnly -TopRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                Import-Excel -Path $Path -WorksheetName Test -HeaderName FirstName, SecondName, City, Rating, Country -DataOnly -TopRow 4 | Should BeNullOrEmpty
             }
         }
         Describe 'blank rows and columns' {
@@ -502,6 +515,9 @@ Context 'output' {
 
                 $Result = Import-Excel -Path $Path -WorksheetName Test -TopRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                {Import-Excel -Path $Path -WorksheetName Test -TopRow 4} | Should Throw 'No column headers found'
+                Import-Excel -Path $Path -WorksheetName Test -TopRow 5 | Should BeNullOrEmpty
             }
             it 'Default and DataOnly' {
                 $ExpectedResult = @(
@@ -546,6 +562,10 @@ Context 'output' {
 
                 $Result = Import-Excel -Path $Path -WorksheetName Test -DataOnly -TopRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+                
+                {Import-Excel -Path $Path -WorksheetName Test -DataOnly -TopRow 4} | Should Throw 'No column headers found'
+
+                Import-Excel -Path $Path -WorksheetName Test -DataOnly -TopRow 5 | Should BeNullOrEmpty
             }
             it 'HeaderName' {
                 $ExpectedResult = @(
@@ -635,21 +655,21 @@ Context 'output' {
                     }
                     [PSCustomObject]@{
                         'MovieName' = 'The Matrix'
-                        'Year'       = '1999'
-                        'Rating'     = '8'
-                        'Genre'      = $null
+                        'Year'      = '1999'
+                        'Rating'    = '8'
+                        'Genre'     = $null
                     }
                     [PSCustomObject]@{
                         'MovieName' = $null
-                        'Year'       = $null
-                        'Rating'     = $null
-                        'Genre'      = $null
+                        'Year'      = $null
+                        'Rating'    = $null
+                        'Genre'     = $null
                     }
                     [PSCustomObject]@{
                         'MovieName' = 'Skyfall'
-                        'Year'       = '2012'
-                        'Rating'     = '9'
-                        'Genre'      = $null
+                        'Year'      = '2012'
+                        'Rating'    = '9'
+                        'Genre'     = $null
                     }
                 )
 
@@ -659,36 +679,69 @@ Context 'output' {
                 $ExpectedResult = @(
                     [PSCustomObject]@{
                         'MovieName' = 'The Bodyguard'
-                        'Year'       = '1982'
-                        'Rating'     = '9'
-                        'Genre'      = $null
-                        'Country'    = 'Thriller'
+                        'Year'      = '1982'
+                        'Rating'    = '9'
+                        'Genre'     = $null
+                        'Country'   = 'Thriller'
                     }
                     [PSCustomObject]@{
                         'MovieName' = 'The Matrix'
-                        'Year'       = '1999'
-                        'Rating'     = '8'
-                        'Genre'      = $null
-                        'Country'    = 'Sci-Fi'
+                        'Year'      = '1999'
+                        'Rating'    = '8'
+                        'Genre'     = $null
+                        'Country'   = 'Sci-Fi'
                     }
                     [PSCustomObject]@{
                         'MovieName' = $null
-                        'Year'       = $null
-                        'Rating'     = $null
-                        'Genre'      = $null
-                        'Country'    = $null
+                        'Year'      = $null
+                        'Rating'    = $null
+                        'Genre'     = $null
+                        'Country'   = $null
                     }
                     [PSCustomObject]@{
                         'MovieName' = 'Skyfall'
-                        'Year'       = '2012'
-                        'Rating'     = '9'
-                        'Genre'      = $null
-                        'Country'    = 'Thriller'
+                        'Year'      = '2012'
+                        'Rating'    = '9'
+                        'Genre'     = $null
+                        'Country'   = 'Thriller'
                     }
                 )
 
                 $Result = Import-Excel -Path $Path -WorksheetName Test -HeaderName MovieName, Year, Rating, Genre, Country -TopRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+                
+                $ExpectedResult = @(
+                    [PSCustomObject]@{
+                        'MovieName' = $null
+                        'Year'      = $null
+                        'Rating'    = $null
+                        'Genre'     = $null
+                        'Country'   = $null
+                    }
+                    [PSCustomObject]@{
+                        'MovieName' = 'Skyfall'
+                        'Year'      = '2012'
+                        'Rating'    = '9'
+                        'Genre'     = $null
+                        'Country'   = 'Thriller'
+                    }
+                )
+
+                $Result = Import-Excel -Path $Path -WorksheetName Test -HeaderName MovieName, Year, Rating, Genre, Country -TopRow 4
+                Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                $ExpectedResult = [PSCustomObject]@{
+                    'MovieName' = 'Skyfall'
+                    'Year'      = '2012'
+                    'Rating'    = '9'
+                    'Genre'     = $null
+                    'Country'   = 'Thriller'
+                }
+                
+                $Result = Import-Excel -Path $Path -WorksheetName Test -HeaderName MovieName, Year, Rating, Genre, Country  -TopRow 5
+                Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                Import-Excel -Path $Path -WorksheetName Test -HeaderName MovieName, Year, Rating, Genre, Country -TopRow 6 | Should BeNullOrEmpty
             }
             it 'HeaderName and DataOnly' {
                 $ExpectedResult = @(
@@ -810,6 +863,22 @@ Context 'output' {
 
                 $Result = Import-Excel -Path $Path -WorksheetName Test -HeaderName MovieName, Year, Rating, Genre, Country -DataOnly -TopRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                $ExpectedResult = [PSCustomObject]@{
+                    'MovieName' = 'Skyfall'
+                    'Year'      = '2012'
+                    'Rating'    = '9'
+                    'Genre'     = 'Thriller'
+                    'Country'   = $null
+                }
+                
+                $Result = Import-Excel -Path $Path -WorksheetName Test -HeaderName MovieName, Year, Rating, Genre, Country -DataOnly -TopRow 4
+                Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+                
+                $Result = Import-Excel -Path $Path -WorksheetName Test -HeaderName MovieName, Year, Rating, Genre, Country -DataOnly  -TopRow 5
+                Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                Import-Excel -Path $Path -WorksheetName Test -HeaderName MovieName, Year, Rating, Genre, Country -DataOnly -TopRow 6 | Should BeNullOrEmpty
             }
             it 'NoHeader' {
                 $ExpectedResult = @(
@@ -887,6 +956,38 @@ Context 'output' {
 
                 $Result = Import-Excel -Path $Path -WorksheetName Test -NoHeader -TopRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                $ExpectedResult = @(
+                    [PSCustomObject]@{
+                        'P1' = $null
+                        'P2' = $null
+                        'P3' = $null
+                        'P4' = $null
+                        'P5' = $null
+                    }
+                    [PSCustomObject]@{
+                        'P1' = 'Skyfall'
+                        'P2' = '2012'
+                        'P3' = '9'
+                        'P4' = $null
+                        'P5' = 'Thriller'
+                    }
+                )
+                $Result = Import-Excel -Path $Path -WorksheetName Test -NoHeader -TopRow 4
+                Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+                
+                $ExpectedResult = [PSCustomObject]@{
+                    'P1' = 'Skyfall'
+                    'P2' = '2012'
+                    'P3' = '9'
+                    'P4' = $null
+                    'P5' = 'Thriller'
+                }
+                
+                $Result = Import-Excel -Path $Path -WorksheetName Test -NoHeader -TopRow 5
+                Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                Import-Excel -Path $Path -WorksheetName Test -NoHeader -TopRow 6 | Should BeNullOrEmpty
             }
             it 'NoHeader and DataOnly' {
                 $ExpectedResult = @(
@@ -943,6 +1044,21 @@ Context 'output' {
 
                 $Result = Import-Excel -Path $Path -WorksheetName Test -NoHeader -DataOnly -TopRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                $ExpectedResult = [PSCustomObject]@{
+                    'P1' = 'Skyfall'
+                    'P2' = '2012'
+                    'P3' = '9'
+                    'P4' = 'Thriller'
+                }
+                
+                $Result = Import-Excel -Path $Path -WorksheetName Test -NoHeader -DataOnly -TopRow 4
+                Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                $Result = Import-Excel -Path $Path -WorksheetName Test -NoHeader -DataOnly -TopRow 5
+                Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                Import-Excel -Path $Path -WorksheetName Test -NoHeader -DataOnly -TopRow 6 | Should BeNullOrEmpty
             }
         }
         Describe 'blank rows and columns with missing headers' {

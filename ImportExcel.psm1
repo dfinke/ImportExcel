@@ -331,19 +331,17 @@ Function Import-Excel {
                 throw "Worksheet '$WorksheetName' not found, the workbook only contains the worksheets '$($Excel.Workbook.Worksheets)'."
             }
             
-            if (-not $Worksheet.Dimension.Rows) {
-                Write-Warning "Worksheet '$WorksheetName' in workbook '$Path' is empty"
+            #region Set the top row
+            if (((-not ($NoHeader -or $HeaderName)) -and ($TopRow -eq 0))) {
+                $TopRow = 1
+            }
+            #endregion
+
+            if (-not ($AllCells = $Worksheet.Cells | where {($_.Start.Row -ge $TopRow)})) {
+                Write-Warning "Worksheet '$WorksheetName' in workbook '$Path' is empty after TopRow '$TopRow'"
             }
             else {
-                #region Set the top row
-                if (((-not ($NoHeader -or $HeaderName)) -and ($TopRow -eq 0))) {
-                    $TopRow = 1
-                }
-                #endregion
-
-                #region Collect all cells that contain data starting from the top row
-                $AllCells = $Worksheet.Cells | where {($_.Start.Row -ge $TopRow)}
-
+                #region Get rows and columns
                 if ($DataOnly) {
                     $CellsWithValues = $AllCells | where {$_.Value}
 
@@ -360,7 +358,7 @@ Function Import-Excel {
                 #endregion
 
                 #region Create property names
-                if (-not ($PropertyNames = Get-PropertyNames -Columns $Columns -TopRow $TopRow)) {
+                if ((-not $Columns) -or (-not ($PropertyNames = Get-PropertyNames -Columns $Columns -TopRow $TopRow))) {
                     throw "No column headers found on top row '$TopRow'. If column headers in the worksheet are not a requirement then please use the '-NoHeader' or '-HeaderName' parameter."
                 }
 
