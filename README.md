@@ -27,6 +27,19 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 ```
 
 # What's new
+#### 9/12/2017
+Version 4.0 released.
+
+Super thanks and hat tip to [DarkLite1](https://github.com/DarkLite1). There is now a new and improved `Import-Excel`, not only in functionality, but also improved readability, examples and more. Not only that, he's been running it in production in his company for a number of weeks!
+
+*Added* `Update-FirstObjectProperties` Updates the first object to contain all the properties of the object with the most properties in the array. Check out the help.
+
+
+***Breaking Changes***: There are breaking changes, the are only in the `Import-Excel` function.
+
+
+Moving forward, looking to add testing of this module, and having each checkin run on Appveyor. This is in preparation for new features coming down the road
+
 #### 7/3/2017
 Thanks to [Mikkel Nordberg](https://www.linkedin.com/in/mikkelnordberg). He contributed a `ConvertTo-ExcelXlsx`. To use it, Excel needs to be installed. I converts older Excel files `xls` to 'xlsx'.
 
