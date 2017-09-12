@@ -148,6 +148,40 @@ Function Export-Excel {
             Export all services to an Excel sheet where all cells have a 'Conditional formatting rule' in Excel that will show the background fill color in 'LightPink' and the text color in 'DarkRed' when the value contains the word 'Stop'. If the value contains the word 'Running' it will have a background fill color in 'Cyan' and a text color 'Blue'. In case none of these conditions are met the color will be the default, black text on a white background.
 
         .EXAMPLE
+            $ExcelParams = @{
+                Path      = $env:TEMP + '\Excel.xlsx'
+                Show      = $true
+                Verbose   = $true
+            }
+            Remove-Item -Path $ExcelParams.Path -Force -EA Ignore
+
+            $Array = @()
+
+            $Obj1 = [PSCustomObject]@{
+                Member1   = 'First'
+                Member2   = 'Second'
+            }
+
+            $Obj2 = [PSCustomObject]@{
+                Member1   = 'First'
+                Member2   = 'Second'
+                Member3   = 'Third'
+            }
+
+            $Obj3 = [PSCustomObject]@{
+                Member1   = 'First'
+                Member2   = 'Second'
+                Member3   = 'Third'
+                Member4   = 'Fourth'
+            }
+
+            $Array = $Obj1, $Obj2, $Obj3
+            $Array | Out-GridView -Title 'Not showing Member3 and Member4'
+            $Array | Update-FirstObjectProperties | Export-Excel @ExcelParams -WorkSheetname Numbers
+            
+            Updates the first object of the array by adding property 'Member3' and 'Member4'. Afterwards. all objects are exported to an Excel file and all column headers are visible.
+
+        .EXAMPLE
             Get-Process | Export-Excel .\test.xlsx -WorkSheetname Processes -IncludePivotTable -Show -PivotRows Company -PivotData PM
 
         .EXAMPLE
@@ -155,6 +189,9 @@ Function Export-Excel {
 
         .EXAMPLE
             Get-Service | Export-Excel 'c:\temp\test.xlsx'  -Show -IncludePivotTable -PivotRows status -PivotData @{status='count'}
+        
+        .LINK
+            https://github.com/dfinke/ImportExcel
     #>
 
     [CmdLetBinding()]
@@ -390,50 +427,55 @@ Function Export-Excel {
     }
 
     Process {
-        if ($firstTimeThru) {
-            $firstTimeThru = $false
-            $isDataTypeValueType = $TargetData.GetType().name -match $pattern
-            Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'"
-        }
-
-        if ($isDataTypeValueType) {
-            $ColumnIndex = $StartColumn
-
-            Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData
-
-            $ColumnIndex += 1
-            $Row += 1
-        } 
-        else {
-            #region Add headers
-            if (-not $script:Header) {
-                $ColumnIndex = $StartColumn
-                $script:Header = $TargetData.PSObject.Properties.Name
-
-                if ($NoHeader) {
-                    # Don't push the headers to the spread sheet
-                    $Row -= 1
-                } 
-                else {
-                    foreach ($Name in $script:Header) {
-                        $ws.Cells[$Row, $ColumnIndex].Value = $Name
-                        Write-Verbose "Cell '$Row`:$ColumnIndex' add header '$Name'"
-                        $ColumnIndex += 1
-                    }
-                }
+        Try {
+            if ($firstTimeThru) {
+                $firstTimeThru = $false
+                $isDataTypeValueType = $TargetData.GetType().name -match $pattern
+                Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'"
             }
-            #endregion
 
-            $Row += 1
-            $ColumnIndex = $StartColumn
+            if ($isDataTypeValueType) {
+                $ColumnIndex = $StartColumn
 
-            foreach ($Name in $script:Header) {
-                #region Add non header values
-                Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData.$Name
+                Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData
 
                 $ColumnIndex += 1
+                $Row += 1
+            } 
+            else {
+                #region Add headers
+                if (-not $script:Header) {
+                    $ColumnIndex = $StartColumn
+                    $script:Header = $TargetData.PSObject.Properties.Name
+
+                    if ($NoHeader) {
+                        # Don't push the headers to the spread sheet
+                        $Row -= 1
+                    } 
+                    else {
+                        foreach ($Name in $script:Header) {
+                            $ws.Cells[$Row, $ColumnIndex].Value = $Name
+                            Write-Verbose "Cell '$Row`:$ColumnIndex' add header '$Name'"
+                            $ColumnIndex += 1
+                        }
+                    }
+                }
                 #endregion
+
+                $Row += 1
+                $ColumnIndex = $StartColumn
+
+                foreach ($Name in $script:Header) {
+                    #region Add non header values
+                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData.$Name
+
+                    $ColumnIndex += 1
+                    #endregion
+                }
             }
+       }
+        Catch {
+            throw "Failed exporting worksheet '$WorkSheetname' to '$Path': $_"
         }
     }
 
