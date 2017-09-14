@@ -130,7 +130,7 @@ function Import-Excel {
                     {
                         $propertyName = $Column.Name
                         $position = $Column.Position
-                        $newRow."$propertyName" = $worksheet.Cells[($Row),($position+1)].Value
+                        $newRow."$propertyName" = $worksheet.Cells[($Row),($position+$StartColumn)].Value
                     }
                     $rows += [PSCustomObject]$newRow
                 }
