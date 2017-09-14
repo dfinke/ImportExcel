@@ -1,3 +1,4 @@
+
 function Import-ExcelTable
 {
     [CmdletBinding()]
@@ -14,51 +15,52 @@ function Import-ExcelTable
         [Int]$TopRow
     )
 
-        $Path = (Resolve-Path $Path).ProviderPath
-        Write-Verbose "Import Excel workbook '$Path' with worksheet '$Worksheetname'"
+$Path = (Resolve-Path $Path).ProviderPath
+Write-Verbose "Import Excel workbook '$Path' with worksheet '$Worksheetname'"
 
-        $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
-        $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
+$Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
+$Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
 
         
-        if (-not ($Worksheet = $Excel.Workbook.Worksheets[$WorkSheetName])) {
-            throw "Worksheet '$WorksheetName' not found, the workbook only contains the worksheets '$($Excel.Workbook.Worksheets)'."
-        }
-        if (-not ($excelTable = $Worksheet.Tables[$TableName])) {
-            throw "Table '$TableName' not found in the worksheet. Worksheet only contains the tables '$($Worsheet.Tables)'."
-        }
-
-            $rows = @()
-            $excelTable = $worksheet.Tables[$TableName]
-            $StartRow = $xlTable.Address.Start.Row + 1
-            $StartColumn = $xlTable.Address.Start.Column
-            $RowCount = $xlTable.Address.Rows - 2
+if (-not ($Worksheet = $Excel.Workbook.Worksheets[$WorkSheetName])) {
+    throw "Worksheet '$WorksheetName' not found, the workbook only contains the worksheets '$($Excel.Workbook.Worksheets)'."
+}
+if (-not ($excelTable = $Worksheet.Tables[$TableName])) {
+    throw "Table '$TableName' not found in the worksheet. Worksheet only contains the tables '$($Worsheet.Tables)'."
+}
+    $rows = @()
+    $excelTable = $Worksheet.Tables[$TableName]
+    $StartRow = $excelTable.Address.Start.Row + 1
+    $StartColumn = $excelTable.Address.Start.Column
+    $RowCount = $excelTable.Address.Rows - 2
            
-           if($TopRow -and $RowCount -gt $TopRow)
-           {
-               $RowCount = $TopRow
-           }
+    if($TopRow -and $RowCount -gt $TopRow)
+    {
+         $RowCount = ($TopRow - 1)
+    }
 
-            $ColumnCount = $xlTable.Address.Columns
+    $ColumnCount = $excelTable.Address.Columns
 
-            $EndRow = $StartRow + $RowCount
+    $EndRow = $StartRow + $RowCount
             
-            $EndColumn = $StartColumn + $ColumnCount
+    $EndColumn = $StartColumn + $ColumnCount
         
-            foreach($Row in $StartRow..($EndRow))
+    foreach($Row in $StartRow..($EndRow))
+    {
+        $newRow = [Ordered]@{}
+        $CellsWithValues = $worksheet.Cells[$Row, $StartColumn, $Row, $EndColumn] | Where-Object Value
+        if($CellsWithValues)
+        {
+            foreach($Column in $excelTable.Columns)
             {
-                $newRow = [Ordered]@{}
-                $CellsWithValues = $worksheet.Cells[$Row, $StartColumn, $Row, $EndColumn] | Where-Object Value
-                if($CellsWithValues)
-                {
-                    foreach($Column in $xlTable.Columns)
-                    {
-                        $propertyName = $Column.Name
-                        $position = $Column.Position
-                        $newRow."$propertyName" = $worksheet.Cells[($Row),($position+$StartColumn)].Value
-                    }
-                    $rows += [PSCustomObject]$newRow
-                }
+                $propertyName = $Column.Name
+                $position = $Column.Position
+                $newRow."$propertyName" = $worksheet.Cells[($Row),($position+$StartColumn)].Value
             }
-            $rows 
-        }    
+            $rows += [PSCustomObject]$newRow
+        }
+    }
+    $rows 
+}    
+
+   
