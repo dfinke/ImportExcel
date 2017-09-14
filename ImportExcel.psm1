@@ -13,6 +13,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Get-HtmlTable.ps1
 . $PSScriptRoot\Get-Range.ps1
 . $PSScriptRoot\Get-XYRange.ps1
+. $PSScriptRoot\Import-ExcelTable.ps1
 . $PSScriptRoot\Import-Html.ps1
 . $PSScriptRoot\InferData.ps1
 . $PSScriptRoot\Invoke-Sum.ps1
@@ -48,11 +49,11 @@ Function Import-Excel {
         Create custom objects from the rows in an Excel worksheet.
  
     .DESCRIPTION 
-        The Import-Excel cmdlet creates custom objects from the rows in an Excel worksheet. Each row represents one object. All of this is possible without installing Microsoft Excel and by using the .NET library ‘EPPLus.dll’.
+        The Import-Excel cmdlet creates custom objects from the rows in an Excel worksheet. Each row represents one object. All of this is possible without installing Microsoft Excel and by using the .NET library ï¿½EPPLus.dllï¿½.
 
         By default, the property names of the objects are retrieved from the column headers. Because an object cannot have a blanc property name, only columns with column headers will be imported.
 
-        If the default behavior is not desired and you want to import the complete worksheet ‘as is’, the parameter ‘-NoHeader’ can be used. In case you want to provide your own property names, you can use the parameter ‘-HeaderName’. 
+        If the default behavior is not desired and you want to import the complete worksheet ï¿½as isï¿½, the parameter ï¿½-NoHeaderï¿½ can be used. In case you want to provide your own property names, you can use the parameter ï¿½-HeaderNameï¿½. 
 
 
     .PARAMETER Path 
@@ -74,15 +75,15 @@ Function Import-Excel {
     .PARAMETER NoHeader
         Automatically generate property names (P1, P2, P3, ..) instead of the ones defined in the column headers of the TopRow.
 
-        This switch is best used when you want to import the complete worksheet ‘as is’ and are not concerned with the property names.
+        This switch is best used when you want to import the complete worksheet ï¿½as isï¿½ and are not concerned with the property names.
 
     .PARAMETER TopRow
         The row from where we start to import data, all rows above the TopRow are disregarded. By default this is the first row. 
 
-        When the parameters ‘-NoHeader’ and ‘-HeaderName’ are not provided, this row will contain the column headers that will be used as property names. When one of both parameters are provided, the property names are automatically created and this row will be treated as a regular row containing data.
+        When the parameters ï¿½-NoHeaderï¿½ and ï¿½-HeaderNameï¿½ are not provided, this row will contain the column headers that will be used as property names. When one of both parameters are provided, the property names are automatically created and this row will be treated as a regular row containing data.
 
     .EXAMPLE
-        Import data from an Excel worksheet. One object is created for each row. The property names of the objects consist of the column names defined in the first row. In case a column doesn’t have a column header (usually in row 1 when ‘-TopRow’ is not used), then the unnamed columns will be skipped and the data in those columns will not be imported.
+        Import data from an Excel worksheet. One object is created for each row. The property names of the objects consist of the column names defined in the first row. In case a column doesnï¿½t have a column header (usually in row 1 when ï¿½-TopRowï¿½ is not used), then the unnamed columns will be skipped and the data in those columns will not be imported.
 
         ----------------------------------------------
         | File: Movies.xlsx     -      Sheet: Actors |
@@ -104,7 +105,7 @@ Function Import-Excel {
         Notice that column 'B' is not imported because there's no value in cell 'B1' that can be used as property name for the objects.
 
     .EXAMPLE
-        Import the complete Excel worksheet ‘as is’ by using the ‘-NoHeader’ switch. One object is created for each row. The property names of the objects will be automatically generated (P1, P2, P3, ..).
+        Import the complete Excel worksheet ï¿½as isï¿½ by using the ï¿½-NoHeaderï¿½ switch. One object is created for each row. The property names of the objects will be automatically generated (P1, P2, P3, ..).
 
         ----------------------------------------------
         | File: Movies.xlsx     -      Sheet: Actors |
@@ -132,7 +133,7 @@ Function Import-Excel {
         Notice that the column header (row 1) is imported as an object too.
  
      .EXAMPLE
-        Import data from an Excel worksheet. One object is created for each row. The property names of the objects consist of the names defined in the parameter ‘-HeaderName’. The properties are named starting from the most left column (A) to the right. In case no value is present in one of the columns, that property will have an empty value.
+        Import data from an Excel worksheet. One object is created for each row. The property names of the objects consist of the names defined in the parameter ï¿½-HeaderNameï¿½. The properties are named starting from the most left column (A) to the right. In case no value is present in one of the columns, that property will have an empty value.
 
         ----------------------------------------------------------
         | File: Movies.xlsx            -           Sheet: Movies |
@@ -169,7 +170,7 @@ Function Import-Excel {
         Notice that empty rows are imported and that data for the property 'Genre' is not present in the worksheet. As such, the 'Genre' property will be blanc for all objects.
         
      .EXAMPLE
-        Import data from an Excel worksheet. One object is created for each row. The property names of the objects are automatically generated by using the switch ‘-NoHeader’ (P1, P@, P#, ..). The switch ‘-DataOnly’ will speed up the import because empty rows and empty columns are not imported.
+        Import data from an Excel worksheet. One object is created for each row. The property names of the objects are automatically generated by using the switch ï¿½-NoHeaderï¿½ (P1, P@, P#, ..). The switch ï¿½-DataOnlyï¿½ will speed up the import because empty rows and empty columns are not imported.
 
         ----------------------------------------------------------
         | File: Movies.xlsx            -           Sheet: Movies |
@@ -181,7 +182,7 @@ Function Import-Excel {
         |4     Skyfall         2012           9                  |
         ----------------------------------------------------------
 
-        PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Movies –NoHeader -DataOnly
+        PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Movies ï¿½NoHeader -DataOnly
  
         P1: The Bodyguard
         P2: 1992
@@ -198,7 +199,7 @@ Function Import-Excel {
         Notice that empty rows and empty columns are not imported.
 
  .EXAMPLE
-        Import data from an Excel worksheet. One object is created for each row. The property names are provided with the ‘-HeaderName’ parameter. The import will start from row 2 and empty columns and rows are not imported.
+        Import data from an Excel worksheet. One object is created for each row. The property names are provided with the ï¿½-HeaderNameï¿½ parameter. The import will start from row 2 and empty columns and rows are not imported.
 
         ----------------------------------------------------------
         | File: Movies.xlsx            -           Sheet: Actors |
@@ -209,13 +210,13 @@ Function Import-Excel {
         |3     Jean-Claude               Vandamme     Brussels   |
         ----------------------------------------------------------
 
-        PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Actors -DataOnly -HeaderName 'FirstName', 'SecondName', 'City' –TopRow 2
+        PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Actors -DataOnly -HeaderName 'FirstName', 'SecondName', 'City' ï¿½TopRow 2
          
         FirstName : Jean-Claude
         SecondName: Vandamme
         City      : Brussels
 
-        Notice that only 1 object is imported with only 3 properties. Column B and row 2 are empty and have been disregarded by using the switch '-DataOnly'. The property names have been named with the values provided with the parameter '-HeaderName'. Row number 1 with ‘Chuck Norris’ has not been imported, because we started the import from row 2 with the parameter ‘-TopRow 2’.
+        Notice that only 1 object is imported with only 3 properties. Column B and row 2 are empty and have been disregarded by using the switch '-DataOnly'. The property names have been named with the values provided with the parameter '-HeaderName'. Row number 1 with ï¿½Chuck Norrisï¿½ has not been imported, because we started the import from row 2 with the parameter ï¿½-TopRow 2ï¿½.
             
     .LINK
         https://github.com/dfinke/ImportExcel
