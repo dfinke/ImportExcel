@@ -59,7 +59,7 @@ Function Import-Excel {
         Specifies the path to the Excel file.
  
     .PARAMETER WorksheetName
-        Specifies the name of the worksheet in the Excel workbook to import.        
+        Specifies the name of the worksheet in the Excel workbook to import. By default, if no name is provided, the first worksheet will be imported.        
 
     .PARAMETER DataOnly
         Import only rows and columns that contain data, empty rows and empty columns are not imported.
