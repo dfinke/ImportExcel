@@ -240,7 +240,6 @@ Function Import-Excel {
         [Parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Position=0, Mandatory)]
         [ValidateScript({Test-Path -Path $_ -PathType Leaf})]
         [String]$Path,
-        [Parameter(Position=1, Mandatory)]
         [Alias('Sheet')]
         [String]$WorksheetName,
         [Parameter(ParameterSetName='B', Mandatory)]
@@ -327,9 +326,16 @@ Function Import-Excel {
             $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
             $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
 
-            if (-not ($Worksheet = $Excel.Workbook.Worksheets[$WorkSheetName])) {
-                throw "Worksheet '$WorksheetName' not found, the workbook only contains the worksheets '$($Excel.Workbook.Worksheets)'."
+            #region Select worksheet
+            if ($WorksheetName) {
+                if (-not ($Worksheet = $Excel.Workbook.Worksheets[$WorkSheetName])) {
+                    throw "Worksheet '$WorksheetName' not found, the workbook only contains the worksheets '$($Excel.Workbook.Worksheets)'. If you only wish to select the first worksheet, please remove the '-WorksheetName' parameter."
+                }
             }
+            else {
+                $Worksheet = $Excel.Workbook.Worksheets | Select-Object -First 1
+            }
+            #endregion
             
             #region Set the top row
             if (((-not ($NoHeader -or $HeaderName)) -and ($TopRow -eq 0))) {

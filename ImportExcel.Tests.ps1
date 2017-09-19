@@ -10,7 +10,7 @@ $WarningPreference = 'SilentlyContinue'
 # $WarningPreference = 'Continue'
 $ProgressPreference = 'SilentlyContinue'
 
-$Path = '.\Test.xlsx'
+$Path = 'Test.xlsx'
 
 Context 'input' {
     in $TestDrive {
@@ -18,9 +18,6 @@ Context 'input' {
             Context 'mandatory in sets' {
                 it 'Path' {
                     (Get-Command Import-Excel).Parameters['Path'].Attributes.Mandatory | Should be $true
-                }
-                it 'WorksheetName' {
-                    (Get-Command Import-Excel).Parameters['WorksheetName'].Attributes.Mandatory | Should be $true
                 }
                 it 'HeaderName' {
                     (Get-Command Import-Excel).Parameters['HeaderName'].Attributes.Mandatory | Should be $true
@@ -30,11 +27,14 @@ Context 'input' {
                 }
             }
             Context 'optional' {
+                it 'DataOnly' {
+                    (Get-Command Import-Excel).Parameters['DataOnly'].Attributes.Mandatory | Should be $false
+                }
                 it 'TopRow' {
                     (Get-Command Import-Excel).Parameters['TopRow'].Attributes.Mandatory | Should be $false
                 }
-                it 'DataOnly' {
-                    (Get-Command Import-Excel).Parameters['DataOnly'].Attributes.Mandatory | Should be $false
+                it 'WorksheetName' {
+                    (Get-Command Import-Excel).Parameters['WorksheetName'].Attributes.Mandatory | Should be $false
                 }
             }
             Context 'illegal combinations' {
@@ -45,20 +45,185 @@ Context 'input' {
             }
         }
         Describe 'worksheet' {
+            in $TestDrive {
+                #region Create test file
+                $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+                $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
+                $Excel | Add-WorkSheet -WorkSheetname Test
+                $Excel.Save()
+                $Excel.Dispose()
+                #endregion
 
-            #region Create test file
-            $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
-            $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
-            $Excel | Add-WorkSheet -WorkSheetname Test
-            $Excel.Save()
-            $Excel.Dispose()
-            #endregion
+                it 'not found' {
+                    {Import-Excel -Path $Path -WorksheetName NotExisting} | Should Throw 'not found'
+                }
+                it 'empty' {               
+                    Import-Excel -Path $Path -WorksheetName Test -NoHeader | Should BeNullOrEmpty
+                }
+                it 'select first worksheet' {
+                    Remove-Item ./* -Force
+                    #region Create test file
+                    $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+                    $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
+                    
+                    <#
+                        ----------------------------------------------
+                        |           A           B            C       |
+                        |1     First Name                 Address    |
+                        |2     Chuck         Norris       California |
+                        |3     Jean-Claude   Vandamme     Brussels   |
+                        ----------------------------------------------
+                    #>
 
-            it 'not found' {
-                {Import-Excel -Path $Path -WorksheetName NotExisting} | Should Throw 'not found'
-            }
-            it 'empty' {               
-                Import-Excel -Path $Path -WorksheetName Test -NoHeader | Should BeNullOrEmpty
+                    # Row, Column
+                    $WorksheetActors = $Excel | Add-WorkSheet -WorkSheetname Actors
+                    $WorksheetActors.Cells[1, 1].Value = 'First Name'
+                    $WorksheetActors.Cells[1, 3].Value = 'Address'
+                    $WorksheetActors.Cells[2, 1].Value = 'Chuck'
+                    $WorksheetActors.Cells[2, 2].Value = 'Norris'
+                    $WorksheetActors.Cells[2, 3].Value = 'California'
+                    $WorksheetActors.Cells[3, 1].Value = 'Jean-Claude'
+                    $WorksheetActors.Cells[3, 2].Value = 'Vandamme'
+                    $WorksheetActors.Cells[3, 3].Value = 'Brussels'
+
+                    <#
+                        ---------------------------------------------------------------------
+                        |           A            B            C          D         E        |
+                        |1     Movie name      Year           Rating               Genre    |
+                        |2     The Bodyguard   1992           9                    Thriller |
+                        |3     The Matrix      1999           8                    Sci-Fi   |
+                        |4                                                                  |
+                        |5     Skyfall         2012           9                    Thriller |
+                        ---------------------------------------------------------------------
+                    #>
+
+                    # Row, Column
+                    $WorksheetMovies = $Excel | Add-WorkSheet -WorkSheetname Movies
+                    $WorksheetMovies.Cells[1, 1].Value = 'Movie name'
+                    $WorksheetMovies.Cells[1, 2].Value = 'Year'
+                    $WorksheetMovies.Cells[1, 3].Value = 'Rating'
+                    $WorksheetMovies.Cells[1, 5].Value = 'Genre'
+                    $WorksheetMovies.Cells[2, 1].Value = 'The Bodyguard'
+                    $WorksheetMovies.Cells[2, 2].Value = '1982'
+                    $WorksheetMovies.Cells[2, 3].Value = '9'
+                    $WorksheetMovies.Cells[2, 5].Value = 'Thriller'
+                    $WorksheetMovies.Cells[3, 1].Value = 'The Matrix'
+                    $WorksheetMovies.Cells[3, 2].Value = '1999'
+                    $WorksheetMovies.Cells[3, 3].Value = '8'
+                    $WorksheetMovies.Cells[3, 5].Value = 'Sci-Fi'
+                    $WorksheetMovies.Cells[5, 1].Value = 'Skyfall'
+                    $WorksheetMovies.Cells[5, 2].Value = '2012'
+                    $WorksheetMovies.Cells[5, 3].Value = '9'
+                    $WorksheetMovies.Cells[5, 5].Value = 'Thriller'
+
+                    $Excel.Save()
+                    $Excel.Dispose()
+                    #endregion
+
+                    $ExpectedResult = @(
+                        [PSCustomObject]@{
+                            'First Name' = 'Chuck'
+                            'Address'    = 'California'
+                        }
+                        [PSCustomObject]@{
+                            'First Name' = 'Jean-Claude'
+                            'Address'    = 'Brussels'
+                        }
+                    )
+
+                    $Result = Import-Excel -Path $Path
+                    Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+
+                    Remove-Item ./* -Force
+
+                    #region Create test file
+                    $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+                    $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
+                   
+                    <#
+                        ---------------------------------------------------------------------
+                        |           A            B            C          D         E        |
+                        |1     Movie name      Year           Rating               Genre    |
+                        |2     The Bodyguard   1992           9                    Thriller |
+                        |3     The Matrix      1999           8                    Sci-Fi   |
+                        |4                                                                  |
+                        |5     Skyfall         2012           9                    Thriller |
+                        ---------------------------------------------------------------------
+                    #>
+
+                    # Row, Column
+                    $WorksheetMovies = $Excel | Add-WorkSheet -WorkSheetname Movies
+                    $WorksheetMovies.Cells[1, 1].Value = 'Movie name'
+                    $WorksheetMovies.Cells[1, 2].Value = 'Year'
+                    $WorksheetMovies.Cells[1, 3].Value = 'Rating'
+                    $WorksheetMovies.Cells[1, 5].Value = 'Genre'
+                    $WorksheetMovies.Cells[2, 1].Value = 'The Bodyguard'
+                    $WorksheetMovies.Cells[2, 2].Value = '1982'
+                    $WorksheetMovies.Cells[2, 3].Value = '9'
+                    $WorksheetMovies.Cells[2, 5].Value = 'Thriller'
+                    $WorksheetMovies.Cells[3, 1].Value = 'The Matrix'
+                    $WorksheetMovies.Cells[3, 2].Value = '1999'
+                    $WorksheetMovies.Cells[3, 3].Value = '8'
+                    $WorksheetMovies.Cells[3, 5].Value = 'Sci-Fi'
+                    $WorksheetMovies.Cells[5, 1].Value = 'Skyfall'
+                    $WorksheetMovies.Cells[5, 2].Value = '2012'
+                    $WorksheetMovies.Cells[5, 3].Value = '9'
+                    $WorksheetMovies.Cells[5, 5].Value = 'Thriller'
+                    
+                    <#
+                        ----------------------------------------------
+                        |           A           B            C       |
+                        |1     First Name                 Address    |
+                        |2     Chuck         Norris       California |
+                        |3     Jean-Claude   Vandamme     Brussels   |
+                        ----------------------------------------------
+                    #>
+
+                    # Row, Column
+                    $WorksheetActors = $Excel | Add-WorkSheet -WorkSheetname Actors
+                    $WorksheetActors.Cells[1, 1].Value = 'First Name'
+                    $WorksheetActors.Cells[1, 3].Value = 'Address'
+                    $WorksheetActors.Cells[2, 1].Value = 'Chuck'
+                    $WorksheetActors.Cells[2, 2].Value = 'Norris'
+                    $WorksheetActors.Cells[2, 3].Value = 'California'
+                    $WorksheetActors.Cells[3, 1].Value = 'Jean-Claude'
+                    $WorksheetActors.Cells[3, 2].Value = 'Vandamme'
+                    $WorksheetActors.Cells[3, 3].Value = 'Brussels'
+
+                    $Excel.Save()
+                    $Excel.Dispose()
+                    #endregion
+
+                    $ExpectedResult = @(
+                        [PSCustomObject]@{
+                            'Movie name' = 'The Bodyguard'
+                            'Year'       = '1982'
+                            'Rating'     = '9'
+                            'Genre'      = 'Thriller'
+                        }
+                        [PSCustomObject]@{
+                            'Movie name' = 'The Matrix'
+                            'Year'       = '1999'
+                            'Rating'     = '8'
+                            'Genre'      = 'Sci-Fi'
+                        }
+                        [PSCustomObject]@{
+                            'Movie name' = $null
+                            'Year'       = $null
+                            'Rating'     = $null
+                            'Genre'      = $null
+                        }
+                        [PSCustomObject]@{
+                            'Movie name' = 'Skyfall'
+                            'Year'       = '2012'
+                            'Rating'     = '9'
+                            'Genre'      = 'Thriller'
+                        }
+                    )
+
+                    $Result = Import-Excel -Path $Path
+                    Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+                }
             }
         }
     }
