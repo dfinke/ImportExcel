@@ -15,6 +15,9 @@ $Path = 'Test.xlsx'
 Context 'input' {
     in $TestDrive {
         Describe 'parameters' {
+            BeforeEach {
+                Remove-Item ./* -Force
+            }
             Context 'mandatory in sets' {
                 it 'Path' {
                     (Get-Command Import-Excel).Parameters['Path'].Attributes.Mandatory | Should be $true
@@ -37,10 +40,64 @@ Context 'input' {
                     (Get-Command Import-Excel).Parameters['WorksheetName'].Attributes.Mandatory | Should be $false
                 }
             }
-            Context 'illegal combinations' {
+            Context 'illegal' {
                 it 'NoHeader combined with HeaderName' {
-                    ''| Export-Excel -Path $Path -WorkSheetname Kiwi
-                    {Import-Excel -Path $Path -WorksheetName Test -HeaderName A -NoHeader} | Should Throw 'Parameter set cannot be resolved'
+                    'Kiwi'| Export-Excel -Path $Path -WorkSheetname Fruit
+                    {Import-Excel -Path $Path -WorksheetName Fruit -HeaderName A -NoHeader} | Should Throw 'Parameter set cannot be resolved'
+                }
+                it 'Path does not exist' {
+                    {Import-Excel -Path D:\DontExist -WorksheetName Fruit} | Should Throw "Cannot validate argument on parameter 'Path'"
+                }
+                it 'WorksheetName left blank' {
+                    'Kiwi'| Export-Excel -Path $Path -WorkSheetname Fruit
+                    {Import-Excel -Path $Path -WorksheetName $null} | Should Throw "Cannot validate argument on parameter 'WorksheetName'. The argument is null or empty"
+                    {Import-Excel -Path $Path -WorksheetName ''} | Should Throw "Cannot validate argument on parameter 'WorksheetName'. The argument is null or empty"
+                }
+            }
+            Context 'omit paramter name' {
+                it 'Path' {
+                    [PSCustomObject]@{
+                        Number  = 1
+                    } | Export-Excel -Path $Path -WorkSheetname Test
+
+                    $ExpectedResult = [PSCustomObject]@{
+                        'Number' = '1'
+                    }
+
+                    $Result = Import-Excel $Path
+                    Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+                }
+                it 'Path and WorksheetName' {
+                    [PSCustomObject]@{
+                        Number  = 1
+                    } | Export-Excel -Path $Path -WorkSheetname Test
+
+                    $ExpectedResult = [PSCustomObject]@{
+                        'Number' = '1'
+                    }
+
+                    $Result = Import-Excel $Path Test
+                    Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+                }
+                it 'Path and WorksheetName with NoHeader' {
+                    'Kiwi' | Export-Excel -Path $Path -WorkSheetname Fruit
+
+                    $ExpectedResult = [PSCustomObject]@{
+                        P1 = 'Kiwi'
+                    }
+
+                    $Result = Import-Excel $Path Fruit -NoHeader
+                    Assert-Equivalent -Actual $Result -Expected $ExpectedResult
+                }
+                it 'Path and WorksheetName with HeaderName' {
+                    'Kiwi' | Export-Excel -Path $Path -WorkSheetname Fruit
+
+                    $ExpectedResult = [PSCustomObject]@{
+                        Fruits = 'Kiwi'
+                    }
+
+                    $Result = Import-Excel $Path Fruit -HeaderName Fruits
+                    Assert-Equivalent -Actual $Result -Expected $ExpectedResult
                 }
             }
         }
@@ -60,7 +117,7 @@ Context 'input' {
                 it 'empty' {               
                     Import-Excel -Path $Path -WorksheetName Test -NoHeader | Should BeNullOrEmpty
                 }
-                it 'select first worksheet' {
+                it 'select first worksheet by default' {
                     Remove-Item ./* -Force
                     #region Create test file
                     $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
