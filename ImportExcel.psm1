@@ -54,7 +54,6 @@ Function Import-Excel {
 
         If the default behavior is not desired and you want to import the complete worksheet ‘as is’, the parameter ‘-NoHeader’ can be used. In case you want to provide your own property names, you can use the parameter ‘-HeaderName’. 
 
-
     .PARAMETER Path 
         Specifies the path to the Excel file.
  
@@ -241,6 +240,8 @@ Function Import-Excel {
         [ValidateScript({Test-Path -Path $_ -PathType Leaf})]
         [String]$Path,
         [Alias('Sheet')]
+        [Parameter(Position=1)]
+        [ValidateNotNullOrEmpty()]
         [String]$WorksheetName,
         [Parameter(ParameterSetName='B', Mandatory)]
         [String[]]$HeaderName,
