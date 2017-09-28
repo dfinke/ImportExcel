@@ -80,6 +80,9 @@ Function Import-Excel {
 
         When the parameters ‘-NoHeader’ and ‘-HeaderName’ are not provided, this row will contain the column headers that will be used as property names. When one of both parameters are provided, the property names are automatically created and this row will be treated as a regular row containing data.
 
+    .PARAMETER Password
+        Accepts a string that will be used to open a password protected Excel file.
+
     .EXAMPLE
         Import data from an Excel worksheet. One object is created for each row. The property names of the objects consist of the column names defined in the first row. In case a column doesn’t have a column header (usually in row 1 when ‘-StartRow’ is not used), then the unnamed columns will be skipped and the data in those columns will not be imported.
 
