@@ -35,7 +35,7 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 Special thanks to [robinmalik](https://github.com/robinmalik) for providing us with [the code](https://github.com/dfinke/ImportExcel/issues/174) to implement this new feature. A high five to [DarkLite1](https://github.com/DarkLite1) for the implementation.
 
-#### 9/12/2017 (Version 4.0)
+#### 9/12/2017 (Version 4.0.0)
 
 Super thanks and hat tip to [DarkLite1](https://github.com/DarkLite1). There is now a new and improved `Import-Excel`, not only in functionality, but also improved readability, examples and more. Not only that, he's been running it in production in his company for a number of weeks!
 
