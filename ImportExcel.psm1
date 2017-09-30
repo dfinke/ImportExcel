@@ -75,13 +75,16 @@ Function Import-Excel {
 
         This switch is best used when you want to import the complete worksheet ‘as is’ and are not concerned with the property names.
 
-    .PARAMETER TopRow
-        The row from where we start to import data, all rows above the TopRow are disregarded. By default this is the first row. 
+    .PARAMETER StartRow
+        The row from where we start to import data, all rows above the StartRow are disregarded. By default this is the first row. 
 
         When the parameters ‘-NoHeader’ and ‘-HeaderName’ are not provided, this row will contain the column headers that will be used as property names. When one of both parameters are provided, the property names are automatically created and this row will be treated as a regular row containing data.
 
+    .PARAMETER Password
+        Accepts a string that will be used to open a password protected Excel file.
+
     .EXAMPLE
-        Import data from an Excel worksheet. One object is created for each row. The property names of the objects consist of the column names defined in the first row. In case a column doesn’t have a column header (usually in row 1 when ‘-TopRow’ is not used), then the unnamed columns will be skipped and the data in those columns will not be imported.
+        Import data from an Excel worksheet. One object is created for each row. The property names of the objects consist of the column names defined in the first row. In case a column doesn’t have a column header (usually in row 1 when ‘-StartRow’ is not used), then the unnamed columns will be skipped and the data in those columns will not be imported.
 
         ----------------------------------------------
         | File: Movies.xlsx     -      Sheet: Actors |
@@ -208,36 +211,25 @@ Function Import-Excel {
         |3     Jean-Claude               Vandamme     Brussels   |
         ----------------------------------------------------------
 
-        PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Actors -DataOnly -HeaderName 'FirstName', 'SecondName', 'City' –TopRow 2
+        PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Actors -DataOnly -HeaderName 'FirstName', 'SecondName', 'City' –StartRow 2
          
         FirstName : Jean-Claude
         SecondName: Vandamme
         City      : Brussels
 
-        Notice that only 1 object is imported with only 3 properties. Column B and row 2 are empty and have been disregarded by using the switch '-DataOnly'. The property names have been named with the values provided with the parameter '-HeaderName'. Row number 1 with ‘Chuck Norris’ has not been imported, because we started the import from row 2 with the parameter ‘-TopRow 2’.
+        Notice that only 1 object is imported with only 3 properties. Column B and row 2 are empty and have been disregarded by using the switch '-DataOnly'. The property names have been named with the values provided with the parameter '-HeaderName'. Row number 1 with ‘Chuck Norris’ has not been imported, because we started the import from row 2 with the parameter ‘-StartRow 2’.
             
     .LINK
         https://github.com/dfinke/ImportExcel
 
     .NOTES
-        2017/08/16 Added parameter sets for proper parameter validation and to make sure '-NoHeader' and '-HeaderRow' aren't used together
-                   Added try/catch clause, CmdLetBinding and verbose messages
-                   Renamed 'HeaderRow' to 'TopRow' to avoid confusion with other parameters
-                   Renamed '-Header' to '-HeaderName'
-                   Added test for duplicate property names
-                   Added test for empty worksheet
-                   Added test for no data after TopRow
-                   Fixed incorrect import when there's no value in the first column
-                   Fixed values being imported under the wrong property name in case one 
-                   Fixed incorrect import in case column A is empty and B and C not ( '$Worksheet.Dimension.Columns' is unreliable because it will say 2 columns are in use while it should say 3).
-                   (Ex. Add data in cell B2 and C2, use the '-NoHeader' switch, notice P1 and P2 are incorrectly blanc.)
     #>
 
     [CmdLetBinding(DefaultParameterSetName)]
     Param (
         [Alias('FullName')]
         [Parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Position=0, Mandatory)]
-        [ValidateScript({Test-Path -Path $_ -PathType Leaf})]
+        [ValidateScript({(Test-Path -Path $_ -PathType Leaf) -and ($_ -match '.xls$|.xlsx$')})]
         [String]$Path,
         [Alias('Sheet')]
         [Parameter(Position=1)]
@@ -247,10 +239,12 @@ Function Import-Excel {
         [String[]]$HeaderName,
         [Parameter(ParameterSetName='C', Mandatory)]
         [Switch]$NoHeader,
-        [Alias('HeaderRow')]
+        [Alias('HeaderRow','TopRow')]
         [ValidateRange(1, 9999)]
-        [Int]$TopRow,
-        [Switch]$DataOnly
+        [Int]$StartRow,
+        [Switch]$DataOnly,
+        [ValidateNotNullOrEmpty()]
+        [String]$Password
     )
 
     Begin {
@@ -285,7 +279,7 @@ Function Import-Excel {
                 [Parameter(Mandatory)]
                 [Int[]]$Columns,
                 [Parameter(Mandatory)]
-                [Int]$TopRow
+                [Int]$StartRow
             )
             
             Try {
@@ -304,12 +298,12 @@ Function Import-Excel {
                     }
                 }
                 else {
-                    if ($TopRow -eq 0) {
+                    if ($StartRow -eq 0) {
                         throw 'The top row can never be equal to 0 when we need to retrieve headers from the worksheet.'
                     }
 
                     foreach ($C in $Columns) {
-                        $Worksheet.Cells[$TopRow,$C] | where {$_.Value} | Select-Object @{N='Column'; E={$C}}, Value
+                        $Worksheet.Cells[$StartRow,$C] | where {$_.Value} | Select-Object @{N='Column'; E={$C}}, Value
                     }
                 }
             }
@@ -321,11 +315,26 @@ Function Import-Excel {
 
     Process {
         Try {
+            #region Open file
             $Path = (Resolve-Path $Path).ProviderPath
             Write-Verbose "Import Excel workbook '$Path' with worksheet '$Worksheetname'"
 
             $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
-            $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
+
+            if ($Password) {
+                $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage
+
+	            Try {
+		            $Excel.Load($Stream,$Password)
+	            }
+	            Catch {
+		            throw "Password '$Password' is not correct."
+	            }
+            }
+            else {
+                $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
+            }
+            #endregion
 
             #region Select worksheet
             if ($WorksheetName) {
@@ -339,13 +348,13 @@ Function Import-Excel {
             #endregion
             
             #region Set the top row
-            if (((-not ($NoHeader -or $HeaderName)) -and ($TopRow -eq 0))) {
-                $TopRow = 1
+            if (((-not ($NoHeader -or $HeaderName)) -and ($StartRow -eq 0))) {
+                $StartRow = 1
             }
             #endregion
 
-            if (-not ($AllCells = $Worksheet.Cells | where {($_.Start.Row -ge $TopRow)})) {
-                Write-Warning "Worksheet '$WorksheetName' in workbook '$Path' is empty after TopRow '$TopRow'"
+            if (-not ($AllCells = $Worksheet.Cells | where {($_.Start.Row -ge $StartRow)})) {
+                Write-Warning "Worksheet '$WorksheetName' in workbook '$Path' is empty after StartRow '$StartRow'"
             }
             else {
                 #region Get rows and columns
@@ -360,17 +369,17 @@ Function Import-Excel {
                     $Columns = 1..$LastColumn
 
                     $LastRow = $AllCells.Start.Row | Sort-Object -Unique | Select-Object -Last 1
-                    $Rows = $TopRow..$LastRow | where {($_ -ge $TopRow) -and ($_ -gt 0)}
+                    $Rows = $StartRow..$LastRow | where {($_ -ge $StartRow) -and ($_ -gt 0)}
                 }
                 #endregion
 
                 #region Create property names
-                if ((-not $Columns) -or (-not ($PropertyNames = Get-PropertyNames -Columns $Columns -TopRow $TopRow))) {
-                    throw "No column headers found on top row '$TopRow'. If column headers in the worksheet are not a requirement then please use the '-NoHeader' or '-HeaderName' parameter."
+                if ((-not $Columns) -or (-not ($PropertyNames = Get-PropertyNames -Columns $Columns -StartRow $StartRow))) {
+                    throw "No column headers found on top row '$StartRow'. If column headers in the worksheet are not a requirement then please use the '-NoHeader' or '-HeaderName' parameter."
                 }
 
                 if ($Duplicates = $PropertyNames | Group-Object Value | where Count -GE 2) {
-                    throw "Duplicate column headers found on row '$TopRow' in columns '$($Duplicates.Group.Column)'. Column headers must be unique, if this is not a requirement please use the '-NoHeader' or '-HeaderName' parameter."
+                    throw "Duplicate column headers found on row '$StartRow' in columns '$($Duplicates.Group.Column)'. Column headers must be unique, if this is not a requirement please use the '-NoHeader' or '-HeaderName' parameter."
                 }
                 #endregion
 
@@ -383,12 +392,12 @@ Function Import-Excel {
 
                 #region Filter out the top row when it contains column headers
                 if (-not ($NoHeader -or $HeaderName)) {
-                    $Rows = $Rows | where {$_ -gt $TopRow}
+                    $Rows = $Rows | where {$_ -gt $StartRow}
                 }
                 #endregion
 
                 if (-not $Rows) {
-                    Write-Warning "Worksheet '$WorksheetName' in workbook '$Path' contains no data in the rows after top row '$TopRow'"
+                    Write-Warning "Worksheet '$WorksheetName' in workbook '$Path' contains no data in the rows after top row '$StartRow'"
                 }
                 else {
                     #region Create one object per row
