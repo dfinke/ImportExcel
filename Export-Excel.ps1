@@ -515,6 +515,9 @@ Function Export-Excel {
 
             if (-not [String]::IsNullOrEmpty($TableName)) {
                 $csr = $StartRow
+                if ($Title) {
+                    $csr += 1
+                }
                 $csc = $StartColumn
                 $cer = $ws.Dimension.End.Row
                 $cec = $script:Header.Count
