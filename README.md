@@ -32,15 +32,22 @@ Fixed issues related to use of -Title parameter combined with column formatting 
 - [Issue #182](https://github.com/dfinke/ImportExcel/issues/182)
 - [Issue #89](https://github.com/dfinke/ImportExcel/issues/89)
 
-#### 9/12/2017
-Version 4.0 released.
+#### 9/28/2017 (Version 4.0.1)
+- Added a new parameter called `Password` to import password protected files
+- Added even more `Pester` tests for a more robust and bug free module
+- Renamed parameter 'TopRow' to 'StartRow'
+  This allows us to be more concise when new parameters ('StartColumn', ..) will be added in the future Your code will not break after the update, because we added an alias for backward compatibility
+
+Special thanks to [robinmalik](https://github.com/robinmalik) for providing us with [the code](https://github.com/dfinke/ImportExcel/issues/174) to implement this new feature. A high five to [DarkLite1](https://github.com/DarkLite1) for the implementation.
+
+#### 9/12/2017 (Version 4.0.0)
 
 Super thanks and hat tip to [DarkLite1](https://github.com/DarkLite1). There is now a new and improved `Import-Excel`, not only in functionality, but also improved readability, examples and more. Not only that, he's been running it in production in his company for a number of weeks!
 
 *Added* `Update-FirstObjectProperties` Updates the first object to contain all the properties of the object with the most properties in the array. Check out the help.
 
 
-***Breaking Changes***: Due to a big portion of the code that is rewritten some slightly different behaviour can be expected from the `Import-Excel` function. This is especially true for importing empty Excel files with or without using the `TopRow` parameter. To make sure that your code is still valid, please check the examples in the help or the accompanying `Pester` test file.
+***Breaking Changes***: Due to a big portion of the code that is rewritten some slightly different behavior can be expected from the `Import-Excel` function. This is especially true for importing empty Excel files with or without using the `TopRow` parameter. To make sure that your code is still valid, please check the examples in the help or the accompanying `Pester` test file.
 
 
 Moving forward, we are planning to include automatic testing with the help of `Pester`, `Appveyor` and `Travis`. From now on any changes in the module will have to be accompanied by the corresponding `Pester` tests to avoid breakages of code and functionality. This is in preparation for new features coming down the road.
