@@ -27,6 +27,11 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 ```
 
 # What's new
+#### 10/2/2017
+Fixed issues related to use of -Title parameter combined with column formatting parameters.
+- [Issue #182](https://github.com/dfinke/ImportExcel/issues/182)
+- [Issue #89](https://github.com/dfinke/ImportExcel/issues/89)
+
 #### 9/28/2017 (Version 4.0.1)
 - Added a new parameter called `Password` to import password protected files
 - Added even more `Pester` tests for a more robust and bug free module

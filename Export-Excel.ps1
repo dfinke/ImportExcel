@@ -41,7 +41,7 @@ Function Export-Excel {
             '#,##0.00'
 
             # number with 2 decimal places and thousand separator and money symbol
-            '€#,##0.00'
+            'â‚¬#,##0.00'
 
             # percentage (1 = 100%, 0.01 = 1%)
             '0%'
@@ -498,8 +498,14 @@ Function Export-Excel {
                 }
             }
 
-            $startAddress=$ws.Dimension.Start.Address
-            $dataRange="{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
+            if ($Title) {
+                $startAddress = "A2"
+            }
+            else {
+                $startAddress = $ws.Dimension.Start.Address
+            }
+            
+            $dataRange = "{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
 
             Write-Debug "Data Range '$dataRange'"
 
@@ -509,6 +515,9 @@ Function Export-Excel {
 
             if (-not [String]::IsNullOrEmpty($TableName)) {
                 $csr = $StartRow
+                if ($Title) {
+                    $csr += 1
+                }
                 $csc = $StartColumn
                 $cer = $ws.Dimension.End.Row
                 $cec = $script:Header.Count
@@ -525,10 +534,6 @@ Function Export-Excel {
                 $wsPivot.View.TabSelected = $true
 
                 $pivotTableDataName=$WorkSheetname + 'PivotTableData'
-
-                if ($Title) {
-                    $startAddress = 'A2'
-                }
 
                 $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $ws.Cells[$dataRange], $pivotTableDataName)
 
@@ -607,7 +612,13 @@ Function Export-Excel {
                 }
             }
             if ($BoldTopRow) {
-                $range=$ws.Dimension.Address -replace $ws.Dimension.Rows, '1'
+                if ($Title) {
+                    $range = $ws.Dimension.Address -replace '\d+', '2'
+                }
+                else {
+                    $range = $ws.Dimension.Address -replace '\d+', '1'
+                }
+
                 $ws.Cells[$range].Style.Font.Bold = $true
             }
             if ($AutoSize) {
@@ -687,7 +698,7 @@ Function Export-Excel {
                     $rule.Style.Font.Color.Color = $targetConditionalText.ConditionalTextColor
                     $rule.Style.Fill.PatternType = $targetConditionalText.PatternType
                     $rule.Style.Fill.BackgroundColor.Color = $targetConditionalText.BackgroundColor
-               }
+                }
             }
 
             if ($CellStyleSB) {
