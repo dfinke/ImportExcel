@@ -28,6 +28,7 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 #### 10/2/2017
+Thanks to [Jeremy Brun](https://github.com/jeremytbrun)
 Fixed issues related to use of -Title parameter combined with column formatting parameters.
 - [Issue #182](https://github.com/dfinke/ImportExcel/issues/182)
 - [Issue #89](https://github.com/dfinke/ImportExcel/issues/89)
@@ -131,22 +132,22 @@ Big thanks to [DarkLite1](https://github.com/DarkLite1) for some great updates
         Get-ExcelWorkbookInfo .\Test.xlsx
 
         CorePropertiesXml     : #document
-        Title                 : 
-        Subject               : 
+        Title                 :
+        Subject               :
         Author                : Konica Minolta User
-        Comments              : 
-        Keywords              : 
+        Comments              :
+        Keywords              :
         LastModifiedBy        : Bond, James (London) GBR
         LastPrinted           : 2017-01-21T12:36:11Z
         Created               : 17/01/2017 13:51:32
-        Category              : 
-        Status                : 
+        Category              :
+        Status                :
         ExtendedPropertiesXml : #document
         Application           : Microsoft Excel
-        HyperlinkBase         : 
+        HyperlinkBase         :
         AppVersion            : 14.0300
         Company               : Secret Service
-        Manager               : 
+        Manager               :
         Modified              : 10/02/2017 12:45:37
         CustomPropertiesXml   : #document
 ```
@@ -162,14 +163,14 @@ Get-Process | Select Company, Handles | Export-Excel -Now
 
 ```PowerShell
 Get-Process |
-    Select-Object Company,Handles,PM, NPM| 
+    Select-Object Company,Handles,PM, NPM|
     Export-Excel $xlfile -Show  -AutoSize -CellStyleSB {
         param(
             $workSheet,
             $totalRows,
             $lastColumn
         )
-                
+
         Set-CellStyle $workSheet 1 $LastColumn Solid Cyan
 
         foreach($row in (2..$totalRows | Where-Object {$_ % 2 -eq 0})) {
