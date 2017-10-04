@@ -30,8 +30,6 @@ if ($PSVersionTable.PSVersion.Major -ge 5) {
     . $PSScriptRoot\Plot.ps1
 
     Function New-Plot {
-        [OutputType([PSPlot])]
-        Param()
 
         [PSPlot]::new()
     }

@@ -194,7 +194,7 @@ Function Export-Excel {
             https://github.com/dfinke/ImportExcel
     #>
 
-    [CmdLetBinding()]
+    [CmdletBinding(DefaultParameterSetName='Default')]
     Param(
         $Path,
         [Parameter(ValueFromPipeline=$true)]
@@ -223,6 +223,7 @@ Function Export-Excel {
         [Switch]$FreezeFirstColumn,
         [Switch]$FreezeTopRowFirstColumn,
         [Int[]]$FreezePane,
+        [Parameter(ParameterSetName='Default')]
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
         [Switch]$NoHeader,
@@ -240,8 +241,10 @@ Function Export-Excel {
             else {
                 $true
             }
-        })] 
+        })]
+        [Parameter(ParameterSetName='Table')]
         [String]$TableName,
+        [Parameter(ParameterSetName='Table')]
         [OfficeOpenXml.Table.TableStyles]$TableStyle = 'Medium6',
         [Object[]]$ExcelChartDefinition,
         [String[]]$HideSheet,
@@ -386,7 +389,10 @@ Function Export-Excel {
                 $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp','.xlsx'                
                 $Show = $true
                 $AutoSize = $true
-                $AutoFilter = $true
+                if (!$TableName)
+                {
+                    $AutoFilter = $true
+                }
             }
 
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
