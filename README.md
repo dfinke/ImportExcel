@@ -27,6 +27,11 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 ```
 
 # What's new
+#### 10/4/2017
+Thanks to https://github.com/ili101 :
+- Fix Bug, Unable to find type [PSPlot]
+- Fix Bug, AutoFilter with TableName create corrupted Excel file.
+
 #### 10/2/2017
 Thanks to [Jeremy Brun](https://github.com/jeremytbrun)
 Fixed issues related to use of -Title parameter combined with column formatting parameters.
