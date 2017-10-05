@@ -1,59 +1,76 @@
 PowerShell Import-Excel
 -
 
-This PowerShell Module wraps the .NET [EPPlus DLL](http://epplus.codeplex.com/) (included). Easily integrate reading and writing Excel spreadsheets into PowerShell, without launching Excel in the background. You can also automate the creation of Pivot Tables and Charts.
+This PowerShell Module allows you to read and write Excel files without installing Microsoft Excel on your system. No need to bother with the cumbersome Excel COM-objects thanks to the .NET EPPlus DLL (http://epplus.codeplex.com/) which is included in the module. Creating Tables, Pivot Tables, Charts and much more has just become a lot easier.
 
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/testimonial.png)
 
 Installation
 -
-#### [Powershell V5](https://www.microsoft.com/en-us/download/details.aspx?id=50395) and Later
-You can install ImportExcel directly from the Powershell Gallery
+#### [PowerShell V5](https://www.microsoft.com/en-us/download/details.aspx?id=50395) and Later
+You can install the `ImportExcel` module directly from the PowerShell Gallery
 
-* [Recommended] Install to your personal Powershell Modules folder
-```powershell
+* [Recommended] Install to your personal PowerShell Modules folder
+```PowerShell
 Install-Module ImportExcel -scope CurrentUser
 ```
-* [Requires Elevation] Install for Everyone (computer Powershell Modules folder)
-```powershell
+* [Requires Elevation] Install for Everyone (computer PowerShell Modules folder)
+```PowerShell
 Install-Module ImportExcel
 ```
 
-#### Powershell V4 and Earlier
+#### PowerShell V4 and Earlier
 To install to your personal modules folder (e.g. ~\Documents\WindowsPowerShell\Modules), run:
 
-```powershell
+```PowerShell
 iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfinke/ImportExcel/master/Install.ps1')
 ```
 
 # What's new
-#### 9/12/2017
-Version 4.0 released.
+#### 10/4/2017
+Thanks to https://github.com/ili101 :
+- Fix Bug, Unable to find type [PSPlot]
+- Fix Bug, AutoFilter with TableName create corrupted Excel file.
+
+#### 10/2/2017
+Thanks to [Jeremy Brun](https://github.com/jeremytbrun)
+Fixed issues related to use of -Title parameter combined with column formatting parameters.
+- [Issue #182](https://github.com/dfinke/ImportExcel/issues/182)
+- [Issue #89](https://github.com/dfinke/ImportExcel/issues/89)
+
+#### 9/28/2017 (Version 4.0.1)
+- Added a new parameter called `Password` to import password protected files
+- Added even more `Pester` tests for a more robust and bug free module
+- Renamed parameter 'TopRow' to 'StartRow'
+  This allows us to be more concise when new parameters ('StartColumn', ..) will be added in the future Your code will not break after the update, because we added an alias for backward compatibility
+
+Special thanks to [robinmalik](https://github.com/robinmalik) for providing us with [the code](https://github.com/dfinke/ImportExcel/issues/174) to implement this new feature. A high five to [DarkLite1](https://github.com/DarkLite1) for the implementation.
+
+#### 9/12/2017 (Version 4.0.0)
 
 Super thanks and hat tip to [DarkLite1](https://github.com/DarkLite1). There is now a new and improved `Import-Excel`, not only in functionality, but also improved readability, examples and more. Not only that, he's been running it in production in his company for a number of weeks!
 
 *Added* `Update-FirstObjectProperties` Updates the first object to contain all the properties of the object with the most properties in the array. Check out the help.
 
 
-***Breaking Changes***: There are breaking changes, the are only in the `Import-Excel` function.
+***Breaking Changes***: Due to a big portion of the code that is rewritten some slightly different behavior can be expected from the `Import-Excel` function. This is especially true for importing empty Excel files with or without using the `TopRow` parameter. To make sure that your code is still valid, please check the examples in the help or the accompanying `Pester` test file.
 
 
-Moving forward, looking to add testing of this module, and having each checkin run on Appveyor. This is in preparation for new features coming down the road
+Moving forward, we are planning to include automatic testing with the help of `Pester`, `Appveyor` and `Travis`. From now on any changes in the module will have to be accompanied by the corresponding `Pester` tests to avoid breakages of code and functionality. This is in preparation for new features coming down the road.
 
 #### 7/3/2017
-Thanks to [Mikkel Nordberg](https://www.linkedin.com/in/mikkelnordberg). He contributed a `ConvertTo-ExcelXlsx`. To use it, Excel needs to be installed. I converts older Excel files `xls` to 'xlsx'.
+Thanks to [Mikkel Nordberg](https://www.linkedin.com/in/mikkelnordberg). He contributed a `ConvertTo-ExcelXlsx`. To use it, Excel needs to be installed. The function converts the older Excel file format ending in `.xls` to the new format ending in `.xlsx`.
 
 #### 6/15/2017
 Huge thank you to [DarkLite1](https://github.com/DarkLite1)! Refactoring of code, adding help, adding features, fixing bugs. Specifically this long outstanding one:
 
 [Export-Excel: Numeric values not correct](https://github.com/dfinke/ImportExcel/issues/168)
 
-It is fantasic to work with and have folks like `DarkLite1` in the community, helping make PowerShells so much better.
-A hat to you.
+It is fantastic to work with people like `DarkLite1` in the community, to help make the module so much better. A hat to you.
 
-Another shout out to [Damian Reeves](https://twitter.com/DamReev)! His questions turn into great features. He asked can you import and Excel sheet and transform the data into SQL Insert statements. The answer is now yes!
+Another shout out to [Damian Reeves](https://twitter.com/DamReev)! His questions turn into great features. He asked if it was possible to import an Excel worksheet and transform the data into SQL `INSERT` statements. We can now answer that question with a big YES!
 
-```powershell
+```PowerShell
 ConvertFrom-ExcelToSQLInsert People .\testSQLGen.xlsx
 ```
 
@@ -65,9 +82,9 @@ INSERT INTO People ('First', 'Last', 'The Zip') Values('Harry', 'Doe', '12345');
 INSERT INTO People ('First', 'Last', 'The Zip') Values('Jane', 'Doe', '12345');
 ```
 ## Bonus Points
-Use the underlying `ConvertFrom-ExcelData` and you can use a scriptblock to transform the data your way.
+Use the underlying `ConvertFrom-ExcelData` function and you can use a scriptblock to format the data however you want.
 
-```powershell
+```PowerShell
 ConvertFrom-ExcelData .\testSQLGen.xlsx {
     param($propertyNames, $record)
 
@@ -79,7 +96,7 @@ ConvertFrom-ExcelData .\testSQLGen.xlsx {
     $reportRecord -join "`r`n"
 }
 ```
-Prints
+Generates
 
 ```
 First: John
@@ -120,22 +137,22 @@ Big thanks to [DarkLite1](https://github.com/DarkLite1) for some great updates
         Get-ExcelWorkbookInfo .\Test.xlsx
 
         CorePropertiesXml     : #document
-        Title                 : 
-        Subject               : 
+        Title                 :
+        Subject               :
         Author                : Konica Minolta User
-        Comments              : 
-        Keywords              : 
+        Comments              :
+        Keywords              :
         LastModifiedBy        : Bond, James (London) GBR
         LastPrinted           : 2017-01-21T12:36:11Z
         Created               : 17/01/2017 13:51:32
-        Category              : 
-        Status                : 
+        Category              :
+        Status                :
         ExtendedPropertiesXml : #document
         Application           : Microsoft Excel
-        HyperlinkBase         : 
+        HyperlinkBase         :
         AppVersion            : 14.0300
         Company               : Secret Service
-        Manager               : 
+        Manager               :
         Modified              : 10/02/2017 12:45:37
         CustomPropertiesXml   : #document
 ```
@@ -143,22 +160,22 @@ Big thanks to [DarkLite1](https://github.com/DarkLite1) for some great updates
 #### 12/22/2016
 - Added `-Now` switch. This short cuts the process, automatically creating a temp file and enables the `-Show`, `-AutoFilter`, `-AutoSize` switches.
 
-```powershell
+```PowerShell
 Get-Process | Select Company, Handles | Export-Excel -Now
 ```
 
 - Added ScriptBlocks for coloring cells. Check out [Examples](https://github.com/dfinke/ImportExcel/tree/master/Examples/FormatCellStyles)
 
-```powershell
+```PowerShell
 Get-Process |
-    Select-Object Company,Handles,PM, NPM| 
+    Select-Object Company,Handles,PM, NPM|
     Export-Excel $xlfile -Show  -AutoSize -CellStyleSB {
         param(
             $workSheet,
             $totalRows,
             $lastColumn
         )
-                
+
         Set-CellStyle $workSheet 1 $LastColumn Solid Cyan
 
         foreach($row in (2..$totalRows | Where-Object {$_ % 2 -eq 0})) {
@@ -173,7 +190,7 @@ Get-Process |
 ![](https://github.com/dfinke/ImportExcel/blob/master/images/CellFormatting.png?raw=true)
 
 #### 9/28/2016
-[Fixed](https://github.com/dfinke/ImportExcel/pull/126) Powershell 3.0 compatibility. Thanks to [headsphere](https://github.com/headsphere). He used `$obj.PSObject.Methods[$target]` snytax to make it backward compatible. PS v4.0 and later allow `$obj.$target`.
+[Fixed](https://github.com/dfinke/ImportExcel/pull/126) PowerShell 3.0 compatibility. Thanks to [headsphere](https://github.com/headsphere). He used `$obj.PSObject.Methods[$target]` snytax to make it backward compatible. PS v4.0 and later allow `$obj.$target`.
 
 Thank you to [xelsirko](https://github.com/xelsirko) for fixing - *Import-module importexcel gives version warning if started inside background job*
 
@@ -215,7 +232,7 @@ Huge thank you to [Willie Möller](https://github.com/W1M0R)
 #### 4/18/2016
 Thanks to [Paul Williams](https://github.com/pauldalewilliams) for this feature. Now data can be transposed to columns for better charting.
 
-```powershell
+```PowerShell
 $file = "C:\Temp\ps.xlsx"
 rm $file -ErrorAction Ignore
 
@@ -234,7 +251,7 @@ ps |
 
 Add `-PivotDataToColumn`
 
-```powershell
+```PowerShell
 $file = "C:\Temp\ps.xlsx"
 rm $file -ErrorAction Ignore
 
@@ -311,7 +328,7 @@ $data |
 #### 3/2/2016
 * Added `GreaterThan`, `GreaterThanOrEqual`, `LessThan`, `LessThanOrEqual` to `New-ConditionalText`
 
-```powershell
+```PowerShell
 echo 489 668 299 777 860 151 119 497 234 788 |
     Export-Excel c:\temp\test.xlsx -Show `
     -ConditionalText (New-ConditionalText -ConditionalType GreaterThan 525)
@@ -319,7 +336,7 @@ echo 489 668 299 777 860 151 119 497 234 788 |
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/GTConditional.png)
 
 #### 2/22/2016
-* `Import-Html` using Lee Holmes [Extracting Tables from PowerShell’s Invoke-WebRequest](http://www.leeholmes.com/blog/2015/01/05/extracting-tables-from-powershells-invoke-webrequest/)
+* `Import-Html` using Lee Holmes [Extracting Tables from PowerShell’s Invoke-WebRequest](http://www.leeholmes.com/blog/2015/01/05/extracting-tables-from-PowerShells-invoke-webrequest/)
 
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/ImportHtml.gif)
 
@@ -329,7 +346,7 @@ echo 489 668 299 777 860 151 119 497 234 788 |
 
 ## Try *PassThru*
 
-```powershell
+```PowerShell
 $file = "C:\Temp\passthru.xlsx"
 rm $file -ErrorAction Ignore
 
@@ -392,14 +409,14 @@ Stay tuned for a [blog post](http://www.dougfinke.com/blog/) and examples.
 Big bug fix for version 3.0 PowerShell folks!
 
 This technique fails in 3.0 and works in 4.0 and later.
-```powershell
+```PowerShell
 $m="substring"
 "hello".$m(2,1)
 ```
 
 Adding `.invoke` works in 3.0 and later.
 
-```powershell
+```PowerShell
 $m="substring"
 "hello".$m.invoke(2,1)
 ```
@@ -471,7 +488,7 @@ Or, check out the short ***"How To"*** video.
 #### 7/09/2015
 * For -PivotRows you can pass a `hashtable` with the name of the property and the type of calculation. `Sum`, `Average`, `Max`, `Min`, `Product`, `StdDev`, `StdDevp`, `Var`, `Varp`
 
-```powershell
+```PowerShell
 Get-Service |
 	Export-Excel "c:\temp\test.xlsx" `
 		-Show `
@@ -604,7 +621,7 @@ You can set the pattern, size and of if the title is bold.
 	    Handles   = {$p|select company, handles}
 	    Services  = {gsv}
 	    Files     = {dir -File}
-	    Albums    = {(Invoke-RestMethod http://www.dougfinke.com/powershellfordevelopers/albums.js)}
+	    Albums    = {(Invoke-RestMethod http://www.dougfinke.com/PowerShellfordevelopers/albums.js)}
 	}
 
 	Export-MultipleExcelSheets -Show -AutoSize .\testExport.xlsx $DataToGather

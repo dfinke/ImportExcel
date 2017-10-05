@@ -41,7 +41,7 @@ Function Export-Excel {
             '#,##0.00'
 
             # number with 2 decimal places and thousand separator and money symbol
-            '�#,##0.00'
+            '€#,##0.00'
 
             # percentage (1 = 100%, 0.01 = 1%)
             '0%'
@@ -194,7 +194,7 @@ Function Export-Excel {
             https://github.com/dfinke/ImportExcel
     #>
 
-    [CmdLetBinding()]
+    [CmdletBinding(DefaultParameterSetName='Default')]
     Param(
         $Path,
         [Parameter(ValueFromPipeline=$true)]
@@ -223,6 +223,7 @@ Function Export-Excel {
         [Switch]$FreezeFirstColumn,
         [Switch]$FreezeTopRowFirstColumn,
         [Int[]]$FreezePane,
+        [Parameter(ParameterSetName='Default')]
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
         [Switch]$NoHeader,
@@ -240,8 +241,10 @@ Function Export-Excel {
             else {
                 $true
             }
-        })] 
+        })]
+        [Parameter(ParameterSetName='Table')]
         [String]$TableName,
+        [Parameter(ParameterSetName='Table')]
         [OfficeOpenXml.Table.TableStyles]$TableStyle = 'Medium6',
         [Object[]]$ExcelChartDefinition,
         [String[]]$HideSheet,
@@ -336,15 +339,14 @@ Function Export-Excel {
                 #Otherwise the default will be unbolded.
                 $ws.Cells[$Row, $StartColumn].Style.Font.Bold = $True
             }
-
             $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
-            
+
             #can only set TitleBackgroundColor if TitleFillPattern is something other than None
-            if ($TitleBackgroundColor -AND $TitleFillPattern -eq 'None') {
-                $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = "DarkDown"
+            if ($TitleBackgroundColor -AND ($TitleFillPattern -ne 'None')) {
                 $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
-            } elseif ($TitleBackgroundColor) {
-                $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
+            }
+            else {
+                Write-Warning "Title Background Color ignored. You must set the TitleFillPattern parameter to a value other than 'None'. Try 'Solid'."
             }
         }
 
@@ -387,7 +389,10 @@ Function Export-Excel {
                 $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp','.xlsx'                
                 $Show = $true
                 $AutoSize = $true
-                $AutoFilter = $true
+                if (!$TableName)
+                {
+                    $AutoFilter = $true
+                }
             }
 
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
@@ -499,8 +504,14 @@ Function Export-Excel {
                 }
             }
 
-            $startAddress=$ws.Dimension.Start.Address
-            $dataRange="{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
+            if ($Title) {
+                $startAddress = "A2"
+            }
+            else {
+                $startAddress = $ws.Dimension.Start.Address
+            }
+            
+            $dataRange = "{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
 
             Write-Debug "Data Range '$dataRange'"
 
@@ -510,6 +521,9 @@ Function Export-Excel {
 
             if (-not [String]::IsNullOrEmpty($TableName)) {
                 $csr = $StartRow
+                if ($Title) {
+                    $csr += 1
+                }
                 $csc = $StartColumn
                 $cer = $ws.Dimension.End.Row
                 $cec = $script:Header.Count
@@ -526,10 +540,6 @@ Function Export-Excel {
                 $wsPivot.View.TabSelected = $true
 
                 $pivotTableDataName=$WorkSheetname + 'PivotTableData'
-
-                if ($Title) {
-                    $startAddress = 'A2'
-                }
 
                 $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $ws.Cells[$dataRange], $pivotTableDataName)
 
@@ -608,7 +618,13 @@ Function Export-Excel {
                 }
             }
             if ($BoldTopRow) {
-                $range=$ws.Dimension.Address -replace $ws.Dimension.Rows, '1'
+                if ($Title) {
+                    $range = $ws.Dimension.Address -replace '\d+', '2'
+                }
+                else {
+                    $range = $ws.Dimension.Address -replace '\d+', '1'
+                }
+
                 $ws.Cells[$range].Style.Font.Bold = $true
             }
             if ($AutoSize) {
@@ -688,7 +704,7 @@ Function Export-Excel {
                     $rule.Style.Font.Color.Color = $targetConditionalText.ConditionalTextColor
                     $rule.Style.Fill.PatternType = $targetConditionalText.PatternType
                     $rule.Style.Fill.BackgroundColor.Color = $targetConditionalText.BackgroundColor
-               }
+                }
             }
 
             if ($CellStyleSB) {
