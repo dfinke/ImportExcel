@@ -182,7 +182,7 @@ Function Import-Excel {
         |4     Skyfall         2012           9                  |
         ----------------------------------------------------------
 
-        PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Movies ‘NoHeader -DataOnly
+        PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Movies -NoHeader -DataOnly
  
         P1: The Bodyguard
         P2: 1992
@@ -210,7 +210,7 @@ Function Import-Excel {
         |3     Jean-Claude               Vandamme     Brussels   |
         ----------------------------------------------------------
 
-        PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Actors -DataOnly -HeaderName 'FirstName', 'SecondName', 'City' ‘StartRow 2
+        PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Actors -DataOnly -HeaderName 'FirstName', 'SecondName', 'City' -StartRow 2
          
         FirstName : Jean-Claude
         SecondName: Vandamme
