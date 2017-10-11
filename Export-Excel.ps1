@@ -211,6 +211,7 @@ Function Export-Excel {
         [Switch]$PivotDataToColumn,
         [String]$Password,
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = 'Pie',
+        [Hashtable]$PivotTableDefinition,
         [Switch]$IncludePivotTable,
         [Switch]$IncludePivotChart,
         [Switch]$NoLegend,
@@ -530,6 +531,64 @@ Function Export-Excel {
                 $targetRange = $ws.Cells[$csr, $csc, $cer, $cec]
                 $tbl = $ws.Tables.Add($targetRange, $TableName)
                 $tbl.TableStyle = $TableStyle
+            }
+
+            if ($PivotTableDefinition) {
+                foreach ($item in $PivotTableDefinition.GetEnumerator()) {
+                    $targetName = $item.Key
+                    $pivotTableName = $targetName + 'PivotTable'
+                    $wsPivot = $pkg | Add-WorkSheet -WorkSheetname $pivotTableName -NoClobber:$NoClobber
+                    $pivotTableDataName = $targetName + 'PivotTableData'
+                    $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $ws.Cells[$dataRange], $pivotTableDataName)
+
+                    switch ($item.Value.Keys) {
+                        "PivotRows" {
+                            foreach ($Row in $item.Value.PivotRows) {
+                                $null = $pivotTable.RowFields.Add($pivotTable.Fields[$Row])
+                            }
+                        }
+
+                        "PivotColumns" {
+                            foreach ($Column in $item.Value.PivotColumns) {
+                                $null = $pivotTable.ColumnFields.Add($pivotTable.Fields[$Column])
+                            }
+                        }
+
+                        "PivotData" {
+                            $pivotData = $item.Value.PivotData
+                            if ($PivotData -is [HashTable] -or $PivotData -is [System.Collections.Specialized.OrderedDictionary]) {
+                                $PivotData.Keys | ForEach-Object {
+                                    $df = $pivotTable.DataFields.Add($pivotTable.Fields[$_])
+                                    $df.Function = $PivotData.$_
+                                }
+                            }
+                            else {
+                                foreach ($Item in $PivotData) {
+                                    $df = $pivotTable.DataFields.Add($pivotTable.Fields[$Item])
+                                    $df.Function = 'Count'
+                                }
+                            }
+
+                            if ($PivotDataToColumn) {
+                                $pivotTable.DataOnRows = $false
+                            }
+                        }
+
+                        "IncludePivotChart" {
+                            $chart = $wsPivot.Drawings.AddChart('PivotChart', $ChartType, $pivotTable)
+                            #$chart.DataLabel.ShowCategory = $ShowCategory
+                            #$chart.DataLabel.ShowPercent = $ShowPercent
+
+                            #if ($NoLegend) {
+                            #    $chart.Legend.Remove()
+                            #}
+
+                            $chart.SetPosition(1, 0, 6, 0)
+                            $chart.SetSize(600, 400)
+
+                        }
+                    }
+                }
             }
 
             if ($IncludePivotTable) {
