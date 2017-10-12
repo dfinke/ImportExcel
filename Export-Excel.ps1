@@ -263,6 +263,14 @@ Function Export-Excel {
     )
 
     Begin {
+        function Find-WorkSheet {
+            param (
+                $WorkSheetName
+            )
+
+            $pkg.Workbook.Worksheets | Where-Object {$_.name -match $WorkSheetName}
+        }
+
         Function Add-CellValue {
             <#
             .SYNOPSIS
@@ -539,7 +547,20 @@ Function Export-Excel {
                     $pivotTableName = $targetName + 'PivotTable'
                     $wsPivot = $pkg | Add-WorkSheet -WorkSheetname $pivotTableName -NoClobber:$NoClobber
                     $pivotTableDataName = $targetName + 'PivotTableData'
-                    $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $ws.Cells[$dataRange], $pivotTableDataName)
+
+                    if (!$item.Value.SourceWorkSheet) {
+                        $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $ws.Cells[$dataRange], $pivotTableDataName)
+                    }
+                    else {
+                        $workSheet = Find-WorkSheet $item.Value.SourceWorkSheet
+
+                        if($workSheet) {
+                            $targetStartAddress = $workSheet.Dimension.Start.Address
+                            $targetDataRange = "{0}:{1}" -f $targetStartAddress, $workSheet.Dimension.End.Address
+
+                            $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $workSheet.Cells[$targetDataRange], $pivotTableDataName)
+                        }
+                    }
 
                     switch ($item.Value.Keys) {
                         "PivotRows" {
@@ -575,17 +596,14 @@ Function Export-Excel {
                         }
 
                         "IncludePivotChart" {
+                            $ChartType = "Pie"
+                            if ($item.Value.ChartType) {
+                                $ChartType = $item.Value.ChartType
+                            }
+
                             $chart = $wsPivot.Drawings.AddChart('PivotChart', $ChartType, $pivotTable)
-                            #$chart.DataLabel.ShowCategory = $ShowCategory
-                            #$chart.DataLabel.ShowPercent = $ShowPercent
-
-                            #if ($NoLegend) {
-                            #    $chart.Legend.Remove()
-                            #}
-
-                            $chart.SetPosition(1, 0, 6, 0)
+                            $chart.SetPosition(1, 0, 3, 0)
                             $chart.SetSize(600, 400)
-
                         }
                     }
                 }
@@ -640,8 +658,6 @@ Function Export-Excel {
                         $chart.Legend.Remove()
                     }
 
-                    $chart.SetPosition(1, 0, 6, 0)
-                    $chart.SetSize(600, 400)
                 }
             }
 
