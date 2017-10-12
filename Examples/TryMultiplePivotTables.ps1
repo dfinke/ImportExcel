@@ -1,4 +1,6 @@
-﻿ipmo .\ImportExcel.psd1 -Force
+﻿"To ship, is to choose"
+
+ipmo .\ImportExcel.psd1 -Force
 
 $file = "c:\temp\testPT.xlsx"
 rm $file -ErrorAction Ignore
@@ -18,5 +20,6 @@ $pt.PT2=@{
 }
 
 
-$data = gsv | select status, Name, displayName, starttype
-$data | Export-Excel -Path $file -Show -PivotTable $pt -AutoSize 
+Get-Service | 
+    select status, Name, displayName, starttype | 
+    Export-Excel -Path $file -Show -PivotTable $pt -AutoSize
