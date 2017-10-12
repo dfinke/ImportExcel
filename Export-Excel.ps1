@@ -544,7 +544,7 @@ Function Export-Excel {
             if ($PivotTableDefinition) {
                 foreach ($item in $PivotTableDefinition.GetEnumerator()) {
                     $targetName = $item.Key
-                    $pivotTableName = $targetName + 'PivotTable'
+                    $pivotTableName = $targetName #+ 'PivotTable'
                     $wsPivot = $pkg | Add-WorkSheet -WorkSheetname $pivotTableName -NoClobber:$NoClobber
                     $pivotTableDataName = $targetName + 'PivotTableData'
 

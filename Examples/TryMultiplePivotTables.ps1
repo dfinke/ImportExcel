@@ -2,20 +2,18 @@
 
 ipmo .\ImportExcel.psd1 -Force
 
-
 $pt=[ordered]@{}
 
-$pt.PT1=@{
-    
-    SourceWorkSheet='Sheet1'
+$pt.ServiceInfo=@{    
+    SourceWorkSheet='Services'
     PivotRows = "Status"    
     PivotData= @{'Status'='count'}
     IncludePivotChart=$true
     ChartType='BarClustered3D'
 }
 
-$pt.PT2=@{
-    SourceWorkSheet='Sheet2'
+$pt.ProcessInfo=@{
+    SourceWorkSheet='Processes'
     PivotRows = "Company"    
     PivotData= @{'Company'='count'}
     IncludePivotChart=$true
@@ -28,10 +26,5 @@ $ps=Get-Process | Select-Object Name,Company, Handles
 $file = "c:\temp\testPT.xlsx"
 rm $file -ErrorAction Ignore
 
-$gsv| Export-Excel -Path $file -AutoSize 
-$ps | Export-Excel -Path $file -AutoSize -WorkSheetname Sheet2 -PivotTableDefinition $pt -Show 
-
-return 
-Get-Service | 
-    select status, Name, displayName, starttype | 
-    Export-Excel -Path $file -Show -PivotTable $pt -AutoSize 
+$gsv| Export-Excel -Path $file -AutoSize -WorkSheetname Services
+$ps | Export-Excel -Path $file -AutoSize -WorkSheetname Processes -PivotTableDefinition $pt -Show 
