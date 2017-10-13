@@ -554,7 +554,7 @@ Function Export-Excel {
                     else {
                         $workSheet = Find-WorkSheet $item.Value.SourceWorkSheet
 
-                        if($workSheet) {
+                        if ($workSheet) {
                             $targetStartAddress = $workSheet.Dimension.Start.Address
                             $targetDataRange = "{0}:{1}" -f $targetStartAddress, $workSheet.Dimension.End.Address
 
@@ -804,4 +804,22 @@ Function Export-Excel {
             throw "Failed exporting worksheet '$WorkSheetname' to '$Path': $_"
         }
     }
+}
+
+function New-PivotTableDefinition {
+    param(
+        [Parameter(Mandatory)]
+        $PivtoTableName,
+        $SourceWorkSheet,
+        $PivotRows,
+        [hashtable]$PivotData,
+        $PivotColumns,
+        [Switch]$IncludePivotChart,
+        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = 'Pie'
+    )
+
+    $parameters = @{} + $PSBoundParameters
+    $parameters.Remove('PivtoTableName')
+
+    @{$PivtoTableName=$parameters}
 }
