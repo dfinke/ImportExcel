@@ -27,6 +27,28 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 ```
 
 # What's new
+#### 10/13/2017
+Added `New-PivotTableDefinition`. You can create and wire up a PivotTable to a WorkSheet. You can also create as many PivotTable Worksheets to point a one Worksheet. Or, you create many Worksheets and many corresponding PivotTable Worksheets.
+
+Here you can create a WorkSheet with the data from `Get-Service`. Then create four PivotTables, pointing to the data each pivoting on a differnt dimension and showing a differnet chart
+
+```powershell
+$base = @{
+    SourceWorkSheet   = 'gsv'
+    PivotData         = @{'Status' = 'count'}
+    IncludePivotChart = $true
+}
+
+$ptd = [ordered]@{}
+
+$ptd += New-PivotTableDefinition @base servicetype -PivotRows servicetype -ChartType Area3D
+$ptd += New-PivotTableDefinition @base status -PivotRows status -ChartType PieExploded3D
+$ptd += New-PivotTableDefinition @base starttype -PivotRows starttype -ChartType BarClustered3D
+$ptd += New-PivotTableDefinition @base canstop -PivotRows canstop -ChartType ConeColStacked
+
+Get-Service | Export-Excel -path $file -WorkSheetname gsv -Show -PivotTableDefinition $ptd
+```
+
 #### 10/4/2017
 Thanks to https://github.com/ili101 :
 - Fix Bug, Unable to find type [PSPlot]
