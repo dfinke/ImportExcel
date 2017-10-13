@@ -23,7 +23,7 @@ Function Export-Excel {
 
         .PARAMETER NumberFormat
             Formats all values that can be converted to a number to the format specified.
-            
+
             Examples:
             # integer (not really needed unless you need to round numbers, Excel with use default cell properties)
             '0'
@@ -63,7 +63,7 @@ Function Export-Excel {
                 Verbose = $true
             }
             Remove-Item -Path $ExcelParams.Path -Force -EA Ignore
-            Write-Output -1 668 34 777 860 -0.5 119 -0.1 234 788 | 
+            Write-Output -1 668 34 777 860 -0.5 119 -0.1 234 788 |
                 Export-Excel @ExcelParams -NumberFormat '[Blue]$#,##0.00;[Red]-$#,##0.00'
 
             Exports all data to the Excel file 'Excel.xslx' and colors the negative values in 'Red' and the positive values in 'Blue'. It will also add a dollar sign '$' in front of the rounded numbers to two decimal characters behind the comma.
@@ -86,7 +86,7 @@ Function Export-Excel {
                 Number3   = '1.555,83'
                 Number4   = '1.2'
                 Number5   = '-31'
-                PhoneNr1  = '+32 44' 
+                PhoneNr1  = '+32 44'
                 PhoneNr2  = '+32 4 4444 444'
                 PhoneNr3  =  '+3244444444'
             } | Export-Excel @ExcelParams -NoNumberConversion IPAddress, Number1
@@ -111,7 +111,7 @@ Function Export-Excel {
                 Number3   = '1.555,83'
                 Number4   = '1.2'
                 Number5   = '-31'
-                PhoneNr1  = '+32 44' 
+                PhoneNr1  = '+32 44'
                 PhoneNr2  = '+32 4 4444 444'
                 PhoneNr3  =  '+3244444444'
             } | Export-Excel @ExcelParams -NoNumberConversion *
@@ -178,7 +178,7 @@ Function Export-Excel {
             $Array = $Obj1, $Obj2, $Obj3
             $Array | Out-GridView -Title 'Not showing Member3 and Member4'
             $Array | Update-FirstObjectProperties | Export-Excel @ExcelParams -WorkSheetname Numbers
-            
+
             Updates the first object of the array by adding property 'Member3' and 'Member4'. Afterwards. all objects are exported to an Excel file and all column headers are visible.
 
         .EXAMPLE
@@ -189,15 +189,15 @@ Function Export-Excel {
 
         .EXAMPLE
             Get-Service | Export-Excel 'c:\temp\test.xlsx'  -Show -IncludePivotTable -PivotRows status -PivotData @{status='count'}
-        
+
         .LINK
             https://github.com/dfinke/ImportExcel
     #>
 
-    [CmdletBinding(DefaultParameterSetName='Default')]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     Param(
         $Path,
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline = $true)]
         $TargetData,
         [String]$WorkSheetname = 'Sheet1',
         [String]$Title,
@@ -211,6 +211,7 @@ Function Export-Excel {
         [Switch]$PivotDataToColumn,
         [String]$Password,
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = 'Pie',
+        [Hashtable]$PivotTableDefinition,
         [Switch]$IncludePivotTable,
         [Switch]$IncludePivotChart,
         [Switch]$NoLegend,
@@ -223,28 +224,28 @@ Function Export-Excel {
         [Switch]$FreezeFirstColumn,
         [Switch]$FreezeTopRowFirstColumn,
         [Int[]]$FreezePane,
-        [Parameter(ParameterSetName='Default')]
+        [Parameter(ParameterSetName = 'Default')]
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
         [Switch]$NoHeader,
         [String]$RangeName,
-        [ValidateScript({
-            if ($_.Contains(' ')) {
-                throw 'Tablename has spaces.'
-            }
-            elseif (-not $_) {
-                throw 'Tablename is null or empty.'
-            }
-            elseif ($_[0] -notmatch '[a-z]') {
-                throw 'Tablename start with invalid character.'
-            }
-            else {
-                $true
-            }
-        })]
-        [Parameter(ParameterSetName='Table')]
+        [ValidateScript( {
+                if ($_.Contains(' ')) {
+                    throw 'Tablename has spaces.'
+                }
+                elseif (-not $_) {
+                    throw 'Tablename is null or empty.'
+                }
+                elseif ($_[0] -notmatch '[a-z]') {
+                    throw 'Tablename start with invalid character.'
+                }
+                else {
+                    $true
+                }
+            })]
+        [Parameter(ParameterSetName = 'Table')]
         [String]$TableName,
-        [Parameter(ParameterSetName='Table')]
+        [Parameter(ParameterSetName = 'Table')]
         [OfficeOpenXml.Table.TableStyles]$TableStyle = 'Medium6',
         [Object[]]$ExcelChartDefinition,
         [String[]]$HideSheet,
@@ -262,6 +263,14 @@ Function Export-Excel {
     )
 
     Begin {
+        function Find-WorkSheet {
+            param (
+                $WorkSheetName
+            )
+
+            $pkg.Workbook.Worksheets | Where-Object {$_.name -match $WorkSheetName}
+        }
+
         Function Add-CellValue {
             <#
             .SYNOPSIS
@@ -299,8 +308,8 @@ Function Export-Excel {
                     #endregion
                 }
 
-                {(($NoNumberConversion) -and ($NoNumberConversion -contains $Name)) -or 
-                ($NoNumberConversion -eq '*')} {
+                {(($NoNumberConversion) -and ($NoNumberConversion -contains $Name)) -or
+                    ($NoNumberConversion -eq '*')} {
                     #regioon Save a value without converting to number
                     $TargetCell.Value = $_
                     Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' unconverted"
@@ -314,7 +323,7 @@ Function Export-Excel {
                         $TargetCell.Value = $Number
                         $targetCell.Style.Numberformat.Format = $Numberformat
                         Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' as number converted from '$_' with format '$Numberformat'"
-                    } 
+                    }
                     else {
                         $TargetCell.Value = $_
                         Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' as string"
@@ -362,9 +371,9 @@ Function Export-Excel {
 
             $R = $null
 
-            if ([Double]::TryParse([String]$Value,[System.Globalization.NumberStyles]::Any,
-                        [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$R)) {
-                $R        
+            if ([Double]::TryParse([String]$Value, [System.Globalization.NumberStyles]::Any,
+                    [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$R)) {
+                $R
             }
         }
 
@@ -386,11 +395,10 @@ Function Export-Excel {
             }
 
             if ($Now) {
-                $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp','.xlsx'                
+                $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx'
                 $Show = $true
                 $AutoSize = $true
-                if (!$TableName)
-                {
+                if (!$TableName) {
                     $AutoFilter = $true
                 }
             }
@@ -402,7 +410,7 @@ Function Export-Excel {
             }
 
             $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
-            $ws  = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber
+            $ws = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber
 
             foreach ($format in $ConditionalFormat ) {
                 $target = "Add$($format.Formatter)"
@@ -421,11 +429,11 @@ Function Export-Excel {
             $firstTimeThru = $true
             $isDataTypeValueType = $false
             $pattern = 'string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
-        } 
+        }
         Catch {
             if ($AlreadyExists) {
                 throw "Failed exporting worksheet '$WorkSheetname' to '$Path': The worksheet '$WorkSheetname' already exists."
-            } 
+            }
             else {
                 throw "Failed exporting worksheet '$WorkSheetname' to '$Path': $_"
             }
@@ -447,7 +455,7 @@ Function Export-Excel {
 
                 $ColumnIndex += 1
                 $Row += 1
-            } 
+            }
             else {
                 #region Add headers
                 if (-not $script:Header) {
@@ -457,7 +465,7 @@ Function Export-Excel {
                     if ($NoHeader) {
                         # Don't push the headers to the spread sheet
                         $Row -= 1
-                    } 
+                    }
                     else {
                         foreach ($Name in $script:Header) {
                             $ws.Cells[$Row, $ColumnIndex].Value = $Name
@@ -479,7 +487,7 @@ Function Export-Excel {
                     #endregion
                 }
             }
-       }
+        }
         Catch {
             throw "Failed exporting worksheet '$WorkSheetname' to '$Path': $_"
         }
@@ -491,11 +499,11 @@ Function Export-Excel {
                 $totalRows = $ws.Dimension.Rows
                 $totalColumns = $ws.Dimension.Columns
 
-                foreach($c in 0..($totalColumns-1)) {
-                    $targetRangeName = "$($script:Header[$c])"                
+                foreach ($c in 0..($totalColumns - 1)) {
+                    $targetRangeName = "$($script:Header[$c])"
 
-                    $targetColumn = $c+1
-                    $theCell = $ws.Cells[2,$targetColumn,$totalRows,$targetColumn ]
+                    $targetColumn = $c + 1
+                    $theCell = $ws.Cells[2, $targetColumn, $totalRows, $targetColumn ]
                     $ws.Names.Add($targetRangeName, $theCell) | Out-Null
 
                     if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress($targetRangeName)) {
@@ -510,7 +518,7 @@ Function Export-Excel {
             else {
                 $startAddress = $ws.Dimension.Start.Address
             }
-            
+
             $dataRange = "{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
 
             Write-Debug "Data Range '$dataRange'"
@@ -528,9 +536,77 @@ Function Export-Excel {
                 $cer = $ws.Dimension.End.Row
                 $cec = $script:Header.Count
 
-                $targetRange = $ws.Cells[$csr, $csc, $cer,$cec]
+                $targetRange = $ws.Cells[$csr, $csc, $cer, $cec]
                 $tbl = $ws.Tables.Add($targetRange, $TableName)
                 $tbl.TableStyle = $TableStyle
+            }
+
+            if ($PivotTableDefinition) {
+                foreach ($item in $PivotTableDefinition.GetEnumerator()) {
+                    $targetName = $item.Key
+                    $pivotTableName = $targetName #+ 'PivotTable'
+                    $wsPivot = $pkg | Add-WorkSheet -WorkSheetname $pivotTableName -NoClobber:$NoClobber
+                    $pivotTableDataName = $targetName + 'PivotTableData'
+
+                    if (!$item.Value.SourceWorkSheet) {
+                        $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $ws.Cells[$dataRange], $pivotTableDataName)
+                    }
+                    else {
+                        $workSheet = Find-WorkSheet $item.Value.SourceWorkSheet
+
+                        if ($workSheet) {
+                            $targetStartAddress = $workSheet.Dimension.Start.Address
+                            $targetDataRange = "{0}:{1}" -f $targetStartAddress, $workSheet.Dimension.End.Address
+
+                            $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $workSheet.Cells[$targetDataRange], $pivotTableDataName)
+                        }
+                    }
+
+                    switch ($item.Value.Keys) {
+                        "PivotRows" {
+                            foreach ($Row in $item.Value.PivotRows) {
+                                $null = $pivotTable.RowFields.Add($pivotTable.Fields[$Row])
+                            }
+                        }
+
+                        "PivotColumns" {
+                            foreach ($Column in $item.Value.PivotColumns) {
+                                $null = $pivotTable.ColumnFields.Add($pivotTable.Fields[$Column])
+                            }
+                        }
+
+                        "PivotData" {
+                            $pivotData = $item.Value.PivotData
+                            if ($PivotData -is [HashTable] -or $PivotData -is [System.Collections.Specialized.OrderedDictionary]) {
+                                $PivotData.Keys | ForEach-Object {
+                                    $df = $pivotTable.DataFields.Add($pivotTable.Fields[$_])
+                                    $df.Function = $PivotData.$_
+                                }
+                            }
+                            else {
+                                foreach ($Item in $PivotData) {
+                                    $df = $pivotTable.DataFields.Add($pivotTable.Fields[$Item])
+                                    $df.Function = 'Count'
+                                }
+                            }
+
+                            if ($PivotDataToColumn) {
+                                $pivotTable.DataOnRows = $false
+                            }
+                        }
+
+                        "IncludePivotChart" {
+                            $ChartType = "Pie"
+                            if ($item.Value.ChartType) {
+                                $ChartType = $item.Value.ChartType
+                            }
+
+                            $chart = $wsPivot.Drawings.AddChart('PivotChart', $ChartType, $pivotTable)
+                            $chart.SetPosition(1, 0, 3, 0)
+                            $chart.SetSize(600, 400)
+                        }
+                    }
+                }
             }
 
             if ($IncludePivotTable) {
@@ -539,7 +615,7 @@ Function Export-Excel {
 
                 $wsPivot.View.TabSelected = $true
 
-                $pivotTableDataName=$WorkSheetname + 'PivotTableData'
+                $pivotTableDataName = $WorkSheetname + 'PivotTableData'
 
                 $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $ws.Cells[$dataRange], $pivotTableDataName)
 
@@ -582,8 +658,6 @@ Function Export-Excel {
                         $chart.Legend.Remove()
                     }
 
-                    $chart.SetPosition(1, 0, 6, 0)
-                    $chart.SetSize(600, 400)
                 }
             }
 
@@ -592,29 +666,29 @@ Function Export-Excel {
             }
 
             if ($AutoFilter) {
-                $ws.Cells[$dataRange].AutoFilter=$true
+                $ws.Cells[$dataRange].AutoFilter = $true
             }
 
             if ($FreezeTopRow) {
-                $ws.View.FreezePanes(2,1)
+                $ws.View.FreezePanes(2, 1)
             }
 
             if ($FreezeTopRowFirstColumn) {
-                $ws.View.FreezePanes(2,2)
+                $ws.View.FreezePanes(2, 2)
             }
 
             if ($FreezeFirstColumn) {
-                $ws.View.FreezePanes(1,2)
+                $ws.View.FreezePanes(1, 2)
             }
 
             if ($FreezePane) {
-                $freezeRow,$freezeColumn=$FreezePane
+                $freezeRow, $freezeColumn = $FreezePane
                 if (-not $freezeColumn -or $freezeColumn -eq 0) {
-                    $freezeColumn=1
+                    $freezeColumn = 1
                 }
 
                 if ($freezeRow -gt 1) {
-                    $ws.View.FreezePanes($freezeRow,$freezeColumn)
+                    $ws.View.FreezePanes($freezeRow, $freezeColumn)
                 }
             }
             if ($BoldTopRow) {
@@ -635,42 +709,43 @@ Function Export-Excel {
                 $pkg.Workbook.WorkSheets[$Sheet].Hidden = 'Hidden'
             }
 
-            $chartCount=0
+            $chartCount = 0
             foreach ($chartDef in $ExcelChartDefinition) {
-                $ChartName = 'Chart' + (Split-Path -Leaf ([System.IO.path]::GetTempFileName())) -replace 'tmp|\.',''
+                $ChartName = 'Chart' + (Split-Path -Leaf ([System.IO.path]::GetTempFileName())) -replace 'tmp|\.', ''
                 $chart = $ws.Drawings.AddChart($ChartName, $chartDef.ChartType)
                 $chart.Title.Text = $chartDef.Title
 
                 if ($chartDef.NoLegend) {
                     $chart.Legend.Remove()
                 }
-            
+
                 if ($chart.Datalabel -ne $null) {
-                    $chart.Datalabel.ShowCategory  = $chartDef.ShowCategory
-                    $chart.Datalabel.ShowPercent   = $chartDef.ShowPercent
+                    $chart.Datalabel.ShowCategory = $chartDef.ShowCategory
+                    $chart.Datalabel.ShowPercent = $chartDef.ShowPercent
                 }
 
-                $chart.SetPosition($chartDef.Row, $chartDef.RowOffsetPixels,$chartDef.Column, $chartDef.ColumnOffsetPixels)
+                $chart.SetPosition($chartDef.Row, $chartDef.RowOffsetPixels, $chartDef.Column, $chartDef.ColumnOffsetPixels)
                 $chart.SetSize($chartDef.Width, $chartDef.Height)
 
                 $chartDefCount = @($chartDef.YRange).Count
                 if ($chartDefCount -eq 1) {
-                    $Series=$chart.Series.Add($chartDef.YRange, $chartDef.XRange)
-                
-                    $SeriesHeader=$chartDef.SeriesHeader
+                    $Series = $chart.Series.Add($chartDef.YRange, $chartDef.XRange)
+
+                    $SeriesHeader = $chartDef.SeriesHeader
                     if (-not $SeriesHeader) {
                         $SeriesHeader = 'Series 1'
                     }
 
                     $Series.Header = $SeriesHeader
-                } else {
-                    for($idx = 0; $idx -lt $chartDefCount; $idx += 1) {
-                        $Series=$chart.Series.Add($chartDef.YRange[$idx], $chartDef.XRange)                    
+                }
+                else {
+                    for ($idx = 0; $idx -lt $chartDefCount; $idx += 1) {
+                        $Series = $chart.Series.Add($chartDef.YRange[$idx], $chartDef.XRange)
 
                         if ($chartDef.SeriesHeader.Count -gt 0) {
                             $SeriesHeader = $chartDef.SeriesHeader[$idx]
                         }
-                    
+
                         if (-not $SeriesHeader) {
                             $SeriesHeader = "Series $($idx)"
                         }
@@ -685,14 +760,14 @@ Function Export-Excel {
                 foreach ($targetConditionalText in $ConditionalText) {
                     $target = "Add$($targetConditionalText.ConditionalType)"
 
-                    $Range=$targetConditionalText.Range
+                    $Range = $targetConditionalText.Range
                     if (-not $Range) {
                         $Range = $ws.Dimension.Address
                     }
 
-                    $rule=($ws.Cells[$Range].ConditionalFormatting).PSObject.Methods[$target].Invoke()
+                    $rule = ($ws.Cells[$Range].ConditionalFormatting).PSObject.Methods[$target].Invoke()
 
-                    if ($targetConditionalText.Text) {                
+                    if ($targetConditionalText.Text) {
                         if ($targetConditionalText.ConditionalType -match 'equal|notequal|lessthan|lessthanorequal|greaterthan|greaterthanorequal') {
                             $rule.Formula = $targetConditionalText.Text
                         }
@@ -715,7 +790,7 @@ Function Export-Excel {
 
             if ($PassThru) {
                 $pkg
-            } 
+            }
             else {
                 $pkg.Save()
                 $pkg.Dispose()
@@ -729,4 +804,22 @@ Function Export-Excel {
             throw "Failed exporting worksheet '$WorkSheetname' to '$Path': $_"
         }
     }
+}
+
+function New-PivotTableDefinition {
+    param(
+        [Parameter(Mandatory)]
+        $PivtoTableName,
+        $SourceWorkSheet,
+        $PivotRows,
+        [hashtable]$PivotData,
+        $PivotColumns,
+        [Switch]$IncludePivotChart,
+        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = 'Pie'
+    )
+
+    $parameters = @{} + $PSBoundParameters
+    $parameters.Remove('PivtoTableName')
+
+    @{$PivtoTableName=$parameters}
 }
