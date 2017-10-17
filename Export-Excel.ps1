@@ -319,7 +319,7 @@ Function Export-Excel {
 
                 Default {
                     #region Save a value as a number if possible
-                    if ($Number = ConvertTo-Number $_) {
+                    if (($Number = ConvertTo-Number $_) -ne $null) {
                         $TargetCell.Value = $Number
                         $targetCell.Style.Numberformat.Format = $Numberformat
                         Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' as number converted from '$_' with format '$Numberformat'"
