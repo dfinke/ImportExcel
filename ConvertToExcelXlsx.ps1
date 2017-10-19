@@ -51,6 +51,8 @@ Function ConvertTo-ExcelXlsx {
         $Excel.ActiveWorkbook.Close()
         $Excel.Quit()
 
+        Write-Verbose "Converted $xlsFile"
+
         if ($PassThru){
             Get-Item $xlsxPath
         }
