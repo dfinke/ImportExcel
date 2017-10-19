@@ -5,7 +5,9 @@ Function ConvertTo-ExcelXlsx {
         [parameter(Mandatory=$true, ValueFromPipeline)]
         [string]$Path,
         [parameter(Mandatory=$false)]
-        [switch]$Force
+        [switch]$Force,
+        [parameter(Mandatory=$false)]
+        [switch]$PassThru
     )
     Process
     {
@@ -31,14 +33,14 @@ Function ConvertTo-ExcelXlsx {
                 } catch {
                     throw "{0} already exists and cannot be removed. The file may be locked by another application." -f $xlsxPath
                 }
-                Write-Verbose $("Removed {0}" -f $xlsxPath)
+                Write-Verbose $("Removed existing {0}" -f $xlsxPath)
             } else {
                 throw "{0} already exists!" -f $xlsxPath
             }
         }
 
         try{    
-            $Excel = New-Object -ComObject "Excel.Application"
+            $Excel = New-Object -ComObject "Excel.Application" -Verbose:$false
         } catch {
             throw "Could not create Excel.Application ComObject. Please verify that Excel is installed."
         }
@@ -48,6 +50,10 @@ Function ConvertTo-ExcelXlsx {
         $Excel.ActiveWorkbook.SaveAs($xlsxPath, $xlFixedFormat)
         $Excel.ActiveWorkbook.Close()
         $Excel.Quit()
+
+        if ($PassThru){
+            Get-Item $xlsxPath
+        }
     }
 }
 
