@@ -1,4 +1,4 @@
-Function Export-Excel {
+﻿Function Export-Excel {
     <#
         .SYNOPSIS
             Export data to an Excel worksheet.
@@ -196,8 +196,13 @@ Function Export-Excel {
 
     [CmdletBinding(DefaultParameterSetName = 'Default')]
     Param(
-        $Path,
-        [Parameter(ValueFromPipeline = $true)]
+        [Parameter(Mandatory=$true,ParameterSetName="Default",Position=0)] 
+        [Parameter(Mandatory=$true,ParameterSetName="Table"  ,Position=0)] 
+        [String]$Path, 
+        [Parameter(Mandatory=$true,ParameterSetName="PackageDefault")] 
+        [Parameter(Mandatory=$true,ParameterSetName="PackageTable")] 
+        [OfficeOpenXml.ExcelPackage]$ExcelPackage,     
+        [Parameter(ValueFromPipeline=$true)]
         $TargetData,
         [String]$WorkSheetname = 'Sheet1',
         [String]$Title,
@@ -225,6 +230,7 @@ Function Export-Excel {
         [Switch]$FreezeTopRowFirstColumn,
         [Int[]]$FreezePane,
         [Parameter(ParameterSetName = 'Default')]
+        [Parameter(ParameterSetName = 'PackageDefault')]
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
         [Switch]$NoHeader,
@@ -244,8 +250,10 @@ Function Export-Excel {
                 }
             })]
         [Parameter(ParameterSetName = 'Table')]
+        [Parameter(ParameterSetName = 'PackageTable')]
         [String]$TableName,
         [Parameter(ParameterSetName = 'Table')]
+        [Parameter(ParameterSetName = 'PackageTable')]
         [OfficeOpenXml.Table.TableStyles]$TableStyle = 'Medium6',
         [Object[]]$ExcelChartDefinition,
         [String[]]$HideSheet,
@@ -255,11 +263,13 @@ Function Export-Excel {
         [Int]$StartColumn = 1,
         [Switch]$PassThru,
         [String]$Numberformat = 'General',
+        [string[]]$ExcludeProperty,
         [String[]]$NoNumberConversion,
         [Object[]]$ConditionalFormat,
         [Object[]]$ConditionalText,
         [ScriptBlock]$CellStyleSB,
-        [Switch]$Now
+        [Switch]$Now,
+        [switch]$Append
     )
 
     Begin {
@@ -354,7 +364,7 @@ Function Export-Excel {
             if ($TitleBackgroundColor -AND ($TitleFillPattern -ne 'None')) {
                 $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
             }
-            else {
+            elseif ($TitleBackgroundColor)  {
                 Write-Warning "Title Background Color ignored. You must set the TitleFillPattern parameter to a value other than 'None'. Try 'Solid'."
             }
         }
@@ -403,35 +413,52 @@ Function Export-Excel {
                 }
             }
 
-            $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+            if ($ExcelPackage) { 
+                $pkg           = $ExcelPackage 
+                $Path          = $pkg.File 
+            } 
+            Else               {
+                $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
 
-            if (Test-Path $Path) {
-                Write-Debug "Path '$Path' already exists"
-            }
+                if (Test-Path $Path) {
+                    Write-Debug "Path '$Path' already exists"
+                }
 
-            $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
-            $ws = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber
-
+                $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
+            }  
+            
+            [OfficeOpenXml.ExcelWorksheet]$ws  = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber
+            
             foreach ($format in $ConditionalFormat ) {
                 $target = "Add$($format.Formatter)"
                 $rule = ($ws.ConditionalFormatting).PSObject.Methods[$target].Invoke($format.Range, $format.IconType)
                 $rule.Reverse = $format.Reverse
             }
 
-            $Row = $StartRow
-
-            if ($Title) {
-                Add-Title
-
-                $Row += 1
+            if ($append)       {
+                $headerRange       = $ws.Dimension.Address -replace "\d+$","1"
+                #if there is a title or anything else above the header row, specifying StartRow will skip it. 
+                if ($StartRow -ne 1) {$headerRange  = $headerRange -replace "1","$StartRow"} 
+                $script:Header     = $ws.Cells[$headerrange].Value
+                $row               = $ws.Dimension.Rows  
+                Write-Debug -Message ("Appending: headers are " + ($script:Header -join ", ") + "Start row $row") 
             }
-
+            elseif($Title)     {    #Can only add a title if not appending              
+                $Row = $StartRow
+                Add-Title
+                $Row ++
+            }
+            else {
+                $Row = $StartRow
+            
+            } 
+            $ColumnIndex = $StartColumn
             $firstTimeThru = $true
             $isDataTypeValueType = $false
             $pattern = 'string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
         }
         Catch {
-            if ($AlreadyExists) {
+            if ($AlreadyExists) {  #Is this set anywhere ? 
                 throw "Failed exporting worksheet '$WorkSheetname' to '$Path': The worksheet '$WorkSheetname' already exists."
             }
             else {
@@ -460,7 +487,7 @@ Function Export-Excel {
                 #region Add headers
                 if (-not $script:Header) {
                     $ColumnIndex = $StartColumn
-                    $script:Header = $TargetData.PSObject.Properties.Name
+                   $script:Header = $TargetData.PSObject.Properties.Name | Where-Object {$_ -notin $ExcludeProperty}  
 
                     if ($NoHeader) {
                         # Don't push the headers to the spread sheet
@@ -536,7 +563,9 @@ Function Export-Excel {
                 $cer = $ws.Dimension.End.Row
                 $cec = $script:Header.Count
 
-                $targetRange = $ws.Cells[$csr, $csc, $cer, $cec]
+                $targetRange = $ws.Cells[$csr, $csc, $cer, $cec] 
+                #if we're appending data the table may already exist: but excel doesn't like the result if I put 
+                # if ($ws.Tables[$TableName]) {$ws.Tables.Delete($TableName) } 
                 $tbl = $ws.Tables.Add($targetRange, $TableName)
                 $tbl.TableStyle = $TableStyle
             }
@@ -545,6 +574,8 @@ Function Export-Excel {
                 foreach ($item in $PivotTableDefinition.GetEnumerator()) {
                     $targetName = $item.Key
                     $pivotTableName = $targetName #+ 'PivotTable'
+                    #Make sure the Pivot table sheet doesn't already exist
+                    try  {     $pkg.Workbook.Worksheets.Delete(    $pivotTableName) } catch {} 
                     $wsPivot = $pkg | Add-WorkSheet -WorkSheetname $pivotTableName -NoClobber:$NoClobber
                     $pivotTableDataName = $targetName + 'PivotTableData'
 
@@ -611,6 +642,8 @@ Function Export-Excel {
 
             if ($IncludePivotTable) {
                 $pivotTableName = $WorkSheetname + 'PivotTable'
+                #Make sure the Pivot table sheet doesn't already exist
+                try  {     $pkg.Workbook.Worksheets.Delete(    $pivotTableName) } catch {} 
                 $wsPivot = $pkg | Add-WorkSheet -WorkSheetname $pivotTableName -NoClobber:$NoClobber
 
                 $wsPivot.View.TabSelected = $true
