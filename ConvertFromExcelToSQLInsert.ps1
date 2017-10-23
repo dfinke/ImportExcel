@@ -2,10 +2,10 @@ function ConvertFrom-ExcelToSQLInsert {
     <#
   
     .PARAMETER ColumnMap
-    Ordered hashtable of input column names to output column names.
+    Hashtable of input to output column names.
     
-    .EXAMPLE
-    An example
+    .PARAMETER Unique
+    Suppress duplicate lines from output.
     #>
     param(
         [Parameter(Mandatory = $true)]
