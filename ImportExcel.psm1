@@ -437,11 +437,12 @@ function Add-WorkSheet {
         [OfficeOpenXml.ExcelPackage] $ExcelPackage,
         [Parameter(Mandatory=$true)]
         [string] $WorkSheetname,
+        [switch] $ClearSheet,
         [Switch] $NoClobber
     )
 
     $ws = $ExcelPackage.Workbook.Worksheets[$WorkSheetname]
-
+    if($ClearSheet -and $ws) {$ExcelPackage.Workbook.Worksheets.Delete($WorkSheetname) ; $ws = $null }
     if(!$ws) {
         Write-Verbose "Add worksheet '$WorkSheetname'"
         $ws=$ExcelPackage.Workbook.Worksheets.Add($WorkSheetname)

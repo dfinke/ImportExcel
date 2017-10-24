@@ -1,79 +1,109 @@
 ﻿Function Add-ConditionalFormatting {
 <#
-.Synopsis Adds contitional formatting to worksheet 
+.Synopsis 
+    Adds contitional formatting to worksheet 
 .Example 
-$excel = $avdata | Export-Excel -Path (Join-path $FilePath "\Machines.XLSX" ) -WorksheetName "Server Anti-Virus" -AutoSize -FreezeTopRow -AutoFilter -PassThru 
+    $excel = $avdata | Export-Excel -Path (Join-path $FilePath "\Machines.XLSX" ) -WorksheetName "Server Anti-Virus" -AutoSize -FreezeTopRow -AutoFilter -PassThru 
 
-Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "b":b1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "2003" 
-Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "i2:i1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "Disabled" 
-$excel.Workbook.Worksheets[1].Cells["D1:G1048576"].Style.Numberformat.Format = [cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern
-$excel.Workbook.Worksheets[1].Row(1).style.font.bold = $true
-$excel.Save() ; $excel.Dispose()  
+    Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "b":b1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "2003" 
+    Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "i2:i1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "Disabled" 
+    $excel.Workbook.Worksheets[1].Cells["D1:G1048576"].Style.Numberformat.Format = [cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern
+    $excel.Workbook.Worksheets[1].Row(1).style.font.bold = $true
+    $excel.Save() ; $excel.Dispose()  
 
-  Here Export-Excel is called with the -passThru parameter so the Excel Package object is stored in $Excel 
-  The desired worksheet is selected and the then columns B and i are conditially formatted (excluding the top row) to show 
-  Fixed formats are then applied to dates in columns D..G and the top row is formatted
-  Finally the workbook is saved and the Excel closed.  
+    Here Export-Excel is called with the -passThru parameter so the Excel Package object is stored in $Excel 
+    The desired worksheet is selected and the then columns B and i are conditially formatted (excluding the top row) to show 
+    Fixed formats are then applied to dates in columns D..G and the top row is formatted
+    Finally the workbook is saved and the Excel closed.  
 
 #>
     Param (
+        #The worksheet where the format is to be applied 
         [OfficeOpenXml.ExcelWorksheet]$WorkSheet ,
+        #The area of the worksheet where the format is to be applied 
         [OfficeOpenXml.ExcelAddress]$Range ,
+        #One of the standard named rules - Top / Bottom / Less than / Greater than / Contains etc  
         [Parameter(Mandatory=$true,ParameterSetName="NamedRule",Position=3)]
         [OfficeOpenXml.ConditionalFormatting.eExcelConditionalFormattingRuleType]$RuleType ,
+        #Text colour for matching objects 
         [Alias("ForeGroundColour")] 
         [System.Drawing.Color]$ForeGroundColor,
+        #colour for databar type charts 
         [Parameter(Mandatory=$true,ParameterSetName="DataBar")] 
         [Alias("DataBarColour")] 
         [System.Drawing.Color]$DataBarColor,
+        #One of the three-icon set types (e.g. Traffic Lights)
         [Parameter(Mandatory=$true,ParameterSetName="ThreeIconSet")] 
         [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting3IconsSetType]$ThreeIconsSet,
+        #A four-icon set name
         [Parameter(Mandatory=$true,ParameterSetName="FourIconSet")]         
         [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting4IconsSetType]$FourIconsSet,
+        #A five-icon set name
         [Parameter(Mandatory=$true,ParameterSetName="FiveIconSet")] 
         [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting5IconsSetType]$FiveIconsSet,
-        $ConditionValue,
-        $ConditionValue2,
+        #A value for the condition (e.g. "2000" if the test is 'lessthan 2000') 
+        [string]$ConditionValue,
+        #A second value for the conditions like between x and Y 
+        [string]$ConditionValue2,
+        #Background colour for matching items
         [System.Drawing.Color]$BackgroundColor,
-        [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern,
+        #Background pattern for matching items
+        [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern =  [OfficeOpenXml.Style.ExcelFillStyle]::Solid, 
+        #Secondary colour when a background pattern requires it
         [System.Drawing.Color]$PatternColor,
+        #Sets the numeric format for matching items
         $NumberFormat, 
+        #Put matching items in bold face
         [switch]$Bold,
+        #Put matching items in italic
         [switch]$Italic,
+        #Underline matching items
         [switch]$Underline,
+        #Strikethrough text of matching items
         [switch]$StrikeThru
     ) 
 
-    If      ($ThreeIconsSet) {$rule =  $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)} 
-    elseif  ($FourIconsSet)  {$rule =  $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet) }
-    elseif  ($FiveIconsSet)  {$rule =  $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Range , $IconType)     }
-    elseif  ($DataBarColor)  {$rule =  $WorkSheet.ConditionalFormatting.AddDatabar(     $Range , $DataBarColor) }
-    else    {                 $rule = ($WorkSheet.ConditionalFormatting)."Add$RuleType"($Range)}
+    If      ($ThreeIconsSet)  {$rule =  $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)} 
+    elseif  ($FourIconsSet)   {$rule =  $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet) }
+    elseif  ($FiveIconsSet)   {$rule =  $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Range , $IconType)     }
+    elseif  ($DataBarColor)   {$rule =  $WorkSheet.ConditionalFormatting.AddDatabar(     $Range , $DataBarColor) }
+    else    {                  $rule = ($WorkSheet.ConditionalFormatting)."Add$RuleType"($Range)}
     
-    if      ($ConditionValue  -and $RuleType -match "Top|Botom")             {$rule.Rank      = $ConditionValue } 
-    if      ($ConditionValue  -and $RuleType -match "StdDev")                {$rule.StdDev    = $ConditionValue }
-    if      ($ConditionValue  -and $RuleType -match "Than|Equal|Expression") {$rule.Formula   = $ConditionValue }
-    if      ($ConditionValue  -and $RuleType -match "Text|With")             {$rule.Text      = $ConditionValue }
-    if      ($ConditionValue  -and
-             $ConditionValue2 -and $RuleType -match "Between")               {$rule.Formula   = $ConditionValue
-                                                                              $rule.Formula2  = $ConditionValue2}
-    $rule.Style.Font.Bold      = $Bold
-    $rule.Style.Font.Italic    = $Italic
-    $rule.Style.Font.Underline = $Underline
-    $rule.Style.Font.Strike    = $StrikeThru
-    
-    if ($ForeGroundColor)     {$rule.Style.Font.Color           = $ForeGroundColor}
-    if ($BackgroundColor)     {$rule.Style.Fill.BackgroundColor = $BackgroundColor }
-    if ($BackgroundPattern)   {$rule.Style.Fill.PatternType     = $BackgroundPattern }
-    if ($PatternColor)        {$rule.Style.Fill.PatternColor    = $PatternColor}
-    if ($NumberFormat)        {$rule.Style.NumberFormat.Format  = $NumberFormat}
+    if ($ConditionValue   -and $RuleType -match "Top|Botom")             {$rule.Rank      = $ConditionValue } 
+    if ($ConditionValue   -and $RuleType -match "StdDev")                {$rule.StdDev    = $ConditionValue }
+    if ($ConditionValue   -and $RuleType -match "Than|Equal|Expression") {$rule.Formula   = $ConditionValue }
+    if ($ConditionValue   -and $RuleType -match "Text|With")             {$rule.Text      = $ConditionValue }
+    if ($ConditionValue   -and
+         $ConditionValue2 -and $RuleType -match "Between")               {$rule.Formula   = $ConditionValue
+                                                                          $rule.Formula2  = $ConditionValue2}
+ 
+    if ($NumberFormat)        {$rule.Style.NumberFormat.Format        = $NumberFormat }
+    if ($Underline)           {$rule.Style.Font.Underline             = [OfficeOpenXml.Style.ExcelUnderLineType]::Single } 
+    if ($Bold)                {$rule.Style.Font.Bold                  = $true} 
+    if ($Italic)              {$rule.Style.Font.Italic                = $true}
+    if ($StrikeThru)          {$rule.Style.Font.Strike                = $true}    
+    if ($ForeGroundColor)     {$rule.Style.Font.Color.color           = $ForeGroundColor   }
+    if ($BackgroundColor)     {$rule.Style.Fill.BackgroundColor.color = $BackgroundColor   }
+    if ($BackgroundPattern)   {$rule.Style.Fill.PatternType           = $BackgroundPattern }
+    if ($PatternColor)        {$rule.Style.Fill.PatternColor.color    = $PatternColor      }
 }
 
 Function Set-Format {
+<#
+.SYNOPSIS 
+    Applies Number, font, alignment and colour formatting to a range of Excel Cells 
+.EXAMPLE
+    $sheet.Column(3) | Set-Format -HorizontalAlignment Right -NumberFormat "#,###"
+    Selects column 3 from a sheet object (within a workbook object, which is a child of the ExcelPackage object) and passes it to Set-Format which formats as an integer with comma seperated groups
+.EXAMPLE
+    Set-Format -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NumberFormat "#,###" 
+    Instead of piping the address in this version specifies a block of cells and applies similar formatting 
+
+#>
     Param   (
-        #A row, Column or block of cells to format
+        #One or more row(s), Column(s) and/or block(s) of cells to format
         [Parameter(ValueFromPipeline=$true)]
-        $Address ,
+        [object[]]$Address ,
         #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "£#,##0.00;[Red]-£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc
         [Alias("NFormat")] 
         $NumberFormat, 
