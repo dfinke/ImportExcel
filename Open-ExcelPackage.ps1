@@ -34,11 +34,11 @@ Function Close-ExcelPackage {
     [parameter(Mandatory=$true, ValueFromPipeline=$true)]
     [OfficeOpenXml.ExcelPackage]$ExcelPackage,
     #Open the file
-    [switch]$Show 
+    [switch]$Show, 
     #Abandon the file without saving
     [Switch]$NoSave,
     #Save file with a new name (ignored if -NoSaveSpecified)
-    $SaveAs, 
+    $SaveAs
     )
     if ( $NoSave)      {$ExcelPackage.Dispose()}
     else {
