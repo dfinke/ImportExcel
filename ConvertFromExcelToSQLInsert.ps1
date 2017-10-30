@@ -2,10 +2,10 @@ function ConvertFrom-ExcelToSQLInsert {
     <#
   
     .PARAMETER ColumnMap
-    Hashtable of input to output column names.
+    Ordered hashtable of input column names to output column names.
     
-    .PARAMETER Unique
-    Suppress duplicate lines from output.
+    .EXAMPLE
+    An example
     #>
     param(
         [Parameter(Mandatory = $true)]
@@ -17,7 +17,10 @@ function ConvertFrom-ExcelToSQLInsert {
         [Alias("Sheet")]
         $WorkSheetname = 1,
         $ColumnMap,
+        $LiteralColumns,
+        [switch]$Oracle = $false,
         [switch]$Unique,
+        [switch]$Trim = $false,
         [int]$HeaderRow = 1,
         [string[]]$Header,
         [switch]$NoHeader,
@@ -27,28 +30,61 @@ function ConvertFrom-ExcelToSQLInsert {
 
     $null = $PSBoundParameters.Remove('TableName')
     $null = $PSBoundParameters.Remove('ColumnMap')
+    $null = $PSBoundParameters.Remove('LiteralColumns')
     $null = $PSBoundParameters.Remove('Unique')
+    $null = $PSBoundParameters.Remove('Oracle')
+    $null = $PSBoundParameters.Remove('Trim')
     $params = @{} + $PSBoundParameters
 
     $script:raw_output = @()
     ConvertFrom-ExcelData @params {
         param($propertyNames, $record)
 
+        if ($LiteralColumns.Count -gt 0) 
+        { 
+            If ( $Oracle ) 
+            {
+                $ColumnNames = (( $LiteralColumns.Keys -join ", ") + ", ")                
+            } 
+            Else 
+            {
+                $ColumnNames = ("'" + ( $LiteralColumns.Keys -join "', '") + "', ")
+            }
+            
+            $values = foreach ($propertyName in $LiteralColumns.Keys) { $LiteralColumns[$propertyName] }        
+            $targetValues = "'" + ($values -join "', '") + "',"
+        }
+
         $iterator = @()
         If ($ColumnMap.Count -gt 0)
             {
                 $iterator = $ColumnMap.Keys
-                $ColumnNames = "'" + ($ColumnMap.Values -join "', '") + "'"
+                If ( $Oracle ) 
+                {
+                    $ColumnNames += ( $ColumnMap.Values -join ", ")
+                }
+                Else 
+                {
+                    $ColumnNames += "'" + ( $ColumnMap.Values -join "', '") + "'"                    
+                }
             }
         Else
             {
                 $iterator = $PropertyNames
-                $ColumnNames = "'" + ($propertyNames -join "', '") + "'"                
+                $ColumnNames += "'" + ($propertyNames -join "', '") + "'"                
             }
-
-        $values = foreach ($propertyName in $iterator) { $record.$propertyName }        
-        $targetValues = "'" + ($values -join "', '") + "'"
-
+            
+        $values = foreach ($propertyName in $iterator)
+            {
+                If ( $Trim -eq $true) {
+                    $record.$propertyName.Trim()
+                }
+                else {
+                    $record.$propertyName                    
+                }
+            }        
+        $targetValues += "'" + ($values -join "', '") + "'"
+        
         If ( $Unique -eq $true)
         {
             $script:raw_output += $("INSERT INTO {0} ({1}) Values({2});" -f $TableName, $ColumnNames, $targetValues)
