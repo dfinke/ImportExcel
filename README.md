@@ -42,7 +42,7 @@ Huge thanks to [James O'Neill](https://twitter.com/jamesoneill). PowerShell afic
 
 (Check out the examples `help Export-Excel -Examples`)
 
-* New function `Export-Charts` (requires Excel to be installed) - Excport Excel charts out as JPG files
+* New function `Export-Charts` (requires Excel to be installed) - Export Excel charts out as JPG files
 * New function `Add-ConditionalFormatting` Adds contitional formatting to worksheet
 * New function `Set-Format` Applies Number, font, alignment and colour formatting to a range of Excel Cells
 * `ColorCompletion` an argument completer for `Colors` for params across functions
