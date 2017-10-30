@@ -1,3 +1,32 @@
+#Escapes single occurences of characters in a string.  Double occurences are not escaped.  e.g.  ''' will become '''', NOT ''''''.
+#Default is to replace single quotes
+#Sourced from: https://stackoverflow.com/a/33956262/270794
+Function EscapeChar {
+    param(
+        [Parameter(Mandatory = $true)][String] $param,
+        [Parameter(Mandatory = $false)][String] $charToEscape
+    )
+
+    if ($charToEscape -eq '') {
+        $charToEscape = "'"
+    }
+    $cleanedString = ""
+    $index = 0
+    $length = $param.length
+    for ($index = 0; $index -lt $length; $index++) {
+        $char = $param[$index]
+        if ($char -eq $charToEscape) {
+            if ($index +1 -lt $length -and $param[$index + 1] -eq $charToEscape) {
+                ++$index ## /!\ Manual increment of our loop counter to skip next char /!\
+            }
+            $cleanedString += "$charToEscape$charToEscape"
+            continue
+        }
+        $cleanedString += $char
+    }
+    return $cleanedString
+}
+
 function ConvertFrom-ExcelToSQLInsert {
     <#
   
@@ -73,8 +102,9 @@ function ConvertFrom-ExcelToSQLInsert {
                 $iterator = $PropertyNames
                 $ColumnNames += "'" + ($propertyNames -join "', '") + "'"                
             }
-            
-        $values = foreach ($propertyName in $iterator)
+
+
+        $trimmedValues = foreach ($propertyName in $iterator)
             {
                 If ( $Trim -eq $true) {
                     $record.$propertyName.Trim()
@@ -82,7 +112,11 @@ function ConvertFrom-ExcelToSQLInsert {
                 else {
                     $record.$propertyName                    
                 }
-            }        
+
+            }  
+
+        $values = foreach ($value in $trimmedValues) {EscapeChar($value)}
+    
         $targetValues += "'" + ($values -join "', '") + "'"
         
         If ( $Unique -eq $true)
