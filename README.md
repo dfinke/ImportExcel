@@ -27,6 +27,30 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 ```
 
 # What's new
+#### 10/30/2017
+Huge thanks to [James O'Neill](https://twitter.com/jamesoneill). PowerShell aficionado. He always brings a flare when working with PowerShell. This is no exception.
+
+(Check out the examples `help Export-Excel -Examples`)
+
+* New parameter `Package` allows an ExcelPackage object returned by `-passThru` to be passed in
+* New parameter `ExcludeProperty` to remove unwanted properties without needing to go through `select-object`
+* New parameter `Append` code to read the existing headers and move the insertion point below the current data
+* New parameter `ClearSheet`  which removes the worksheet and any past data
+
+* Remove any existing Pivot table before trying to [re]create it
+* Check for inserting a pivot table so if `-InsertPivotChart` is specified it implies `-InsertPivotTable`
+
+(Check out the examples `help Export-Excel -Examples`)
+
+* New function `Export-Charts` (requires Excel to be installed) - Export Excel charts out as JPG files
+* New function `Add-ConditionalFormatting` Adds contitional formatting to worksheet
+* New function `Set-Format` Applies Number, font, alignment and colour formatting to a range of Excel Cells
+* `ColorCompletion` an argument completer for `Colors` for params across functions
+
+I also worked out the parameters so you can do this, which is the same as passing `-Now`. It creates an Excel file name for you, does an auto fit and sets up filters.
+
+`ps | select Company, Handles | Export-Excel`
+
 #### 10/13/2017
 Added `New-PivotTableDefinition`. You can create and wire up a PivotTable to a WorkSheet. You can also create as many PivotTable Worksheets to point a one Worksheet. Or, you create many Worksheets and many corresponding PivotTable Worksheets.
 
