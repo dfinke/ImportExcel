@@ -115,7 +115,7 @@ function ConvertFrom-ExcelToSQLInsert {
 
             }  
 
-        $values = foreach ($value in $trimmedValues) {EscapeChar($value)}
+        $values = foreach ($value in $trimmedValues) { if ($value -ne $null) {EscapeChar($value)} else {$value}}
     
         $targetValues += "'" + ($values -join "', '") + "'"
         
