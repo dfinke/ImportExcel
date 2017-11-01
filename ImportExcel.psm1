@@ -1,6 +1,8 @@
-Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
+ï»¿Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 
+. $PSScriptRoot\AddConditionalFormatting.ps1
 . $PSScriptRoot\Charting.ps1
+. $PSScriptRoot\ColorCompletion.ps1
 . $PSScriptRoot\ConvertFromExcelData.ps1
 . $PSScriptRoot\ConvertFromExcelToSQLInsert.ps1
 . $PSScriptRoot\ConvertToExcelXlsx.ps1
@@ -20,16 +22,19 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\New-ConditionalText.ps1
 . $PSScriptRoot\New-ExcelChart.ps1
 . $PSScriptRoot\New-PSItem.ps1
+. $PSScriptRoot\Open-ExcelPackage.ps1
 . $PSScriptRoot\Pivot.ps1
 . $PSScriptRoot\Set-CellStyle.ps1
+. $PSScriptRoot\SetFormat.ps1
 . $PSScriptRoot\TrackingUtils.ps1
 . $PSScriptRoot\Update-FirstObjectProperties.ps1
-
 
 if ($PSVersionTable.PSVersion.Major -ge 5) {
     . $PSScriptRoot\Plot.ps1
 
     Function New-Plot {
+        [OutputType([PSPlot])]
+        Param()
 
         [PSPlot]::new()
     }
@@ -44,25 +49,25 @@ Function Import-Excel {
      <#
     .SYNOPSIS
         Create custom objects from the rows in an Excel worksheet.
- 
-    .DESCRIPTION 
-        The Import-Excel cmdlet creates custom objects from the rows in an Excel worksheet. Each row represents one object. All of this is possible without installing Microsoft Excel and by using the .NET library ‘EPPLus.dll’.
+
+    .DESCRIPTION
+        The Import-Excel cmdlet creates custom objects from the rows in an Excel worksheet. Each row represents one object. All of this is possible without installing Microsoft Excel and by using the .NET library â€˜EPPLus.dllâ€™.
 
         By default, the property names of the objects are retrieved from the column headers. Because an object cannot have a blanc property name, only columns with column headers will be imported.
 
-        If the default behavior is not desired and you want to import the complete worksheet ‘as is’, the parameter ‘-NoHeader’ can be used. In case you want to provide your own property names, you can use the parameter ‘-HeaderName’. 
+        If the default behavior is not desired and you want to import the complete worksheet â€˜as isâ€™, the parameter â€˜-NoHeaderâ€™ can be used. In case you want to provide your own property names, you can use the parameter â€˜-HeaderNameâ€™.
 
-    .PARAMETER Path 
+    .PARAMETER Path
         Specifies the path to the Excel file.
- 
+
     .PARAMETER WorksheetName
-        Specifies the name of the worksheet in the Excel workbook to import. By default, if no name is provided, the first worksheet will be imported.        
+        Specifies the name of the worksheet in the Excel workbook to import. By default, if no name is provided, the first worksheet will be imported.
 
     .PARAMETER DataOnly
         Import only rows and columns that contain data, empty rows and empty columns are not imported.
 
     .PARAMETER HeaderName
-        Specifies custom property names to use, instead of the values defined in the column headers of the TopRow. 
+        Specifies custom property names to use, instead of the values defined in the column headers of the TopRow.
 
         In case you provide less header names than there is data in the worksheet, then only the data with a corresponding header name will be imported and the data without header name will be disregarded.
 
@@ -71,18 +76,18 @@ Function Import-Excel {
     .PARAMETER NoHeader
         Automatically generate property names (P1, P2, P3, ..) instead of the ones defined in the column headers of the TopRow.
 
-        This switch is best used when you want to import the complete worksheet ‘as is’ and are not concerned with the property names.
+        This switch is best used when you want to import the complete worksheet â€˜as isâ€™ and are not concerned with the property names.
 
     .PARAMETER StartRow
-        The row from where we start to import data, all rows above the StartRow are disregarded. By default this is the first row. 
+        The row from where we start to import data, all rows above the StartRow are disregarded. By default this is the first row.
 
-        When the parameters ‘-NoHeader’ and ‘-HeaderName’ are not provided, this row will contain the column headers that will be used as property names. When one of both parameters are provided, the property names are automatically created and this row will be treated as a regular row containing data.
+        When the parameters â€˜-NoHeaderâ€™ and â€˜-HeaderNameâ€™ are not provided, this row will contain the column headers that will be used as property names. When one of both parameters are provided, the property names are automatically created and this row will be treated as a regular row containing data.
 
     .PARAMETER Password
         Accepts a string that will be used to open a password protected Excel file.
 
     .EXAMPLE
-        Import data from an Excel worksheet. One object is created for each row. The property names of the objects consist of the column names defined in the first row. In case a column doesn’t have a column header (usually in row 1 when ‘-StartRow’ is not used), then the unnamed columns will be skipped and the data in those columns will not be imported.
+        Import data from an Excel worksheet. One object is created for each row. The property names of the objects consist of the column names defined in the first row. In case a column doesnâ€™t have a column header (usually in row 1 when â€˜-StartRowâ€™ is not used), then the unnamed columns will be skipped and the data in those columns will not be imported.
 
         ----------------------------------------------
         | File: Movies.xlsx     -      Sheet: Actors |
@@ -94,7 +99,7 @@ Function Import-Excel {
         ----------------------------------------------
 
         PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Actors
- 
+
         First Name: Chuck
         Address   : California
 
@@ -104,7 +109,7 @@ Function Import-Excel {
         Notice that column 'B' is not imported because there's no value in cell 'B1' that can be used as property name for the objects.
 
     .EXAMPLE
-        Import the complete Excel worksheet ‘as is’ by using the ‘-NoHeader’ switch. One object is created for each row. The property names of the objects will be automatically generated (P1, P2, P3, ..).
+        Import the complete Excel worksheet â€˜as isâ€™ by using the â€˜-NoHeaderâ€™ switch. One object is created for each row. The property names of the objects will be automatically generated (P1, P2, P3, ..).
 
         ----------------------------------------------
         | File: Movies.xlsx     -      Sheet: Actors |
@@ -116,23 +121,23 @@ Function Import-Excel {
         ----------------------------------------------
 
         PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Actors -NoHeader
- 
+
         P1: First Name
-        P2: 
+        P2:
         P3: Address
-    
+
         P1: Chuck
         P2: Norris
         P3: California
-    
+
         P1: Jean-Claude
         P2: Vandamme
         P3: Brussels
 
         Notice that the column header (row 1) is imported as an object too.
- 
+
      .EXAMPLE
-        Import data from an Excel worksheet. One object is created for each row. The property names of the objects consist of the names defined in the parameter ‘-HeaderName’. The properties are named starting from the most left column (A) to the right. In case no value is present in one of the columns, that property will have an empty value.
+        Import data from an Excel worksheet. One object is created for each row. The property names of the objects consist of the names defined in the parameter â€˜-HeaderNameâ€™. The properties are named starting from the most left column (A) to the right. In case no value is present in one of the columns, that property will have an empty value.
 
         ----------------------------------------------------------
         | File: Movies.xlsx            -           Sheet: Movies |
@@ -145,7 +150,7 @@ Function Import-Excel {
         ----------------------------------------------------------
 
         PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Movies -HeaderName 'Movie name', 'Year', 'Rating', 'Genre'
- 
+
         Movie name: The Bodyguard
         Year      : 1992
         Rating    : 9
@@ -167,9 +172,9 @@ Function Import-Excel {
         Genre     :
 
         Notice that empty rows are imported and that data for the property 'Genre' is not present in the worksheet. As such, the 'Genre' property will be blanc for all objects.
-        
+
      .EXAMPLE
-        Import data from an Excel worksheet. One object is created for each row. The property names of the objects are automatically generated by using the switch ‘-NoHeader’ (P1, P@, P#, ..). The switch ‘-DataOnly’ will speed up the import because empty rows and empty columns are not imported.
+        Import data from an Excel worksheet. One object is created for each row. The property names of the objects are automatically generated by using the switch â€˜-NoHeaderâ€™ (P1, P@, P#, ..). The switch â€˜-DataOnlyâ€™ will speed up the import because empty rows and empty columns are not imported.
 
         ----------------------------------------------------------
         | File: Movies.xlsx            -           Sheet: Movies |
@@ -181,12 +186,12 @@ Function Import-Excel {
         |4     Skyfall         2012           9                  |
         ----------------------------------------------------------
 
-        PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Movies –NoHeader -DataOnly
- 
+        PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Movies â€“NoHeader -DataOnly
+
         P1: The Bodyguard
         P2: 1992
         P3: 9
-        
+
         P1: The Matrix
         P2: 1999
         P3: 8
@@ -198,7 +203,7 @@ Function Import-Excel {
         Notice that empty rows and empty columns are not imported.
 
  .EXAMPLE
-        Import data from an Excel worksheet. One object is created for each row. The property names are provided with the ‘-HeaderName’ parameter. The import will start from row 2 and empty columns and rows are not imported.
+        Import data from an Excel worksheet. One object is created for each row. The property names are provided with the â€˜-HeaderNameâ€™ parameter. The import will start from row 2 and empty columns and rows are not imported.
 
         ----------------------------------------------------------
         | File: Movies.xlsx            -           Sheet: Actors |
@@ -209,14 +214,14 @@ Function Import-Excel {
         |3     Jean-Claude               Vandamme     Brussels   |
         ----------------------------------------------------------
 
-        PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Actors -DataOnly -HeaderName 'FirstName', 'SecondName', 'City' –StartRow 2
-         
+        PS C:\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Actors -DataOnly -HeaderName 'FirstName', 'SecondName', 'City' â€“StartRow 2
+
         FirstName : Jean-Claude
         SecondName: Vandamme
         City      : Brussels
 
-        Notice that only 1 object is imported with only 3 properties. Column B and row 2 are empty and have been disregarded by using the switch '-DataOnly'. The property names have been named with the values provided with the parameter '-HeaderName'. Row number 1 with ‘Chuck Norris’ has not been imported, because we started the import from row 2 with the parameter ‘-StartRow 2’.
-            
+        Notice that only 1 object is imported with only 3 properties. Column B and row 2 are empty and have been disregarded by using the switch '-DataOnly'. The property names have been named with the values provided with the parameter '-HeaderName'. Row number 1 with â€˜Chuck Norrisâ€™ has not been imported, because we started the import from row 2 with the parameter â€˜-StartRow 2â€™.
+
     .LINK
         https://github.com/dfinke/ImportExcel
 
@@ -257,9 +262,9 @@ Function Import-Excel {
                 [String]$Name,
                 $Value
             )
-            
+
             Try {
-                $NewRow.$Name = $Value            
+                $NewRow.$Name = $Value
                 Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$Name' and value '$Value'"
             }
             Catch {
@@ -279,7 +284,7 @@ Function Import-Excel {
                 [Parameter(Mandatory)]
                 [Int]$StartRow
             )
-            
+
             Try {
                 if ($NoHeader) {
                     $i = 0
@@ -344,7 +349,7 @@ Function Import-Excel {
                 $Worksheet = $Excel.Workbook.Worksheets | Select-Object -First 1
             }
             #endregion
-            
+
             #region Set the top row
             if (((-not ($NoHeader -or $HeaderName)) -and ($StartRow -eq 0))) {
                 $StartRow = 1
@@ -383,7 +388,7 @@ Function Import-Excel {
 
                 #region Filter out rows with data in columns that don't have a column header
                 if ($DataOnly -and (-not $NoHeader)) {
-                    $Rows = $CellsWithValues.Start | where {$PropertyNames.Column -contains $_.Column} | 
+                    $Rows = $CellsWithValues.Start | where {$PropertyNames.Column -contains $_.Column} |
                         Sort-Object Row -Unique | Select-Object -ExpandProperty Row
                 }
                 #endregion
@@ -406,7 +411,7 @@ Function Import-Excel {
                         foreach ($P in $PropertyNames) {
                             Add-Property -Name $P.Value -Value $Worksheet.Cells[$R, $P.Column].Value
                         }
-                    
+
                         [PSCustomObject]$NewRow
                     }
                     #endregion
@@ -432,11 +437,12 @@ function Add-WorkSheet {
         [OfficeOpenXml.ExcelPackage] $ExcelPackage,
         [Parameter(Mandatory=$true)]
         [string] $WorkSheetname,
+        [switch] $ClearSheet,
         [Switch] $NoClobber
     )
 
     $ws = $ExcelPackage.Workbook.Worksheets[$WorkSheetname]
-
+    if($ClearSheet -and $ws) {$ExcelPackage.Workbook.Worksheets.Delete($WorkSheetname) ; $ws = $null }
     if(!$ws) {
         Write-Verbose "Add worksheet '$WorkSheetname'"
         $ws=$ExcelPackage.Workbook.Worksheets.Add($WorkSheetname)

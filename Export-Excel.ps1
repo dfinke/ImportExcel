@@ -1,17 +1,87 @@
-Function Export-Excel {
+﻿Function Export-Excel {
     <#
         .SYNOPSIS
             Export data to an Excel worksheet.
 
         .DESCRIPTION
             Export data to an Excel file and where possible try to convert numbers so Excel recognizes them as numbers instead of text. After all. Excel is a spreadsheet program used for number manipulation and calculations. In case the number conversion is not desired, use the parameter '-NoNumberConversion *'.
-
+        .PARAMETER Path
+            Path to a new or existing .XLSX file
+        .PARAMETER  ExcelPackage
+            An object representing an Excel Package - usually this is returned by specifying -Passthru alllowing multiple commands to work on the same Workbook without saving and reloading each time.
+        .PARAMETER WorkSheetName
+            The name of a sheet within the workbook - "Sheet1" by default
+        .PARAMETER ClearSheet
+            If specified Export-Excel will remove any existing worksheet with the selected name. The Default behaviour is to overwrite cells in this sheet as needed (but leaving non-overwritten ones in place)
+        .PARAMETER Append
+            If specified data will be added to the end of an existing sheet, using the same column headings.
+        .PARAMETER TargetData
+            Data to insert onto the worksheet - this is often provided from the pipeline.
+        .PARAMETER ExcludeProperty
+            Speficies properties which may exist in the target data but should not be placed on the worksheet
+        .PARAMETER Title
+            Text of a title to be placed in Cell A1
+        .PARAMETER TitleBold
+            Sets the title in boldface type
+        .PARAMETER TitleSize
+            Sets the point size for the title
+        .PARAMETER TitleBackgroundColor
+            Sets the cell background to solid and the chose colour for the title cell
+        .PARAMETER Password
+            Sets password protection on the workbook
+        .PARAMETER IncludePivotTable
+            Adds a Pivot table using the data in the worksheet
+        .PARAMETER PivotRows
+            Name(s) columns from the spreadhseet which will prvoide the row name(s) in the pivot table
+        .PARAMETER PivotColumns
+            Name(s) columns from the spreadhseet which will prvoide the Column name(s) in the pivot table
+        .PARAMETER PivotData
+            Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP to provide the data in the Pivot table
+        .PARAMETER PivotTableDefinition,
+            HashTable(s) with Sheet PivotTows, PivotColumns, PivotData, IncludePivotChart and ChartType values to make it easier to specify a definition or multiple Pivots.
+        .PARAMETER IncludePivotChart,
+             Include a chart with the Pivot table - implies Include Pivot Table.
+        .PARAMETER NoLegend
+            Exclude the legend from the pivot chart
+        .PARAMETER ShowCategory
+            Add category labels to the pivot chart
+        .PARAMETER ShowPercent
+            Add Percentage labels to the pivot chart
         .PARAMETER ConditionalText
             Applies a 'Conditional formatting rule' in Excel on all the cells. When specific conditions are met a rule is triggered.
-
         .PARAMETER NoNumberConversion
             By default we convert all values to numbers if possible, but this isn't always desirable. NoNumberConversion allows you to add exceptions for the conversion. Wildcards (like '*') are allowed.
+        .PARAMETER BoldTopRow
+            Makes the top Row boldface.
+        .PARAMETER NoHeader
+            Does not put field names at the top of columns
+        .PARAMETER RangeName
+            Makes the data in the worksheet a named range
+        .PARAMETER TableName
+            Makes the data in the worksheet a table with a name applies a style to it. Name must not contain spaces
+        .PARAMETER TableStyle
+            Selects the style for the named table - defaults to 'Medium6'
+        .PARAMETER ExcelChartDefinition
+            A hash table containing ChartType, Title, NoLegend, ShowCategory, ShowPecent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts
+        .PARAMETER HideSheet
+            Name(s) of Sheet(s) to hide in the workbook
+        .PARAMETER KillExcel
+            Closes Excel - prevents errors writing to the file because Excel has it open
+        .PARAMETER AutoNameRange
+            Makes each column  a named range
+        .PARAMETER StartRow
+            Row to start adding data. 1 by default. Row 1 will contain the title if any. Then headers will appear (Unless -No header is specified) then the data appears
+        .PARAMETER StartColumn
+            Column to start adding data - 1 by default
 
+        .PARAMETER FreezeTopRow
+            Freezes headers etc. in the top row
+        .PARAMETER FreezeFirstColumn
+            Freezes titles etc. in the left column
+        .PARAMETER FreezeTopRowFirstColumn
+             Freezes top row and left column (equivalent to Freeze pane 2,2 )
+        .PARAMETER FreezePane
+             Freezes panes at specified coordinates (in the form  RowNumber , ColumnNumber)
         .PARAMETER AutoFilter
             Enables the 'Filter' in Excel on the complete header row. So users can easily sort, filter and/or search the data in the select column from within Excel.
 
@@ -51,6 +121,8 @@ Function Export-Excel {
 
         .PARAMETER Show
             Opens the Excel file immediately after creation. Convenient for viewing the results instantly without having to search for the file first.
+        .PARAMETER PassThru
+            If specified, Export-Excel returns an object representing the Excel package without saving the package first. To save it you need to call the save or Saveas method or send it back to Export-Excel
 
         .EXAMPLE
             Get-Process | Export-Excel .\Test.xlsx -show
@@ -190,30 +262,90 @@ Function Export-Excel {
         .EXAMPLE
             Get-Service | Export-Excel 'c:\temp\test.xlsx'  -Show -IncludePivotTable -PivotRows status -PivotData @{status='count'}
 
+        .EXAMPLE
+            $pt = [ordered]@{}
+            $pt.pt1=@{ SourceWorkSheet   = 'Sheet1';
+                       PivotRows         = 'Status'
+                       PivotData         = @{'Status'='count'}
+                       IncludePivotChart = $true
+                       ChartType         = 'BarClustered3D'
+            }
+            $pt.pt2=@{ SourceWorkSheet   = 'Sheet2';
+                       PivotRows         = 'Company'
+                       PivotData         = @{'Company'='count'}
+                       IncludePivotChart = $true
+                       ChartType         = 'PieExploded3D'
+            }
+            Remove-Item  -Path .\test.xlsx
+            Get-Service | Select-Object    -Property Status,Name,DisplayName,StartType | Export-Excel -Path .\test.xlsx -AutoSize
+            Get-Process | Select-Object    -Property Name,Company,Handles,CPU,VM       | Export-Excel -Path .\test.xlsx -AutoSize -WorkSheetname 'sheet2'
+            Export-Excel -Path .\test.xlsx -PivotTableDefinition $pt -Show
+
+            This example defines two pivot tables. Then it puts Service data on Sheet1 with one call to Export-Excel and Process Data on sheet2 with a second call to Export-Excel
+            The thrid and final call adds the two pivot tables and opens the spreadsheet in Excel
+
+
+        .EXAMPLE
+            Remove-Item  -Path .\test.xlsx
+            $excel = Get-Service | Select-Object -Property Status,Name,DisplayName,StartType | Export-Excel -Path .\test.xlsx -PassThru
+            $excel.Workbook.Worksheets["Sheet1"].Row(1).style.font.bold = $true
+            $excel.Workbook.Worksheets["Sheet1"].Column(3 ).width = 29
+            $excel.Workbook.Worksheets["Sheet1"].Column(3 ).Style.wraptext = $true
+            $excel.Save()
+            $excel.Dispose()
+            Start-Process .\test.xlsx
+
+            This example uses -passthrough - put service information into sheet1 of the work book and saves the excelPackageObject in $Excel
+            It then uses the package object to apply formatting, and then saves the workbook and disposes of the object before loading the document in Excel.
+
+        .EXAMPLE
+            $excel = Get-Process | Select-Object -Property Name,Company,Handles,CPU,PM,NPM,WS | Export-Excel -Path .\test.xlsx -ClearSheet -WorkSheetname "Processes" -PassThru
+            $sheet = $excel.Workbook.Worksheets["Processes"]
+            $sheet.Column(1) | Set-Format -Bold -AutoFit
+            $sheet.Column(2) | Set-Format -Width 29 -WrapText
+            $sheet.Column(3) | Set-Format -HorizontalAlignment Right -NFormat "#,###"
+            Set-Format -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NFormat "#,###"
+            Set-Format -Address $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#,##0.0" -Bold
+            Set-Format -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
+            Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor Red
+            Add-ConditionalFormatting -WorkSheet $sheet -Range "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600" -ForeGroundColor Red
+            foreach ($c in 5..9) {Set-Format $sheet.Column($c)  -AutoFit }
+            Export-Excel -ExcelPackage $excel -WorkSheetname "Processes" -IncludePivotChart -ChartType ColumnClustered -NoLegend -PivotRows company  -PivotData @{'Name'='Count'}  -Show
+
+            This a more sophisticated version of the previous example showing different ways of using Set-Format, and also adding conditional formatting.
+            In the final command a Pivot chart is added and the workbook is opened in Excel.
+
         .LINK
             https://github.com/dfinke/ImportExcel
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Default')]
     Param(
-        $Path,
-        [Parameter(ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName="Default",Position=0)]
+        [Parameter(ParameterSetName="Table"  ,Position=0)]
+        [String]$Path,
+        [Parameter(Mandatory=$true,ParameterSetName="PackageDefault")]
+        [Parameter(Mandatory=$true,ParameterSetName="PackageTable")]
+        [OfficeOpenXml.ExcelPackage]$ExcelPackage,
+        [Parameter(ValueFromPipeline=$true)]
         $TargetData,
+        [String]$Password,
         [String]$WorkSheetname = 'Sheet1',
+        [switch]$ClearSheet,
+        [switch]$Append,
         [String]$Title,
         [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern = 'None',
         [Switch]$TitleBold,
         [Int]$TitleSize = 22,
         [System.Drawing.Color]$TitleBackgroundColor,
+        [Switch]$IncludePivotTable,
         [String[]]$PivotRows,
         [String[]]$PivotColumns,
         $PivotData,
         [Switch]$PivotDataToColumn,
-        [String]$Password,
-        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = 'Pie',
         [Hashtable]$PivotTableDefinition,
-        [Switch]$IncludePivotTable,
         [Switch]$IncludePivotChart,
+        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = 'Pie',
         [Switch]$NoLegend,
         [Switch]$ShowCategory,
         [Switch]$ShowPercent,
@@ -225,6 +357,7 @@ Function Export-Excel {
         [Switch]$FreezeTopRowFirstColumn,
         [Int[]]$FreezePane,
         [Parameter(ParameterSetName = 'Default')]
+        [Parameter(ParameterSetName = 'PackageDefault')]
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
         [Switch]$NoHeader,
@@ -243,9 +376,11 @@ Function Export-Excel {
                     $true
                 }
             })]
-        [Parameter(ParameterSetName = 'Table')]
+        [Parameter(ParameterSetName = 'Table'        ,Mandatory = $true)]
+        [Parameter(ParameterSetName = 'PackageTable' ,Mandatory = $true)]
         [String]$TableName,
         [Parameter(ParameterSetName = 'Table')]
+        [Parameter(ParameterSetName = 'PackageTable')]
         [OfficeOpenXml.Table.TableStyles]$TableStyle = 'Medium6',
         [Object[]]$ExcelChartDefinition,
         [String[]]$HideSheet,
@@ -255,10 +390,13 @@ Function Export-Excel {
         [Int]$StartColumn = 1,
         [Switch]$PassThru,
         [String]$Numberformat = 'General',
+        [string[]]$ExcludeProperty,
         [String[]]$NoNumberConversion,
         [Object[]]$ConditionalFormat,
         [Object[]]$ConditionalText,
         [ScriptBlock]$CellStyleSB,
+        [Parameter(ParameterSetName = 'Now')]
+        # [Parameter(ParameterSetName = 'TableNow')]
         [Switch]$Now
     )
 
@@ -354,7 +492,7 @@ Function Export-Excel {
             if ($TitleBackgroundColor -AND ($TitleFillPattern -ne 'None')) {
                 $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
             }
-            else {
+            elseif ($TitleBackgroundColor)  {
                 Write-Warning "Title Background Color ignored. You must set the TitleFillPattern parameter to a value other than 'None'. Try 'Solid'."
             }
         }
@@ -394,7 +532,7 @@ Function Export-Excel {
                 Stop-ExcelProcess
             }
 
-            if ($Now) {
+            if ($PSBoundParameters.Keys.Count -eq 0 -Or $Now) {
                 $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx'
                 $Show = $true
                 $AutoSize = $true
@@ -403,35 +541,51 @@ Function Export-Excel {
                 }
             }
 
-            $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+            if ($ExcelPackage) {
+                $pkg           = $ExcelPackage
+                $Path          = $pkg.File
+            }
+            Else               {
+                $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
 
-            if (Test-Path $Path) {
-                Write-Debug "Path '$Path' already exists"
+                if (Test-Path $Path) {
+                    Write-Debug "Path '$Path' already exists"
+                }
+
+                $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
             }
 
-            $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
-            $ws = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber
-
+            [OfficeOpenXml.ExcelWorksheet]$ws  = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber -ClearSheet:$ClearSheet  #Add worksheet doesn't take any action for -noClobber
             foreach ($format in $ConditionalFormat ) {
                 $target = "Add$($format.Formatter)"
                 $rule = ($ws.ConditionalFormatting).PSObject.Methods[$target].Invoke($format.Range, $format.IconType)
                 $rule.Reverse = $format.Reverse
             }
 
-            $Row = $StartRow
-
-            if ($Title) {
-                Add-Title
-
-                $Row += 1
+            if ($append)       {
+                $headerRange       = $ws.Dimension.Address -replace "\d+$","1"
+                #if there is a title or anything else above the header row, specifying StartRow will skip it.
+                if ($StartRow -ne 1) {$headerRange  = $headerRange -replace "1","$StartRow"}
+                $script:Header     = $ws.Cells[$headerrange].Value
+                $row               = $ws.Dimension.Rows
+                Write-Debug -Message ("Appending: headers are " + ($script:Header -join ", ") + "Start row $row")
             }
+            elseif($Title)     {    #Can only add a title if not appending
+                $Row = $StartRow
+                Add-Title
+                $Row ++
+            }
+            else {
+                $Row = $StartRow
 
+            }
+            $ColumnIndex = $StartColumn
             $firstTimeThru = $true
             $isDataTypeValueType = $false
             $pattern = 'string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
         }
         Catch {
-            if ($AlreadyExists) {
+            if ($AlreadyExists) {  #Is this set anywhere ?
                 throw "Failed exporting worksheet '$WorkSheetname' to '$Path': The worksheet '$WorkSheetname' already exists."
             }
             else {
@@ -441,6 +595,7 @@ Function Export-Excel {
     }
 
     Process {
+      if ($TargetData) {
         Try {
             if ($firstTimeThru) {
                 $firstTimeThru = $false
@@ -460,7 +615,7 @@ Function Export-Excel {
                 #region Add headers
                 if (-not $script:Header) {
                     $ColumnIndex = $StartColumn
-                    $script:Header = $TargetData.PSObject.Properties.Name
+                    $script:Header = $TargetData.PSObject.Properties.Name | Where-Object {$_ -notin $ExcludeProperty}
 
                     if ($NoHeader) {
                         # Don't push the headers to the spread sheet
@@ -491,6 +646,7 @@ Function Export-Excel {
         Catch {
             throw "Failed exporting worksheet '$WorkSheetname' to '$Path': $_"
         }
+      }
     }
 
     End {
@@ -534,9 +690,11 @@ Function Export-Excel {
                 }
                 $csc = $StartColumn
                 $cer = $ws.Dimension.End.Row
-                $cec = $script:Header.Count
+                $cec = $ws.Dimension.End.Column # was $script:Header.Count
 
                 $targetRange = $ws.Cells[$csr, $csc, $cer, $cec]
+                #if we're appending data the table may already exist: but excel doesn't like the result if I put
+                # if ($ws.Tables[$TableName]) {$ws.Tables.Delete($TableName) }
                 $tbl = $ws.Tables.Add($targetRange, $TableName)
                 $tbl.TableStyle = $TableStyle
             }
@@ -545,6 +703,8 @@ Function Export-Excel {
                 foreach ($item in $PivotTableDefinition.GetEnumerator()) {
                     $targetName = $item.Key
                     $pivotTableName = $targetName #+ 'PivotTable'
+                    #Make sure the Pivot table sheet doesn't already exist
+                    try  {     $pkg.Workbook.Worksheets.Delete(    $pivotTableName) } catch {}
                     $wsPivot = $pkg | Add-WorkSheet -WorkSheetname $pivotTableName -NoClobber:$NoClobber
                     $pivotTableDataName = $targetName + 'PivotTableData'
 
@@ -602,15 +762,17 @@ Function Export-Excel {
                             }
 
                             $chart = $wsPivot.Drawings.AddChart('PivotChart', $ChartType, $pivotTable)
-                            $chart.SetPosition(1, 0, 3, 0)
+                            $chart.SetPosition(0, 0, 4, 0)  #Changed position to top row, next to a chart which doesn't pivot on columns
                             $chart.SetSize(600, 400)
                         }
                     }
                 }
             }
 
-            if ($IncludePivotTable) {
+            if ($IncludePivotTable -or $IncludePivotChart) { #changed so -includePivotChart Implies -includePivotTable.
                 $pivotTableName = $WorkSheetname + 'PivotTable'
+                #Make sure the Pivot table sheet doesn't already exist
+                try  {     $pkg.Workbook.Worksheets.Delete(    $pivotTableName) } catch {}
                 $wsPivot = $pkg | Add-WorkSheet -WorkSheetname $pivotTableName -NoClobber:$NoClobber
 
                 $wsPivot.View.TabSelected = $true
@@ -653,7 +815,7 @@ Function Export-Excel {
                     $chart = $wsPivot.Drawings.AddChart('PivotChart', $ChartType, $pivotTable)
                     $chart.DataLabel.ShowCategory = $ShowCategory
                     $chart.DataLabel.ShowPercent = $ShowPercent
-
+                    $chart.SetPosition(0,26,2,26)  # if Pivot table is rows+data only it will be 2 columns wide if has pivot columns we don't know how wide it will be
                     if ($NoLegend) {
                         $chart.Legend.Remove()
                     }
