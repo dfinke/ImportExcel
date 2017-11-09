@@ -20,7 +20,7 @@ function ConvertFrom-ExcelToSQLInsert {
     ConvertFrom-ExcelData @params {
         param($propertyNames, $record)
 
-        $ColumnNames = "'" + ($PropertyNames -join "', '") + "'"
+        $ColumnNames = "[" + ($PropertyNames -join "], [") + "]"
         $values = foreach ($propertyName in $PropertyNames) { $record.$propertyName }
         $targetValues = "'" + ($values -join "', '") + "'"
 
