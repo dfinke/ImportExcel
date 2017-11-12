@@ -62,7 +62,10 @@ Function Set-Format {
         #Set cells to a fixed hieght  (rows or ranges only)
         [float]$Height,
         #Hide a row or column  (not a range)
-        [switch]$Hidden
+        [switch]$Hidden,
+        #Indent cells in range
+        [ValidateRange(0, 15)]
+        [int]$Indent
     )
     process {
         Foreach ($range in $Address) {
@@ -124,6 +127,7 @@ Function Set-Format {
                     $Range -is [OfficeOpenXml.ExcelColumn]  ) {$Range.Hidden = $True}
                 else {Write-Warning -Message ("Can hide a row or a column but not a {0} object" -f ($Range.GetType().name)) }
             }
+            if ($Indent) {$Range.Style.Indent = $Indent }
         }
     }
 }
