@@ -370,7 +370,7 @@
                     throw 'Tablename is null or empty.'
                 }
                 elseif ($_[0] -notmatch '[a-z]') {
-                    throw 'Tablename start with invalid character.'
+                    throw 'Tablename starts with an invalid character.'
                 }
                 else {
                     $true
@@ -524,10 +524,9 @@
             Get-Process excel -ErrorAction Ignore | Stop-Process
             while (Get-Process excel -ErrorAction Ignore) {}
         }
-
         Try {
             $script:Header = $null
-
+            if ($append -and $clearSheet) {throw "You can't use -Append AND -ClearSheet."}   
             if ($KillExcel) {
                 Stop-ExcelProcess
             }
@@ -554,7 +553,7 @@
 
                 $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
             }
-
+            
             [OfficeOpenXml.ExcelWorksheet]$ws  = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber -ClearSheet:$ClearSheet  #Add worksheet doesn't take any action for -noClobber
             foreach ($format in $ConditionalFormat ) {
                 $target = "Add$($format.Formatter)"
@@ -566,14 +565,16 @@
                 $headerRange       = $ws.Dimension.Address -replace "\d+$","1"
                 #if there is a title or anything else above the header row, specifying StartRow will skip it.
                 if ($StartRow -ne 1) {$headerRange  = $headerRange -replace "1","$StartRow"}
-                $script:Header     = $ws.Cells[$headerrange].Value
+                #$script:Header     = $ws.Cells[$headerrange].Value
+                #using a slightly odd syntax otherwise header ends up as a 2D array 
+                $ws.Cells[$headerRange].Value | foreach -Begin {$Script:header = @()} -Process {$Script:header += $_ } 
                 $row               = $ws.Dimension.Rows
                 Write-Debug -Message ("Appending: headers are " + ($script:Header -join ", ") + "Start row $row")
             }
             elseif($Title)     {    #Can only add a title if not appending
                 $Row = $StartRow
                 Add-Title
-                $Row ++
+                $Row ++ ; $startRow ++ 
             }
             else {
                 $Row = $StartRow
@@ -652,14 +653,19 @@
     End {
         Try {
             if ($AutoNameRange) {
-                $totalRows = $ws.Dimension.Rows
+                if (-not $script:header) {
+                     $headerRange       = $ws.Dimension.Address -replace "\d+$","1"
+                     #if there is a title or anything else above the header row, specifying StartRow will skip it.
+                     if ($StartRow -ne 1) {$headerRange  = $headerRange -replace "1","$StartRow"}
+                     #using a slightly odd syntax otherwise header ends up as a 2D array 
+                     $ws.Cells[$headerRange].Value | foreach -Begin {$Script:header = @()} -Process {$Script:header += $_ } 
+                } 
+                $totalRows = $ws.Dimension.End.Row
                 $totalColumns = $ws.Dimension.Columns
-
                 foreach ($c in 0..($totalColumns - 1)) {
                     $targetRangeName = "$($script:Header[$c])"
-
-                    $targetColumn = $c + 1
-                    $theCell = $ws.Cells[2, $targetColumn, $totalRows, $targetColumn ]
+                    $targetColumn = $c + $StartColumn
+                    $theCell = $ws.Cells[($startrow+1), $targetColumn, $totalRows , $targetColumn ]
                     $ws.Names.Add($targetRangeName, $theCell) | Out-Null
 
                     if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress($targetRangeName)) {
@@ -669,7 +675,7 @@
             }
 
             if ($Title) {
-                $startAddress = "A2"
+                $startAddress = $ws.Dimension.Start.address  -replace "$($ws.Dimension.Start.row)`$", "$($ws.Dimension.Start.row + 1)"
             }
             else {
                 $startAddress = $ws.Dimension.Start.Address
@@ -685,9 +691,7 @@
 
             if (-not [String]::IsNullOrEmpty($TableName)) {
                 $csr = $StartRow
-                if ($Title) {
-                    $csr += 1
-                }
+
                 $csc = $StartColumn
                 $cer = $ws.Dimension.End.Row
                 $cec = $ws.Dimension.End.Column # was $script:Header.Count
@@ -764,6 +768,10 @@
                             $chart = $wsPivot.Drawings.AddChart('PivotChart', $ChartType, $pivotTable)
                             $chart.SetPosition(0, 0, 4, 0)  #Changed position to top row, next to a chart which doesn't pivot on columns
                             $chart.SetSize(600, 400)
+                            $chart.DataLabel.ShowCategory = [boolean]$item.value.ShowCategory
+                            $chart.DataLabel.ShowPercent  = [boolean]$item.value.ShowPercent
+                            if ([boolean]$item.value.NoLegend)   {$chart.Legend.Remove()}
+                            if ($item.value.ChartTitle)          {$chart.Title.Text = $item.value.chartTitle}
                         }
                     }
                 }
@@ -971,17 +979,22 @@
 function New-PivotTableDefinition {
     param(
         [Parameter(Mandatory)]
-        $PivtoTableName,
+        [Alias("PivtoTableName")]#Previous typo - use alias to avoid breaking scripts
+        $PivotTableName,
         $SourceWorkSheet,
         $PivotRows,
         [hashtable]$PivotData,
         $PivotColumns,
         [Switch]$IncludePivotChart,
-        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = 'Pie'
+        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = 'Pie',
+        [Switch]$NoLegend,
+        [Switch]$ShowCategory,
+        [Switch]$ShowPercent,
+        [String]$ChartTitle
     )
 
     $parameters = @{} + $PSBoundParameters
-    $parameters.Remove('PivtoTableName')
+    $parameters.Remove('PivotTableName')
 
-    @{$PivtoTableName=$parameters}
+    @{$PivotTableName=$parameters}
 }

@@ -24,10 +24,15 @@
 . $PSScriptRoot\New-PSItem.ps1
 . $PSScriptRoot\Open-ExcelPackage.ps1
 . $PSScriptRoot\Pivot.ps1
+. $PSScriptRoot\Send-SQLDataToExcel.ps1
 . $PSScriptRoot\Set-CellStyle.ps1
+. $PSScriptRoot\Set-Column.ps1
+. $PSScriptRoot\Set-Row.ps1
 . $PSScriptRoot\SetFormat.ps1
 . $PSScriptRoot\TrackingUtils.ps1
 . $PSScriptRoot\Update-FirstObjectProperties.ps1
+
+New-Alias -Name Use-ExcelData -Value "ConvertFrom-ExcelData"
 
 if ($PSVersionTable.PSVersion.Major -ge 5) {
     . $PSScriptRoot\Plot.ps1

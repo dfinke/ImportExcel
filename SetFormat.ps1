@@ -1,4 +1,4 @@
-Function Set-Format {
+﻿Function Set-Format {
 <#
 .SYNOPSIS
     Applies Number, font, alignment and colour formatting to a range of Excel Cells
@@ -12,9 +12,15 @@ Function Set-Format {
 #>
     Param   (
         #One or more row(s), Column(s) and/or block(s) of cells to format
-        [Parameter(ValueFromPipeline = $true)]
-        [object[]]$Address ,
-        #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "£#,##0.00;[Red]-£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc
+        [Parameter(ValueFromPipeline = $true,ParameterSetName="Address",Mandatory=$True)]
+        $Address ,
+        #The worksheet where the format is to be applied
+        [Parameter(ParameterSetName="SheetAndRange",Mandatory=$True)]
+        [OfficeOpenXml.ExcelWorksheet]$WorkSheet ,
+        #The area of the worksheet where the format is to be applied
+        [Parameter(ParameterSetName="SheetAndRange",Mandatory=$True)]
+        [OfficeOpenXml.ExcelAddress]$Range,
+        #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "Â£#,##0.00;[Red]-Â£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc
         [Alias("NFormat")]
         $NumberFormat,
         #Style of border to draw around the range
@@ -56,73 +62,83 @@ Function Set-Format {
         [ValidateRange(-90, 90)]
         [int]$TextRotation ,
         #Autofit cells to width  (columns or ranges only)
-        [switch]$AutoFit,
-        #Set cells to a fixed width (columns or ranges only), ignored if Autofit is specified
+        [Alias("AutoFit")]
+        [Switch]$AutoSize,
+        #Set cells to a fixed width (columns or ranges only), ignored if Autosize is specified
         [float]$Width,
         #Set cells to a fixed hieght  (rows or ranges only)
         [float]$Height,
         #Hide a row or column  (not a range)
         [switch]$Hidden
     )
+    begin {
+        #Allow Set-Format to take Worksheet and range parameters (like Add Contitional formatting) -  convert them to an address 
+        if ($WorkSheet -and $Range) {$Address = $WorkSheet.Cells[$Range] } 
+    }
+
     process {
-        Foreach ($range in $Address) {
+        if   ($Address -is [Array])  {
+            [void]$PSBoundParameters.Remove("Address") 
+            $Address | Set-Format @PSBoundParameters
+        }    
+        else {
             if ($ResetFont) {
-                $Range.Style.Font.Color.SetColor("Black")
-                $Range.Style.Font.Bold = $false
-                $Range.Style.Font.Italic = $false
-                $Range.Style.Font.UnderLine = $false
-                $Range.Style.Font.Strike = $falsee
+                $Address.Style.Font.Color.SetColor("Black")
+                $Address.Style.Font.Bold = $false
+                $Address.Style.Font.Italic = $false
+                $Address.Style.Font.UnderLine = $false
+                $Address.Style.Font.Strike = $falsee
             }
             if ($Underline) {
-                $Range.Style.Font.UnderLine = $true
-                $Range.Style.Font.UnderLineType = $UnderLineType
+                $Address.Style.Font.UnderLine = $true
+                $Address.Style.Font.UnderLineType = $UnderLineType
             }
-            if ($Bold) {$Range.Style.Font.Bold = $true                }
-            if ($Italic) {$Range.Style.Font.Italic = $true                }
-            if ($StrikeThru) {$Range.Style.Font.Strike = $true                }
-            if ($FontShift) {$Range.Style.Font.VerticalAlign = $FontShift           }
-            if ($FontColor) {$Range.Style.Font.Color.SetColor( $FontColor    )      }
-            if ($BorderRound) {$Range.Style.Border.BorderAround( $BorderAround )      }
-            if ($NumberFormat) {$Range.Style.Numberformat.Format = $NumberFormat        }
-            if ($TextRotation) {$Range.Style.TextRotation = $TextRotation        }
-            if ($WrapText) {$Range.Style.WrapText = $true                }
-            if ($HorizontalAlignment) {$Range.Style.HorizontalAlignment = $HorizontalAlignment }
-            if ($VerticalAlignment) {$Range.Style.VerticalAlignment = $VerticalAlignment   }
+            if ($Bold) {$Address.Style.Font.Bold = $true                }
+            if ($Italic) {$Address.Style.Font.Italic = $true                }
+            if ($StrikeThru) {$Address.Style.Font.Strike = $true                }
+            if ($FontShift) {$Address.Style.Font.VerticalAlign = $FontShift           }
+            if ($FontColor) {$Address.Style.Font.Color.SetColor( $FontColor    )      }
+            if ($BorderRound) {$Address.Style.Border.BorderAround( $BorderAround )      }
+            if ($NumberFormat) {$Address.Style.Numberformat.Format = $NumberFormat        }
+            if ($TextRotation) {$Address.Style.TextRotation = $TextRotation        }
+            if ($WrapText) {$Address.Style.WrapText = $true                }
+            if ($HorizontalAlignment) {$Address.Style.HorizontalAlignment = $HorizontalAlignment }
+            if ($VerticalAlignment) {$Address.Style.VerticalAlignment = $VerticalAlignment   }
 
             if ($BackgroundColor) {
-                $Range.Style.Fill.PatternType = $BackgroundPattern
-                $Range.Style.Fill.BackgroundColor.SetColor($BackgroundColor)
+                $Address.Style.Fill.PatternType = $BackgroundPattern
+                $Address.Style.Fill.BackgroundColor.SetColor($BackgroundColor)
                 if ($PatternColor) {
-                    $range.Style.Fill.PatternColor.SetColor( $PatternColor)
+                    $Address.Style.Fill.PatternColor.SetColor( $PatternColor)
                 }
             }
 
             if ($Height) {
-                if ($Range -is [OfficeOpenXml.ExcelRow]   ) {$Range.Height = $Height }
-                elseif ($Range -is [OfficeOpenXml.ExcelRange] ) {
-                    ($range.Start.Row)..($range.Start.Row + $range.Rows) |
+                if ($Address -is [OfficeOpenXml.ExcelRow]   ) {$Address.Height = $Height }
+                elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {
+                    ($Address.Start.Row)..($Address.Start.Row + $Address.Rows) |
                         ForEach-Object {$ws.Row($_).Height = $Height }
                 }
-                else {Write-Warning -Message ("Can set the height of a row or a range but not a {0} object" -f ($Range.GetType().name)) }
+                else {Write-Warning -Message ("Can set the height of a row or a range but not a {0} object" -f ($Address.GetType().name)) }
             }
-            if ($AutoFit) {
-                if ($Range -is [OfficeOpenXml.ExcelColumn]) {$Range.AutoFit() }
-                elseif ($Range -is [OfficeOpenXml.ExcelRange] ) {$Range.AutoFitColumns() }
-                else {Write-Warning -Message ("Can autofit a column or a range but not a {0} object" -f ($Range.GetType().name)) }
+            if ($Autosize) {
+                if ($Address -is [OfficeOpenXml.ExcelColumn]) {$Address.AutoFit() }
+                elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {$Address.AutoFitColumns() }
+                else {Write-Warning -Message ("Can autofit a column or a range but not a {0} object" -f ($Address.GetType().name)) }
 
             }
             elseif ($Width) {
-                if ($Range -is [OfficeOpenXml.ExcelColumn]) {$Range.Width = $Width}
-                elseif ($Range -is [OfficeOpenXml.ExcelRange] ) {
-                    ($range.Start.Column)..($range.Start.Column + $range.Columns) |
+                if ($Address -is [OfficeOpenXml.ExcelColumn]) {$Address.Width = $Width}
+                elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {
+                    ($Address.Start.Column)..($Address.Start.Column + $Address.Columns) |
                         ForEach-Object {$ws.Column($_).Width = $Width}
                 }
-                else {Write-Warning -Message ("Can set the width of a column or a range but not a {0} object" -f ($Range.GetType().name)) }
+                else {Write-Warning -Message ("Can set the width of a column or a range but not a {0} object" -f ($Address.GetType().name)) }
             }
             if ($Hidden) {
-                if ($Range -is [OfficeOpenXml.ExcelRow] -or
-                    $Range -is [OfficeOpenXml.ExcelColumn]  ) {$Range.Hidden = $True}
-                else {Write-Warning -Message ("Can hide a row or a column but not a {0} object" -f ($Range.GetType().name)) }
+                if ($Address -is [OfficeOpenXml.ExcelRow] -or
+                    $Address -is [OfficeOpenXml.ExcelColumn]  ) {$Address.Hidden = $True}
+                else {Write-Warning -Message ("Can hide a row or a column but not a {0} object" -f ($Address.GetType().name)) }
             }
         }
     }
