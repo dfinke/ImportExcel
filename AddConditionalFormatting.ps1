@@ -1,4 +1,4 @@
-Function Add-ConditionalFormatting {
+﻿Function Add-ConditionalFormatting {
 <#
 .Synopsis
     Adds contitional formatting to worksheet
@@ -19,27 +19,49 @@ Function Add-ConditionalFormatting {
 #>
     Param (
         #The worksheet where the format is to be applied
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
+        [Parameter(Mandatory = $true, ParameterSetName = "DataBar")]
+        [Parameter(Mandatory = $true, ParameterSetName = "ThreeIconSet")]
+        [Parameter(Mandatory = $true, ParameterSetName = "FourIconSet")]
+        [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSet")]
         [OfficeOpenXml.ExcelWorksheet]$WorkSheet ,
         #The area of the worksheet where the format is to be applied
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
+        [Parameter(Mandatory = $true, ParameterSetName = "DataBar")]
+        [Parameter(Mandatory = $true, ParameterSetName = "ThreeIconSet")]
+        [Parameter(Mandatory = $true, ParameterSetName = "FourIconSet")]
+        [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSet")]
         [OfficeOpenXml.ExcelAddress]$Range ,
+        #One or more row(s), Column(s) and/or block(s) of cells to format
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
+        [Parameter(Mandatory = $true, ParameterSetName = "DataBarAddress")]
+        [Parameter(Mandatory = $true, ParameterSetName = "ThreeIconSetAddress")]
+        [Parameter(Mandatory = $true, ParameterSetName = "FourIconSetAddress")]
+        [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSetAddress")]
+        $Address ,
         #One of the standard named rules - Top / Bottom / Less than / Greater than / Contains etc
         [Parameter(Mandatory = $true, ParameterSetName = "NamedRule", Position = 3)]
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress", Position = 3)]
         [OfficeOpenXml.ConditionalFormatting.eExcelConditionalFormattingRuleType]$RuleType ,
         #Text colour for matching objects
         [Alias("ForeGroundColour")]
         [System.Drawing.Color]$ForeGroundColor,
         #colour for databar type charts
         [Parameter(Mandatory = $true, ParameterSetName = "DataBar")]
+        [Parameter(Mandatory = $true, ParameterSetName = "DataBarAddress")]
         [Alias("DataBarColour")]
         [System.Drawing.Color]$DataBarColor,
         #One of the three-icon set types (e.g. Traffic Lights)
         [Parameter(Mandatory = $true, ParameterSetName = "ThreeIconSet")]
+        [Parameter(Mandatory = $true, ParameterSetName = "ThreeIconSetAddress")]
         [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting3IconsSetType]$ThreeIconsSet,
         #A four-icon set name
         [Parameter(Mandatory = $true, ParameterSetName = "FourIconSet")]
+        [Parameter(Mandatory = $true, ParameterSetName = "FourIconSetAddress")]
         [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting4IconsSetType]$FourIconsSet,
         #A five-icon set name
         [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSet")]
+        [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSetAddress")]
         [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting5IconsSetType]$FiveIconsSet,
         #A value for the condition (e.g. "2000" if the test is 'lessthan 2000')
         [string]$ConditionValue,
@@ -62,7 +84,11 @@ Function Add-ConditionalFormatting {
         #Strikethrough text of matching items
         [switch]$StrikeThru
     )
-
+    #Allow add conditional formatting to work like Set-Format (with single ADDRESS parameter) split it to get worksheet and Range of cells.  
+    If ($Address -and -not $WorkSheet -and -not $Range) {
+        $WorkSheet = $Address.Worksheet[0]
+        $Range     = $Address.Address 
+    }    
     If ($ThreeIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)}
     elseif ($FourIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet) }
     elseif ($FiveIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Range , $IconType)     }
