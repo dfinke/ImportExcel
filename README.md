@@ -27,6 +27,20 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 ```
 
 # What's new
+
+#### 11/23/2017
+More great additions and thanks to [James O'Neill](https://twitter.com/jamesoneill)
+
+* Added `Convert-XlRangeToImage` Gets the specified part of an Excel file and exports it as an image
+* Fixed a typo in the message at line 373.
+* Now catch an attempt to both clear the sheet and append to it.
+* Fixed some issues when appending to sheets where the header isn't in row 1 or the data doesn't start in column 1.
+* Added support for more settings when creating a pivot chart.
+* Corrected a typo PivotTableName was PivtoTableName in definition of New-PivotTableDefinition
+* Add-ConditionalFormat and Set-Format added to the parameters so each has the choice of working more like the other.
+* Added Set-Row and Set-Column - fill a formula down or across.
+* Added Send-SQLDataToExcel. Insert a rowset and then call Export-Excel for ranges, charts, pivots etc
+
 #### 10/30/2017
 Huge thanks to [James O'Neill](https://twitter.com/jamesoneill). PowerShell aficionado. He always brings a flare when working with PowerShell. This is no exception.
 
