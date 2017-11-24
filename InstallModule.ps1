@@ -49,7 +49,10 @@ Begin {
             'Open-ExcelPackage.ps1',
             'Pivot.ps1',
             'Plot.ps1',
+            'Send-SQLDataToExcel.ps1',
             'Set-CellStyle.ps1',
+            'Set-Column.ps1',
+            'Set-Row.ps1',
             'SetFormat.ps1',
             'TrackingUtils.ps1',
             'Update-FirstObjectProperties.ps1'
