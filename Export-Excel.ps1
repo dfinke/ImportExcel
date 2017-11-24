@@ -397,7 +397,8 @@
         [ScriptBlock]$CellStyleSB,
         [Parameter(ParameterSetName = 'Now')]
         # [Parameter(ParameterSetName = 'TableNow')]
-        [Switch]$Now
+        [Switch]$Now,
+        [Switch]$ReturnRange
     )
 
     Begin {
@@ -526,7 +527,7 @@
         }
         Try {
             $script:Header = $null
-            if ($append -and $clearSheet) {throw "You can't use -Append AND -ClearSheet."}   
+            if ($append -and $clearSheet) {throw "You can't use -Append AND -ClearSheet."}
             if ($KillExcel) {
                 Stop-ExcelProcess
             }
@@ -553,7 +554,7 @@
 
                 $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
             }
-            
+
             [OfficeOpenXml.ExcelWorksheet]$ws  = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber -ClearSheet:$ClearSheet  #Add worksheet doesn't take any action for -noClobber
             foreach ($format in $ConditionalFormat ) {
                 $target = "Add$($format.Formatter)"
@@ -566,15 +567,15 @@
                 #if there is a title or anything else above the header row, specifying StartRow will skip it.
                 if ($StartRow -ne 1) {$headerRange  = $headerRange -replace "1","$StartRow"}
                 #$script:Header     = $ws.Cells[$headerrange].Value
-                #using a slightly odd syntax otherwise header ends up as a 2D array 
-                $ws.Cells[$headerRange].Value | foreach -Begin {$Script:header = @()} -Process {$Script:header += $_ } 
+                #using a slightly odd syntax otherwise header ends up as a 2D array
+                $ws.Cells[$headerRange].Value | foreach -Begin {$Script:header = @()} -Process {$Script:header += $_ }
                 $row               = $ws.Dimension.Rows
                 Write-Debug -Message ("Appending: headers are " + ($script:Header -join ", ") + "Start row $row")
             }
             elseif($Title)     {    #Can only add a title if not appending
                 $Row = $StartRow
                 Add-Title
-                $Row ++ ; $startRow ++ 
+                $Row ++ ; $startRow ++
             }
             else {
                 $Row = $StartRow
@@ -657,9 +658,9 @@
                      $headerRange       = $ws.Dimension.Address -replace "\d+$","1"
                      #if there is a title or anything else above the header row, specifying StartRow will skip it.
                      if ($StartRow -ne 1) {$headerRange  = $headerRange -replace "1","$StartRow"}
-                     #using a slightly odd syntax otherwise header ends up as a 2D array 
-                     $ws.Cells[$headerRange].Value | foreach -Begin {$Script:header = @()} -Process {$Script:header += $_ } 
-                } 
+                     #using a slightly odd syntax otherwise header ends up as a 2D array
+                     $ws.Cells[$headerRange].Value | foreach -Begin {$Script:header = @()} -Process {$Script:header += $_ }
+                }
                 $totalRows = $ws.Dimension.End.Row
                 $totalColumns = $ws.Dimension.Columns
                 foreach ($c in 0..($totalColumns - 1)) {
@@ -962,6 +963,10 @@
                 $pkg
             }
             else {
+                if($ReturnRange) {
+                    $ws.Dimension.Address
+                }
+
                 $pkg.Save()
                 $pkg.Dispose()
 
