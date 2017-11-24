@@ -4,7 +4,7 @@
 RootModule = 'ImportExcel.psm1'
 
 # Version number of this module.
-ModuleVersion = '4.0.6'
+ModuleVersion = '4.0.7'
 
 # ID used to uniquely identify this module
 GUID = '60dd4136-feff-401a-ba27-a84458c57ede'
@@ -19,7 +19,10 @@ CompanyName = 'Doug Finke'
 Copyright = 'c 2015 All rights reserved.'
 
 # Description of the functionality provided by this module
-    Description   = 'PowerShell module to import/export Excel spreadsheets, without Excel. Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq'
+    Description   = @'
+PowerShell module to import/export Excel spreadsheets, without Excel.
+Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq
+'@
 
 # Minimum version of the Windows PowerShell engine required by this module
 # PowerShellVersion = ''
