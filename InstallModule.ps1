@@ -27,6 +27,7 @@ Begin {
             'ColorCompletion.ps1',
             'ConvertFromExcelData.ps1',
             'ConvertFromExcelToSQLInsert.ps1',
+            'ConvertExcelToImageFile.ps1',
             'ConvertToExcelXlsx.ps1',
             'Copy-ExcelWorkSheet.ps1',
             'Export-Charts.ps1',

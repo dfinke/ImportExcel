@@ -31,6 +31,7 @@
 . $PSScriptRoot\SetFormat.ps1
 . $PSScriptRoot\TrackingUtils.ps1
 . $PSScriptRoot\Update-FirstObjectProperties.ps1
+. $PSScriptRoot\ConvertExcelToImageFile.ps1
 
 New-Alias -Name Use-ExcelData -Value "ConvertFrom-ExcelData"
 
