@@ -31,6 +31,10 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 12/2017
+* Fixed when using certain a `ChartType` for the Pivot Table Chart, would throw an error
+* Fixed - when you specify a file, and the directory does not exit, it now creates it
+
 #### 11/23/2017
 More great additions and thanks to [James O'Neill](https://twitter.com/jamesoneill)
 
