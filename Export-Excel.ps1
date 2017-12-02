@@ -321,13 +321,13 @@
 
     [CmdletBinding(DefaultParameterSetName = 'Default')]
     Param(
-        [Parameter(ParameterSetName="Default",Position=0)]
-        [Parameter(ParameterSetName="Table"  ,Position=0)]
+        [Parameter(ParameterSetName = "Default", Position = 0)]
+        [Parameter(ParameterSetName = "Table"  , Position = 0)]
         [String]$Path,
-        [Parameter(Mandatory=$true,ParameterSetName="PackageDefault")]
-        [Parameter(Mandatory=$true,ParameterSetName="PackageTable")]
+        [Parameter(Mandatory = $true, ParameterSetName = "PackageDefault")]
+        [Parameter(Mandatory = $true, ParameterSetName = "PackageTable")]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline = $true)]
         $TargetData,
         [String]$Password,
         [String]$WorkSheetname = 'Sheet1',
@@ -376,8 +376,8 @@
                     $true
                 }
             })]
-        [Parameter(ParameterSetName = 'Table'        ,Mandatory = $true)]
-        [Parameter(ParameterSetName = 'PackageTable' ,Mandatory = $true)]
+        [Parameter(ParameterSetName = 'Table'        , Mandatory = $true)]
+        [Parameter(ParameterSetName = 'PackageTable' , Mandatory = $true)]
         [String]$TableName,
         [Parameter(ParameterSetName = 'Table')]
         [Parameter(ParameterSetName = 'PackageTable')]
@@ -493,7 +493,7 @@
             if ($TitleBackgroundColor -AND ($TitleFillPattern -ne 'None')) {
                 $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
             }
-            elseif ($TitleBackgroundColor)  {
+            elseif ($TitleBackgroundColor) {
                 Write-Warning "Title Background Color ignored. You must set the TitleFillPattern parameter to a value other than 'None'. Try 'Solid'."
             }
         }
@@ -542,37 +542,43 @@
             }
 
             if ($ExcelPackage) {
-                $pkg           = $ExcelPackage
-                $Path          = $pkg.File
+                $pkg = $ExcelPackage
+                $Path = $pkg.File
             }
-            Else               {
+            Else {
                 $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
 
-                if (Test-Path $Path) {
+                $targetPath = Split-Path $Path
+                if (!(Test-Path $targetPath)) {
+                    Write-Debug "Base path $($targetPath) does not exist, creating"
+                    $null = mkdir $targetPath -ErrorAction Ignore
+                }
+                elseif (Test-Path $Path) {
                     Write-Debug "Path '$Path' already exists"
                 }
 
                 $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
             }
 
-            [OfficeOpenXml.ExcelWorksheet]$ws  = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber -ClearSheet:$ClearSheet  #Add worksheet doesn't take any action for -noClobber
+            [OfficeOpenXml.ExcelWorksheet]$ws = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber -ClearSheet:$ClearSheet  #Add worksheet doesn't take any action for -noClobber
             foreach ($format in $ConditionalFormat ) {
                 $target = "Add$($format.Formatter)"
                 $rule = ($ws.ConditionalFormatting).PSObject.Methods[$target].Invoke($format.Range, $format.IconType)
                 $rule.Reverse = $format.Reverse
             }
 
-            if ($append)       {
-                $headerRange       = $ws.Dimension.Address -replace "\d+$","1"
+            if ($append) {
+                $headerRange = $ws.Dimension.Address -replace "\d+$", "1"
                 #if there is a title or anything else above the header row, specifying StartRow will skip it.
-                if ($StartRow -ne 1) {$headerRange  = $headerRange -replace "1","$StartRow"}
+                if ($StartRow -ne 1) {$headerRange = $headerRange -replace "1", "$StartRow"}
                 #$script:Header     = $ws.Cells[$headerrange].Value
                 #using a slightly odd syntax otherwise header ends up as a 2D array
                 $ws.Cells[$headerRange].Value | foreach -Begin {$Script:header = @()} -Process {$Script:header += $_ }
-                $row               = $ws.Dimension.Rows
+                $row = $ws.Dimension.Rows
                 Write-Debug -Message ("Appending: headers are " + ($script:Header -join ", ") + "Start row $row")
             }
-            elseif($Title)     {    #Can only add a title if not appending
+            elseif ($Title) {
+                #Can only add a title if not appending
                 $Row = $StartRow
                 Add-Title
                 $Row ++ ; $startRow ++
@@ -587,7 +593,8 @@
             $pattern = 'string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
         }
         Catch {
-            if ($AlreadyExists) {  #Is this set anywhere ?
+            if ($AlreadyExists) {
+                #Is this set anywhere ?
                 throw "Failed exporting worksheet '$WorkSheetname' to '$Path': The worksheet '$WorkSheetname' already exists."
             }
             else {
@@ -597,76 +604,76 @@
     }
 
     Process {
-      if ($TargetData) {
-        Try {
-            if ($firstTimeThru) {
-                $firstTimeThru = $false
-                $isDataTypeValueType = $TargetData.GetType().name -match $pattern
-                Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'"
-            }
-
-            if ($isDataTypeValueType) {
-                $ColumnIndex = $StartColumn
-
-                Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData
-
-                $ColumnIndex += 1
-                $Row += 1
-            }
-            else {
-                #region Add headers
-                if (-not $script:Header) {
-                    $ColumnIndex = $StartColumn
-                    $script:Header = $TargetData.PSObject.Properties.Name | Where-Object {$_ -notin $ExcludeProperty}
-
-                    if ($NoHeader) {
-                        # Don't push the headers to the spread sheet
-                        $Row -= 1
-                    }
-                    else {
-                        foreach ($Name in $script:Header) {
-                            $ws.Cells[$Row, $ColumnIndex].Value = $Name
-                            Write-Verbose "Cell '$Row`:$ColumnIndex' add header '$Name'"
-                            $ColumnIndex += 1
-                        }
-                    }
+        if ($TargetData) {
+            Try {
+                if ($firstTimeThru) {
+                    $firstTimeThru = $false
+                    $isDataTypeValueType = $TargetData.GetType().name -match $pattern
+                    Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'"
                 }
-                #endregion
 
-                $Row += 1
-                $ColumnIndex = $StartColumn
+                if ($isDataTypeValueType) {
+                    $ColumnIndex = $StartColumn
 
-                foreach ($Name in $script:Header) {
-                    #region Add non header values
-                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData.$Name
+                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData
 
                     $ColumnIndex += 1
+                    $Row += 1
+                }
+                else {
+                    #region Add headers
+                    if (-not $script:Header) {
+                        $ColumnIndex = $StartColumn
+                        $script:Header = $TargetData.PSObject.Properties.Name | Where-Object {$_ -notin $ExcludeProperty}
+
+                        if ($NoHeader) {
+                            # Don't push the headers to the spread sheet
+                            $Row -= 1
+                        }
+                        else {
+                            foreach ($Name in $script:Header) {
+                                $ws.Cells[$Row, $ColumnIndex].Value = $Name
+                                Write-Verbose "Cell '$Row`:$ColumnIndex' add header '$Name'"
+                                $ColumnIndex += 1
+                            }
+                        }
+                    }
                     #endregion
+
+                    $Row += 1
+                    $ColumnIndex = $StartColumn
+
+                    foreach ($Name in $script:Header) {
+                        #region Add non header values
+                        Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData.$Name
+
+                        $ColumnIndex += 1
+                        #endregion
+                    }
                 }
             }
+            Catch {
+                throw "Failed exporting worksheet '$WorkSheetname' to '$Path': $_"
+            }
         }
-        Catch {
-            throw "Failed exporting worksheet '$WorkSheetname' to '$Path': $_"
-        }
-      }
     }
 
     End {
         Try {
             if ($AutoNameRange) {
                 if (-not $script:header) {
-                     $headerRange       = $ws.Dimension.Address -replace "\d+$","1"
-                     #if there is a title or anything else above the header row, specifying StartRow will skip it.
-                     if ($StartRow -ne 1) {$headerRange  = $headerRange -replace "1","$StartRow"}
-                     #using a slightly odd syntax otherwise header ends up as a 2D array
-                     $ws.Cells[$headerRange].Value | foreach -Begin {$Script:header = @()} -Process {$Script:header += $_ }
+                    $headerRange = $ws.Dimension.Address -replace "\d+$", "1"
+                    #if there is a title or anything else above the header row, specifying StartRow will skip it.
+                    if ($StartRow -ne 1) {$headerRange = $headerRange -replace "1", "$StartRow"}
+                    #using a slightly odd syntax otherwise header ends up as a 2D array
+                    $ws.Cells[$headerRange].Value | foreach -Begin {$Script:header = @()} -Process {$Script:header += $_ }
                 }
                 $totalRows = $ws.Dimension.End.Row
                 $totalColumns = $ws.Dimension.Columns
                 foreach ($c in 0..($totalColumns - 1)) {
                     $targetRangeName = "$($script:Header[$c])"
                     $targetColumn = $c + $StartColumn
-                    $theCell = $ws.Cells[($startrow+1), $targetColumn, $totalRows , $targetColumn ]
+                    $theCell = $ws.Cells[($startrow + 1), $targetColumn, $totalRows , $targetColumn ]
                     $ws.Names.Add($targetRangeName, $theCell) | Out-Null
 
                     if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress($targetRangeName)) {
@@ -676,7 +683,7 @@
             }
 
             if ($Title) {
-                $startAddress = $ws.Dimension.Start.address  -replace "$($ws.Dimension.Start.row)`$", "$($ws.Dimension.Start.row + 1)"
+                $startAddress = $ws.Dimension.Start.address -replace "$($ws.Dimension.Start.row)`$", "$($ws.Dimension.Start.row + 1)"
             }
             else {
                 $startAddress = $ws.Dimension.Start.Address
@@ -709,7 +716,7 @@
                     $targetName = $item.Key
                     $pivotTableName = $targetName #+ 'PivotTable'
                     #Make sure the Pivot table sheet doesn't already exist
-                    try  {     $pkg.Workbook.Worksheets.Delete(    $pivotTableName) } catch {}
+                    try {     $pkg.Workbook.Worksheets.Delete(    $pivotTableName) } catch {}
                     $wsPivot = $pkg | Add-WorkSheet -WorkSheetname $pivotTableName -NoClobber:$NoClobber
                     $pivotTableDataName = $targetName + 'PivotTableData'
 
@@ -769,19 +776,22 @@
                             $chart = $wsPivot.Drawings.AddChart('PivotChart', $ChartType, $pivotTable)
                             $chart.SetPosition(0, 0, 4, 0)  #Changed position to top row, next to a chart which doesn't pivot on columns
                             $chart.SetSize(600, 400)
-                            $chart.DataLabel.ShowCategory = [boolean]$item.value.ShowCategory
-                            $chart.DataLabel.ShowPercent  = [boolean]$item.value.ShowPercent
-                            if ([boolean]$item.value.NoLegend)   {$chart.Legend.Remove()}
-                            if ($item.value.ChartTitle)          {$chart.Title.Text = $item.value.chartTitle}
+                            if ($chart.DataLabel) {
+                                $chart.DataLabel.ShowCategory = [boolean]$item.value.ShowCategory
+                                $chart.DataLabel.ShowPercent = [boolean]$item.value.ShowPercent
+                            }
+                            if ([boolean]$item.value.NoLegend) {$chart.Legend.Remove()}
+                            if ($item.value.ChartTitle) {$chart.Title.Text = $item.value.chartTitle}
                         }
                     }
                 }
             }
 
-            if ($IncludePivotTable -or $IncludePivotChart) { #changed so -includePivotChart Implies -includePivotTable.
+            if ($IncludePivotTable -or $IncludePivotChart) {
+                #changed so -includePivotChart Implies -includePivotTable.
                 $pivotTableName = $WorkSheetname + 'PivotTable'
                 #Make sure the Pivot table sheet doesn't already exist
-                try  {     $pkg.Workbook.Worksheets.Delete(    $pivotTableName) } catch {}
+                try {     $pkg.Workbook.Worksheets.Delete(    $pivotTableName) } catch {}
                 $wsPivot = $pkg | Add-WorkSheet -WorkSheetname $pivotTableName -NoClobber:$NoClobber
 
                 $wsPivot.View.TabSelected = $true
@@ -822,9 +832,11 @@
 
                 if ($IncludePivotChart) {
                     $chart = $wsPivot.Drawings.AddChart('PivotChart', $ChartType, $pivotTable)
-                    $chart.DataLabel.ShowCategory = $ShowCategory
-                    $chart.DataLabel.ShowPercent = $ShowPercent
-                    $chart.SetPosition(0,26,2,26)  # if Pivot table is rows+data only it will be 2 columns wide if has pivot columns we don't know how wide it will be
+                    if ($chart.DataLabel) {
+                        $chart.DataLabel.ShowCategory = $ShowCategory
+                        $chart.DataLabel.ShowPercent = $ShowPercent
+                    }
+                    $chart.SetPosition(0, 26, 2, 26)  # if Pivot table is rows+data only it will be 2 columns wide if has pivot columns we don't know how wide it will be
                     if ($NoLegend) {
                         $chart.Legend.Remove()
                     }
@@ -963,7 +975,7 @@
                 $pkg
             }
             else {
-                if($ReturnRange) {
+                if ($ReturnRange) {
                     $ws.Dimension.Address
                 }
 
@@ -1001,5 +1013,5 @@ function New-PivotTableDefinition {
     $parameters = @{} + $PSBoundParameters
     $parameters.Remove('PivotTableName')
 
-    @{$PivotTableName=$parameters}
+    @{$PivotTableName = $parameters}
 }
