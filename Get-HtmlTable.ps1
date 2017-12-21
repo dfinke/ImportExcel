@@ -1,15 +1,15 @@
 function Get-HtmlTable {
-	param(
-		[Parameter(Mandatory = $true)]
-		$url,
-		$tableIndex = 0,
-		$Header,
-		[int]$FirstDataRow = 0,
-		[Switch]$UseDefaultCredentials
-	)
+    param(
+        [Parameter(Mandatory=$true)]
+        $url,
+        $tableIndex=0,
+        $Header,
+        [int]$FirstDataRow=0,
+        [Switch]$UseDefaultCredentials
+    )
 	if ($url -match '^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/|www\.)') {
-		$r = Invoke-WebRequest $url -UseDefaultCredentials: $UseDefaultCredentials
-
+	    $r = Invoke-WebRequest $url -UseDefaultCredentials: $UseDefaultCredentials
+    
 		$table = $r.ParsedHtml.getElementsByTagName("table")[$tableIndex]
 	}
 	else {
@@ -19,34 +19,31 @@ function Get-HtmlTable {
 		
 		$table = $r.getElementsByTagName("table").Item($tableIndex)
 	}
-	
-	$propertyNames = $Header
+    $propertyNames=$Header
 
-	for ($idx = $FirstDataRow; $idx -lt @($table.rows).count; $idx++) {
+    for ($idx = $FirstDataRow; $idx -lt @($table.rows).count; $idx++) {
 
-		$row = $table.rows.item($idx)
-		$cells = @($row.cells)
+        $row = $table.rows.item($idx)
+        $cells = @($row.cells)        
 
-		if (!$propertyNames) {
-			if ($cells[0].tagName -eq 'TD') {
-				$propertyNames = @($cells | ForEach-Object {$_.innertext -replace ' ', ''})
-			}
-			else {
-				$propertyNames = @(1..($cells.Count + 2) | ForEach-Object { "P$_" })
-			}
-			continue
-		}
+        if(!$propertyNames) {
+            if($cells[0].tagName -eq 'TD') {
+                $propertyNames = @($cells | ForEach-Object {$_.innertext -replace ' ',''})
+            } else  {
+                $propertyNames =  @(1..($cells.Count + 2) | ForEach-Object { "P$_" })
+            }
+            continue
+        }        
 
-		$result = [ordered]@{}
+        $result = [ordered]@{}
 
-		for ($counter = 0; $counter -lt $cells.Count; $counter++) {
-			$propertyName = $propertyNames[$counter]
+        for($counter = 0; $counter -lt $cells.Count; $counter++) {
+            $propertyName = $propertyNames[$counter]
 
-			if (!$propertyName) { $propertyName = '[missing]'}
-			$result.$propertyName = $cells[$counter].InnerText
-		}
+            if(!$propertyName) { $propertyName= '[missing]'}
+            $result.$propertyName= $cells[$counter].InnerText
+        }
 
-		[PSCustomObject]$result
-	}
+        [PSCustomObject]$result
+    }
 }
-
