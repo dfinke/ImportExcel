@@ -10,7 +10,7 @@ Function Set-Format {
     Instead of piping the address in this version specifies a block of cells and applies similar formatting
 .EXAMPLE
     Set-Format -Indent 4 $sheet.Cells[C1:C10]
-    Sets selected cells indent to 4. Valid range is 0-15
+    Sets selected cells indent to 4. Valid range is 0-15.
 #>
     Param   (
         #One or more row(s), Column(s) and/or block(s) of cells to format
