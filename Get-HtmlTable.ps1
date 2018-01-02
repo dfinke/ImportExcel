@@ -13,11 +13,19 @@ function Get-HtmlTable {
 		$table = $r.ParsedHtml.getElementsByTagName("table")[$tableIndex]
 	}
 	else {
-		$r = New-Object -ComObject "HTMLFile"
-		$source = Get-Content -Path $url -Raw
-		$r.IHTMLDocument2_write($source)
-		
-		$table = $r.getElementsByTagName("table").Item($tableIndex)
+		try {
+			$r = New-Object -ComObject "HTMLFile"
+			$source = Get-Content -Path $url -Raw
+			$r.IHTMLDocument2_write($source)
+		}
+		catch {
+			$r = New-Object -ComObject "HTMLFile"
+			$source = [System.Text.Encoding]::Unicode.GetBytes($source)
+			$r.write($source)
+		}
+		finally {
+			$table = $r.getElementsByTagName("table").Item($tableIndex)
+		}
 	}
     $propertyNames=$Header
 
