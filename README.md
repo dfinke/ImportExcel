@@ -31,7 +31,17 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
-#### 12/2017
+#### 1/1/2018
+* Added switch `[Switch]$NoTotalsInPivot`. Allows hiding of  the row totals in the pivot table.
+Thanks you to [jameseholt](https://github.com/jameseholt) for the request.
+
+```powershell
+    get-process | where Company | select Company, Handles, WorkingSet |
+        export-excel C:\temp\testColumnGrand.xlsx `
+            -Show -ClearSheet  -KillExcel `
+            -IncludePivotTable -PivotRows Company -PivotData @{"Handles"="average"} -NoTotalsInPivot
+```
+
 * Fixed when using certain a `ChartType` for the Pivot Table Chart, would throw an error
 * Fixed - when you specify a file, and the directory does not exit, it now creates it
 
