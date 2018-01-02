@@ -398,7 +398,8 @@
         [Parameter(ParameterSetName = 'Now')]
         # [Parameter(ParameterSetName = 'TableNow')]
         [Switch]$Now,
-        [Switch]$ReturnRange
+        [Switch]$ReturnRange,
+        [Switch]$NoTotalsInPivot
     )
 
     Begin {
@@ -784,6 +785,10 @@
                             if ($item.value.ChartTitle) {$chart.Title.Text = $item.value.chartTitle}
                         }
                     }
+
+                    if($item.Value.NoTotalsInPivot) {
+                        $pivotTable.RowGrandTotals = $false
+                    }
                 }
             }
 
@@ -829,6 +834,10 @@
                         $pivotTable.DataOnRows = $false
                     }
                 }
+                
+                if($NoTotalsInPivot) {
+                    $pivotTable.RowGrandTotals = $false
+                }                
 
                 if ($IncludePivotChart) {
                     $chart = $wsPivot.Drawings.AddChart('PivotChart', $ChartType, $pivotTable)
@@ -1007,7 +1016,8 @@ function New-PivotTableDefinition {
         [Switch]$NoLegend,
         [Switch]$ShowCategory,
         [Switch]$ShowPercent,
-        [String]$ChartTitle
+        [String]$ChartTitle,
+        [Switch]$NoTotalsInPivot
     )
 
     $parameters = @{} + $PSBoundParameters
