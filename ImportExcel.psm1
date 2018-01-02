@@ -33,7 +33,7 @@
 . $PSScriptRoot\Update-FirstObjectProperties.ps1
 . $PSScriptRoot\ConvertExcelToImageFile.ps1
 
-New-Alias -Name Use-ExcelData -Value "ConvertFrom-ExcelData"
+New-Alias -Name Use-ExcelData -Value "ConvertFrom-ExcelData" -Force
 
 if ($PSVersionTable.PSVersion.Major -ge 5) {
     . $PSScriptRoot\Plot.ps1
