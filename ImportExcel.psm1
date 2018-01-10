@@ -238,7 +238,7 @@ Function Import-Excel {
     Param (
         [Alias('FullName')]
         [Parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Position=0, Mandatory)]
-        [ValidateScript({(Test-Path -Path $_ -PathType Leaf) -and ($_ -match '.xls$|.xlsx$')})]
+        [ValidateScript( {(Test-Path -Path $_ -PathType Leaf) -and ($_ -match '.xls$|.xlsx$|.xlsm$')})]
         [String]$Path,
         [Alias('Sheet')]
         [Parameter(Position=1)]
