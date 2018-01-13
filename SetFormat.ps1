@@ -72,22 +72,22 @@
         [switch]$Hidden
     )
     begin {
-        #Allow Set-Format to take Worksheet and range parameters (like Add Contitional formatting) -  convert them to an address 
-        if ($WorkSheet -and $Range) {$Address = $WorkSheet.Cells[$Range] } 
+        #Allow Set-Format to take Worksheet and range parameters (like Add Contitional formatting) -  convert them to an address
+        if ($WorkSheet -and $Range) {$Address = $WorkSheet.Cells[$Range] }
     }
 
     process {
         if   ($Address -is [Array])  {
-            [void]$PSBoundParameters.Remove("Address") 
+            [void]$PSBoundParameters.Remove("Address")
             $Address | Set-Format @PSBoundParameters
-        }    
+        }
         else {
             if ($ResetFont) {
                 $Address.Style.Font.Color.SetColor("Black")
                 $Address.Style.Font.Bold = $false
                 $Address.Style.Font.Italic = $false
                 $Address.Style.Font.UnderLine = $false
-                $Address.Style.Font.Strike = $falsee
+                $Address.Style.Font.Strike = $false
             }
             if ($Underline) {
                 $Address.Style.Font.UnderLine = $true
@@ -98,7 +98,7 @@
             if ($StrikeThru) {$Address.Style.Font.Strike = $true                }
             if ($FontShift) {$Address.Style.Font.VerticalAlign = $FontShift           }
             if ($FontColor) {$Address.Style.Font.Color.SetColor( $FontColor    )      }
-            if ($BorderRound) {$Address.Style.Border.BorderAround( $BorderAround )      }
+            if ($BorderAround) {$Address.Style.Border.BorderAround( $BorderAround )      }
             if ($NumberFormat) {$Address.Style.Numberformat.Format = $NumberFormat        }
             if ($TextRotation) {$Address.Style.TextRotation = $TextRotation        }
             if ($WrapText) {$Address.Style.WrapText = $true                }
