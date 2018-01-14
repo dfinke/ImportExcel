@@ -31,6 +31,12 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+####
+* Added -Force to New-Alias
+* Add example to set the background color of a column
+* Supports excluding Row Grand Totals for PivotTables
+* Allow xlsm files to be read
+* Fix `Set-Column.ps1`, `Set-Row.ps1`, `SetFormat.ps1`, `formatting.ps1` **$falsee** and **$BorderRound**
 #### 1/1/2018
 * Added switch `[Switch]$NoTotalsInPivot`. Allows hiding of  the row totals in the pivot table.
 Thanks you to [jameseholt](https://github.com/jameseholt) for the request.
