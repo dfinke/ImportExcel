@@ -8,7 +8,7 @@
         .PARAMETER Path
             Path to a new or existing .XLSX file
         .PARAMETER  ExcelPackage
-            An object representing an Excel Package - usually this is returned by specifying -Passthru alllowing multiple commands to work on the same Workbook without saving and reloading each time.
+            An object representing an Excel Package - usually this is returned by specifying -Passthru allowing multiple commands to work on the same Workbook without saving and reloading each time.
         .PARAMETER WorkSheetName
             The name of a sheet within the workbook - "Sheet1" by default
         .PARAMETER ClearSheet
@@ -834,10 +834,10 @@
                         $pivotTable.DataOnRows = $false
                     }
                 }
-                
+
                 if($NoTotalsInPivot) {
                     $pivotTable.RowGrandTotals = $false
-                }                
+                }
 
                 if ($IncludePivotChart) {
                     $chart = $wsPivot.Drawings.AddChart('PivotChart', $ChartType, $pivotTable)
