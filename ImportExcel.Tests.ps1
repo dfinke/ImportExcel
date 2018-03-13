@@ -2071,3 +2071,14 @@ Context 'special cases' {
         }
     }
 }
+
+Context 'General Tests' {
+    in $TestDrive {
+        Describe 'Get Help' {
+            it 'New-Plot' {
+                #Get-Help : Unable to find type [PSPlot].
+                {Help New-Plot} | Should -Not -Throw
+            }
+        }
+    }
+}
