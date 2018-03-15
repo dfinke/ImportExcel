@@ -31,6 +31,9 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 3/14/2018
+- Thank you to [James O'Neill](https://twitter.com/jamesoneill), fixed bugs with ChangeDatabase parameter which would prevent it working
+
 ####
 * Added -Force to New-Alias
 * Add example to set the background color of a column
