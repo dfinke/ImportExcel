@@ -37,7 +37,7 @@
         [switch]$MsSQLserver,
         #Switches to a specific database on a SQL server
         [Parameter(ParameterSetName="SQLConnection")]
-        [switch]$DataBase,
+        [String]$DataBase,
         #The SQL query to run 
         [Parameter(Mandatory=$true)]
         [string]$SQL, 
@@ -94,6 +94,7 @@
     if     ($MsSQLserver) {
             if ($connection -notmatch "=") {$Connection = "server=$Connection;trusted_connection=true;timeout=60"} 
             $Session = New-Object -TypeName System.Data.SqlClient.SqlConnection  -ArgumentList $Connection
+            if ($Session.State -ne 'Open') {$session.Open()} 
             if ($DataBase) {$Session.ChangeDatabase($DataBase) }
     }
     elseif ($Connection)  {
@@ -124,7 +125,7 @@
     $excelPackage.Workbook.Worksheets[$WorkSheetname].Cells[$r,$StartColumn].LoadFromDataTable($dataTable, $PrintHeaders )  | Out-Null
     
     #Call export-excel with any parameters which don't relate to the SQL query
-    "Connection", "Session", "MsSQLserver", "Destination" , "sql" ,"Path" | foreach-object {$null = $PSBoundParameters.Remove($_) }
+    "Connection", "Database" , "Session", "MsSQLserver", "Destination" , "sql" ,"Path" | foreach-object {$null = $PSBoundParameters.Remove($_) }
     Export-Excel -ExcelPackage $excelPackage   @PSBoundParameters 
 
     #If we were not passed a session close the session we created. 
