@@ -32,6 +32,21 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 # What's new
 
 #### 3/31/2018
+- Updated `Set-Format`
+    * Added parameters to set borders for cells, including top, bottm, left and right
+    * Added parameters to set `value` and `formula`
+
+```powershell
+$data = @"
+From,To,RDollars,RPercent,MDollars,MPercent,Revenue,Margin
+Atlanta,New York,3602000,.0809,955000,.09,245,65
+New York,Washington,4674000,.105,336000,.03,222,16
+Chicago,New York,4674000,.0804,1536000,.14,550,43
+New York,Philadelphia,12180000,.1427,-716000,-.07,321,-25
+New York,San Francisco,3221000,.0629,1088000,.04,436,21
+New York,Phoneix,2782000,.0723,467000,.10,674,33
+"@
+```
 
 - Added `-PivotFilter` parameter, allows you to set up a filter so you can drill down into a subset of the overall dataset.
 
