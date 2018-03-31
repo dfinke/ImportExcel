@@ -48,6 +48,9 @@ New York,Phoneix,2782000,.0723,467000,.10,674,33
 "@
 ```
 
+![](https://github.com/dfinke/ImportExcel/blob/master/images/CustomReport.png?raw=true)
+
+
 - Added `-PivotFilter` parameter, allows you to set up a filter so you can drill down into a subset of the overall dataset.
 
 ```powershell
