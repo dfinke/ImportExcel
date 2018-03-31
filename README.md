@@ -31,6 +31,10 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+#### 3/31/2018
+- Added `-PivotFilter` parameter, allows you to drill down into a subset of the overall dataset.
+
+
 #### 3/14/2018
 - Thank you to [James O'Neill](https://twitter.com/jamesoneill), fixed bugs with ChangeDatabase parameter which would prevent it working
 
