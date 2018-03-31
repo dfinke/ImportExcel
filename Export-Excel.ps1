@@ -342,6 +342,7 @@
         [String[]]$PivotRows,
         [String[]]$PivotColumns,
         $PivotData,
+        [String[]]$PivotFilter,
         [Switch]$PivotDataToColumn,
         [Hashtable]$PivotTableDefinition,
         [Switch]$IncludePivotChart,
@@ -711,6 +712,9 @@
                 $tbl = $ws.Tables.Add($targetRange, $TableName)
                 $tbl.TableStyle = $TableStyle
             }
+            
+            $PivotTableStartCell = "A1"
+            if($PivotFilter) {$PivotTableStartCell = "A3"}
 
             if ($PivotTableDefinition) {
                 foreach ($item in $PivotTableDefinition.GetEnumerator()) {
@@ -722,7 +726,7 @@
                     $pivotTableDataName = $targetName + 'PivotTableData'
 
                     if (!$item.Value.SourceWorkSheet) {
-                        $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $ws.Cells[$dataRange], $pivotTableDataName)
+                        $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells[$PivotTableStartCell], $ws.Cells[$dataRange], $pivotTableDataName)
                     }
                     else {
                         $workSheet = Find-WorkSheet $item.Value.SourceWorkSheet
@@ -731,7 +735,7 @@
                             $targetStartAddress = $workSheet.Dimension.Start.Address
                             $targetDataRange = "{0}:{1}" -f $targetStartAddress, $workSheet.Dimension.End.Address
 
-                            $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $workSheet.Cells[$targetDataRange], $pivotTableDataName)
+                            $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells[$PivotTableStartCell], $workSheet.Cells[$targetDataRange], $pivotTableDataName)
                         }
                     }
 
@@ -803,7 +807,7 @@
 
                 $pivotTableDataName = $WorkSheetname + 'PivotTableData'
 
-                $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells['A1'], $ws.Cells[$dataRange], $pivotTableDataName)
+                $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells[$PivotTableStartCell], $ws.Cells[$dataRange], $pivotTableDataName)
 
                 if ($PivotRows) {
                     foreach ($Row in $PivotRows) {
@@ -843,7 +847,7 @@
                     $chart = $wsPivot.Drawings.AddChart('PivotChart', $ChartType, $pivotTable)
                     if ($chart.DataLabel) {
                         $chart.DataLabel.ShowCategory = $ShowCategory
-                        $chart.DataLabel.ShowPercent = $ShowPercent
+                        $chart.DataLabel.ShowPercent  = $ShowPercent
                     }
                     $chart.SetPosition(0, 26, 2, 26)  # if Pivot table is rows+data only it will be 2 columns wide if has pivot columns we don't know how wide it will be
                     if ($NoLegend) {
@@ -852,6 +856,14 @@
 
                 }
             }
+
+            if($pivotTable -and $PivotFilter) {
+
+                foreach($pFilter in $PivotFilter) {
+                    $null = $pivotTable.PageFields.Add($pivotTable.Fields[$pFilter])
+                }
+            }
+
 
             if ($Password) {
                 $ws.Protection.SetPassword($Password)
