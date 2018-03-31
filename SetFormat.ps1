@@ -25,8 +25,17 @@
         $NumberFormat,
         #Style of border to draw around the range
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderAround,
+        [System.Drawing.Color]$BorderColor=[System.Drawing.Color]::Black,
+        [OfficeOpenXml.Style.ExcelBorderStyle]$BorderBottom,
+        [OfficeOpenXml.Style.ExcelBorderStyle]$BorderTop,
+        [OfficeOpenXml.Style.ExcelBorderStyle]$BorderLeft,
+        [OfficeOpenXml.Style.ExcelBorderStyle]$BorderRight,
         #Colour for the text - if none specified it will be left as it it is
         [System.Drawing.Color]$FontColor,
+        #Value for the cell
+        $Value,
+        #Formula for the cell
+        $Formula,
         #Clear Bold, Italic, StrikeThrough and Underline and set colour to black
         [switch]$ResetFont,
         #Make text bold
@@ -98,7 +107,31 @@
             if ($StrikeThru) {$Address.Style.Font.Strike = $true                }
             if ($FontShift) {$Address.Style.Font.VerticalAlign = $FontShift           }
             if ($FontColor) {$Address.Style.Font.Color.SetColor( $FontColor    )      }
-            if ($BorderAround) {$Address.Style.Border.BorderAround( $BorderAround )      }
+            
+            if ($BorderAround) {
+                $Address.Style.Border.BorderAround($BorderAround, $BorderColor)
+            }            
+
+            if ($BorderBottom) {             
+                $Address.Style.Border.Bottom.Style=$BorderBottom
+                $Address.Style.Border.Bottom.Color.SetColor($BorderColor)
+            }
+
+            if ($BorderTop) {             
+                $Address.Style.Border.Top.Style=$BorderTop
+                $Address.Style.Border.Top.Color.SetColor($BorderColor)
+            }
+
+            if ($BorderLeft) {             
+                $Address.Style.Border.Left.Style=$BorderLeft
+                $Address.Style.Border.Left.Color.SetColor($BorderColor)
+            }
+
+            if ($BorderRight) {             
+                $Address.Style.Border.Right.Style=$BorderRight
+                $Address.Style.Border.Right.Color.SetColor($BorderColor)
+            }
+            
             if ($NumberFormat) {$Address.Style.Numberformat.Format = $NumberFormat        }
             if ($TextRotation) {$Address.Style.TextRotation = $TextRotation        }
             if ($WrapText) {$Address.Style.WrapText = $true                }
@@ -123,15 +156,20 @@
             }
             if ($Autosize) {
                 if ($Address -is [OfficeOpenXml.ExcelColumn]) {$Address.AutoFit() }
-                elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {$Address.AutoFitColumns() }
+                elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {
+                    $Address.AutoFitColumns() 
+                }
                 else {Write-Warning -Message ("Can autofit a column or a range but not a {0} object" -f ($Address.GetType().name)) }
 
             }
             elseif ($Width) {
                 if ($Address -is [OfficeOpenXml.ExcelColumn]) {$Address.Width = $Width}
                 elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {
-                    ($Address.Start.Column)..($Address.Start.Column + $Address.Columns) |
-                        ForEach-Object {$ws.Column($_).Width = $Width}
+                    ($Address.Start.Column)..($Address.Start.Column + $Address.Columns - 1) |
+                        ForEach-Object {
+                            #$ws.Column($_).Width = $Width
+                            $Address.Worksheet.Column($_).Width = $Width
+                        }
                 }
                 else {Write-Warning -Message ("Can set the width of a column or a range but not a {0} object" -f ($Address.GetType().name)) }
             }
@@ -139,6 +177,14 @@
                 if ($Address -is [OfficeOpenXml.ExcelRow] -or
                     $Address -is [OfficeOpenXml.ExcelColumn]  ) {$Address.Hidden = $True}
                 else {Write-Warning -Message ("Can hide a row or a column but not a {0} object" -f ($Address.GetType().name)) }
+            }
+
+            if ($Value) {
+                $Address.Value = $Value                
+            }
+
+            if ($Formula) {
+                $Address.Formula = $Formula
             }
         }
     }
