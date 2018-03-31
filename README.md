@@ -32,7 +32,22 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 # What's new
 
 #### 3/31/2018
-- Added `-PivotFilter` parameter, allows you to drill down into a subset of the overall dataset.
+
+- Added `-PivotFilter` parameter, allows you to set up a filter so you can drill down into a subset of the overall dataset.
+
+```powershell
+$data =@"
+Region,Area,Product,Units,Cost
+North,A1,Apple,100,.5
+South,A2,Pear,120,1.5
+East,A3,Grape,140,2.5
+West,A4,Banana,160,3.5
+North,A1,Pear,120,1.5
+North,A1,Grape,140,2.5
+"@
+```
+
+![](https://github.com/dfinke/ImportExcel/blob/master/images/PivotTableFilter.png?raw=true)
 
 
 #### 3/14/2018
