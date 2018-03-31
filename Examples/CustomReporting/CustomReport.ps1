@@ -45,7 +45,6 @@ $BorderBottom = "Thick"
 $BorderColor = "LightBlue"
 
 Set-Format -Address $sheet1.Cells["A2"]    -BorderBottom $BorderBottom -BorderColor $BorderColor
-Set-Format -Address $sheet1.Cells["A2"]    -BorderTop Thick -BorderColor green
 
 Set-Format -Address $sheet1.Cells["C2"]    -BorderBottom $BorderBottom -BorderColor $BorderColor
 Set-Format -Address $sheet1.Cells["E2:G2"] -BorderBottom $BorderBottom -BorderColor $BorderColor
