@@ -19,5 +19,4 @@ $data |
         -AutoSize -AutoFilter `
         -IncludePivotTable `
         -PivotRows Product `
-        -PivotData @{"Units"="sum"} `
-        -PivotFilter Region, Area `
+        -PivotData @{"Units"="sum"} -PivotFilter Region, Area 
