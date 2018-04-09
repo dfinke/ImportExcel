@@ -400,7 +400,8 @@
         # [Parameter(ParameterSetName = 'TableNow')]
         [Switch]$Now,
         [Switch]$ReturnRange,
-        [Switch]$NoTotalsInPivot
+        [Switch]$NoTotalsInPivot,
+        [Switch]$ReZip
     )
 
     Begin {
@@ -1000,7 +1001,26 @@
                     $ws.Dimension.Address
                 }
 
+
+
                 $pkg.Save()
+
+                if ($ReZip) {
+                    write-verbose "Re-Zipping $($pkg.file) using .NET ZIP library"
+                    $zipAssembly = "System.IO.Compression.Filesystem"
+                    try {
+                        Add-Type -assembly $zipAssembly -ErrorAction stop
+                    } catch {
+                        write-error "The -ReZip parameter requires .NET Framework 4.5 or later to be installed. Recommend to install Powershell v4+"
+                        continue
+                    }
+                    
+                    $TempZipPath = Join-Path -path ([System.IO.Path]::GetTempPath()) -ChildPath ([System.IO.Path]::GetRandomFileName())
+                    [io.compression.zipfile]::ExtractToDirectory($pkg.File,$TempZipPath) | Out-Null
+                    Remove-Item $pkg.File -Force
+                    [io.compression.zipfile]::CreateFromDirectory($TempZipPath,$pkg.File) | Out-Null
+                }
+
                 $pkg.Dispose()
 
                 if ($Show) {
