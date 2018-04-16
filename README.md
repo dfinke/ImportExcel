@@ -5,6 +5,9 @@ This PowerShell Module allows you to read and write Excel files without installi
 
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/testimonial.png)
 
+# How to Vidoes
+* [PowerShell Excel Module - ImportExcel](https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq)
+
 Installation
 -
 #### [PowerShell V5](https://www.microsoft.com/en-us/download/details.aspx?id=50395) and Later
@@ -27,6 +30,87 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 ```
 
 # What's new
+
+#### 4/10/2018
+-New parameter `-ReZip`. It ReZips the xlsx so it can be imported to PowerBI
+
+Thanks to [Justin Grote](https://github.com/JustinGrote) for finding and fixing the error that Excel files created do not import to PowerBI online. Plus, thank you to [CrashM](https://github.com/CrashM) for confirming the fix.
+
+Super helpful!
+
+#### 3/31/2018
+- Updated `Set-Format`
+    * Added parameters to set borders for cells, including top, bottm, left and right
+    * Added parameters to set `value` and `formula`
+
+```powershell
+$data = @"
+From,To,RDollars,RPercent,MDollars,MPercent,Revenue,Margin
+Atlanta,New York,3602000,.0809,955000,.09,245,65
+New York,Washington,4674000,.105,336000,.03,222,16
+Chicago,New York,4674000,.0804,1536000,.14,550,43
+New York,Philadelphia,12180000,.1427,-716000,-.07,321,-25
+New York,San Francisco,3221000,.0629,1088000,.04,436,21
+New York,Phoneix,2782000,.0723,467000,.10,674,33
+"@
+```
+
+![](https://github.com/dfinke/ImportExcel/blob/master/images/CustomReport.png?raw=true)
+
+
+- Added `-PivotFilter` parameter, allows you to set up a filter so you can drill down into a subset of the overall dataset.
+
+```powershell
+$data =@"
+Region,Area,Product,Units,Cost
+North,A1,Apple,100,.5
+South,A2,Pear,120,1.5
+East,A3,Grape,140,2.5
+West,A4,Banana,160,3.5
+North,A1,Pear,120,1.5
+North,A1,Grape,140,2.5
+"@
+```
+
+![](https://github.com/dfinke/ImportExcel/blob/master/images/PivotTableFilter.png?raw=true)
+
+
+#### 3/14/2018
+- Thank you to [James O'Neill](https://twitter.com/jamesoneill), fixed bugs with ChangeDatabase parameter which would prevent it working
+
+####
+* Added -Force to New-Alias
+* Add example to set the background color of a column
+* Supports excluding Row Grand Totals for PivotTables
+* Allow xlsm files to be read
+* Fix `Set-Column.ps1`, `Set-Row.ps1`, `SetFormat.ps1`, `formatting.ps1` **$falsee** and **$BorderRound**
+#### 1/1/2018
+* Added switch `[Switch]$NoTotalsInPivot`. Allows hiding of  the row totals in the pivot table.
+Thanks you to [jameseholt](https://github.com/jameseholt) for the request.
+
+```powershell
+    get-process | where Company | select Company, Handles, WorkingSet |
+        export-excel C:\temp\testColumnGrand.xlsx `
+            -Show -ClearSheet  -KillExcel `
+            -IncludePivotTable -PivotRows Company -PivotData @{"Handles"="average"} -NoTotalsInPivot
+```
+
+* Fixed when using certain a `ChartType` for the Pivot Table Chart, would throw an error
+* Fixed - when you specify a file, and the directory does not exit, it now creates it
+
+#### 11/23/2017
+More great additions and thanks to [James O'Neill](https://twitter.com/jamesoneill)
+
+* Added `Convert-XlRangeToImage` Gets the specified part of an Excel file and exports it as an image
+* Fixed a typo in the message at line 373.
+* Now catch an attempt to both clear the sheet and append to it.
+* Fixed some issues when appending to sheets where the header isn't in row 1 or the data doesn't start in column 1.
+* Added support for more settings when creating a pivot chart.
+* Corrected a typo PivotTableName was PivtoTableName in definition of New-PivotTableDefinition
+* Add-ConditionalFormat and Set-Format added to the parameters so each has the choice of working more like the other.
+* Added Set-Row and Set-Column - fill a formula down or across.
+* Added Send-SQLDataToExcel. Insert a rowset and then call Export-Excel for ranges, charts, pivots etc
+
 #### 10/30/2017
 Huge thanks to [James O'Neill](https://twitter.com/jamesoneill). PowerShell aficionado. He always brings a flare when working with PowerShell. This is no exception.
 
