@@ -32,6 +32,10 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 # What's new
 
 #### 4/10/2018
+Thanks to the community yet again, [ili101](https://github.com/ili101) for fixes and features
+- Removed `[PSPlot]` as OutputType. Fixes it throwing an error
+
+#### 4/10/2018
 -New parameter `-ReZip`. It ReZips the xlsx so it can be imported to PowerBI
 
 Thanks to [Justin Grote](https://github.com/JustinGrote) for finding and fixing the error that Excel files created do not import to PowerBI online. Plus, thank you to [CrashM](https://github.com/CrashM) for confirming the fix.
