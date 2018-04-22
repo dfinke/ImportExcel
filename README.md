@@ -31,9 +31,13 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
-#### 4/10/2018
-Thanks to the community yet again, [ili101](https://github.com/ili101) for fixes and features
-- Removed `[PSPlot]` as OutputType. Fixes it throwing an error
+#### 4/22/2018
+Thanks to the community yet again
+- [ili101](https://github.com/ili101) for fixes and features
+    - Removed `[PSPlot]` as OutputType. Fixes it throwing an error
+- [Nasir Zubair](https://github.com/nzubair) added `ConvertEmptyStringsToNull` to the function `ConvertFrom-ExcelToSQLInsert`
+    - If specified, cells without any data are replaced with NULL, instead of an empty string. This is to address behviors in certain DBMS where an empty string is insert as 0 for INT column, instead of a NULL value.
+
 
 #### 4/10/2018
 -New parameter `-ReZip`. It ReZips the xlsx so it can be imported to PowerBI
