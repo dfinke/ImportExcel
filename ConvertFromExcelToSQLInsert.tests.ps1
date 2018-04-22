@@ -1,13 +1,11 @@
-﻿cls
-
-ipmo .\ImportExcel.psd1 -Force
+﻿Import-Module .\ImportExcel.psd1 -Force
 
 $xlFile = ".\testSQL.xlsx"
 
 Describe "ConvertFrom-ExcelToSQLInsert" {
-    
+
     BeforeEach {
-        
+
         $([PSCustomObject]@{
             Name="John"
             Age=$null
@@ -15,22 +13,22 @@ Describe "ConvertFrom-ExcelToSQLInsert" {
     }
 
     AfterAll {
-        rm $xlFile -Recurse -Force -ErrorAction Ignore
+        Remove-Item $xlFile -Recurse -Force -ErrorAction Ignore
     }
 
-    It "Should be empty double single quotes" {            
+    It "Should be empty double single quotes" {
         $expected="INSERT INTO Sheet1 ('Name', 'Age') Values('John', '');"
- 
-        $actual = ConvertFrom-ExcelToSQLInsert -Path $xlFile Sheet1 
-        
+
+        $actual = ConvertFrom-ExcelToSQLInsert -Path $xlFile Sheet1
+
         $actual | should be $expected
     }
 
-     It "Should have NULL" {    
+     It "Should have NULL" {
         $expected="INSERT INTO Sheet1 ('Name', 'Age') Values('John', NULL);"
- 
+
         $actual = ConvertFrom-ExcelToSQLInsert -Path $xlFile Sheet1 -ConvertEmptyStringsToNull
-        
+
         $actual | should be $expected
     }
 }
