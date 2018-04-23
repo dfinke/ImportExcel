@@ -31,14 +31,14 @@
 . $PSScriptRoot\SetFormat.ps1
 . $PSScriptRoot\TrackingUtils.ps1
 . $PSScriptRoot\Update-FirstObjectProperties.ps1
+. $PSScriptRoot\ConvertExcelToImageFile.ps1
 
-New-Alias -Name Use-ExcelData -Value "ConvertFrom-ExcelData"
+New-Alias -Name Use-ExcelData -Value "ConvertFrom-ExcelData" -Force
 
 if ($PSVersionTable.PSVersion.Major -ge 5) {
     . $PSScriptRoot\Plot.ps1
 
     Function New-Plot {
-        [OutputType([PSPlot])]
         Param()
 
         [PSPlot]::new()
@@ -237,7 +237,7 @@ Function Import-Excel {
     Param (
         [Alias('FullName')]
         [Parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Position=0, Mandatory)]
-        [ValidateScript({(Test-Path -Path $_ -PathType Leaf) -and ($_ -match '.xls$|.xlsx$')})]
+        [ValidateScript( {(Test-Path -Path $_ -PathType Leaf) -and ($_ -match '.xls$|.xlsx$|.xlsm$')})]
         [String]$Path,
         [Alias('Sheet')]
         [Parameter(Position=1)]

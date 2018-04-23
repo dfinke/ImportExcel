@@ -27,6 +27,7 @@ Begin {
             'ColorCompletion.ps1',
             'ConvertFromExcelData.ps1',
             'ConvertFromExcelToSQLInsert.ps1',
+            'ConvertExcelToImageFile.ps1',
             'ConvertToExcelXlsx.ps1',
             'Copy-ExcelWorkSheet.ps1',
             'Export-Charts.ps1',
@@ -49,7 +50,10 @@ Begin {
             'Open-ExcelPackage.ps1',
             'Pivot.ps1',
             'Plot.ps1',
+            'Send-SQLDataToExcel.ps1',
             'Set-CellStyle.ps1',
+            'Set-Column.ps1',
+            'Set-Row.ps1',
             'SetFormat.ps1',
             'TrackingUtils.ps1',
             'Update-FirstObjectProperties.ps1'
