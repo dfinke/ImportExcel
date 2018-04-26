@@ -11,7 +11,7 @@
    This will open the file at $xlPath, select sheet1 apply formatting to two blocks of the sheet and close the package 
 #>
     [OutputType([OfficeOpenXml.ExcelPackage])]
-    Param ([Parameter(Mandatory=$true)]$path,
+    Param ([Parameter(Mandatory=$true)]$Path,
            [switch]$KillExcel)
 
         if($KillExcel)         {

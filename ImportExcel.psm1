@@ -3,6 +3,8 @@
 . $PSScriptRoot\AddConditionalFormatting.ps1
 . $PSScriptRoot\Charting.ps1
 . $PSScriptRoot\ColorCompletion.ps1
+. $PSScriptRoot\ConvertExcelToImageFile.ps1
+. $PSScriptRoot\Compare-WorkSheet.ps1
 . $PSScriptRoot\ConvertFromExcelData.ps1
 . $PSScriptRoot\ConvertFromExcelToSQLInsert.ps1
 . $PSScriptRoot\ConvertToExcelXlsx.ps1
@@ -31,7 +33,7 @@
 . $PSScriptRoot\SetFormat.ps1
 . $PSScriptRoot\TrackingUtils.ps1
 . $PSScriptRoot\Update-FirstObjectProperties.ps1
-. $PSScriptRoot\ConvertExcelToImageFile.ps1
+
 
 New-Alias -Name Use-ExcelData -Value "ConvertFrom-ExcelData" -Force
 

@@ -108,7 +108,7 @@
         else                           { $cellData = $Value}
         if  ($cellData -match "^=")    { $Worksheet.Cells[$Row, $Column].Formula                           = $cellData           }
         else                           { $Worksheet.Cells[$Row, $Column].Value                             = $cellData           }
-        if  ($cellData -is [datetime]) { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format         = 'm/d/yy h:mm'       }
+        if  ($cellData -is [datetime]) { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format         = 'm/d/yy h:mm'       } # This is not a custom format, but a preset recognized as date and localized.
     }}
     #region Apply formatting
     if      ($Underline)               {
