@@ -444,7 +444,7 @@
                 {$_ -is [DateTime]} {
                     #region Save a date with an international valid format
                     $TargetCell.Value = $_
-                    $TargetCell.Style.Numberformat.Format = 'm/d/yy h:mm'
+                    $TargetCell.Style.Numberformat.Format = 'm/d/yy h:mm' # This is not a custom format, but a preset recognized as date and localized.
                     Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as date"
                     break
                     #endregion
