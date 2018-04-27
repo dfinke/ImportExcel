@@ -35,7 +35,7 @@
         So this version starts at row 2 to skip the tiltle and labels the first column "label" and the Second "Value"; the label acts as the key
         and the result is display on using grid view. Note that grid view works best when the number of columns is small. 
 #>
-[cmdletbinding()]
+[cmdletbinding(DefaultParameterSetName)]
     Param(
         #First file to compare 
         [parameter(Mandatory=$true)]
