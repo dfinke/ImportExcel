@@ -42,7 +42,7 @@ Set-Format -Address $sheet1.Cells["E:E"] -Width 12
 Set-Format -Address $sheet1.Cells["I:I"] -Width 12
 
 $BorderBottom = "Thick"
-$BorderColor = "LightBlue"
+$BorderColor = "Black"
 
 Set-Format -Address $sheet1.Cells["A2"]    -BorderBottom $BorderBottom -BorderColor $BorderColor
 
