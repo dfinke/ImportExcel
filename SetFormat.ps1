@@ -83,7 +83,7 @@
     begin {
         #Allow Set-Format to take Worksheet and range parameters (like Add Contitional formatting) -  convert them to an address
         if ($WorkSheet -and $Range) {$Address = $WorkSheet.Cells[$Range] }
-    }
+    } 
 
     process {
         if   ($Address -is [Array])  {
@@ -150,7 +150,7 @@
                 if ($Address -is [OfficeOpenXml.ExcelRow]   ) {$Address.Height = $Height }
                 elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {
                     ($Address.Start.Row)..($Address.Start.Row + $Address.Rows) |
-                        ForEach-Object {$ws.Row($_).Height = $Height }
+                        ForEach-Object {$Address.WorkSheet.Row($_).Height = $Height }
                 }
                 else {Write-Warning -Message ("Can set the height of a row or a range but not a {0} object" -f ($Address.GetType().name)) }
             }
