@@ -1,7 +1,9 @@
 PowerShell Import-Excel
 -
 
-This PowerShell Module allows you to read and write Excel files without installing Microsoft Excel on your system. No need to bother with the cumbersome Excel COM-objects thanks to the .NET EPPlus DLL (http://epplus.codeplex.com/) which is included in the module. Creating Tables, Pivot Tables, Charts and much more has just become a lot easier.
+Install from the [PowerShell Gallery](https://www.powershellgallery.com/packages/ImportExcel/).
+
+This PowerShell Module allows you to read and write Excel files without installing Microsoft Excel on your system. No need to bother with the cumbersome Excel COM-object. Creating Tables, Pivot Tables, Charts and much more has just become a lot easier.
 
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/testimonial.png)
 
