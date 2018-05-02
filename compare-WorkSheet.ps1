@@ -132,7 +132,7 @@
                 Sort-Object -Property "_Row","File"
     
     #if BackgroundColor was specified, set it on extra or extra or changed rows  
-    if     ($BackgroundColor ) {
+    if     ($diff -and $BackgroundColor) {
         #Differences may only exist in one file. So gather the changes for each file; open the file, update each impacted row in the shee, save the file  
         $updates = $diff.where({$_.SideIndicator -ne "=="}) | Group-object -Property "_File"
         foreach   ($file in $updates) {
@@ -160,7 +160,7 @@
         }
     }
     #if font colour was specified, set it on changed properties where the same key appears in both sheets. 
-    if     ($FontColor -and ($propList -contains $Key)  ) {
+    if     ($diff -and $FontColor -and ($propList -contains $Key)  ) {
         $updates = $diff.where({$_.SideIndicator -ne "=="})  | Group-object -Property $Key | where {$_.count -eq 2} 
         if ($updates) {
             $XL1 = Open-ExcelPackage -path $Referencefile
@@ -178,7 +178,7 @@
             if (-not $oneFile) {$xl2.Save() ; $xl2.Stream.Close() ; $xl2.Dispose()}
         }
     }
-    elseif ($FontColor) {Write-Warning -Message "To match rows to set changed cells, you must specify -Key and it must match one of the included properties" }   
+    elseif ($diff -and $FontColor) {Write-Warning -Message "To match rows to set changed cells, you must specify -Key and it must match one of the included properties" }   
 
     if     ($show)           { 
         Start-Process -FilePath $Referencefile 
