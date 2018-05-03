@@ -112,7 +112,7 @@
     
     #Get Column headings and create a hash table of Name to column letter. 
     $headings = $Sheet1[-1].psobject.Properties.name # This preserves the sequence - using get-member would sort them alphabetically!
-    $headings | ForEach-Object -Begin {$columns  = @{}  ; } -Process  {$Columns[$_] = [char]($i ++) }
+    $headings | ForEach-Object -Begin {$columns  = @{}  ; $i=65 } -Process  {$Columns[$_] = [char]($i ++) }
     
     #Make a list of property headings using the Property (default "*") and ExcludeProperty parameters 
     if ($Key -eq "Name" -and $NoHeader) {$key  = "p1"} 
