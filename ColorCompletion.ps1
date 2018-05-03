@@ -7,13 +7,13 @@
 
 if (Get-Command -Name register-argumentCompleter -ErrorAction SilentlyContinue) {
     Register-ArgumentCompleter -CommandName Export-Excel               -ParameterName TitleBackgroundColor   -ScriptBlock $Function:ColorCompletion
-    Register-ArgumentCompleter -CommandName Add-ConditionalFormatting  -ParameterName AllDataBackgroundColor -ScriptBlock $Function:ColorCompletion    
     Register-ArgumentCompleter -CommandName Add-ConditionalFormatting  -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion    
     Register-ArgumentCompleter -CommandName Add-ConditionalFormatting  -ParameterName DataBarColor           -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Add-ConditionalFormatting  -ParameterName ForeGroundColor        -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Compare-Worksheet          -ParameterName AllDataBackgroundColor -ScriptBlock $Function:ColorCompletion    
     Register-ArgumentCompleter -CommandName Compare-Worksheet          -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Compare-Worksheet          -ParameterName FontColor              -ScriptBlock $Function:ColorCompletion
-    Register-ArgumentCompleter -CommandName Compare-Worksheet          -ParameterName FontColor              -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Compare-Worksheet          -ParameterName TabColor               -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName FontColor              -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName PatternColor           -ScriptBlock $Function:ColorCompletion

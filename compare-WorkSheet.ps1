@@ -12,25 +12,30 @@
         We also add the name of the file in which the difference occurs.  
         If -BackgroundColor is specified the difference rows will be changed to that background. 
     .Example 
-        Compare-WorkSheet -Referencefile 'Server1.xlsx' -Differencefile 'Server2.xlsx'  -WorkSheetName Products -key IdentifyingNumber -ExcludeProperty Install* | format-table
+        Compare-WorkSheet -Referencefile 'Server56.xlsx' -Differencefile 'Server57.xlsx'  -WorkSheetName Products -key IdentifyingNumber -ExcludeProperty Install* | format-table
         The two workbooks in this example contain the result of redirecting a subset of properties from Get-WmiObject -Class win32_product to Export-Excel
-        The command compares the "products" pages in the two workbooks, but we don't want a match if the software was installed on a 
-        different date or from a different place,  so Excluding Install* removes InstallDate and InstallSource. The results will be presented as a table.  
+        The command compares the "products" pages in the two workbooks, but we don't want to register a differnce if if the software was installed on a 
+        different date or from a different place,  so Excluding Install* removes InstallDate and InstallSource. 
+        This data doesn't have a "name" column" so we specify the "IdentifyingNumber" column as the key.  
+        The results will be presented as a table.  
     .Example 
-        Compare-WorkSheet  'Server1.xlsx' 'Server2.xlsx'  -WorkSheetName Services -key Name -BackgroundColor lightGreen
+        compare-WorkSheet "Server54.xlsx" "Server55.xlsx" -WorkSheetName services -GridView  
         This time two workbooks contain the result of redirecting Get-WmiObject -Class win32_service to Export-Excel 
-        This command compares the "services" pages and highlights the rows in the spreadsheet files. 
-        Here the -Differencefile and -Referencefile parameter switches are assumed
+        Here the -Differencefile and -Referencefile parameter switches are assumed  , and the default setting for -key ("Name") works for services
+        This will display the differences between the "services" sheets using a grid view 
     .Example 
-        Compare-WorkSheet 'Server1.xlsx' 'Server2.xlsx'  -WorkSheetName Services -BackgroundColor lightGreen -fontColor Red -Show
-        This builds on the previous example: this time Where two rows in the services have the same name, this will also highlight  the changed cells in red. 
-        This example will open the Excel files and  omits the -key parameter because "Name" will be assumed to the label for the key column 
+        Compare-WorkSheet  'Server54.xlsx' 'Server55.xlsx'  -WorkSheetName Services -BackgroundColor lightGreen
+        This version of the command outputs the differences between the "services" pages and also highlights any different rows in the spreadsheet files. 
+    .Example 
+        Compare-WorkSheet 'Server54.xlsx' 'Server55.xlsx'  -WorkSheetName Services -BackgroundColor lightGreen -FontColor Red -Show
+        This builds on the previous example: this time Where two changed rows have the value in the "name" column (the default value for -key),
+        this version adds highlighting of the changed cells in red; and then opens the Excel file.
     .Example
         Compare-WorkSheet 'Pester-tests.xlsx' 'Pester-tests.xlsx' -WorkSheetName 'Server1','Server2' -Property "full Description","Executed","Result" -Key "full Description"
         This time the reference file and the difference file are the same file and two different sheets are used. Because the tests include the
-        machine name and time the test was run only a limited set of columns.   
+        machine name and time the test was run the command specifies a limited set of columns should be used.    
     .Example
-        Compare-WorkSheet  'Server1.xlsx' 'Server2.xlsx' -WorkSheetName general -Startrow 2 -Headername Label,value -Key Label -GridView -ExcludeDifferent 
+        Compare-WorkSheet  'Server54.xlsx' 'Server55.xlsx' -WorkSheetName general -Startrow 2 -Headername Label,value -Key Label -GridView -ExcludeDifferent 
         The "General" page has a title and two unlabelled columns with a row forCPU, Memory, Domain, Disk and so on 
         So the command is instructed to starts at row 2 to skip the title and to name the columns: the first is "label" and the Second "Value";
          the label acts as the key. This time we interested the rows which are the same in both sheets, 
@@ -119,10 +124,12 @@
     if ($propList.Count -eq 0)  {Write-Warning -Message "No Columns are selected with -Property = '$Property' and -excludeProperty = '$ExcludeProperty'." ; return}
 
     #Add RowNumber, Sheetname and file name to every row 
-    $i = $startRow + 1 ; foreach ($row in $Sheet1) {Add-Member -InputObject $row -MemberType NoteProperty -Name "_Row"   -Value ($i ++) 
+    $FirstDataRow = $startRow + 1
+    if ($Headername -or $NoHeader) {$FirstDataRow -- } 
+    $i = $FirstDataRow ; foreach ($row in $Sheet1) {Add-Member -InputObject $row -MemberType NoteProperty -Name "_Row"   -Value ($i ++) 
                                                     Add-Member -InputObject $row -MemberType NoteProperty -Name "_Sheet" -Value  $worksheet1
                                                     Add-Member -InputObject $row -MemberType NoteProperty -Name "_File"  -Value  $Referencefile} 
-    $i = $startRow + 1 ; foreach ($row in $Sheet2) {Add-Member -InputObject $row -MemberType NoteProperty -Name "_Row"   -Value ($i ++) 
+    $i = $FirstDataRow ; foreach ($row in $Sheet2) {Add-Member -InputObject $row -MemberType NoteProperty -Name "_Row"   -Value ($i ++) 
                                                     Add-Member -InputObject $row -MemberType NoteProperty -Name "_Sheet" -Value  $worksheet2
                                                     Add-Member -InputObject $row -MemberType NoteProperty -Name "_File"  -Value  $Differencefile} 
     
@@ -132,7 +139,7 @@
                 Sort-Object -Property "_Row","File"
     
     #if BackgroundColor was specified, set it on extra or extra or changed rows  
-    if     ($diff -and $BackgroundColor) {
+    if      ($diff -and $BackgroundColor) {
         #Differences may only exist in one file. So gather the changes for each file; open the file, update each impacted row in the shee, save the file  
         $updates = $diff.where({$_.SideIndicator -ne "=="}) | Group-object -Property "_File"
         foreach   ($file in $updates) {
@@ -160,7 +167,7 @@
         }
     }
     #if font colour was specified, set it on changed properties where the same key appears in both sheets. 
-    if     ($diff -and $FontColor -and ($propList -contains $Key)  ) {
+    if      ($diff -and $FontColor -and ($propList -contains $Key)  ) {
         $updates = $diff.where({$_.SideIndicator -ne "=="})  | Group-object -Property $Key | where {$_.count -eq 2} 
         if ($updates) {
             $XL1 = Open-ExcelPackage -path $Referencefile
@@ -178,32 +185,68 @@
             if (-not $oneFile) {$xl2.Save() ; $xl2.Stream.Close() ; $xl2.Dispose()}
         }
     }
-    elseif ($diff -and $FontColor) {Write-Warning -Message "To match rows to set changed cells, you must specify -Key and it must match one of the included properties" }   
+    elseif  ($diff -and $FontColor) {Write-Warning -Message "To match rows to set changed cells, you must specify -Key and it must match one of the included properties." }   
 
-    if     ($show)           { 
+    #if nothing was found write a message which wont be redirected
+    if (-not $diff) {Write-Host "Comparison of $Referencefile::$worksheet1 and $Differencefile::$WorkSheet2 returned no results."  }
+
+    if      ($show)               { 
         Start-Process -FilePath $Referencefile 
-        if (-not $oneFile)  { Start-Process -FilePath $Differencefile }
+        if  (-not $oneFile)  { Start-Process -FilePath $Differencefile }
+        if  ($GridView)      { Write-Warning -Message "-GridView is ignored when -Show is specified" } 
     }    
-    elseif ($GridView)       { 
-            $Sheet2 | ForEach-Object -Begin {$Rowhash = @{} } -Process {$Rowhash[$_.$key] = $_._row } 
-            if ($StartRow) { $rowCount1 = $StartRow} else {  $rowCount1 = 1}
-            $rowCount2 = $null 
-            $diff | Group-Object -Property $key | Sort-Object -Property @{e={($_.group | Measure-Object -Property _row -Maximum).maximum} } | ForEach-Object  {
-                $hash = [ordered]@{"<Row" = $rowCount1} ;
-                $keyVal =  $_.Name;  
-                foreach ($row IN $_.Group) {
-                    if  ($row.sideindicator -ne "=>")         {$rowCount1    = $hash["<Row"] =  $row._Row  } 
-                    if  ($hash.Side) {$hash.side = "<>"} else {$hash["Side"] = $row.sideindicator}
-                    if  ($Rowhash[$keyval])                   {$rowCount2    = $Rowhash[$keyval] }
-                    $hash[">Row"] = $rowCount2
-                    $Hash[$key]   = $keyVal 
+    elseif  ($GridView -and $propList -contains $key) { 
+             
+             
+             if ($IncludeEqual -and -not $ExcludeDifferent) {
+                $GroupedRows = $diff | Group-Object -Property $key  
+             }
+             else { #to get the right now numbers on the grid we need to have all the rows. 
+                $GroupedRows = Compare-Object -ReferenceObject $Sheet1 -DifferenceObject $Sheet2 -Property $propList -PassThru -IncludeEqual  | 
+                                        Group-Object -Property $key                       
+             }
+             #Additions, deletions and unchanged rows will give a group of 1; changes will give a group of 2 .
+
+             #If one sheet has extra rows we can get a single "==" result from compare, but with the row from the reference sheet 
+             #but the row in the other sheet might so we will look up the row number from the key field build a hash table for that  
+             $Sheet2 | ForEach-Object -Begin {$Rowhash = @{} } -Process {$Rowhash[$_.$key] = $_._row } 
+
+             $ExpandedDiff = ForEach ($g in $GroupedRows)  {
+                #we're going to create a custom object from a hash table. We want the fields to be ordered
+                $hash = [ordered]@{}  
+                foreach ($result IN $g.Group) {
+                    # if result indicates equal or "in Reference" set the reference side row. If we did that on a previous result keep it. Otherwise set to "blank"
+                    if     ($result.sideindicator -ne "=>")      {$hash["<Row"] = $result._Row  } 
+                    elseif (-not $hash["<Row"])                  {$hash["<Row"] = "" }
+                    #if we have already set the side, this is the second record, so set side to indicate "changed"     
+                    if     ($hash.Side) {$hash.side = "<>"} else {$hash["Side"] = $result.sideindicator}
+                    #if result is "in reference" and we don't have a matching "in difference" (meaning a change) the lookup will be blank. Which we want.   
+                    $hash[">Row"] = $Rowhash[$g.Name] 
+                    #position the key as the next field (only appears once) 
+                    $Hash[$key]    = $g.Name  
+                    #For all the other fields we care about create <=FieldName and/or =>FieldName 
                     foreach ($p in $propList.Where({$_ -ne $key})) {
-                        if  ($row.SideIndicator -eq "==")  {$hash[("=>$P")] = $hash[("<=$P")] =$row.$P}
-                        else                               {$hash[($row.SideIndicator+$P)]    =$row.$P}
+                        if  ($result.SideIndicator -eq "==")  {$hash[("=>$P")] = $hash[("<=$P")] =$result.$P}
+                        else                                  {$hash[($result.SideIndicator+$P)] =$result.$P}
                     }
                 } 
-                [Pscustomobject]$hash   }   | Sort-Object   -Property "<row","side"| Update-FirstObjectProperties | Out-GridView -Title "Comparing $Referencefile::$worksheet1 (<=) with $Differencefile::$WorkSheet2 (=>)"   
+                [Pscustomobject]$hash
+             }
+
+             #Sort by reference row number, and fill in any blanks in the difference-row column
+             $ExpandedDiff = $ExpandedDiff | Sort-Object -Property "<row"  
+             for ($i = 1; $i -lt $ExpandedDiff.Count; $i++) {if (-not $ExpandedDiff[$i].">row") {$ExpandedDiff[$i].">row" = $ExpandedDiff[$i-1].">row" } }   
+             #Sort by difference row number, and fill in any blanks in the reference-row column
+             $ExpandedDiff = $ExpandedDiff | Sort-Object -Property ">row"  
+             for ($i = 1; $i -lt $ExpandedDiff.Count; $i++) {if (-not $ExpandedDiff[$i]."<row") {$ExpandedDiff[$i]."<row" = $ExpandedDiff[$i-1]."<row" } }  
+             
+             #if we had to put the equal rows back, take them out; sort, make sure all the columns are present in row 1 so the grid puts them in, and output              
+             if ( $ExcludeDifferent) {$ExpandedDiff = $ExpandedDiff.where({$_.side -eq "=="}) | Sort-Object -Property "<row" ,">row"  } 
+             elseif ( $IncludeEqual) {$ExpandedDiff = $ExpandedDiff                           | Sort-Object -Property "<row" ,">row"  }
+             else                    {$ExpandedDiff = $ExpandedDiff.where({$_.side -ne "=="}) | Sort-Object -Property "<row" ,">row"  } 
+             $ExpandedDiff | Update-FirstObjectProperties | Out-GridView -Title "Comparing $Referencefile::$worksheet1 (<=) with $Differencefile::$WorkSheet2 (=>)"   
     }
-    elseif (-not $PassThru)  {return ($diff | Select-Object -Property (@(@{n="_Side";e={$_.SideIndicator}},"_File" ,"_Sheet","_Row") + $propList))}
-    if     (     $PassThru)  {return  $diff }
+    elseif  ($GridView     )  {Write-Warning -Message "To use -GridView you must specify -Key and it must match one of the included properties."  }   
+    elseif  (-not $PassThru)  {return ($diff | Select-Object -Property (@(@{n="_Side";e={$_.SideIndicator}},"_File" ,"_Sheet","_Row") + $propList))}
+    if      (     $PassThru)  {return  $diff }
 }
