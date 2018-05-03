@@ -33,6 +33,9 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+- [James O'Neill](https://twitter.com/jamesoneill) added `Compare-Worksheet`
+    - Compares two worksheets with the same name in different files.
+
 #### 4/22/2018
 Thanks to the community yet again
 - [ili101](https://github.com/ili101) for fixes and features
