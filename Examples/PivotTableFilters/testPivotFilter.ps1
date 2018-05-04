@@ -3,7 +3,6 @@
 $xlFile=".\testPivot.xlsx"
 Remove-Item $xlFile -ErrorAction Ignore
 
-
 $data =@"
 Region,Area,Product,Units,Cost
 North,A1,Apple,100,.5
@@ -19,4 +18,4 @@ $data |
         -AutoSize -AutoFilter `
         -IncludePivotTable `
         -PivotRows Product `
-        -PivotData @{"Units"="sum"} -PivotFilter Region, Area 
+        -PivotData @{"Units"="sum"} -PivotFilter Region, Area
