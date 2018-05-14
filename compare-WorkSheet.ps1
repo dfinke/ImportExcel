@@ -45,7 +45,7 @@
         This version of the previous command lightlights all the cells in lightgray and then sets the changed rows back to white; only 
         the unchanged rows are highlighted
 #>
-[cmdletbinding(DefaultParameterSetName)]
+    [cmdletbinding(DefaultParameterSetName)]
     Param(
         #First file to compare 
         [parameter(Mandatory=$true,Position=0)]
@@ -135,7 +135,7 @@
     
     if ($ExcludeDifferent -and -not $IncludeEqual) {$IncludeEqual = $true} 
     #Do the comparison and add file,sheet and row to the result - these are prefixed with "_" to show they are added the addition will fail if the sheet has these properties so split the operations 
-    $diff = Compare-Object -ReferenceObject $Sheet1 -DifferenceObject $Sheet2 -Property $propList -PassThru -IncludeEqual:$IncludeEqual -ExcludeDifferent:$ExcludeDifferent  |
+    [PSCustomObject[]]$diff = Compare-Object -ReferenceObject $Sheet1 -DifferenceObject $Sheet2 -Property $propList -PassThru -IncludeEqual:$IncludeEqual -ExcludeDifferent:$ExcludeDifferent  |
                 Sort-Object -Property "_Row","File"
     
     #if BackgroundColor was specified, set it on extra or extra or changed rows  
