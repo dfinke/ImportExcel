@@ -1,4 +1,4 @@
-﻿if(!(gcm ig1 -ErrorAction SilentlyContinue)) {
+﻿if(!(gcm ig -ErrorAction SilentlyContinue)) {
 
     "Use ``Install-Module NameIT`` to get the needed module from the gallery to support running this script"
 
@@ -35,7 +35,4 @@ $(1..6 | % {
         Revenue=$e
         Margin=$f
     }
-} | ConvertTo-Csv -NoTypeInformation)  -replace '"','' 
-
-#| Export-Excel
-# | ConvertTo-Csv -NoTypeInformation) -replace '"','' | ConvertFrom-Csv | Export-Excel
+} | ConvertTo-Csv -NoTypeInformation)  -replace '"','' # | Export-Excel
