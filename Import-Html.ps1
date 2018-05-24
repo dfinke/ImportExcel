@@ -6,7 +6,10 @@ function Import-Html {
         $index,
         $Header,
         [int]$FirstDataRow=0,
-        [Switch]$UseDefaultCredentials
+        [Switch]$UseDefaultCredentials,
+        [ValidateSet("ById", "ByName", "ByIndex")]
+        $SelectionMethod="ByIndex",
+        $Selector
     )
     
     $xlFile = [System.IO.Path]::GetTempFileName() -replace "tmp","xlsx"
@@ -14,7 +17,7 @@ function Import-Html {
 
     Write-Verbose "Exporting to Excel file $($xlFile)"
 
-    $data = Get-HtmlTable -url $url -tableIndex $index -Header $Header -FirstDataRow $FirstDataRow -UseDefaultCredentials: $UseDefaultCredentials
+    $data = Get-HtmlTable -url $url -tableIndex $index -Header $Header -FirstDataRow $FirstDataRow -UseDefaultCredentials: $UseDefaultCredentials -SelectionMethod $SelectionMethod -Selector $Selector
     
     $data | Export-Excel $xlFile -Show -AutoSize
 }

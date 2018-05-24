@@ -3,14 +3,24 @@ function Get-HtmlTable {
         [Parameter(Mandatory=$true)]
         $url,
         $tableIndex=0,
-        $Header,
+        $Header,        
         [int]$FirstDataRow=0,
-        [Switch]$UseDefaultCredentials
+        [Switch]$UseDefaultCredentials,
+        [ValidateSet("ById", "ByName", "ByIndex" )]
+        $SelectionMethod="ByIndex",
+        $Selector
     )
 
     $r = Invoke-WebRequest $url -UseDefaultCredentials: $UseDefaultCredentials
     
-    $table = $r.ParsedHtml.getElementsByTagName("table")[$tableIndex]
+
+    #$table = $r.ParsedHtml.getElementsByTagName("table")[$tableIndex]
+    $table = switch ($SelectionMethod) {
+        'ById'      { $r.ParsedHtml.getElementById($Selector)  }
+        'ByName'    { $r.ParsedHtml.getElementsByName($Selector)[$tableIndex]  }
+        Default { $r.ParsedHtml.getElementsByTagName("table")[$tableIndex] }
+    }
+
     $propertyNames=$Header
     $totalRows=@($table.rows).count
 
