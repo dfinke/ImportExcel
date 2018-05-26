@@ -19,7 +19,7 @@ function Export-ExcelSheet {
     $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
     $workbook = $xl.Workbook
 
-    $targetSheets = $workbook.Worksheets | Where {$_.Name -Match $SheetName}
+    $targetSheets = $workbook.Worksheets | Where-Object {$_.Name -Match $SheetName}
 
     $params = @{} + $PSBoundParameters
     $params.Remove("OutputPath")

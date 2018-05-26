@@ -1,5 +1,7 @@
 ﻿Function Send-SQLDataToExcel {
-<#
+  [CmdLetBinding()]
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword","")]
+  <#
     .Synopsis 
         Runs a SQL query and inserts the results into an ExcelSheet, more efficiently than sending it via Export-Excel
     .Description
@@ -23,7 +25,7 @@
  
 
 
-#>
+  #>
     param (
         #Database connection string; either DSN=ODBC_Data_Source_Name, a full odbc or SQL Connection string, or the name of a SQL server 
         [Parameter(ParameterSetName="SQLConnection", Mandatory=$true)]
@@ -41,6 +43,9 @@
         #The SQL query to run 
         [Parameter(Mandatory=$true)]
         [string]$SQL, 
+        #Override the default query time of 30 seconds.     
+        [int]$QueryTimeout, 
+        #File name for the Excel File
         $Path, 
         [String]$WorkSheetname = 'Sheet1',   
         [Switch]$KillExcel, 
@@ -92,9 +97,9 @@
     #We were either given a session object or a connection string (with, optionally a MSSQLServer parameter)
     # If we got -MSSQLServer, create a SQL connection, if we didn't but we got -Connection create an ODBC connection
     if     ($MsSQLserver) {
-            if ($connection -notmatch "=") {$Connection = "server=$Connection;trusted_connection=true;timeout=60"} 
+            if ($Connection -notmatch "=") {$Connection = "server=$Connection;trusted_connection=true;timeout=60"} 
             $Session = New-Object -TypeName System.Data.SqlClient.SqlConnection  -ArgumentList $Connection
-            if ($Session.State -ne 'Open') {$session.Open()} 
+            if ($Session.State -ne 'Open') {$Session.Open()} 
             if ($DataBase) {$Session.ChangeDatabase($DataBase) }
     }
     elseif ($Connection)  {
@@ -102,30 +107,31 @@
     }
 
     #A session was either passed in or just created. If it's a SQL one make a SQL DataAdapter, otherwise make an ODBC one 
-    if ($Session.gettype().name -match "SqlConnection") {  
+    if ($Session.GetType().name -match "SqlConnection") {  
         $dataAdapter = New-Object -TypeName System.Data.SqlClient.SqlDataAdapter -ArgumentList (
-                       New-Object -TypeName System.Data.SqlClient.SqlCommand     -ArgumentList $sql, $Session)
+                       New-Object -TypeName System.Data.SqlClient.SqlCommand     -ArgumentList $SQL, $Session)
     }
     else {
         $dataAdapter = New-Object -TypeName System.Data.Odbc.OdbcDataAdapter     -ArgumentList (
-                       New-Object -TypeName System.Data.Odbc.OdbcCommand         -ArgumentList $sql, $Session ) 
+                       New-Object -TypeName System.Data.Odbc.OdbcCommand         -ArgumentList $SQL, $Session ) 
     }
-    
+    if ($QueryTimeout) {$dataAdapter.SelectCommand.CommandTimeout = $ServerTimeout}
+
     #Both adapter types output the same kind of table, create one and fill it from the adapter    
     $dataTable       = New-Object -TypeName System.Data.DataTable
     $rowCount        = $dataAdapter.fill($dataTable)
-    Write-Verbose "Query returned $rowcount row(s)" 
+    Write-Verbose -Message "Query returned $rowCount row(s)" 
 
     #ExportExcel user a -NoHeader parameter so that's what we use here, but needs to be the other way around. 
-    $PrintHeaders    = -not $NoHeader
+    $printHeaders    = -not $NoHeader
     if ($Title)  {$r = $StartRow +1 } 
     else         {$r = $StartRow} 
     #Get our Excel sheet and fill it with the data 
     $excelPackage    = Export-Excel -Path $Path -WorkSheetname $WorkSheetname  -PassThru
-    $excelPackage.Workbook.Worksheets[$WorkSheetname].Cells[$r,$StartColumn].LoadFromDataTable($dataTable, $PrintHeaders )  | Out-Null
+    $excelPackage.Workbook.Worksheets[$WorkSheetname].Cells[$r,$StartColumn].LoadFromDataTable($dataTable, $printHeaders )  | Out-Null
     
     #Call export-excel with any parameters which don't relate to the SQL query
-    "Connection", "Database" , "Session", "MsSQLserver", "Destination" , "sql" ,"Path" | foreach-object {$null = $PSBoundParameters.Remove($_) }
+    "Connection", "Database" , "Session", "MsSQLserver", "Destination" , "SQL" ,"Path" | ForEach-Object {$null = $PSBoundParameters.Remove($_) }
     Export-Excel -ExcelPackage $excelPackage   @PSBoundParameters 
 
     #If we were not passed a session close the session we created. 

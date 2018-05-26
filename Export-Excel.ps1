@@ -18,7 +18,7 @@
         .PARAMETER TargetData
             Data to insert onto the worksheet - this is often provided from the pipeline.
         .PARAMETER ExcludeProperty
-            Speficies properties which may exist in the target data but should not be placed on the worksheet
+            Specifies properties which may exist in the target data but should not be placed on the worksheet
         .PARAMETER Title
             Text of a title to be placed in Cell A1
         .PARAMETER TitleBold
@@ -32,9 +32,9 @@
         .PARAMETER IncludePivotTable
             Adds a Pivot table using the data in the worksheet
         .PARAMETER PivotRows
-            Name(s) columns from the spreadhseet which will prvoide the row name(s) in the pivot table
+            Name(s) columns from the spreadhseet which will provide the row name(s) in the pivot table
         .PARAMETER PivotColumns
-            Name(s) columns from the spreadhseet which will prvoide the Column name(s) in the pivot table
+            Name(s) columns from the spreadhseet which will provide the Column name(s) in the pivot table
         .PARAMETER PivotData
             Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP to provide the data in the Pivot table
         .PARAMETER PivotTableDefinition,
@@ -62,13 +62,13 @@
         .PARAMETER TableStyle
             Selects the style for the named table - defaults to 'Medium6'
         .PARAMETER ExcelChartDefinition
-            A hash table containing ChartType, Title, NoLegend, ShowCategory, ShowPecent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts
+            A hash table containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts
         .PARAMETER HideSheet
             Name(s) of Sheet(s) to hide in the workbook
         .PARAMETER KillExcel
             Closes Excel - prevents errors writing to the file because Excel has it open
         .PARAMETER AutoNameRange
-            Makes each column  a named range
+            Makes each column a named range
         .PARAMETER StartRow
             Row to start adding data. 1 by default. Row 1 will contain the title if any. Then headers will appear (Unless -No header is specified) then the data appears
         .PARAMETER StartColumn
