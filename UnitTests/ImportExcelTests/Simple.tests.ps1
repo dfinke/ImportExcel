@@ -5,7 +5,7 @@ Describe "test" {
         ((Get-Command export-excel -ErrorAction SilentlyContinue) -eq $null) | Should Be $false
     }
 
-    It '$PSScriptRoot\Simple.xlsx should exist' {
+    It "$PSScriptRoot\Simple.xlsx should exist" {
         Test-Path $PSScriptRoot\Simple.xlsx | Should Be $true
     }
 }
