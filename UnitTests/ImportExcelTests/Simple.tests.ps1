@@ -17,7 +17,16 @@ Describe "Tests" {
         $data[1].p1 | Should be "b"
     }
 
-    It "Should read fast <1000 milliseconds" {
+    It "Should read fast < 1000 milliseconds" {
         $timer.TotalMilliseconds | should BeLessThan 1000
     }
+
+    It "Should read larger xlsx < 2000 milliseconds" {
+        $timer = Measure-Command {
+            $null = Import-Excel $PSScriptRoot\LargerFile.xlsx
+        }
+
+        $timer.TotalMilliseconds | should BeLessThan 2000
+    }
+
 }
