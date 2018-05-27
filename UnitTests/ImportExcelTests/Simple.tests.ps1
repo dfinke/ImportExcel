@@ -1,12 +1,16 @@
 ﻿Import-Module $PSScriptRoot\..\..\ImportExcel.psd1
+$data = $null
+$timer = Measure-Command {
+    $data = Import-Excel $PSScriptRoot\Simple.xlsx
+}
 
 Describe "Tests" {
-    BeforeAll {
-        $data = $null
-        $timer = Measure-Command {
-            $data = Import-Excel $PSScriptRoot\Simple.xlsx
-        }
-    }
+    # BeforeAll {
+    #     $data = $null
+    #     $timer = Measure-Command {
+    #         $data = Import-Excel $PSScriptRoot\Simple.xlsx
+    #     }
+    # }
 
     It "Should have two items" {
         $data.count | Should be 2
