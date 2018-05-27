@@ -7,7 +7,8 @@ Describe "test" {
 
     It "$PSScriptRoot\Simple.xlsx should exist" {
 
-        "$PSScriptRoot\Simple.xlsx" | should be "C:\projects\importexcel\UnitTests\ImportExcelTests\Simple.xlsx"
+        # "$PSScriptRoot\Simple.xlsx" | should be "C:\projects\importexcel\UnitTests\ImportExcelTests\Simple.xlsx"
+        (Test-Path "C:\projects\importexcel\UnitTests\ImportExcelTests\Simple.xlsx") | should be $true
 
         # "$pwd\Simple.xlsx" | should be "C:\Users\Douglas\Documents\GitHub\ImportExcel\UnitTests\ImportExcelTests\Simple.xlsx"
         # ((ls "$pwd\Simple.xlsx") -eq $null) | should be $false
