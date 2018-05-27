@@ -1,4 +1,5 @@
-﻿Describe "test" {
+﻿Import-Module $PSScriptRoot\..\..\ImportExcel.psd1
+Describe "test" {
 
     It 'Export-Excel should be there' {
         ((Get-Command export-excel -ErrorAction SilentlyContinue) -eq $null) | Should Be $false
