@@ -6,7 +6,8 @@ Describe "test" {
     }
 
     It "$PSScriptRoot\Simple.xlsx should exist" {
-        Test-Path $PSScriptRoot\Simple.xlsx | Should Be $true
+        Test-Path "$PSScriptRoot\Simple.xlsx" | Should Be $true
+        #$PSScriptRoot\Simple.xlsx | should be "C:\projects\importexcel\UnitTests\ImportExcelTests\Simple.xlsx"
     }
 }
 
