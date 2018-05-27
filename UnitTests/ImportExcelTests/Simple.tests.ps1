@@ -1,49 +1,49 @@
-﻿Import-Module $PSScriptRoot\..\..\ImportExcel.psd1
-Describe "test" {
+﻿# Import-Module $PSScriptRoot\..\..\ImportExcel.psd1
+# Describe "test" {
 
-    It 'Export-Excel should be there' {
-        ((Get-Command export-excel -ErrorAction SilentlyContinue) -eq $null) | Should Be $false
-    }
+#     It 'Export-Excel should be there' {
+#         ((Get-Command export-excel -ErrorAction SilentlyContinue) -eq $null) | Should Be $false
+#     }
 
-    It "$PSScriptRoot\Simple.xlsx should exist" {
+#     It "$PSScriptRoot\Simple.xlsx should exist" {
 
-        # "$PSScriptRoot\Simple.xlsx" | should be "C:\projects\importexcel\UnitTests\ImportExcelTests\Simple.xlsx"
-        # (Test-Path "C:\projects\importexcel\UnitTests\ImportExcelTests\Simple.xlsx") | should be $true
-        # (Test-Path "C:\projects\importexcel\UnitTests\ImportExcelTests") | should be $true
-        @(ls "C:\projects\importexcel\UnitTests\ImportExcelTests").count | should be 2
+#         # "$PSScriptRoot\Simple.xlsx" | should be "C:\projects\importexcel\UnitTests\ImportExcelTests\Simple.xlsx"
+#         # (Test-Path "C:\projects\importexcel\UnitTests\ImportExcelTests\Simple.xlsx") | should be $true
+#         # (Test-Path "C:\projects\importexcel\UnitTests\ImportExcelTests") | should be $true
+#         @(ls "C:\projects\importexcel\UnitTests\ImportExcelTests").count | should be 2
 
-        # "$pwd\Simple.xlsx" | should be "C:\Users\Douglas\Documents\GitHub\ImportExcel\UnitTests\ImportExcelTests\Simple.xlsx"
-        # ((ls "$pwd\Simple.xlsx") -eq $null) | should be $false
-        # ((ls "$PSScriptRoot\Simple.xlsx") -eq $null) | should be $false
-        # Test-Path "$PSScriptRoot\Simple.xlsx" | Should Be $true
-        #$PSScriptRoot\Simple.xlsx | should be "C:\projects\importexcel\UnitTests\ImportExcelTests\Simple.xlsx"
-    }
-}
+#         # "$pwd\Simple.xlsx" | should be "C:\Users\Douglas\Documents\GitHub\ImportExcel\UnitTests\ImportExcelTests\Simple.xlsx"
+#         # ((ls "$pwd\Simple.xlsx") -eq $null) | should be $false
+#         # ((ls "$PSScriptRoot\Simple.xlsx") -eq $null) | should be $false
+#         # Test-Path "$PSScriptRoot\Simple.xlsx" | Should Be $true
+#         #$PSScriptRoot\Simple.xlsx | should be "C:\projects\importexcel\UnitTests\ImportExcelTests\Simple.xlsx"
+#     }
+# }
 
-# Import-Module $PSScriptRoot\..\..\ImportExcel.psd1
+Import-Module $PSScriptRoot\..\..\ImportExcel.psd1
 # $data = $null
 # $timer = Measure-Command {
 #     $data = Import-Excel $PSScriptRoot\Simple.xlsx
 # }
 
-# Describe "Tests" {
-#     # BeforeAll {
-#     #     $data = $null
-#     #     $timer = Measure-Command {
-#     #         $data = Import-Excel $PSScriptRoot\Simple.xlsx
-#     #     }
-#     # }
+Describe "Tests" {
+    BeforeAll {
+        $data = $null
+        $timer = Measure-Command {
+            $data = Import-Excel $PSScriptRoot\Simple.xlsx
+        }
+    }
 
-#     It "Should have two items" {
-#         $data.count | Should be 2
-#     }
+    It "Should have two items" {
+        $data.count | Should be 2
+    }
 
-#     It "Should have items a and b" {
-#         $data[0].p1 | Should be "a"
-#         $data[1].p1 | Should be "b"
-#     }
+    It "Should have items a and b" {
+        $data[0].p1 | Should be "a"
+        $data[1].p1 | Should be "b"
+    }
 
-#     It "Should read fast <25 milliseconds" {
-#         $timer.TotalMilliseconds | should BeLessThan 25
-#     }
-# }
+    It "Should read fast <25 milliseconds" {
+        $timer.TotalMilliseconds | should BeLessThan 25
+    }
+}
