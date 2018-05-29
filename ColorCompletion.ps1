@@ -17,7 +17,11 @@ if (Get-Command -Name register-argumentCompleter -ErrorAction SilentlyContinue) 
     Register-ArgumentCompleter -CommandName Merge-Worksheet            -ParameterName AddBackgroundColor     -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Merge-Worksheet            -ParameterName ChangeBackgroundColor  -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Merge-Worksheet       `    -ParameterName DeleteBackgroundColor  -ScriptBlock $Function:ColorCompletion
-    Register-ArgumentCompleter -CommandName Merge-Worksheet            -ParameterName KeyFontColor           -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Merge-MulipleSheets        -ParameterName KeyFontColor           -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Merge-MulipleSheets        -ParameterName AddBackgroundColor     -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Merge-MulipleSheets        -ParameterName ChangeBackgroundColor  -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Merge-MulipleSheets   `    -ParameterName DeleteBackgroundColor  -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Merge-MulipleSheets        -ParameterName KeyFontColor           -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName FontColor              -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName PatternColor           -ScriptBlock $Function:ColorCompletion
