@@ -9,19 +9,20 @@
        .Example 
          merge-worksheet "Server54.xlsx" "Server55.xlsx" -WorkSheetName services -OutputFile Services.xlsx -OutputSheetName 54-55 -show
          The workbooks contain audit information for two servers, one page contains a list of services. This command creates a worksheet named 54-55 
-         in a workbook named services and shows all the services and their differences, and opens it in Excel 
+         in a workbook named services which shows all the services and their differences, and opens it in Excel 
        .Example 
          merge-worksheet "Server54.xlsx" "Server55.xlsx" -WorkSheetName services -OutputFile Services.xlsx -OutputSheetName 54-55 -HideEqual -AddBackgroundColor LightBlue -show
-         This modifies the previous command to hide the equal rows in the output sheet and changes the color used to mark rows "Added" to the second file.  
+         This modifies the previous command to hide the equal rows in the output sheet and changes the color used to mark rows added to the second file.  
        .Example
-         merge-worksheet -OutputFile .\j1.xlsx -OutputSheetName test11 -ReferenceObject (dir .\ImportExcel\4.0.7) -DifferenceObject (dir '\ImportExcel\4.0.8') -Property Length -Show
+         merge-worksheet -OutputFile .\j1.xlsx -OutputSheetName test11 -ReferenceObject (dir .\ImportExcel\4.0.7) -DifferenceObject (dir .\ImportExcel\4.0.8) -Property Length -Show
          This version compares two directories, and marks what has changed. 
          Because no "Key" property is given, "Name" is assumed to be the key and the only other property examined is length.  
-         Files which are added or deleted or have changedd size will be highlighed in the output sheet. Changes to dates or other attributes will be ignored
+         Files which are added or deleted or have changed size will be highlighed in the output sheet. Changes to dates or other attributes will be ignored
        .Example
-         merge-worksheet -Outf .\dummy.xlsx  -RefO (dir .\ImportExcel\4.0.7) -DiffO (dir .\ImportExcel\4.0.8') -Pr Length  -WhatIf -Passthru | Out-GridView 
-         This time no file is written because -WhatIf is specified, and -Passthru causes the results to go Out-Gridview. This version uses aliases to shorten the parameters, 
-         (OutputFileName can be "outFile" and the sheet "OutSheet" :  DifferenceObject & RefeenceObject can be DiffObject & RefObject)      
+         merge-worksheet   -RefO (dir .\ImportExcel\4.0.7) -DiffO (dir .\ImportExcel\4.0.8) -Pr Length  | Out-GridView 
+         This time no file is written and the results -which include all properties, not just length, are output and sent to Out-Gridview. 
+         This version uses aliases to shorten the parameters,
+         (OutputFileName can be "outFile" and the sheet "OutSheet" :  DifferenceObject & ReferenceObject can be DiffObject & RefObject)      
     #>
     [cmdletbinding(SupportsShouldProcess=$true)] 
     Param(
@@ -68,6 +69,7 @@
          [Alias('DiffObject')]
          $DifferenceObject ,
          [parameter(ParameterSetName='D',Position=2)]
+         [parameter(ParameterSetName='E',Position=3)]
          $DiffPrefix = "=>" ,
          #File to hold merged data.
          [parameter(Position=3)]
@@ -129,7 +131,9 @@
          $params     = @{WorkSheetName=$WorkSheetName; Path=$Differencefile; ErrorAction = [System.Management.Automation.ActionPreference]::Stop ;} 
          try            {$DifferenceObject = Import-Excel   @Params }
          Catch          {Write-Warning -Message "Could not read the worksheet '$WorkSheetName' from $Differencefile::$WorkSheetName." ; return } 
-         $DiffPrefix =  (Split-Path -Path $Differencefile -Leaf) -replace "\.xlsx$","" 
+         if ($DiffPrefix -eq "=>" ) { 
+             $DiffPrefix  =  (Split-Path -Path $Differencefile -Leaf) -replace "\.xlsx$","" 
+         }
          if ($NoHeader) {$firstDataRow = $Startrow  } else {$firstDataRow = $Startrow + 1}           
      }
      else   { $firstDataRow = 1  } 
@@ -272,10 +276,46 @@
          }   
          Close-ExcelPackage -ExcelPackage $xl -Show:$Show  
      }  
- }
+}
 
- Function Merge-MulipleSheets {
-    Param   (
+Function Merge-MulipleSheets {
+<#
+    .Synopsis
+        Merges worksheets into a single worksheet with differences marked up. 
+    .Description
+        The Merge worksheet command combines 2 sheets. Merge-MultipleSheets is designed to merge more than 2. 
+        So if asked to merge sheets A,B,C  which contain Services, with a Name, Displayname and Start mode, where "name" is treated as the key 
+        it calls Merge-Worksheet to merge Name, Displayname and Start mode,from sheets A and C  the result has column headings 
+        -Row, Name, DisplayName, Startmode, C-DisplayName, C-StartMode C-Is, C-Row
+        Then it calls merge-worsheet with this result and sheet B, comparing 'Name', 'Displayname' and 'Start mode' columns on each side and outputting
+        _Row, Name, DisplayName, Startmode, B-DisplayName, B-StartMode B-Is, B-Row, C-DisplayName, C-StartMode C-Is, C-Row 
+        Any columns in the "reference" side which are not used in the comparison are appended on the right, which is we compare the sheets in reverse order 
+        The "Is" column holds "Same", "Added", "Removed" or "Changed" and is used for conditional formatting in the output sheet (this is hidden by default), 
+        and when the data is written to Excel the "reference" columns "DisplayName" and "Start" are renamed "A-DisplayName" and "A-Start"
+        Conditional formatting is also applied to the "key" column (name in this case) so the view can be filtered to rows with changes by filtering this column on color. 
+        
+        Note: the processing order can affect what is seen as a change. For example if there is an extra item in sheet B in the example above, 
+        Sheet C will be processed and that row and nothing will be seen to be missing. When sheet B is processed it is marked as an addition, and the conditional formatting marks
+        the entries from sheet A to show that a values were added in at least one sheet.  
+        However of Sheet B is the reference sheet, A and C will be seen to have an item removed; and if B is processed before C, the extra item is known when C is processed and 
+        so C is considered to be missing that item.   
+    .Example
+        dir Server*.xlsx | Merge-MulipleSheets   -WorkSheetName Services -OutputFile Test2.xlsx -OutputSheetName Services -Show
+        We are auditing servers and each one has a workbook in the current directory which contains a "Services" worksheet (the result of 
+        Get-WmiObject -Class win32_service  | Select-Object -Property Name, Displayname, Startmode
+        No key is specified so the key is assumed to be the "Name" column. The files are merged and the result is opened on completion. 
+    .Example 
+        dir Serv*.xlsx |  Merge-MulipleSheets  -WorkSheetName Software -Key "*" -ExcludeProperty Install* -OutputFile Test2.xlsx -OutputSheetName Software -Show        
+        The server audit files in the previous example also have "Software" worksheet, but no single field on that sheet works as a key. 
+        Specifying "*" for the key produces a compound key using all non-excluded fields (and the installation date and file location are excluded).  
+    .Example 
+        Merge-MulipleSheets -Path hotfixes.xlsx -WorkSheetName Serv* -Key hotfixid -OutputFile test2.xlsx -OutputSheetName hotfixes  -HideRowNumbers -Show
+        This time all the servers have written their hofix information to their own worksheets in a shared Excel workbook named "Hotfixes"
+        (the information was obtained by running Get-Hotfix | Sort-Object -Property description,hotfixid  | Select-Object -Property Description,HotfixID)
+        This ignores any sheets which are not named "Serv*", and uses the HotfixID as the key ; in this version the row numbers are hidden. 
+#>
+
+   param   (
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]  
         [string[]]$Path  ,
         #The row from where we start to import data, all rows above the StartRow are disregarded. By default this is the first row.
@@ -316,85 +356,116 @@
         #If specified, opens the output workbook.  
         [Switch]$Show
    )
-   begin   { $filestoProcess  = @()  }
-   process { $filestoProcess += $Path} 
+   begin   {    $filestoProcess   = @()  }
+   process {    $filestoProcess  += $Path} 
    end     {
-       if  ( $filestoProcess.count -lt 2) {Write-Warning -Message "Need at least two files to process"; return} 
-       
-       #Set up the parameters we will pass to merge worksheet 
-       Get-Variable -Name 'HeaderName','NoHeader','StartRow','Key','Property','ExcludeProperty','WorkSheetName' -ErrorAction SilentlyContinue |
-           Where-Object {$_.Value} | ForEach-Object -Begin {$params= @{} } -Process {$params[$_.Name] = $_.Value} 
-       
-       Write-Progress -Activity "Merging sheets" -CurrentOperation "Comparing $($filestoProcess[-1]) against $($filestoProcess[0]). "
-       $merged         = Merge-Worksheet  @params -Referencefile $filestoProcess[0] -Differencefile $filestoProcess[-1]
-       $nextFileNo     = 2
-       while ($nextFileNo -lt $filestoProcess.count -and $merged) { 
-           Write-Progress -Activity "Merging sheets" -CurrentOperation "Comparing $($filestoProcess[-$nextFileNo]) against $($filestoProcess[0]). "
-           $merged     = Merge-Worksheet  @params -ReferenceObject $merged -Differencefile $filestoProcess[-$nextFileNo]     
-           $nextFileNo ++
-       }
-       if (-not $merged) {Write-Warning -Message "The merge operation did not return any data."; return }
+        if     ($filestoProcess.Count -eq 1 -and $WorkSheetName -match '\*') {
+            Write-Progress -Activity "Merging sheets" -CurrentOperation "Expanding * to names of sheets in $($filestoProcess[0]). "
+            $excel = Open-ExcelPackage -Path $filestoProcess 
+            $WorksheetName = $excel.Workbook.Worksheets.Name.where({$_ -like $WorkSheetName})
+            Close-ExcelPackage -NoSave -ExcelPackage $excel
+        }
 
-       Write-Progress -Activity "Merging sheets" -CurrentOperation "Creating output sheet '$OutputSheetName' in $OutputFile"
-       $excel          = $merged | Sort-Object "_row"  | Update-FirstObjectProperties | Export-Excel -Path $OutputFile -WorkSheetname $OutputSheetName -ClearSheet -FreezeTopRow -BoldTopRow -AutoFilter -PassThru 
-       $sheet          = $excel.Workbook.Worksheets[$OutputSheetName]   
+        #Merge indentically named sheets in different work books; 
+         if     ($filestoProcess.Count -ge 2 -and $WorkSheetName -is "string" ) {
+            Get-Variable -Name 'HeaderName','NoHeader','StartRow','Key','Property','ExcludeProperty','WorkSheetName' -ErrorAction SilentlyContinue |
+                Where-Object {$_.Value} | ForEach-Object -Begin {$params= @{} } -Process {$params[$_.Name] = $_.Value} 
+            
+            Write-Progress -Activity "Merging sheets" -CurrentOperation "Comparing $($filestoProcess[-1]) against $($filestoProcess[0]). "
+            $merged            = Merge-Worksheet  @params -Referencefile $filestoProcess[0] -Differencefile $filestoProcess[-1]
+            $nextFileNo        = 2
+            while ($nextFileNo -lt $filestoProcess.count -and $merged) { 
+                Write-Progress -Activity "Merging sheets" -CurrentOperation "Comparing $($filestoProcess[-$nextFileNo]) against $($filestoProcess[0]). "
+                $merged        = Merge-Worksheet  @params -ReferenceObject $merged -Differencefile $filestoProcess[-$nextFileNo]     
+                $nextFileNo    ++
+            }
+        }
+        #Merge different sheets from one workbook 
+        elseif ($filestoProcess.Count -eq 1 -and $WorkSheetName.Count -ge 2 ) {
+            Get-Variable -Name 'HeaderName','NoHeader','StartRow','Key','Property','ExcludeProperty' -ErrorAction SilentlyContinue |
+                Where-Object {$_.Value} | ForEach-Object -Begin {$params= @{} } -Process {$params[$_.Name] = $_.Value} 
+             
+            Write-Progress -Activity "Merging sheets" -CurrentOperation "Comparing $($WorkSheetName[-1]) against $($WorkSheetName[0]). "
+            $merged          = Merge-Worksheet  @params -Referencefile $filestoProcess[0] -Differencefile $filestoProcess[0] -WorkSheetName $WorkSheetName[0,-1]
+            $nextSheetNo     = 2
+            while ($nextSheetNo -lt $WorkSheetName.count -and $merged) { 
+                Write-Progress -Activity "Merging sheets" -CurrentOperation "Comparing $($WorkSheetName[-$nextSheetNo]) against $($WorkSheetName[0]). "
+                $merged      = Merge-Worksheet  @params -ReferenceObject $merged -Differencefile $filestoProcess[0] -WorkSheetName  $WorkSheetName[-$nextSheetNo] -DiffPrefix $WorkSheetName[-$nextSheetNo]
+                $nextSheetNo ++
+            }
+        }
+        #We either need one worksheet name and many files or one file and many sheets. 
+        else {            Write-Warning -Message "Need at least two files to process"           ; return }
+        #if the process didn't return data then abandon now.  
+        if (-not $merged) {Write-Warning -Message "The merge operation did not return any data."; return }
+
+        Write-Progress -Activity "Merging sheets" -CurrentOperation "Creating output sheet '$OutputSheetName' in $OutputFile"
+        $excel                 = $merged | Sort-Object "_row"  | Update-FirstObjectProperties |
+                                  Export-Excel -Path $OutputFile -WorkSheetname $OutputSheetName -ClearSheet -BoldTopRow -AutoFilter -PassThru 
+        $sheet                 = $excel.Workbook.Worksheets[$OutputSheetName]   
        
-       #We will put in a conditional format for "if all the others are not flagged as 'same'" to mark rows where something is added, removed or changed
-       $sameChecks    = @()
-       
-       #All the 'difference' columns in the sheet are labeled with the file they came from, 'reference' columns need their 
-       #headers prefixed with the ref file name,  $colnames is the basis of a regular expression to identify what should have $refPrefix appended  
-       $colNames      = @("_Row","^$Key`$") 
-       $refPrefix     = (Split-Path -Path $filestoProcess[0] -Leaf) -replace "\.xlsx$"," "  
-       
-       Write-Progress -Activity "Merging sheets" -CurrentOperation "Applying formatting to sheet '$OutputSheetName' in $OutputFile"
-       #Find the column headings which are in the form "diffFile  is"; which will hold 'Same', 'Added' or 'Changed'  
-       foreach ($cell in $sheet.Cells[($sheet.Dimension.Address -replace "\d+$","1")].Where({$_.value -match "\sIS$"}) ) {
+        #We will put in a conditional format for "if all the others are not flagged as 'same'" to mark rows where something is added, removed or changed
+        $sameChecks            = @()
+        
+        #All the 'difference' columns in the sheet are labeled with the file they came from, 'reference' columns need their 
+        #headers prefixed with the ref file name,  $colnames is the basis of a regular expression to identify what should have $refPrefix appended  
+        $colNames              = @("_Row") 
+        if ($key -ne "*") 
+              {$colnames      += $Key}
+        if ($filesToProcess.Count -ge 2) {
+              $refPrefix       = (Split-Path -Path $filestoProcess[0] -Leaf) -replace "\.xlsx$"," "  
+        }
+        else {$refPrefix       = $WorkSheetName[0] }
+        Write-Progress -Activity "Merging sheets" -CurrentOperation "Applying formatting to sheet '$OutputSheetName' in $OutputFile"
+        #Find the column headings which are in the form "diffFile  is"; which will hold 'Same', 'Added' or 'Changed'  
+        foreach ($cell in $sheet.Cells[($sheet.Dimension.Address -replace "\d+$","1")].Where({$_.value -match "\sIS$"}) ) {
            #Work leftwards across the headings applying conditional formatting which says 
            # 'Format this cell if the "IS" column has a value of ...' until you find a heading which doesn't have the prefix. 
-           $prefix    = $cell.value -replace  "\sIS$","" 
-           $columnNo  = $cell.start.Column -1 
-           $cellAddr  = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R1C$columnNo",1,$columnNo) 
+           $prefix             = $cell.value -replace  "\sIS$","" 
+           $columnNo           = $cell.start.Column -1 
+           $cellAddr           = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R1C$columnNo",1,$columnNo) 
            while ($sheet.cells[$cellAddr].value -match $prefix) {
                $condFormattingParams =  @{RuleType='Expression'; BackgroundPattern='None'; WorkSheet=$sheet; Range=$([OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[1]C[$columnNo]:R[1048576]C[$columnNo]",0,0)) }    
                Add-ConditionalFormatting @condFormattingParams -ConditionValue ($cell.Address + '="Added"'  ) -BackgroundColor $AddBackgroundColor 
                Add-ConditionalFormatting @condFormattingParams -ConditionValue ($cell.Address + '="Changed"') -BackgroundColor $ChangeBackgroundColor 
                Add-ConditionalFormatting @condFormattingParams -ConditionValue ($cell.Address + '="Removed"') -BackgroundColor $DeleteBackgroundColor 
                $columnNo -- 
-               $cellAddr = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R1C$columnNo",1,$columnNo) 
+               $cellAddr       = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R1C$columnNo",1,$columnNo) 
            }
            #build up a list of prefixes in $colnames - we'll use that to set headers on rows from the reference file; and build up the "if the 'is' cell isn't same" list
-           $colNames    += $prefix
-           $sameChecks  += (($cell.Address -replace "1","2") +'<>"Same"')
-       }
+           $colNames          += $prefix
+           $sameChecks        += (($cell.Address -replace "1","2") +'<>"Same"')
+        }
        
-       #For all the columns which don't match one of the Diff-file prefixes or "_Row" or the 'Key' columnn name; add the reference file prefix to their header.   
-       $nameRegex = $colNames -Join "|"  
-       foreach ($cell in $sheet.Cells[($sheet.Dimension.Address -replace "\d+$","1")].Where({$_.value -Notmatch $nameRegex}) ) {
-           $cell.Value = $refPrefix + $cell.Value
-       }
-       #We've made a bunch of things wider so now is the time to autofit columns. Any hiding has to come AFTER this, because it unhides things 
-       $sheet.Cells.AutoFitColumns() 
-       
-       #if we have a key field (we didn't concatenate all fields) use what we built up in $sameChecks to apply conditional formatting to it (Row no will be in column A, Key in Column B) 
-       if ($Key -ne '*') {
-           Add-ConditionalFormatting -WorkSheet $sheet -Range "B2:B1048576" -ForeGroundColor $KeyFontColor -BackgroundPattern 'None' -RuleType Expression -ConditionValue ("OR(" +($sameChecks -join ",") +")" )   
-       }
-       #Go back over the headings to find and hide the "is" columns; 
-       foreach ($cell in $sheet.Cells[($sheet.Dimension.Address -replace "\d+$","1")].Where({$_.value -match "\sIS$"}) ) {
+        #For all the columns which don't match one of the Diff-file prefixes or "_Row" or the 'Key' columnn name; add the reference file prefix to their header.   
+        $nameRegex             = $colNames -Join "|"  
+        foreach ($cell in $sheet.Cells[($sheet.Dimension.Address -replace "\d+$","1")].Where({$_.value -Notmatch $nameRegex}) ) {
+           $cell.Value         = $refPrefix + $cell.Value
+           $condFormattingParams =  @{RuleType='Expression'; BackgroundPattern='None'; WorkSheet=$sheet; Range=[OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[2]C[$($cell.start.column)]:R[1048576]C[$($cell.start.column)]",0,0)}
+           Add-ConditionalFormatting @condFormattingParams -ConditionValue ("OR(" +(($sameChecks -join ",") -replace '<>"Same"','="Added"') +")" )   -BackgroundColor $DeleteBackgroundColor 
+        }
+        #We've made a bunch of things wider so now is the time to autofit columns. Any hiding has to come AFTER this, because it unhides things 
+        $sheet.Cells.AutoFitColumns() 
+        
+        #if we have a key field (we didn't concatenate all fields) use what we built up in $sameChecks to apply conditional formatting to it (Row no will be in column A, Key in Column B) 
+        if ($Key -ne '*') {
+              Add-ConditionalFormatting -WorkSheet $sheet -Range "B2:B1048576" -ForeGroundColor $KeyFontColor -BackgroundPattern 'None' -RuleType Expression -ConditionValue ("OR(" +($sameChecks -join ",") +")" )   
+              $sheet.view.FreezePanes(2, 3)
+        }
+        else {$sheet.view.FreezePanes(2, 2) }
+        #Go back over the headings to find and hide the "is" columns; 
+        foreach ($cell in $sheet.Cells[($sheet.Dimension.Address -replace "\d+$","1")].Where({$_.value -match "\sIS$"}) ) {
            $sheet.Column($cell.start.Column).HIDDEN = $true
-       }
+        }
        
-       #If specified, look over the headings for "row" and hide the columns which say "this was in row such-and-such"        
-       if ($HideRowNumbers) {
+        #If specified, look over the headings for "row" and hide the columns which say "this was in row such-and-such"        
+        if ($HideRowNumbers) {
            foreach ($cell in $sheet.Cells[($sheet.Dimension.Address -replace "\d+$","1")].Where({$_.value -match "Row$"}) ) {
                $sheet.Column($cell.start.Column).HIDDEN = $true
            }
-       }
+        }
        
-       Close-ExcelPackage -ExcelPackage $excel -Show:$Show  
-       Write-Progress -Activity "Merging sheets" -Completed
+        Close-ExcelPackage -ExcelPackage $excel -Show:$Show  
+        Write-Progress -Activity "Merging sheets" -Completed
    }
- }
-
- 
+}
