@@ -25,7 +25,7 @@ Begin {
             'AddConditionalFormatting.ps1',
             'Charting.ps1',
             'ColorCompletion.ps1',
-            'compare-Worksheet.ps1',
+            'Compare-Worksheet.ps1',
             'ConvertFromExcelData.ps1',
             'ConvertFromExcelToSQLInsert.ps1',
             'ConvertExcelToImageFile.ps1',

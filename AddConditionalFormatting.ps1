@@ -85,11 +85,12 @@
         [switch]$StrikeThru
     )
     #Allow add conditional formatting to work like Set-Format (with single ADDRESS parameter) split it to get worksheet and Range of cells.  
-    If ($Address -and -not $WorkSheet -and -not $Range) {
+    if ($Address -and -not $WorkSheet -and -not $Range) {
         $WorkSheet = $Address.Worksheet[0]
         $Range     = $Address.Address 
-    }    
-    If ($ThreeIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)}
+    }
+    if ($rule -eq "Databar" -and -not $databarColor) {Write-Warning -Message "-DatabarColor must be specified for the Databar rule type"    }    
+    if (   $ThreeIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)}
     elseif ($FourIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet) }
     elseif ($FiveIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Range , $IconType)     }
     elseif ($DataBarColor) {$rule = $WorkSheet.ConditionalFormatting.AddDatabar(     $Range , $DataBarColor) }

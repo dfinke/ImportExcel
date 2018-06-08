@@ -1,4 +1,4 @@
-﻿ ipmo C:\Users\mcp\Documents\GitHub\ImportExcel\ImportExcel.psd1     -Force -Verbose                                                                                                                 
+﻿ Import-Module -name ImportExcel -Force -Verbose                                                                                                                 
 
 $sql           = @"
   SELECT     rootfile.baseName     ,  rootfile.extension   , Image.fileWidth         AS width             ,  image.fileHeight AS height ,  
