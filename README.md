@@ -37,8 +37,31 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
-- [James O'Neill](https://twitter.com/jamesoneill) added `Compare-Worksheet`
-    - Compares two worksheets with the same name in different files.
+#### 06/08/2018
+Thank you again to [James O'Neill](https://twitter.com/jamesoneill) for the lion share of these updates.
+Most notably the performance gains in the `Import-Excel` function.
+
+In addition, I have started to create tests and wired up Appveyor for continuous integration
+
+This release will be bumped to 5.0.0 and will be published officially after more testing.
+
+* added databar to Examples
+* Fix databar example
+* increased how long the import should take
+* Renamed test directory
+* Added PSVersion. Point to the new directory for tests
+* Added EndRow, StartColumn, EndColumn to Import-Excel
+* Added Merge-MultipleSheets to argument completers
+* added build badge
+* Making Merge-Worksheet, and Merge-MultipleWorksheet ready to release
+* Added Merge Multiple worksheet
+* Revert "Added Multiple Merge to Merge-Worksheet.ps1"
+* Added Multiple Merge to Merge-Worksheet.ps1
+* Added Merge-worksheet
+* Force install of pester
+* Checks version of pester on appveyor
+* First step to wire up appveyor
+* 13 days ago : Tidying of case, parameter clarity, removal of aliases. Added timeout to send-SqlDataToExcel Added Merge WorkSheet Fixed bugs in Compare-Worksheet
 
 #### 4/22/2018
 Thanks to the community yet again
