@@ -299,6 +299,8 @@
             It then uses the package object to apply formatting, and then saves the workbook and disposes of the object before loading the document in Excel.
 
         .EXAMPLE
+            Remove-Item -Path .\test.xlsx -ErrorAction Ignore
+
             $excel = Get-Process | Select-Object -Property Name,Company,Handles,CPU,PM,NPM,WS | Export-Excel -Path .\test.xlsx -ClearSheet -WorkSheetname "Processes" -PassThru
             $sheet = $excel.Workbook.Worksheets["Processes"]
             $sheet.Column(1) | Set-Format -Bold -AutoFit
@@ -309,7 +311,7 @@
             Set-Format -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
             Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor Red
             Add-ConditionalFormatting -WorkSheet $sheet -Range "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600" -ForeGroundColor Red
-            foreach ($c in 5..9) {Set-Format $sheet.Column($c)  -AutoFit }
+            foreach ($c in 5..9) {Set-Format -Address $sheet.Column($c)  -AutoFit }
             Export-Excel -ExcelPackage $excel -WorkSheetname "Processes" -IncludePivotChart -ChartType ColumnClustered -NoLegend -PivotRows company  -PivotData @{'Name'='Count'}  -Show
 
             This a more sophisticated version of the previous example showing different ways of using Set-Format, and also adding conditional formatting.
@@ -713,7 +715,7 @@
                 $tbl = $ws.Tables.Add($targetRange, $TableName)
                 $tbl.TableStyle = $TableStyle
             }
-            
+
             $PivotTableStartCell = "A1"
             if($PivotFilter) {$PivotTableStartCell = "A3"}
 
@@ -1014,7 +1016,7 @@
                         write-error "The -ReZip parameter requires .NET Framework 4.5 or later to be installed. Recommend to install Powershell v4+"
                         continue
                     }
-                    
+
                     $TempZipPath = Join-Path -path ([System.IO.Path]::GetTempPath()) -ChildPath ([System.IO.Path]::GetRandomFileName())
                     [io.compression.zipfile]::ExtractToDirectory($pkg.File,$TempZipPath) | Out-Null
                     Remove-Item $pkg.File -Force
