@@ -91,6 +91,9 @@ Function Import-Excel {
 
        When the parameters ‘-NoHeader’ and ‘-HeaderName’ are not provided, this row will contain the column headers that will be used as property names. When one of both parameters are provided, the property names are automatically created and this row will be treated as a regular row containing data.
 
+   .PARAMETER EndRow
+       By default all rows up to the last cell in the sheet will be imported. If specified, import stops at this row.  
+
    .PARAMETER Password
        Accepts a string that will be used to open a password protected Excel file.
 
@@ -248,12 +251,18 @@ Function Import-Excel {
         [ValidateNotNullOrEmpty()]
         [String]$WorksheetName,
         [Parameter(ParameterSetName='B', Mandatory)]
-        [String[]]$HeaderName,
+        [String[]]$HeaderName ,
         [Parameter(ParameterSetName='C', Mandatory)]
-        [Switch]$NoHeader,
+        [Switch]$NoHeader     ,
         [Alias('HeaderRow','TopRow')]
         [ValidateRange(1, 9999)]
         [Int]$StartRow = 1,
+        [Alias('StopRow','BottomRow')]
+        [Int]$EndRow ,
+        [Alias('LeftColumn')]
+        [Int]$StartColumn = 1,
+        [Alias('RightColumn')]
+        [Int]$EndColumn  ,
         [Switch]$DataOnly,
         [ValidateNotNullOrEmpty()]
         [String]$Password
@@ -340,10 +349,13 @@ Function Import-Excel {
             Write-Debug $sw.Elapsed.TotalMilliseconds
             #region Get rows and columns
             #If we are doing dataonly it is quicker to work out which rows to ignore before processing the cells.
+            if (-not $EndRow   ) {$EndRow    = $Worksheet.Dimension.End.Row    }
+            if (-not $EndColumn) {$EndColumn = $Worksheet.Dimension.End.Column }
+            $endAddress = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$EndRow]C[$EndColumn]",0,0)
             if ($DataOnly) {
                 #If we are using headers startrow will be the headerrow so examine data from startRow + 1,
-                if ($NoHeader) {$range = "A" + ($StartRow     ) + ":" + $Worksheet.Dimension.End.Address }
-                else           {$range = "A" + ($StartRow + 1 ) + ":" + $Worksheet.Dimension.End.Address }
+                if ($NoHeader) {$range = "A" + ($StartRow     ) + ":" + $endAddress }
+                else           {$range = "A" + ($StartRow + 1 ) + ":" + $endAddress }
                 #We're going to look at every cell and build 2 hash tables holding rows & columns which contain data.
                 #Want to Avoid 'select unique' operations & large Sorts, becuse time time taken increases with square
                 #of number of items (PS uses heapsort at large size). Instead keep a list of what we have seen,
@@ -351,15 +363,15 @@ Function Import-Excel {
                 $colHash = @{}
                 $rowHash = @{}
                 foreach ($cell in $Worksheet.Cells[$range]) {
-                    if ($cell.Value -ne $null) {$colHash[$cell.Start.Column]=1;  $rowHash[$cell.Start.row]=1 }
+                     if ($cell.Value -ne $null) {$colHash[$cell.Start.Column]=1;  $rowHash[$cell.Start.row]=1 }
                 }
-                $rows    = ($StartRow..($Worksheet.Dimension.End.Row)).Where({$rowHash[$_]})
-                $columns = (1..($Worksheet.Dimension.End.Column)     ).Where({$colHash[$_]})
+                $rows    = (   $StartRow..$EndRow   ).Where({$rowHash[$_]})
+                $columns = ($StartColumn..$EndColumn).Where({$colHash[$_]})
             }
             else {
-                $Columns = ($Worksheet.Dimension.Start.Column)..($Worksheet.Dimension.End.Column)
-                if ($NoHeader)  {$Rows = (    $StartRow)..($Worksheet.Dimension.End.Row) }
-                else            {$Rows = (1 + $StartRow)..($Worksheet.Dimension.End.Row) }
+                $Columns = $StartColumn..$EndColumn  ;              if ($StartColumn -gt $EndColumn) {Write-Warning -Message "Selecting columns $StartColumn to $EndColumn might give odd results."}
+                if ($NoHeader)  {$Rows = (    $StartRow)..$EndRow ; if ($StartRow    -gt $EndRow)    {Write-Warning -Message "Selecting rows $StartRow to $EndRow might give odd results."} }
+                else            {$Rows = (1 + $StartRow)..$EndRow ; if ($StartRow    -ge $EndRow)    {Write-Warning -Message "Selecting $StartRow as the header with data in $(1+$StartRow) to $EndRow might give odd results."}}
             }
             #endregion
             #region Create property names
