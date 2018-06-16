@@ -20,22 +20,26 @@ function Test-APIReadXls {
                 $params.Uri += "?{0}" -f $record.QueryString
             }
 
-@"
+            @"
 
     it "Should have the expected result '$($record.ExpectedResult)'" {
         `$target = '$($params | ConvertTo-Json -compress)' | ConvertFrom-Json
-        `$target.psobject.Properties.name | % {`$p=@{}} {`$p.`$_=`$(`$target.`$_)}
+
+        `$target.psobject.Properties.name | ForEach-Object {`$p=@{}} {`$p.`$_=`$(`$target.`$_)}
+
         Invoke-RestMethod @p | Should Be '$($record.ExpectedResult)'
     }
 
 "@
         })
 
-@"
+    $testFileName = "{0}.tests.ps1" -f (get-date).ToString("yyyyMMddHHmmss.fff")
+
+    @"
 Describe "Tests from $($XlFilename) in $($WorksheetName)" {
 $($blocks)
 }
-"@
-}
+"@ | Set-Content -Encoding Ascii $testFileName
 
-Test-APIReadXls .\testlist.xlsx
+    Invoke-Pester -Script (dir $testFileName)
+}
