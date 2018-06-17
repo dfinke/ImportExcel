@@ -20,6 +20,7 @@
     . $PSScriptRoot\Import-Html.ps1
     . $PSScriptRoot\InferData.ps1
     . $PSScriptRoot\Invoke-Sum.ps1
+    . $PSScriptRoot\Join-WorkSheet.ps1
     . $PSScriptRoot\Merge-Worksheet.ps1
     . $PSScriptRoot\New-ConditionalFormattingIconSet.ps1
     . $PSScriptRoot\New-ConditionalText.ps1
@@ -53,7 +54,7 @@
         Write-Warning 'PowerShell Excel is ready, except for that functionality'
     }
 #endregion
-Function Import-Excel {
+function Import-Excel {
   <#
    .SYNOPSIS
        Create custom objects from the rows in an Excel worksheet.
@@ -94,6 +95,12 @@ Function Import-Excel {
    .PARAMETER EndRow
        By default all rows up to the last cell in the sheet will be imported. If specified, import stops at this row.  
 
+   .PARAMETER StartColumn
+        The number of the first column to read data from (1 by default). 
+        
+   .PARAMETER EndColumn
+        By default the import reads up to the last populated column, -EndColumn tells the import to stop at an earlier number. 
+     
    .PARAMETER Password
        Accepts a string that will be used to open a password protected Excel file.
 
@@ -359,7 +366,7 @@ Function Import-Excel {
                 #We're going to look at every cell and build 2 hash tables holding rows & columns which contain data.
                 #Want to Avoid 'select unique' operations & large Sorts, becuse time time taken increases with square
                 #of number of items (PS uses heapsort at large size). Instead keep a list of what we have seen,
-                #using Hash tables: "we've seen it" is all we need, no need to worry about "seen it before" / "Seen it many times"
+                #using Hash tables: "we've seen it" is all we need, no need to worry about "seen it before" / "Seen it many times".
                 $colHash = @{}
                 $rowHash = @{}
                 foreach ($cell in $Worksheet.Cells[$range]) {
@@ -416,38 +423,95 @@ Function Import-Excel {
 }
 
 function Add-WorkSheet {
+    [cmdletBinding()] 
+    [OutputType([OfficeOpenXml.ExcelWorksheet])]
     param(
-        #TODO Use parametersets to allow a workbook to be passed instead of a package
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [OfficeOpenXml.ExcelPackage] $ExcelPackage,
-        [Parameter(Mandatory=$true)]
-        [string] $WorkSheetname,
-        [switch] $ClearSheet,
-        [Switch] $NoClobber
+        #An object representing an Excel Package.
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, ParameterSetName = "Package", Position=0)]
+        [OfficeOpenXml.ExcelPackage]$ExcelPackage,
+        #An Excel workbook to which the Worksheet will be added - a package contains one workbook so you can use whichever fits at the time.  
+        [Parameter(Mandatory=$true,  ParameterSetName = "WorkBook")]
+        [OfficeOpenXml.ExcelWorkbook]$ExcelWorkbook,
+        #The name of the worksheet 'Sheet1' by default.
+        [string]$WorkSheetname = 'Sheet1',
+        #If the worksheet already exists, by default it will returned, unless -ClearSheet is specified in which case it will be deleted and re-created.  
+        [switch]$ClearSheet,
+        #If specified, the worksheet will be moved to the start of the workbook.
+        #MoveToStart takes precedence over MoveToEnd, Movebefore and MoveAfter if more than one is specified.
+        [Switch]$MoveToStart,  
+        #If specified, the worksheet will be moved to the end of the workbook.
+        #(This is the default position for newly created sheets, but this can be used to move existing sheets.)
+        [Switch]$MoveToEnd, 
+        #If specified, the worksheet will be moved before the nominated one (which can be a postion starting from 1, or a name). 
+        #MoveBefore takes precedence over MoveAfter if both are specified. 
+        $MoveBefore ,
+        # If specified, the worksheet will be moved after the nominated one (which can be a postion starting from 1, or a name or *).
+        # If * is used, the worksheet names will be examined starting with the first one, and the sheet placed after the last sheet which comes before it alphabetically.   
+        $MoveAfter ,
+        #If worksheet is provided as a copy source the new worksheet will be a copy of it. The source can be in the same workbook, or in a different file.
+        [OfficeOpenXml.ExcelWorksheet]$CopySource,
+        #Ignored but retained for backwards compatibility. 
+        [Switch] $NoClobber        
     )
 
-    $ws = $ExcelPackage.Workbook.Worksheets[$WorkSheetname]
-    if($ClearSheet -and $ws) {$ExcelPackage.Workbook.Worksheets.Delete($WorkSheetname) ; $ws = $null }
-    if(!$ws) {
-        Write-Verbose "Add worksheet '$WorkSheetname'"
-        $ws=$ExcelPackage.Workbook.Worksheets.Add($WorkSheetname)
-    }
+    if ($ExcelPackage -and -not $ExcelWorkbook) {$ExcelWorkbook = $ExcelPackage.Workbook}
 
+    $ws = $ExcelWorkbook.Worksheets[$WorkSheetname]
+    if( $ws -and $ClearSheet) { $ExcelWorkbook.Worksheets.Delete($WorkSheetname) ; $ws = $null }
+    if(!$ws -and $CopySource) {
+        Write-Verbose -Message "Copying into worksheet '$WorkSheetname'."
+        $ws=$ExcelWorkbook.Worksheets.Add($WorkSheetname, $CopySource)
+    }
+    elseif(!$ws) {
+        Write-Verbose -Message "Adding worksheet '$WorkSheetname'."
+        $ws=$ExcelWorkbook.Worksheets.Add($WorkSheetname)
+    }
+    else {Write-Verbose -Message "Worksheet '$WorkSheetname' already existed."}
+    if     ($MoveToStart) {$ExcelWorkbook.Worksheets.MoveToStart($worksheetName) }
+    elseif ($MoveToEnd  ) {$ExcelWorkbook.Worksheets.MoveToEnd($worksheetName)   }
+    elseif ($MoveBefore ) {
+        if ($ExcelWorkbook.Worksheets[$MoveBefore]) {
+            if ($MoveBefore -is [int]) {
+                    $ExcelWorkbook.Worksheets.MoveBefore($ws.Index, $MoveBefore)
+            } 
+            else  {$ExcelWorkbook.Worksheets.MoveBefore($worksheetname, $MoveBefore)}
+        }
+        else {Write-Warning "Can't find worksheet '$MoveBefore'; worsheet '$WorkSheetname' will not be moved."}
+    }
+    elseif ($MoveAfter  ) {
+        if ($MoveAfter = "*") {
+            if ($WorkSheetname -lt $ExcelWorkbook.Worksheets[1].Name) {$ExcelWorkbook.Worksheets.MoveToStart($worksheetName)}
+            else {
+                $i = 1
+                While ($i -lt $ExcelWorkbook.Worksheets.Count -and $ExcelWorkbook.Worksheets[$i + 1].Name -lt $worksheetname ) { $i++}
+                $ExcelWorkbook.Worksheets.MoveAfter($ws.Index, $i)
+            }
+        } 
+        elseif ($ExcelWorkbook.Worksheets[$MoveAfter]) {
+            if ($MoveAfter -is [int]) {
+                $ExcelWorkbook.Worksheets.MoveAfter($ws.Index, $MoveAfter)
+            } 
+            else {
+                $ExcelWorkbook.Worksheets.MoveAfter($worksheetname, $MoveAfter)
+            }
+        }
+        else {Write-Warning "Can't find worksheet '$MoveAfter'; worsheet '$WorkSheetname' will not be moved."}
+        }
     return $ws
 }
 
 function ConvertFrom-ExcelSheet {
     <#
-        .Synopsis
-        Reads an Excel file an converts the data to a delimited text file
+      .Synopsis
+        Reads an Excel file an converts the data to a delimited text file.
 
-        .Example
+      .Example
         ConvertFrom-ExcelSheet .\TestSheets.xlsx .\data
-        Reads each sheet in TestSheets.xlsx and outputs it to the data directory as the sheet name with the extension .txt
+        Reads each sheet in TestSheets.xlsx and outputs it to the data directory as the sheet name with the extension .txt.
 
-        .Example
+      .Example
         ConvertFrom-ExcelSheet .\TestSheets.xlsx .\data sheet?0
-        Reads and outputs sheets like Sheet10 and Sheet20 form TestSheets.xlsx and outputs it to the data directory as the sheet name with the extension .txt
+        Reads and outputs sheets like Sheet10 and Sheet20 form TestSheets.xlsx and outputs it to the data directory as the sheet name with the extension .txt.
     #>
 
     [CmdletBinding()]

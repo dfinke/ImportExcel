@@ -2,99 +2,98 @@
     <#
         .SYNOPSIS
             Export data to an Excel worksheet.
-
         .DESCRIPTION
             Export data to an Excel file and where possible try to convert numbers so Excel recognizes them as numbers instead of text. After all. Excel is a spreadsheet program used for number manipulation and calculations. In case the number conversion is not desired, use the parameter '-NoNumberConversion *'.
         .PARAMETER Path
-            Path to a new or existing .XLSX file
+            Path to a new or existing .XLSX file.
         .PARAMETER  ExcelPackage
             An object representing an Excel Package - usually this is returned by specifying -Passthru allowing multiple commands to work on the same Workbook without saving and reloading each time.
         .PARAMETER WorkSheetName
-            The name of a sheet within the workbook - "Sheet1" by default
+            The name of a sheet within the workbook - "Sheet1" by default.
         .PARAMETER ClearSheet
-            If specified Export-Excel will remove any existing worksheet with the selected name. The Default behaviour is to overwrite cells in this sheet as needed (but leaving non-overwritten ones in place)
+            If specified Export-Excel will remove any existing worksheet with the selected name. The Default behaviour is to overwrite cells in this sheet as needed (but leaving non-overwritten ones in place).
         .PARAMETER Append
             If specified data will be added to the end of an existing sheet, using the same column headings.
         .PARAMETER TargetData
             Data to insert onto the worksheet - this is often provided from the pipeline.
         .PARAMETER ExcludeProperty
-            Specifies properties which may exist in the target data but should not be placed on the worksheet
+            Specifies properties which may exist in the target data but should not be placed on the worksheet.
         .PARAMETER Title
-            Text of a title to be placed in Cell A1
+            Text of a title to be placed in Cell A1.
         .PARAMETER TitleBold
-            Sets the title in boldface type
+            Sets the title in boldface type.
         .PARAMETER TitleSize
-            Sets the point size for the title
+            Sets the point size for the title.
         .PARAMETER TitleBackgroundColor
-            Sets the cell background color for the title cell
+            Sets the cell background color for the title cell.
         .PARAMETER TitleFillPattern
-            Sets the fill pattern for the title cell
+            Sets the fill pattern for the title cell.
         .PARAMETER Password
-            Sets password protection on the workbook
+            Sets password protection on the workbook.
         .PARAMETER IncludePivotTable
-            Adds a Pivot table using the data in the worksheet
+            Adds a Pivot table using the data in the worksheet.
         .PARAMETER PivotRows
-            Name(s) columns from the spreadhseet which will provide the row name(s) in the pivot table
+            Name(s) columns from the spreadhseet which will provide the row name(s) in the pivot table.
         .PARAMETER PivotColumns
-            Name(s) columns from the spreadhseet which will provide the Column name(s) in the pivot table
+            Name(s) columns from the spreadhseet which will provide the Column name(s) in the pivot table.
         .PARAMETER PivotData
-            Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP to provide the data in the Pivot table
+            Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP to provide the data in the Pivot table.
         .PARAMETER PivotTableDefinition,
             HashTable(s) with Sheet PivotTows, PivotColumns, PivotData, IncludePivotChart and ChartType values to make it easier to specify a definition or multiple Pivots.
         .PARAMETER IncludePivotChart,
              Include a chart with the Pivot table - implies Include Pivot Table.
         .PARAMETER NoLegend
-            Exclude the legend from the pivot chart
+            Exclude the legend from the pivot chart.
         .PARAMETER ShowCategory
-            Add category labels to the pivot chart
+            Add category labels to the pivot chart.
         .PARAMETER ShowPercent
-            Add Percentage labels to the pivot chart
+            Add Percentage labels to the pivot chart.
         .PARAMETER ConditionalText
             Applies a 'Conditional formatting rule' in Excel on all the cells. When specific conditions are met a rule is triggered.
         .PARAMETER NoNumberConversion
             By default we convert all values to numbers if possible, but this isn't always desirable. NoNumberConversion allows you to add exceptions for the conversion. Wildcards (like '*') are allowed.
         .PARAMETER BoldTopRow
-            Makes the top Row boldface
+            Makes the top Row boldface.
         .PARAMETER NoHeader
-            Does not put field names at the top of columns
+            Does not put field names at the top of columns.
         .PARAMETER RangeName
-            Makes the data in the worksheet a named range
+            Makes the data in the worksheet a named range.
         .PARAMETER TableName
-            Makes the data in the worksheet a table with a name applies a style to it. Name must not contain spaces
+            Makes the data in the worksheet a table with a name applies a style to it. Name must not contain spaces.
         .PARAMETER TableStyle
-            Selects the style for the named table - defaults to 'Medium6'
+            Selects the style for the named table - defaults to 'Medium6'.
         .PARAMETER ExcelChartDefinition
-            A hash table containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts
+            A hash table containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts.
         .PARAMETER HideSheet
-            Name(s) of Sheet(s) to hide in the workbook
+            Name(s) of Sheet(s) to hide in the workbook.
         .PARAMETER MoveToStart 
             If specified, the worksheet will be moved to the start of the workbook.
-            MoveToStart takes precedence over MoveToEnd, Movebefore and MoveAfter if more than one is specified
+            MoveToStart takes precedence over MoveToEnd, Movebefore and MoveAfter if more than one is specified.
         .PARAMETER MoveToEnd 
             If specified, the worksheet will be moved to the end of the workbook. 
-            (This is the default position for newly created sheets, but this can be used to move existing sheets) 
+            (This is the default position for newly created sheets, but this can be used to move existing sheets.) 
         .PARAMETER MoveBefore
             If specified, the worksheet will be moved before the nominated one (which can be a postion starting from 1, or a name). 
-            MoveBefore takes precedence over MoveAfter if both are specified
+            MoveBefore takes precedence over MoveAfter if both are specified.
         .PARAMETER MoveAfter
             If specified, the worksheet will be moved after the nominated one (which can be a postion starting from 1, or a name or *).
-            If * is used, the worksheet names will be examined starting with the first one sheet placed after the last sheet which comes before it alphabetically.   
+            If * is used, the worksheet names will be examined starting with the first one, and the sheet placed after the last sheet which comes before it alphabetically.   
         .PARAMETER KillExcel
-            Closes Excel - prevents errors writing to the file because Excel has it open
+            Closes Excel - prevents errors writing to the file because Excel has it open.
         .PARAMETER AutoNameRange
-            Makes each column a named range
+            Makes each column a named range.
         .PARAMETER StartRow
-            Row to start adding data. 1 by default. Row 1 will contain the title if any. Then headers will appear (Unless -No header is specified) then the data appears
+            Row to start adding data. 1 by default. Row 1 will contain the title if any. Then headers will appear (Unless -No header is specified) then the data appears.
         .PARAMETER StartColumn
-            Column to start adding data - 1 by default
+            Column to start adding data - 1 by default.
         .PARAMETER FreezeTopRow
-            Freezes headers etc. in the top row
+            Freezes headers etc. in the top row.
         .PARAMETER FreezeFirstColumn
-            Freezes titles etc. in the left column
+            Freezes titles etc. in the left column.
         .PARAMETER FreezeTopRowFirstColumn
-             Freezes top row and left column (equivalent to Freeze pane 2,2 )
+             Freezes top row and left column (equivalent to Freeze pane 2,2 ).
         .PARAMETER FreezePane
-             Freezes panes at specified coordinates (in the form  RowNumber , ColumnNumber)
+             Freezes panes at specified coordinates (in the form  RowNumber , ColumnNumber).
         .PARAMETER AutoFilter
             Enables the 'Filter' in Excel on the complete header row. So users can easily sort, filter and/or search the data in the select column from within Excel.
         .PARAMETER AutoSize
@@ -105,34 +104,34 @@
             Formats all values that can be converted to a number to the format specified.
 
             Examples:
-            # integer (not really needed unless you need to round numbers, Excel with use default cell properties)
+            # integer (not really needed unless you need to round numbers, Excel will use default cell properties).
             '0'
 
-            # integer without displaying the number 0 in the cell
+            # integer without displaying the number 0 in the cell.
             '#'
 
-            # number with 1 decimal place
+            # number with 1 decimal place.
             '0.0'
 
-            # number with 2 decimal places
+            # number with 2 decimal places.
             '0.00'
 
-            # number with 2 decimal places and thousand separator
+            # number with 2 decimal places and thousand separator.
             '#,##0.00'
 
-            # number with 2 decimal places and thousand separator and money symbol
+            # number with 2 decimal places and thousand separator and money symbol.
             '€#,##0.00'
 
             # percentage (1 = 100%, 0.01 = 1%)
             '0%'
 
-            # Blue color for positive numbers and a red color for negative numbers. All numbers will proceed a dollar sign '$'.
+            # Blue color for positive numbers and a red color for negative numbers. All numbers will be proceeded by a dollar sign '$'.
             '[Blue]$#,##0.00;[Red]-$#,##0.00'
 
         .PARAMETER Show
             Opens the Excel file immediately after creation. Convenient for viewing the results instantly without having to search for the file first.
         .PARAMETER PassThru
-            If specified, Export-Excel returns an object representing the Excel package without saving the package first. To save it you need to call the save or Saveas method or send it back to Export-Excel
+            If specified, Export-Excel returns an object representing the Excel package without saving the package first. To save it you need to call the save or Saveas method or send it back to Export-Excel.
 
         .EXAMPLE
             Get-Process | Export-Excel .\Test.xlsx -show
@@ -291,8 +290,8 @@
             Get-Process | Select-Object    -Property Name,Company,Handles,CPU,VM       | Export-Excel -Path .\test.xlsx -AutoSize -WorkSheetname 'sheet2'
             Export-Excel -Path .\test.xlsx -PivotTableDefinition $pt -Show
 
-            This example defines two pivot tables. Then it puts Service data on Sheet1 with one call to Export-Excel and Process Data on sheet2 with a second call to Export-Excel
-            The thrid and final call adds the two pivot tables and opens the spreadsheet in Excel
+            This example defines two pivot tables. Then it puts Service data on Sheet1 with one call to Export-Excel and Process Data on sheet2 with a second call to Export-Excel.
+            The thrid and final call adds the two pivot tables and opens the spreadsheet in Excel.
 
 
         .EXAMPLE
@@ -305,7 +304,7 @@
             $excel.Dispose()
             Start-Process .\test.xlsx
 
-            This example uses -passthrough - put service information into sheet1 of the work book and saves the excelPackageObject in $Excel
+            This example uses -passthrough - put service information into sheet1 of the work book and saves the excelPackageObject in $Excel.
             It then uses the package object to apply formatting, and then saves the workbook and disposes of the object before loading the document in Excel.
 
         .EXAMPLE
@@ -425,8 +424,8 @@
                 Save a value in an Excel cell.
 
               .DESCRIPTION
-                DateTime objects are always converted to a DateTime format in Excel. And formulas are always
-                saved as formulas.
+                DateTime objects are always converted to a short DateTime format in Excel. When Excel loads the file,
+                it applies the local format for dates. And formulas are always saved as formulas. URIs are set as hyperlinks in the file.
 
                 Numerical values will be converted to numbers as defined in the regional settings of the local
                 system. In case the parameter 'NoNumberConversion' is used, we don't convert to number and leave
@@ -495,11 +494,7 @@
 
         Try {
             $script:Header = $null
-            if ($append -and $clearSheet) {throw "You can't use -Append AND -ClearSheet."}
-            if ($KillExcel) {
-                Get-Process excel -ErrorAction Ignore | Stop-Process
-                while (Get-Process excel -ErrorAction Ignore) {}
-            }
+            if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
 
             if ($PSBoundParameters.Keys.Count -eq 0 -Or $Now) {
                 $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx'
@@ -511,55 +506,16 @@
             }
 
             if ($ExcelPackage) {
-                $pkg = $ExcelPackage
-                $Path = $pkg.File
+                   $pkg  = $ExcelPackage
+                   $Path = $pkg.File
             }
-            Else {
-                $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+            Else { $pkg  = Open-ExcelPackage -Path $Path -Create -KillExcel:$KillExcel}
+           
+            $params =  @{}
+            if ($NoClobber) {Write-Warning -Message "-NoClobber parameter is no longer used" }
+            foreach ($p in @("WorkSheetname","ClearSheet","MoveToStart","MoveToEnd","MoveBefore","MoveAfter")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
+            $ws = $pkg | Add-WorkSheet @params  
 
-                $targetPath = Split-Path $Path
-                if (!(Test-Path $targetPath)) {
-                    Write-Debug "Base path $($targetPath) does not exist, creating"
-                    $null = mkdir $targetPath -ErrorAction Ignore
-                }
-                elseif (Test-Path $Path) {
-                    Write-Debug "Path '$Path' already exists"
-                }
-
-                $pkg = New-Object OfficeOpenXml.ExcelPackage $Path
-            }
-
-            [OfficeOpenXml.ExcelWorksheet]$ws = $pkg | Add-WorkSheet -WorkSheetname $WorkSheetname -NoClobber:$NoClobber -ClearSheet:$ClearSheet  #Add worksheet doesn't take any action for -noClobber
-            if ($MoveToStart) {$pkg.Workbook.Worksheets.MoveToStart($worksheetName) }
-            elseif ($MoveToEnd) {$pkg.Workbook.Worksheets.MoveToEnd($worksheetName)   }
-            elseif ($MoveBefore) {
-                if ($pkg.Workbook.Worksheets[$MoveBefore]) {
-                    if ($MoveBefore -is [int]) {
-                        $pkg.Workbook.Worksheets.MoveBefore($ws.Index, $MoveBefore)
-                    } 
-                    else {$pkg.Workbook.Worksheets.MoveBefore($worksheetname, $MoveBefore)}
-                }
-                else {Write-Warning "Can't find worksheet '$MoveBefore'; worsheet '$WorkSheetname' will not be moved."}
-            }
-            elseif ($MoveAfter) {
-                if ($MoveAfter = "*") {
-                    if ($WorkSheetname -lt $pkg.Workbook.Worksheets[1].Name) {$pkg.Workbook.Worksheets.MoveToStart($worksheetName)}
-                    else {
-                        $i = 1
-                        While ($i -lt $pkg.Workbook.Worksheets.Count -and $pkg.Workbook.Worksheets[$i + 1].Name -lt $worksheetname ) { $i++}
-                        $pkg.Workbook.Worksheets.MoveAfter($ws.Index, $i)
-                    }
-                } 
-                elseif ($pkg.Workbook.Worksheets[$MoveAfter]) {
-                    if ($MoveAfter -is [int]) {
-                        $pkg.Workbook.Worksheets.MoveAfter($ws.Index, $MoveAfter)
-                    } 
-                    else {
-                        $pkg.Workbook.Worksheets.MoveAfter($worksheetname, $MoveAfter)
-                    }
-                }
-                else {Write-Warning "Can't find worksheet '$MoveAfter'; worsheet '$WorkSheetname' will not be moved."}
-            }
             $ws.View.TabSelected = $true
             foreach ($format in $ConditionalFormat ) {
                 $target = "Add$($format.Formatter)"
@@ -578,17 +534,17 @@
                 Write-Debug -Message ("Appending: headers are " + ($script:Header -join ", ") + "Start row $row")
             }
             elseif ($Title) {
-                #Can only add a title if not appending
+                #Can only add a title if not appending!
                 $Row = $StartRow
                 $ws.Cells[$Row, $StartColumn].Value = $Title
                 $ws.Cells[$Row, $StartColumn].Style.Font.Size = $TitleSize
 
                 if ($TitleBold) {
-                    #set title to Bold if -TitleBold was specified.
+                    #Set title to Bold face font if -TitleBold was specified.
                     #Otherwise the default will be unbolded.
                     $ws.Cells[$Row, $StartColumn].Style.Font.Bold = $True
                 }
-                #can only set TitleBackgroundColor if TitleFillPattern is something other than None
+                #Can only set TitleBackgroundColor if TitleFillPattern is something other than None.
                 if ($TitleBackgroundColor -and ($TitleFillPattern -eq 'None')) {
                     $TitleFillPattern = [OfficeOpenXml.Style.ExcelFillStyle]::Solid 
                 } 
@@ -599,9 +555,7 @@
                 }
                 $Row ++ ; $startRow ++
                 }
-                else { 
-                    $Row = $StartRow
-                }
+            else {  $Row = $StartRow }
             $ColumnIndex = $StartColumn
             $firstTimeThru = $true
             $isDataTypeValueType = $false
@@ -640,7 +594,7 @@
                         $script:Header = $TargetData.PSObject.Properties.Name | Where-Object {$_ -notin $ExcludeProperty}
 
                         if ($NoHeader) {
-                            # Don't push the headers to the spread sheet
+                            # Don't push the headers to the spreadsheet
                             $Row -= 1
                         }
                         else {
@@ -720,7 +674,7 @@
                 $cec = $ws.Dimension.End.Column # was $script:Header.Count
 
                 $targetRange = $ws.Cells[$csr, $csc, $cer, $cec]
-                #if we're appending data the table may already exist:  
+                #if we're appending data the table may already exist.  
                 if ($ws.Tables[$TableName]) {
                     $ws.Tables[$TableName].TableXml.table.ref = $targetRange.Address 
                     $ws.Tables[$TableName].TableStyle = $TableStyle
@@ -737,7 +691,7 @@
                     $pivotTableDataName = $item.Key + 'PivotTableData'
                     if ($item.Value.PivotFilter) {$PivotTableStartCell = "A3"} else { $PivotTableStartCell = "A1"} 
                    
-                    #Make sure the Pivot table sheet doesn't already exist
+                    #Make sure the Pivot table sheet doesn't already exist.
                     #try {      $pkg.Workbook.Worksheets.Delete(    $pivotTableName) } catch {}
                     [OfficeOpenXml.ExcelWorksheet]$wsPivot = $pkg | Add-WorkSheet -WorkSheetname $pivotTableName -NoClobber:$NoClobber
                     
@@ -751,15 +705,17 @@
                     } 
                     #if it is a pivot for a named sheet and it doesn't exist, create it. 
                     elseif ($item.Value.SourceWorkSheet -and -not $wsPivot.PivotTables[$pivotTableDataName] ) {
-                        $workSheet = $pkg.Workbook.Worksheets.where( {$_.name -match $item.Value.SourceWorkSheet})[0]  #removed find worksheet 
+                        #find the worksheet
+                        $workSheet = $pkg.Workbook.Worksheets.where( {$_.name -match $item.Value.SourceWorkSheet})[0]  
                         if (-not $workSheet) {Write-Warning -Message "Could not find Worksheet '$($item.Value.SourceWorkSheet)' specified in pivot-table definition $($item.key)." }
                         else {
-                            $targetDataRange = "{0}:{1}" -f $workSheet.Dimension.Start.Address, $workSheet.Dimension.End.Address
+                            if ($item.Value.SourceRange) { $targetdataRange = $item.Value.SourceRange } 
+                            else { $targetDataRange =  $workSheet.Dimension.Address} 
                             $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells[$PivotTableStartCell], $workSheet.Cells[$targetDataRange], $pivotTableDataName)
                         } 
                     }
 
-                    #if we created the pivot table, set up the rows, columns and data if we didn't, put out a message 'existed' or 'error' 
+                    #if we created the pivot table, set up the rows, columns and data if we didn't, put out a message 'existed' or 'error' .
                     if ($pivotTable) { 
                         foreach ($Row in $item.Value.PivotRows) {
                             try {$null = $pivotTable.RowFields.Add($pivotTable.Fields[$Row]) }
@@ -1059,29 +1015,72 @@
 }
 
 function New-PivotTableDefinition {
+<#
+  .Synopsis
+    Creates Pivot table definitons for export excel 
+  .Description
+    Export-Excel allows a single Pivot table to be defined using the parameters -IncludePivotTable, -PivotColumns -PivotRows, 
+      =PivotData, -PivotFilter, -NoTotalsInPivot, -PivotDataToColumn, -IncludePivotChart and -ChartType.
+    Its -PivotTableDefintion paramater allows multiple pivot tables to be defined, with additional parameters.
+    New-PivotTableDefinition is a convenient way to build these definitions. 
+   .Example 
+    $pt  = New-PivotTableDefinition -PivotTableName "PT1" -SourceWorkSheet "Sheet1" -PivotRows "Status"  -PivotData @{Status='Count' } -PivotFilter 'StartType' -IncludePivotChart  -ChartType BarClustered3D 
+    $Pt += New-PivotTableDefinition -PivotTableName "PT2" -SourceWorkSheet "Sheet2" -PivotRows "Company" -PivotData @{Company='Count'} -IncludePivotChart  -ChartType PieExploded3D  -ShowPercent -ChartTitle "Breakdown of processes by company"
+    Get-Service | Select-Object    -Property Status,Name,DisplayName,StartType | Export-Excel -Path .\test.xlsx -AutoSize
+    Get-Process | Select-Object    -Property Name,Company,Handles,CPU,VM       | Export-Excel -Path .\test.xlsx -AutoSize -WorkSheetname 'sheet2'
+    $excel = Export-Excel -Path .\test.xlsx -PivotTableDefinition $pt -Show 
+
+    This is a re-work of one of the examples in Export-Excel - instead of writing out the pivot definition hash table it is built by calling New-PivotTableDefinition. 
+#>
     param(
         [Parameter(Mandatory)]
         [Alias("PivtoTableName")]#Previous typo - use alias to avoid breaking scripts
         $PivotTableName,
+        #Worksheet where the data is found 
         $SourceWorkSheet,
+        #Address range in the worksheet e.g "A10:F20" - the first row must be column names: if not specified the whole sheet will be used/ 
+        $SourceRange, 
+        #Fields to set as rows in the Pivot table 
         $PivotRows,
+        #A hash table in form "FieldName"="Function", where function is one of 
+        #Average, Count, CountNums, Max, Min, Product, None, StdDev, StdDevP, Sum, Var, VarP
         [hashtable]$PivotData,
+        #Fields to set as columns in the Pivot table 
         $PivotColumns,
+        #Fields to use to filter in the Pivot table 
         $PivotFilter,
+        [Switch]$PivotDataToColumn,
         [Switch]$NoTotalsInPivot,
+        #If specified a chart Will be included. 
         [Switch]$IncludePivotChart,
+        #Optional title for the pivot chart, by default the title omitted.
         [String]$ChartTitle,
+        #Height of the chart in Pixels (400 by default)
         [int]$ChartHeight = 400 ,
+        #Width of the chart in Pixels (600 by default)
         [int]$ChartWidth = 600,
+        #Cell position of the top left corner of the chart, there will be this number of rows above the top edge of the chart (default is 0, chart starts at top edge of row 1). 
         [Int]$ChartRow = 0 ,
-        [Int]$ChartColumn = 6,
+        #Cell position of the top left corner of the chart, there will be this number of cells to the left of the chart (default is 4, chart starts at left edge of column E) 
+        [Int]$ChartColumn = 4,
+        #Vertical offset of the chart from the cell corner.
         [Int]$ChartRowOffSetPixels = 0 ,
+        #Horizontal offset of the chart from the cell corner.
         [Int]$ChartColumnOffSetPixels = 0,
+        #Type of chart
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = 'Pie',
+        #If specified hides the chart legend
         [Switch]$NoLegend,
+        #if specified attaches the category to slices in a pie chart : not supported on all chart types, this may give errors if applied to an unsupported type. 
         [Switch]$ShowCategory,
+        #If specified attaches percentages to slices in a pie chart.
         [Switch]$ShowPercent
     )
+    $validDataFuntions = [system.enum]::GetNames([OfficeOpenXml.Table.PivotTable.DataFieldFunctions])
+
+    if ($PivotData.values.Where({$_ -notin $validDataFuntions}) ) {
+        Write-Warning -Message ("Pivot data functions might not be valid, they should be one of " + ($validDataFuntions -join ", ") + ".")
+    }  
 
     $parameters = @{} + $PSBoundParameters
     $parameters.Remove('PivotTableName')
