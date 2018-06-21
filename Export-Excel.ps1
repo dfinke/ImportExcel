@@ -581,11 +581,11 @@
                 $ws.Cells[$headerRange].Value | foreach -Begin {$Script:header = @()} -Process {$Script:header += $_ }
                 #When creating a new file with Append, the row has to be set to the start row as no sheet exists yet to set a value from.
                 if ($ws.Dimension.Rows -eq $null) {
-					$row = $StartRow
-				} 
-				else {
-					$row = $ws.Dimension.Rows
-				}
+			$row = $StartRow
+		} 
+		else {
+			$row = $ws.Dimension.Rows
+		}
                 Write-Debug -Message ("Appending: headers are " + ($script:Header -join ", ") + "Start row $row")
             }
             elseif ($Title) {
