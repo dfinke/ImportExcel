@@ -1,90 +1,91 @@
-﻿Function Compare-Worksheet {
+﻿Function Compare-WorkSheet {
 <#
     .Synopsis 
-        Compares two worksheets (usually with the same name in different files). 
+        Compares two worksheets with the same name in different files. 
     .Description
-        This command takes two file names, one or two worksheet name(s) and a name for a 'key' column. 
-        It reads the worksheets and determines which column will be compared and  builds a hashtable of the values in the "key column" values and the rows they appear in.  
-        It then uses PowerShell's Compare-Object command to compare the sheets (explicity checking all the column names it selected).
-        For the 'difference' rows it adds the row number for the key of that row - we have to add the key *after* doing the comparison, 
-        otherwise rows will be considered as different simply because they have different row numbers. 
-        We also add the name of the file in which the difference occurs to the result.   
-        If -BackgroundColor is specified the difference rows in the source spreadsheet will have their background changed to identify the different rows.  
+        This command takes two file names, a worksheet name and a name for a key column. 
+        It reads the worksheet from each file and decides the column names.
+        It builds as hashtable of the key column values and the rows they appear in  
+        It then uses PowerShell's compare object command to compare the sheets (explicity checking all column names which have not been excluded)
+        For the difference rows it adds the row number for the key of that row - we have to add the key after doing the comparison, 
+        otherwise rows will be considered as different simply because they have different row numbers 
+        We also add the name of the file in which the difference occurs.  
+        If -BackgroundColor is specified the difference rows will be changed to that background. 
     .Example 
-        Compare-WorkSheet -Referencefile 'Server56.xlsx' -Differencefile 'Server57.xlsx' -WorkSheetName Products -key IdentifyingNumber -ExcludeProperty Install* | format-table
-        The two workbooks in this example contain the result of redirecting a subset of properties from Get-WmiObject -Class win32_product to Export-Excel.
+        Compare-WorkSheet -Referencefile 'Server56.xlsx' -Differencefile 'Server57.xlsx'  -WorkSheetName Products -key IdentifyingNumber -ExcludeProperty Install* | format-table
+        The two workbooks in this example contain the result of redirecting a subset of properties from Get-WmiObject -Class win32_product to Export-Excel
         The command compares the "products" pages in the two workbooks, but we don't want to register a differnce if if the software was installed on a 
-        different date or from a different place,  so specify -ExcludeProperty Install* removes InstallDate and InstallSource from the comparison. 
-        This data doesn't have a "name" column" so we specify the "IdentifyingNumber" column to be the key.  
-        PowerShell will output the differences formatted as a table.  
+        different date or from a different place,  so Excluding Install* removes InstallDate and InstallSource. 
+        This data doesn't have a "name" column" so we specify the "IdentifyingNumber" column as the key.  
+        The results will be presented as a table.  
     .Example 
-        Compare-WorkSheet "Server54.xlsx" "Server55.xlsx" -WorkSheetName services -GridView  
-        This time two workbooks contain the result of redirecting Get-WmiObject -Class win32_service to Export-Excel. 
-        Here the -Differencefile and -Referencefile parameter switches are assumed , and the default setting for -key ("Name") works for services.
+        compare-WorkSheet "Server54.xlsx" "Server55.xlsx" -WorkSheetName services -GridView  
+        This time two workbooks contain the result of redirecting Get-WmiObject -Class win32_service to Export-Excel 
+        Here the -Differencefile and -Referencefile parameter switches are assumed  , and the default setting for -key ("Name") works for services
         This will display the differences between the "services" sheets using a grid view 
     .Example 
         Compare-WorkSheet  'Server54.xlsx' 'Server55.xlsx'  -WorkSheetName Services -BackgroundColor lightGreen
         This version of the command outputs the differences between the "services" pages and also highlights any different rows in the spreadsheet files. 
     .Example 
         Compare-WorkSheet 'Server54.xlsx' 'Server55.xlsx'  -WorkSheetName Services -BackgroundColor lightGreen -FontColor Red -Show
-        This builds on the previous example: this time where two changed rows have the value in the "name" column (the default value for -key),
-        the command adds highlighting of the changed cells in red; and then opens the Excel file.
+        This builds on the previous example: this time Where two changed rows have the value in the "name" column (the default value for -key),
+        this version adds highlighting of the changed cells in red; and then opens the Excel file.
     .Example
         Compare-WorkSheet 'Pester-tests.xlsx' 'Pester-tests.xlsx' -WorkSheetName 'Server1','Server2' -Property "full Description","Executed","Result" -Key "full Description"
         This time the reference file and the difference file are the same file and two different sheets are used. Because the tests include the
-        machine name and time the test was run the command specifies a limited set of columns should be compared.    
+        machine name and time the test was run the command specifies a limited set of columns should be used.    
     .Example
         Compare-WorkSheet  'Server54.xlsx' 'Server55.xlsx' -WorkSheetName general -Startrow 2 -Headername Label,value -Key Label -GridView -ExcludeDifferent 
-        The "General" page has a title and two unlabelled columns with a row for CPU, Memory, Domain, Disk and so on. 
-        So the command is instructed to start at row 2 (skipping the title) and to name the columns: the first is "label" and the second "Value" with label acting as the key. 
-        This time we are interested only in the rows which are the same in both sheets, and the result is displayed using grid view. 
-        Note that grid view works best when the number of columns is small. 
+        The "General" page has a title and two unlabelled columns with a row forCPU, Memory, Domain, Disk and so on 
+        So the command is instructed to starts at row 2 to skip the title and to name the columns: the first is "label" and the Second "Value";
+         the label acts as the key. This time we interested the rows which are the same in both sheets, 
+        and the result is displayed using grid view. Note that grid view works best when the number of columns is small. 
     .Example
         Compare-WorkSheet 'Server1.xlsx' 'Server2.xlsx' -WorkSheetName general -Startrow 2 -Headername Label,value -Key Label -BackgroundColor White -Show -AllDataBackgroundColor LightGray
-        This version of the previous command highlights all the cells in lightgray and then sets the changed rows back to white so that
-        only the unchanged rows are highlighted
+        This version of the previous command lightlights all the cells in lightgray and then sets the changed rows back to white; only 
+        the unchanged rows are highlighted
 #>
     [cmdletbinding(DefaultParameterSetName)]
     Param(
-        #First file to compare. 
+        #First file to compare 
         [parameter(Mandatory=$true,Position=0)]
         $Referencefile ,
-        #Second file to compare.
+        #Second file to compare
         [parameter(Mandatory=$true,Position=1)]
         $Differencefile   ,
         #Name(s) of worksheets to compare.
         $WorkSheetName   = "Sheet1",
-        #Properties to include in the DIFF - supports wildcards, default is "*".
+        #Properties to include in the DIFF - supports wildcards, default is "*"
         $Property        = "*"    ,
-        #Properties to exclude from the the search - supports wildcards. 
+        #Properties to exclude from the the search - supports wildcards 
         $ExcludeProperty ,
-        #Specifies custom property names to use, instead of the values defined in the column headers of the Start row .
+        #Specifies custom property names to use, instead of the values defined in the column headers of the TopRow.
         [Parameter(ParameterSetName='B', Mandatory)]
         [String[]]$Headername,   
-        #Automatically generate property names (P1, P2, P3, ..) instead of the using the values the Start row of the sheet.
+        #Automatically generate property names (P1, P2, P3, ..) instead of the using the values the top row of the sheet
         [Parameter(ParameterSetName='C', Mandatory)]
         [switch]$NoHeader, 
-        #The row from where we start to import data, all rows above the Start row are disregarded. By default this is row 1.
+        #The row from where we start to import data, all rows above the StartRow are disregarded. By default this is the first row.
         [int]$Startrow = 1, 
         #If specified, highlights all the cells - so you can make Equal cells one colour, and Diff cells another. 
         [System.Drawing.Color]$AllDataBackgroundColor,
-        #If specified, highlights the DIFF rows.
+        #If specified, highlights the DIFF rows 
         [System.Drawing.Color]$BackgroundColor,
-        #If specified identifies the tabs which contain DIFF rows (ignored if -backgroundColor is omitted).
+        #If specified identifies the tabs which contain DIFF rows  (ignored if -backgroundColor is omitted)   
         [System.Drawing.Color]$TabColor,
-        #Name of a column which is unique and will be used to add a row to the DIFF object, default is "Name" .
+        #Name of a column which is unique and will be used to add a row to the DIFF object, default is "Name" 
         $Key             = "Name" ,
         #If specified, highlights the DIFF columns in rows which have the same key.  
         [System.Drawing.Color]$FontColor,
-        #If specified opens the Excel workbooks instead of outputting the diff to the console (unless -Passthru is also specified) .
+        #If specified opens the Excel workbooks instead of outputting the diff to the console (unless -passthru is also specified) 
         [Switch]$Show,
-        #If specified, the command tries to the show the DIFF in a Gridview and not on the console. (unless -Passthru is also specified). This Works best with few columns selected, and requires a key .
+        #If specified, the command tries to the show the DIFF in a Gridview and not on the console. (unless-Passthru is also specified). This Works best with few columns selected, and requires a key 
         [switch]$GridView,
         #If specified -Passthrough full set of diff data is returned without filtering to the specified properties 
         [Switch]$PassThru,
-        #If specified the result will include equal rows as well. By default only different rows are returned.
+        #If specified the result will include equal rows as well. By default only different rows are returned 
         [Switch]$IncludeEqual,
-        #If Specified the result includes only the rows where both are equal.
+        #If Specified the result includes only the rows where both are equal
         [Switch]$ExcludeDifferent
     )
     
@@ -113,7 +114,7 @@
     $headings = $Sheet1[-1].psobject.Properties.name # This preserves the sequence - using get-member would sort them alphabetically!
     $headings | ForEach-Object -Begin {$columns  = @{}  ; $i=65 } -Process  {$Columns[$_] = [char]($i ++) }
     
-    #Make a list of property headings using the Property (default "*") and ExcludeProperty parameters.
+    #Make a list of property headings using the Property (default "*") and ExcludeProperty parameters 
     if ($Key -eq "Name" -and $NoHeader) {$key  = "p1"} 
     $propList = @() 
     foreach ($p in $Property)           {$propList += ($headings.where({$_ -like    $p}) )} 
@@ -122,7 +123,7 @@
     $propList = $propList | Select-Object -Unique 
     if ($propList.Count -eq 0)  {Write-Warning -Message "No Columns are selected with -Property = '$Property' and -excludeProperty = '$ExcludeProperty'." ; return}
 
-    #Add RowNumber, Sheetname and file name to every row. 
+    #Add RowNumber, Sheetname and file name to every row 
     $FirstDataRow = $startRow + 1
     if ($Headername -or $NoHeader) {$FirstDataRow -- } 
     $i = $FirstDataRow ; foreach ($row in $Sheet1) {Add-Member -InputObject $row -MemberType NoteProperty -Name "_Row"   -Value ($i ++) 
@@ -133,13 +134,13 @@
                                                     Add-Member -InputObject $row -MemberType NoteProperty -Name "_File"  -Value  $Differencefile} 
     
     if ($ExcludeDifferent -and -not $IncludeEqual) {$IncludeEqual = $true} 
-    #Do the comparison and add file, sheet and row to the result - these are prefixed with "_" to show they are added - the addition will fail if the sheet has these properties so split the operations .
+    #Do the comparison and add file,sheet and row to the result - these are prefixed with "_" to show they are added the addition will fail if the sheet has these properties so split the operations 
     [PSCustomObject[]]$diff = Compare-Object -ReferenceObject $Sheet1 -DifferenceObject $Sheet2 -Property $propList -PassThru -IncludeEqual:$IncludeEqual -ExcludeDifferent:$ExcludeDifferent  |
                 Sort-Object -Property "_Row","File"
     
-    #if BackgroundColor was specified, set it on extra or extra or changed rows.  
+    #if BackgroundColor was specified, set it on extra or extra or changed rows  
     if      ($diff -and $BackgroundColor) {
-        #Differences may only exist in one file. So gather the changes for each file; open the file, update each impacted row in the shee, save the file . 
+        #Differences may only exist in one file. So gather the changes for each file; open the file, update each impacted row in the shee, save the file  
         $updates = $diff.where({$_.SideIndicator -ne "=="}) | Group-object -Property "_File"
         foreach   ($file in $updates) {
             try   {$xl  = Open-ExcelPackage -Path $file.name }
@@ -186,7 +187,7 @@
     }
     elseif  ($diff -and $FontColor) {Write-Warning -Message "To match rows to set changed cells, you must specify -Key and it must match one of the included properties." }   
 
-    #if nothing was found write a message which wont be redirected.
+    #if nothing was found write a message which wont be redirected
     if (-not $diff) {Write-Host "Comparison of $Referencefile::$worksheet1 and $Differencefile::$WorkSheet2 returned no results."  }
 
     if      ($show)               { 
@@ -211,10 +212,10 @@
              $Sheet2 | ForEach-Object -Begin {$Rowhash = @{} } -Process {$Rowhash[$_.$key] = $_._row } 
 
              $ExpandedDiff = ForEach ($g in $GroupedRows)  {
-                #we're going to create a custom object from a hash table. We want the fields to be ordered.
+                #we're going to create a custom object from a hash table. We want the fields to be ordered
                 $hash = [ordered]@{}  
                 foreach ($result IN $g.Group) {
-                    # if result indicates equal or "in Reference" set the reference side row. If we did that on a previous result keep it. Otherwise set to "blank".
+                    # if result indicates equal or "in Reference" set the reference side row. If we did that on a previous result keep it. Otherwise set to "blank"
                     if     ($result.sideindicator -ne "=>")      {$hash["<Row"] = $result._Row  } 
                     elseif (-not $hash["<Row"])                  {$hash["<Row"] = "" }
                     #if we have already set the side, this is the second record, so set side to indicate "changed"     
@@ -223,7 +224,7 @@
                     $hash[">Row"] = $Rowhash[$g.Name] 
                     #position the key as the next field (only appears once) 
                     $Hash[$key]    = $g.Name  
-                    #For all the other fields we care about, create <=FieldName and/or =>FieldName .
+                    #For all the other fields we care about create <=FieldName and/or =>FieldName 
                     foreach ($p in $propList.Where({$_ -ne $key})) {
                         if  ($result.SideIndicator -eq "==")  {$hash[("=>$P")] = $hash[("<=$P")] =$result.$P}
                         else                                  {$hash[($result.SideIndicator+$P)] =$result.$P}
@@ -232,14 +233,14 @@
                 [Pscustomobject]$hash
              }
 
-             #Sort by reference row number, and fill in any blanks in the difference-row column.
+             #Sort by reference row number, and fill in any blanks in the difference-row column
              $ExpandedDiff = $ExpandedDiff | Sort-Object -Property "<row"  
              for ($i = 1; $i -lt $ExpandedDiff.Count; $i++) {if (-not $ExpandedDiff[$i].">row") {$ExpandedDiff[$i].">row" = $ExpandedDiff[$i-1].">row" } }   
-             #Sort by difference row number, and fill in any blanks in the reference-row column.
+             #Sort by difference row number, and fill in any blanks in the reference-row column
              $ExpandedDiff = $ExpandedDiff | Sort-Object -Property ">row"  
              for ($i = 1; $i -lt $ExpandedDiff.Count; $i++) {if (-not $ExpandedDiff[$i]."<row") {$ExpandedDiff[$i]."<row" = $ExpandedDiff[$i-1]."<row" } }  
              
-             #if we had to put the equal rows back, take them out; sort, make sure all the columns are present in row 1 so the grid puts them in, and output.              
+             #if we had to put the equal rows back, take them out; sort, make sure all the columns are present in row 1 so the grid puts them in, and output              
              if ( $ExcludeDifferent) {$ExpandedDiff = $ExpandedDiff.where({$_.side -eq "=="}) | Sort-Object -Property "<row" ,">row"  } 
              elseif ( $IncludeEqual) {$ExpandedDiff = $ExpandedDiff                           | Sort-Object -Property "<row" ,">row"  }
              else                    {$ExpandedDiff = $ExpandedDiff.where({$_.side -ne "=="}) | Sort-Object -Property "<row" ,">row"  } 
