@@ -43,7 +43,7 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 * Now allows you to name the pivot table sheet name when using `-IncludePivotTable`
     * Demo of the `-PivotTableName` parameter
 * Added `-UseMSSQLSyntax` to code gen INSERT INTO correct format format
-    * Demo of the `-UseMSSQLSyntax` parameter [DemoSQLInsert](Examples\ExcelToSQLInsert\DemoSQLInsert.ps1)
+    * Demo of the `-UseMSSQLSyntax` parameter [DemoSQLInsert](Examples/ExcelToSQLInsert/DemoSQLInsert.ps1)
 
 #### 06/08/2018
 Thank you again to [James O'Neill](https://twitter.com/jamesoneill) for the lion share of these updates.
