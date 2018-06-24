@@ -11,7 +11,7 @@ This PowerShell Module allows you to read and write Excel files without installi
 
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/testimonial.png)
 
-# How to Vidoes
+# How to Videos
 * [PowerShell Excel Module - ImportExcel](https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq)
 
 Installation
@@ -36,6 +36,10 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 ```
 
 # What's new
+
+#### [DATE]
+
+* Added Merge-Worksheet.ps1 so the install and publish will include this
 
 #### 06/08/2018
 Thank you again to [James O'Neill](https://twitter.com/jamesoneill) for the lion share of these updates.
@@ -68,7 +72,7 @@ Thanks to the community yet again
 - [ili101](https://github.com/ili101) for fixes and features
     - Removed `[PSPlot]` as OutputType. Fixes it throwing an error
 - [Nasir Zubair](https://github.com/nzubair) added `ConvertEmptyStringsToNull` to the function `ConvertFrom-ExcelToSQLInsert`
-    - If specified, cells without any data are replaced with NULL, instead of an empty string. This is to address behviors in certain DBMS where an empty string is insert as 0 for INT column, instead of a NULL value.
+    - If specified, cells without any data are replaced with NULL, instead of an empty string. This is to address behaviors in certain DBMS where an empty string is insert as 0 for INT column, instead of a NULL value.
 
 
 #### 4/10/2018
@@ -80,7 +84,7 @@ Super helpful!
 
 #### 3/31/2018
 - Updated `Set-Format`
-    * Added parameters to set borders for cells, including top, bottm, left and right
+    * Added parameters to set borders for cells, including top, bottom, left and right
     * Added parameters to set `value` and `formula`
 
 ```powershell
@@ -123,7 +127,7 @@ North,A1,Grape,140,2.5
 * Add example to set the background color of a column
 * Supports excluding Row Grand Totals for PivotTables
 * Allow xlsm files to be read
-* Fix `Set-Column.ps1`, `Set-Row.ps1`, `SetFormat.ps1`, `formatting.ps1` **$falsee** and **$BorderRound**
+* Fix `Set-Column.ps1`, `Set-Row.ps1`, `SetFormat.ps1`, `formatting.ps1` **$false** and **$BorderRound**
 #### 1/1/2018
 * Added switch `[Switch]$NoTotalsInPivot`. Allows hiding of  the row totals in the pivot table.
 Thanks you to [jameseholt](https://github.com/jameseholt) for the request.
@@ -146,10 +150,10 @@ More great additions and thanks to [James O'Neill](https://twitter.com/jamesonei
 * Now catch an attempt to both clear the sheet and append to it.
 * Fixed some issues when appending to sheets where the header isn't in row 1 or the data doesn't start in column 1.
 * Added support for more settings when creating a pivot chart.
-* Corrected a typo PivotTableName was PivtoTableName in definition of New-PivotTableDefinition
+* Corrected a typo PivotTableName was PivotTableName in definition of New-PivotTableDefinition
 * Add-ConditionalFormat and Set-Format added to the parameters so each has the choice of working more like the other.
 * Added Set-Row and Set-Column - fill a formula down or across.
-* Added Send-SQLDataToExcel. Insert a rowset and then call Export-Excel for ranges, charts, pivots etc
+* Added Send-SQLDataToExcel. Insert a rowset and then call Export-Excel for ranges, charts, pivots etc.
 
 #### 10/30/2017
 Huge thanks to [James O'Neill](https://twitter.com/jamesoneill). PowerShell aficionado. He always brings a flare when working with PowerShell. This is no exception.
@@ -167,8 +171,8 @@ Huge thanks to [James O'Neill](https://twitter.com/jamesoneill). PowerShell afic
 (Check out the examples `help Export-Excel -Examples`)
 
 * New function `Export-Charts` (requires Excel to be installed) - Export Excel charts out as JPG files
-* New function `Add-ConditionalFormatting` Adds contitional formatting to worksheet
-* New function `Set-Format` Applies Number, font, alignment and colour formatting to a range of Excel Cells
+* New function `Add-ConditionalFormatting` Adds conditional formatting to worksheet
+* New function `Set-Format` Applies Number, font, alignment and color formatting to a range of Excel Cells
 * `ColorCompletion` an argument completer for `Colors` for params across functions
 
 I also worked out the parameters so you can do this, which is the same as passing `-Now`. It creates an Excel file name for you, does an auto fit and sets up filters.
@@ -178,7 +182,7 @@ I also worked out the parameters so you can do this, which is the same as passin
 #### 10/13/2017
 Added `New-PivotTableDefinition`. You can create and wire up a PivotTable to a WorkSheet. You can also create as many PivotTable Worksheets to point a one Worksheet. Or, you create many Worksheets and many corresponding PivotTable Worksheets.
 
-Here you can create a WorkSheet with the data from `Get-Service`. Then create four PivotTables, pointing to the data each pivoting on a differnt dimension and showing a differnet chart
+Here you can create a WorkSheet with the data from `Get-Service`. Then create four PivotTables, pointing to the data each pivoting on a different dimension and showing a different chart
 
 ```powershell
 $base = @{
@@ -360,7 +364,7 @@ Get-Process |
 ![](https://github.com/dfinke/ImportExcel/blob/master/images/CellFormatting.png?raw=true)
 
 #### 9/28/2016
-[Fixed](https://github.com/dfinke/ImportExcel/pull/126) PowerShell 3.0 compatibility. Thanks to [headsphere](https://github.com/headsphere). He used `$obj.PSObject.Methods[$target]` snytax to make it backward compatible. PS v4.0 and later allow `$obj.$target`.
+[Fixed](https://github.com/dfinke/ImportExcel/pull/126) PowerShell 3.0 compatibility. Thanks to [headsphere](https://github.com/headsphere). He used `$obj.PSObject.Methods[$target]` syntax to make it backward compatible. PS v4.0 and later allow `$obj.$target`.
 
 Thank you to [xelsirko](https://github.com/xelsirko) for fixing - *Import-module importexcel gives version warning if started inside background job*
 
@@ -396,7 +400,7 @@ Thanks Attila.
 #### 4/30/2016
 Huge thank you to [Willie Möller](https://github.com/W1M0R)
 
-* He added a version check so the PowerShell Classes don't cause issues for downlevel version of PowerShell
+* He added a version check so the PowerShell Classes don't cause issues for down-level version of PowerShell
 * He also contributed the first Pester tests for the module. Super! Check them out, they'll be the way tests will be implemented going forward
 
 #### 4/18/2016
@@ -623,7 +627,7 @@ Or
 #### 9/25/2015
 
 **Hide worksheets**
-Got a great request from [forensicsguy20012004](https://github.com/forensicsguy20012004) to hide worksheets. You create a few pivotables, generate charts and then pivotable worksheets don't need to be visible.
+Got a great request from [forensicsguy20012004](https://github.com/forensicsguy20012004) to hide worksheets. You create a few pivot tables, generate charts and then pivot table worksheets don't need to be visible.
 
 `Export-Excel` now has a `-HideSheet` parameter that takes and array of worksheet names and hides them.
 
