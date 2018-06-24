@@ -41,5 +41,7 @@ $($blocks)
 }
 "@ | Set-Content -Encoding Ascii $testFileName
 
-    Invoke-Pester -Script (dir $testFileName)
+    #Invoke-Pester -Script (Get-ChildItem $testFileName)
+    Get-ChildItem $testFileName
 }
+
