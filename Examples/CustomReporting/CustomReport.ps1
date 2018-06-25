@@ -1,4 +1,4 @@
-Import-Module ..\..\ImportExcel.psd1 -Force
+Import-Module ImportExcel.psd1 -Force
 
 $f = ".\dashboard.xlsx"
 Remove-Item $f -ErrorAction Ignore
