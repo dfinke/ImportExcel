@@ -341,6 +341,7 @@
         [Int]$TitleSize = 22,
         [System.Drawing.Color]$TitleBackgroundColor,
         [Switch]$IncludePivotTable,
+        [String]$PivotTableName,
         [String[]]$PivotRows,
         [String[]]$PivotColumns,
         $PivotData,
@@ -801,7 +802,8 @@
 
             if ($IncludePivotTable -or $IncludePivotChart) {
                 #changed so -includePivotChart Implies -includePivotTable.
-                $pivotTableName = $WorkSheetname + 'PivotTable'
+                if (!$PivotTableName) { $pivotTableName = $WorkSheetname + 'PivotTable'}
+
                 #Make sure the Pivot table sheet doesn't already exist
                 try {     $pkg.Workbook.Worksheets.Delete(    $pivotTableName) } catch {}
                 $wsPivot = $pkg | Add-WorkSheet -WorkSheetname $pivotTableName -NoClobber:$NoClobber
