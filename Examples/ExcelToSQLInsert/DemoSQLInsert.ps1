@@ -1,4 +1,4 @@
-Import-Module ..\..\ImportExcel.psd1 -Force
+Import-Module ImportExcel.psd1 -Force
 
 
 ConvertFrom-ExcelToSQLInsert -TableName "Movies" -Path ".\Movies.xlsx" -ConvertEmptyStringsToNull
