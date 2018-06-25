@@ -33,6 +33,43 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
+- New commands - Diff , Merge and Join
+    - `Compare-Worksheet` (introduced in 5.0) uses the built in `Compare-object` command, to output a command-line DIFF and/or colour the worksheet to show differences. For example, if my sheets are Windows services the *extra* rows or rows where the startup status has changed get highlighted
+    - `Merge-Worksheet` (also introduced in 5.0) joins two lumps, side by highlighting the differences. So now I can have server A's services and Server Bs Services on the same page.  I figured out a way to do multiple sheets. So I can have Server A,B,C,D on one page :-) that is `Merge-MultpleSheets`
+    For this release I've fixed heaven only knows how many typos and proof reading errors in the help for these two, but the code is unchanged - although correcting the spelling of Merge-MultipleSheets is potentially a breaking change (and it is still plural!)  
+    - `Join-Worksheet` is **new** for ths release. At it's simplest it copies all the data in Worksheet A to the end of Worksheet B    
+- Add-Worksheet 
+    - I have moved this from ImportExcel.psm1 to ExportExcel.ps1 and it now can move a new worksheet to the right place, and can copy an existing worksheet (from the same or a different workbook) to a new one, and I set the Set return-type to aid intellisense
+- New-PivotTableDefinition 
+    - Now Supports  `-PivotFilter` and `-PivotDataToColumn`, `-ChartHeight/width` `-ChartRow/Column`, `-ChartRow/ColumnPixelOffset` parameters   
+- Set-Format 
+    - Fixed a bug where the `-address` parameter had to be named, although the examples in `export-excel` help showed it working by position (which works now. ) 
+- Export-Excel 
+    - I've done some re-factoring 
+        1. I "flattened out" small "called-once" functions , add-title, convert-toNumber and Stop-ExcelProcess.
+        2. It now uses Add-Worksheet, Open-ExcelPackage and Add-ConditionalFormat instead of duplicating their functionality. 
+        3. I've moved the PivotTable functionality (which was doubled up) out to a new function "Add-PivotTable" which supports some extra parameters PivotFilter and PivotDataToColumn, ChartHeight/width ChartRow/Column, ChartRow/ColumnPixelOffsets.
+        4. I've made the try{} catch{} blocks cover smaller blocks of code to give a better idea where a failure happend, some of these now Warn instead of throwing - I'd rather save the data with warnings than throw it away because we can't add a chart. Along with this I've added some extra write-verbose messages 
+    - Bad column-names specified for Pivots now generate warnings instead of throwing.
+    - Fixed issues when pivottables / charts already exist and an export tries to create them again.
+    - Fixed issue where AutoNamedRange, NamedRange, and TableName do not work when appending to a sheet which already contains the range(s) / table
+    - Fixed issue where AutoNamedRange may try to create ranges with an illegal name. 
+    - Added check for illegal characters in RangeName or Table Name (replace them with "_"), changed tablename validation to allow spaces and applied same validation to RangeName
+    - Fixed a bug where BoldTopRow is always bolds row 1 even if the export is told to start at a lower row. 
+    - Fixed a bug where titles throw pivot table creation out of alignment. 
+    - Fixed a bug where Append can overwrite the last rows of data if the initial export had blank rows at the top of the sheet. 
+    - Removed the need to specify a fill type when specifying a title background color
+    - Added MoveToStart, MoveToEnd, MoveBefore and MoveAfter Parameters - these go straight through to Add worksheet 
+    - Added  "NoScriptOrAliasProperties" "DisplayPropertySet" switches (names subject to change) - combined with ExcludeProperty these are a quick way to reduce the data exported (and speed things up) 
+    - Add-CellValue now understands URI item properties. If a property is of type URI it is created as a hyperlink to speed up Add-CellValue
+        - Commented out the write verbose statements even  if verbose is silenced they cause a significiant performance impact and if it's on they will cause a flood of messages. 
+        - Re-ordered the choices in the switch and added an option to say "If it is numeric already post it as is" 
+        - Added an option to only set the number format if doesn't match the default for the sheet. 
+-Export-Excel Pester Tests
+    -   I have converted examples 1-9, 11 and 13 from Export-Excel help into tests and have added some additional tests, and extra parameters to the example command to ge better test coverage. The test so far has 184 "should" conditions grouped as 58 "IT" statements; but is still a work in progress.  
+---
+
+
 - [James O'Neill](https://twitter.com/jamesoneill) added `Compare-Worksheet`
     - Compares two worksheets with the same name in different files.
 

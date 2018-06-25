@@ -12,7 +12,7 @@
 #>
     Param   (
         #One or more row(s), Column(s) and/or block(s) of cells to format
-        [Parameter(ValueFromPipeline = $true,ParameterSetName="Address",Mandatory=$True)]
+        [Parameter(ValueFromPipeline = $true,ParameterSetName="Address",Mandatory=$True,Position=0)]
         $Address ,
         #The worksheet where the format is to be applied
         [Parameter(ParameterSetName="SheetAndRange",Mandatory=$True)]

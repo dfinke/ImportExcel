@@ -24,7 +24,7 @@
         Get-Process -Name "excel" -ErrorAction Ignore | Stop-Process
         while (Get-Process -Name "excel" -ErrorAction Ignore) {}
     }
-
+    
     $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
     #If -Create was not specified only open the file if it exists already (send a warning if it doesn't exist). 
     if ($Create) {
