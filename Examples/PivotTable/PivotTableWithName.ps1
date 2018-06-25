@@ -1,4 +1,4 @@
-Import-Module ..\..\ImportExcel.psd1 -Force
+Import-Module ImportExcel.psd1 -Force
 
 Remove-Item .\test1.xlsx -ErrorAction Ignore
 
