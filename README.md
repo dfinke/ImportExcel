@@ -37,7 +37,7 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 
 # What's new
 
-#### [DATE]
+#### 6/26/2018
 
 * Added Merge-Worksheet.ps1 so the install and publish will include this
 * Now allows you to name the pivot table sheet name when using `-IncludePivotTable`
