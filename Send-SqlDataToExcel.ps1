@@ -131,7 +131,7 @@
     $excelPackage.Workbook.Worksheets[$WorkSheetname].Cells[$r,$StartColumn].LoadFromDataTable($dataTable, $printHeaders )  | Out-Null
     
     #Call export-excel with any parameters which don't relate to the SQL query
-    "Connection", "Database" , "Session", "MsSQLserver", "Destination" , "SQL" ,"Path" | ForEach-Object {$null = $PSBoundParameters.Remove($_) }
+    "Connection", "Database" , "Session", "MsSQLserver", "Destination" , "SQL" ,"Path", "QueryTimeout" | ForEach-Object {$null = $PSBoundParameters.Remove($_) }
     Export-Excel -ExcelPackage $excelPackage   @PSBoundParameters 
 
     #If we were not passed a session close the session we created. 
