@@ -354,6 +354,7 @@
         [Int]$TitleSize = 22,
         [System.Drawing.Color]$TitleBackgroundColor,
         [Switch]$IncludePivotTable,
+		[String]$PivotTableName,      
         [String[]]$PivotRows,
         [String[]]$PivotColumns,
         $PivotData,
@@ -730,21 +731,22 @@
         }
         if ($IncludePivotTable -or $IncludePivotChart) {
             $params = @{
-                "PivotTableName" = ($WorkSheetname + 'PivotTable') ; 
                 "SourceRange"    = $dataRange          
             }
-            if ($PivotFilter) {$params.PivotFilter = $PivotFilter}
-            if ($PivotRows) {$params.PivotRows = $PivotRows}
-            if ($PivotColumns) {$Params.PivotColumns = $PivotColumns}
-            if ($PivotData) {$Params.PivotData = $PivotData}
-            if ($NoTotalsInPivot) {$params.NoTotalsInPivot = $true}
+			if ($PivotTableName)    {$params.PivotTableName    = $PivotTableName}
+			else                    {$params.PivotTableName    = $WorkSheetname + 'PivotTable'}
+            if ($PivotFilter)       {$params.PivotFilter       = $PivotFilter}
+            if ($PivotRows)         {$params.PivotRows         = $PivotRows}
+            if ($PivotColumns)      {$Params.PivotColumns      = $PivotColumns}
+            if ($PivotData)         {$Params.PivotData         = $PivotData}
+            if ($NoTotalsInPivot)   {$params.NoTotalsInPivot   = $true}
             if ($PivotDataToColumn) {$params.PivotDataToColumn = $true}
             if ($IncludePivotChart) {
                 $params.IncludePivotChart = $true
-                $Params.ChartType = $ChartType 
-                if ($ShowCategory) {$params.ShowCategory = $true}
-                if ($ShowPercent) {$params.ShowPercent = $true}
-                if ($NoLegend) {$params.NoLegend = $true}
+                $Params.ChartType =  $ChartType 
+                if ($ShowCategory)  {$params.ShowCategory = $true}
+                if ($ShowPercent)   {$params.ShowPercent = $true}
+                if ($NoLegend)      {$params.NoLegend = $true}
             }
             Add-PivotTable -ExcelPackage $pkg -SourceWorkSheet $ws   @params
         }

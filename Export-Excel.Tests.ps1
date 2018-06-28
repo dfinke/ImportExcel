@@ -2,7 +2,7 @@
 
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
  
-Import-Module $here -Force 
+Import-Module $here -Force -Verbose
 
 if (Get-process -Name Excel,xlim -ErrorAction SilentlyContinue) {    Write-Warning -Message "You need to close Excel before running the tests." ; return} 
 Describe ExportExcel {
@@ -441,10 +441,10 @@ Describe ExportExcel {
 
         it "Cloned 'Sheet1' to 'NewSheet'                                                           "{
             $newWs = $excel.Workbook.Worksheets["NewSheet"]
-            $newWs.Dimension.Address             | should     be ($excel.Workbook.Worksheets["Sheet1"].Dimension.Address)
-            $newWs.ConditionalFormatting.Count   | should     be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting.Count)
+            $newWs.Dimension.Address                          | should     be ($excel.Workbook.Worksheets["Sheet1"].Dimension.Address)
+            $newWs.ConditionalFormatting.Count                | should     be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting.Count)
             $newWs.ConditionalFormatting[0].Address.Address   | should     be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting[0].Address.Address)
-            $newWs.ConditionalFormatting[0].Formula   | should     be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting[0].Formula)
+            $newWs.ConditionalFormatting[0].Formula           | should     be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting[0].Formula)
         }
 
     } 
@@ -453,12 +453,12 @@ Describe ExportExcel {
         $path = "$env:TEMP\Test.xlsx" 
         #Catch warning 
         $warnVar = $null
-        #Test Append with no existing sheet. 
-        get-process | Select-Object -first 10 -Property Name,cpu,pm,handles,company  | export-excel -StartRow 3 -StartColumn 3 -AutoFilter -AutoNameRange -BoldTopRow -IncludePivotTable  -PivotRows Company -PivotData PM -Path $path -WorkSheetname withOffset -append  
-        get-process | Select-Object -last  10 -Property Name,cpu,pm,handles,company  | export-excel -StartRow 3 -StartColumn 3 -AutoFilter -AutoNameRange -BoldTopRow -IncludePivotTable  -PivotRows Company -PivotData PM -Path $path -WorkSheetname withOffset -append -WarningAction SilentlyContinue -WarningVariable warnvar
+        #Test Append with no existing sheet. Test adding a named pivot table from a command line parameter 
+        get-process | Select-Object -first 10 -Property Name,cpu,pm,handles,company  | export-excel -StartRow 3 -StartColumn 3 -AutoFilter -AutoNameRange -BoldTopRow -IncludePivotTable  -PivotRows Company -PivotData PM -PivotTableName 'PTOffset' -Path $path -WorkSheetname withOffset -append  
+        get-process | Select-Object -last  10 -Property Name,cpu,pm,handles,company  | export-excel -StartRow 3 -StartColumn 3 -AutoFilter -AutoNameRange -BoldTopRow -IncludePivotTable  -PivotRows Company -PivotData PM -PivotTableName 'PTOffset' -Path $path -WorkSheetname withOffset -append -WarningAction SilentlyContinue -WarningVariable warnvar
         $Excel  = Open-ExcelPackage   $path
         $dataWs = $Excel.Workbook.Worksheets["withOffset"]
-        $pt     = $Excel.Workbook.Worksheets["withOffsetPivotTable"].PivotTables[0]
+        $pt     = $Excel.Workbook.Worksheets["PTOffset"].PivotTables[0]
         it "Created and appended to a sheet offset from the top left corner                        " {
             $dataWs.Cells[1,1].Value                                    | Should     beNullOrEmpty
             $dataWs.Cells[2,2].Value                                    | Should     beNullOrEmpty
@@ -479,10 +479,9 @@ Describe ExportExcel {
 
     Context "#Example 11     # Create and append with title, inc ranges and Pivot table" {
         $path = "$env:TEMP\Test.xlsx" 
-        #Catch warning 
         $ptDef = [ordered]@{}
-        $ptDef += New-PivotTableDefinition -PivotTableName "PT1" -SourceWorkSheet 'Sheet1' -PivotRows "Status" -PivotData @{'Status' = 'Count'} -PivotFilter "StartType" -IncludePivotChart -ChartType BarClustered3D  -ChartTitle "Services by status" -ChartHeight 512 -ChartWidth 768 -ChartRow 10 -ChartColumn 0 -NoLegend 
-        $ptDef += New-PivotTableDefinition -PivotTableName "PT2" -SourceWorkSheet 'Sheet2' -PivotRows "Company" -PivotData @{'Company' = 'Count'} -IncludePivotChart -ChartType PieExploded3D -ShowPercent -WarningAction SilentlyContinue 
+        $ptDef += New-PivotTableDefinition -PivotTableName "PT1" -SourceWorkSheet 'Sheet1' -PivotRows "Status"  -PivotData @{'Status'  = 'Count'} -PivotFilter "StartType" -IncludePivotChart -ChartType BarClustered3D  -ChartTitle "Services by status" -ChartHeight 512 -ChartWidth 768 -ChartRow 10 -ChartColumn 0 -NoLegend 
+        $ptDef += New-PivotTableDefinition -PivotTableName "PT2" -SourceWorkSheet 'Sheet2' -PivotRows "Company" -PivotData @{'Company' = 'Count'}                          -IncludePivotChart -ChartType PieExploded3D -ShowPercent -WarningAction SilentlyContinue 
 
         it "Built a pivot definition using New-PivotTableDefinition                                " {
             $ptDef.PT1.SourceWorkSheet                                  | Should be 'Sheet1' 
@@ -493,9 +492,10 @@ Describe ExportExcel {
             $ptDef.PT1.ChartType.tostring()                             | Should be 'BarClustered3D' 
         }   
         Remove-Item -Path $path 
+        #Catch warning 
         $warnvar = $null 
         Get-Service | Select-Object    -Property Status, Name, DisplayName, StartType | Export-Excel -Path $path  -AutoSize                         -TableName "All Services"  -TableStyle Medium1 -WarningAction SilentlyContinue -WarningVariable warnvar
-        Get-Process | Select-Object    -Property Name, Company, Handles, CPU, VM       | Export-Excel -Path $path  -AutoSize -WorkSheetname 'sheet2' -TableName "Processes" -TableStyle Light1 -Title "Processes" -TitleFillPattern Solid -TitleBackgroundColor AliceBlue -TitleBold -TitleSize 22 -PivotTableDefinition $ptDef   
+        Get-Process | Select-Object    -Property Name, Company, Handles, CPU, VM      | Export-Excel -Path $path  -AutoSize -WorkSheetname 'sheet2' -TableName "Processes"     -TableStyle Light1 -Title "Processes" -TitleFillPattern Solid -TitleBackgroundColor AliceBlue -TitleBold -TitleSize 22 -PivotTableDefinition $ptDef   
         $Excel = Open-ExcelPackage   $path
         $ws1 = $Excel.Workbook.Worksheets["Sheet1"]
         $ws2 = $Excel.Workbook.Worksheets["Sheet2"]

@@ -60,7 +60,8 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
     - Fixed a bug where Append can overwrite the last rows of data if the initial export had blank rows at the top of the sheet. 
     - Removed the need to specify a fill type when specifying a title background color
     - Added MoveToStart, MoveToEnd, MoveBefore and MoveAfter Parameters - these go straight through to Add worksheet 
-    - Added  "NoScriptOrAliasProperties" "DisplayPropertySet" switches (names subject to change) - combined with ExcludeProperty these are a quick way to reduce the data exported (and speed things up) 
+    - Added "NoScriptOrAliasProperties" "DisplayPropertySet" switches (names subject to change) - combined with ExcludeProperty these are a quick way to reduce the data exported (and speed things up) 
+    - Added PivotTableName Switch (in line with 5.0.1 release) 
     - Add-CellValue now understands URI item properties. If a property is of type URI it is created as a hyperlink to speed up Add-CellValue
         - Commented out the write verbose statements even  if verbose is silenced they cause a significiant performance impact and if it's on they will cause a flood of messages. 
         - Re-ordered the choices in the switch and added an option to say "If it is numeric already post it as is" 
