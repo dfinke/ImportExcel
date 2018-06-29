@@ -37,6 +37,7 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
     - `Compare-Worksheet` (introduced in 5.0) uses the built in `Compare-object` command, to output a command-line DIFF and/or colour the worksheet to show differences. For example, if my sheets are Windows services the *extra* rows or rows where the startup status has changed get highlighted
     - `Merge-Worksheet` (also introduced in 5.0) joins two lumps, side by highlighting the differences. So now I can have server A's services and Server Bs Services on the same page.  I figured out a way to do multiple sheets. So I can have Server A,B,C,D on one page :-) that is `Merge-MultpleSheets`
     For this release I've fixed heaven only knows how many typos and proof reading errors in the help for these two, but the code is unchanged - although correcting the spelling of Merge-MultipleSheets is potentially a breaking change (and it is still plural!)  
+    also fixed a bug in compare worksheet where color might not be applied correctly when the worksheets came from different files and  had different name. 
     - `Join-Worksheet` is **new** for ths release. At it's simplest it copies all the data in Worksheet A to the end of Worksheet B    
 - Add-Worksheet 
     - I have moved this from ImportExcel.psm1 to ExportExcel.ps1 and it now can move a new worksheet to the right place, and can copy an existing worksheet (from the same or a different workbook) to a new one, and I set the Set return-type to aid intellisense
@@ -60,13 +61,16 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
     - Fixed a bug where Append can overwrite the last rows of data if the initial export had blank rows at the top of the sheet. 
     - Removed the need to specify a fill type when specifying a title background color
     - Added MoveToStart, MoveToEnd, MoveBefore and MoveAfter Parameters - these go straight through to Add worksheet 
-    - Added  "NoScriptOrAliasProperties" "DisplayPropertySet" switches (names subject to change) - combined with ExcludeProperty these are a quick way to reduce the data exported (and speed things up) 
+    - Added "NoScriptOrAliasProperties" "DisplayPropertySet" switches (names subject to change) - combined with ExcludeProperty these are a quick way to reduce the data exported (and speed things up) 
+    - Added PivotTableName Switch (in line with 5.0.1 release) 
     - Add-CellValue now understands URI item properties. If a property is of type URI it is created as a hyperlink to speed up Add-CellValue
         - Commented out the write verbose statements even  if verbose is silenced they cause a significiant performance impact and if it's on they will cause a flood of messages. 
         - Re-ordered the choices in the switch and added an option to say "If it is numeric already post it as is" 
         - Added an option to only set the number format if doesn't match the default for the sheet. 
 -Export-Excel Pester Tests
     -   I have converted examples 1-9, 11 and 13 from Export-Excel help into tests and have added some additional tests, and extra parameters to the example command to ge better test coverage. The test so far has 184 "should" conditions grouped as 58 "IT" statements; but is still a work in progress.  
+-Compare-Worksheet pester tests
+
 ---
 
 
