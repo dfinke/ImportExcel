@@ -37,7 +37,7 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 - New commands - Diff , Merge and Join
     - `Compare-Worksheet` (introduced in 5.0) uses the built in `Compare-object` command, to output a command-line DIFF and/or colour the worksheet to show differences. For example, if my sheets are Windows services the *extra* rows or rows where the startup status has changed get highlighted
     - `Merge-Worksheet` (also introduced in 5.0) joins two lumps, side by highlighting the differences. So now I can have server A's services and Server Bs Services on the same page.  I figured out a way to do multiple sheets. So I can have Server A,B,C,D on one page :-) that is `Merge-MultpleSheets`
-    For this release I've fixed heaven only knows how many typos and proof reading errors in the help for these two, but the code is unchanged - although correcting the spelling of Merge-MultipleSheets is potentially a breaking change (and it is still plural!)  
+    For this release I've fixed heaven only knows how many typos and proof reading errors in the help for these two, the only code change is to fix a bug if two worksheets have different names, are in different files and the Comparison sends the delta in the second back before the one in first, then highlighting changed properties could throw an error. Correcting the spelling of Merge-MultipleSheets is potentially a breaking change (and it is still plural!)  
     also fixed a bug in compare worksheet where color might not be applied correctly when the worksheets came from different files and  had different name. 
     - `Join-Worksheet` is **new** for ths release. At it's simplest it copies all the data in Worksheet A to the end of Worksheet B    
 - Add-Worksheet 
@@ -68,9 +68,9 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
         - Commented out the write verbose statements even  if verbose is silenced they cause a significiant performance impact and if it's on they will cause a flood of messages. 
         - Re-ordered the choices in the switch and added an option to say "If it is numeric already post it as is" 
         - Added an option to only set the number format if doesn't match the default for the sheet. 
--Export-Excel Pester Tests
-    -   I have converted examples 1-9, 11 and 13 from Export-Excel help into tests and have added some additional tests, and extra parameters to the example command to ge better test coverage. The test so far has 184 "should" conditions grouped as 58 "IT" statements; but is still a work in progress.  
--Compare-Worksheet pester tests
+- Export-Excel Pester Tests
+    -   I have converted examples 1-9, 11 and 13 from Export-Excel help into tests and have added some additional tests, and extra parameters to the example command to ge better test coverage. The test so far has 184 "should" conditions grouped as 58 "IT" statements; but is still a work in progress.
+- Compare-Worksheet pester tests
 
 ---
 
