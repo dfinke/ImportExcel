@@ -175,9 +175,17 @@
             else           {$xl2 = Open-ExcelPackage -path $Differencefile }
             foreach ($u in $updates) {
                  foreach ($p in $propList) {
+                    if ($u.group[0]._file -eq $Referencefile) {
+                        $ws1 =  $xl1.Workbook.Worksheets[$u.Group[0]._sheet]
+                        $ws2 =  $xl2.Workbook.Worksheets[$u.Group[1]._sheet]
+                    }
+                    else {
+                        $ws1 =  $xl2.Workbook.Worksheets[$u.Group[0]._sheet]
+                        $ws2 =  $xl1.Workbook.Worksheets[$u.Group[1]._sheet]
+                    }
                     if($u.Group[0].$p -ne $u.Group[1].$p ) {
-                        Set-Format -WorkSheet $xl1.Workbook.Worksheets[$u.Group[0]._sheet] -Range ($Columns[$p] + $u.Group[0]._Row) -FontColor $FontColor
-                        Set-Format -WorkSheet $xl2.Workbook.Worksheets[$u.Group[1]._sheet] -Range ($Columns[$p] + $u.Group[1]._Row) -FontColor $FontColor
+                        Set-Format -WorkSheet $ws1 -Range ($Columns[$p] + $u.Group[0]._Row) -FontColor $FontColor
+                        Set-Format -WorkSheet $ws1 -Range ($Columns[$p] + $u.Group[1]._Row) -FontColor $FontColor
                     } 
                 } 
             }
