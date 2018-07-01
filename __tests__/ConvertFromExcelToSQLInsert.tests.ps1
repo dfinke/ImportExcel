@@ -1,4 +1,4 @@
-﻿Import-Module .\ImportExcel.psd1 -Force
+﻿Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
 
 $xlFile = ".\testSQL.xlsx"
 
