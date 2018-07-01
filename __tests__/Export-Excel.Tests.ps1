@@ -29,7 +29,7 @@ Describe ExportExcel {
         #This is a test of  using it with -KillExcel
         #TODO Need to test opening pre-existing file with no -create switch (and graceful failure when file does not exist) somewhere else
         $Excel = Open-ExcelPackage -Path $path -KillExcel
-        it "Killed Excel when Open-Excelpackage was told to                                        " {
+        it -Skip "Killed Excel when Open-Excelpackage was told to                                        " {
             Get-process -Name Excel,xlim -ErrorAction SilentlyContinue  | should     benullorempty
         }
 
