@@ -9,7 +9,7 @@
        .Example 
          merge-worksheet "Server54.xlsx" "Server55.xlsx" -WorkSheetName services -OutputFile Services.xlsx -OutputSheetName 54-55 -show
          The workbooks contain audit information for two servers, one page contains a list of services. This command creates a worksheet named 54-55 
-         in a workbook named services which shows all the services and their differences, and opens it in Excel 
+         in a workbook named services which shows all the services and their differences, and opens it in Excel. 
        .Example 
          merge-worksheet "Server54.xlsx" "Server55.xlsx" -WorkSheetName services -OutputFile Services.xlsx -OutputSheetName 54-55 -HideEqual -AddBackgroundColor LightBlue -show
          This modifies the previous command to hide the equal rows in the output sheet and changes the color used to mark rows added to the second file.  
@@ -17,12 +17,12 @@
          merge-worksheet -OutputFile .\j1.xlsx -OutputSheetName test11 -ReferenceObject (dir .\ImportExcel\4.0.7) -DifferenceObject (dir .\ImportExcel\4.0.8) -Property Length -Show
          This version compares two directories, and marks what has changed. 
          Because no "Key" property is given, "Name" is assumed to be the key and the only other property examined is length.  
-         Files which are added or deleted or have changed size will be highlighed in the output sheet. Changes to dates or other attributes will be ignored
+         Files which are added or deleted or have changed size will be highlighed in the output sheet. Changes to dates or other attributes will be ignored.
        .Example
          merge-worksheet   -RefO (dir .\ImportExcel\4.0.7) -DiffO (dir .\ImportExcel\4.0.8) -Pr Length  | Out-GridView 
          This time no file is written and the results -which include all properties, not just length, are output and sent to Out-Gridview. 
          This version uses aliases to shorten the parameters,
-         (OutputFileName can be "outFile" and the sheet "OutSheet" :  DifferenceObject & ReferenceObject can be DiffObject & RefObject)      
+         (OutputFileName can be "outFile" and the sheet "OutSheet" :  DifferenceObject & ReferenceObject can be DiffObject & RefObject).      
     #>
     [cmdletbinding(SupportsShouldProcess=$true)] 
     Param(
@@ -60,11 +60,13 @@
          #Automatically generate property names (P1, P2, P3, ..) instead of the using the values the top row of the sheet.
          [Parameter(ParameterSetName='C',Mandatory=$true)]
          [switch]$NoHeader, 
-        
+         
+         #Object to compare if a worksheet is NOT being used. 
          [parameter(ParameterSetName='D',Mandatory=$true)]
          [parameter(ParameterSetName='E',Mandatory=$true)]
          [Alias('RefObject')]
          $ReferenceObject ,
+         #Object to compare if a worksheet is NOT being used. 
          [parameter(ParameterSetName='D',Mandatory=$true,Position=1)]
          [Alias('DiffObject')]
          $DifferenceObject ,
@@ -95,7 +97,7 @@
          [System.Drawing.Color]$AddBackgroundColor    = "PaleGreen",   
          #if Specified hides the rows in the spreadsheet that are equal and only shows changes, added or deleted rows. 
          [switch]$HideEqual ,
-         #If specified outputs the data to the pipeline (you can add -whatif so it the command only outputs to the command)
+         #If specified outputs the data to the pipeline (you can add -whatif so it the command only outputs to the pipeline).
          [switch]$Passthru  ,
          #If specified, opens the output workbook.  
          [Switch]$Show
@@ -238,10 +240,10 @@
                              [Pscustomobject]$hash
      }  | Sort-Object -Property "_row"  
      
-     #Already sorted by reference row number, fill in any blanks in the difference-row column
+     #Already sorted by reference row number, fill in any blanks in the difference-row column.
      for ($i = 1; $i -lt $expandedDiff.Count; $i++) {if (-not $expandedDiff[$i]."$DiffPrefix Row") {$expandedDiff[$i]."$DiffPrefix Row" = $expandedDiff[$i-1]."$DiffPrefix Row" } }   
      
-     #Now re-Sort by difference row number, and fill in any blanks in the reference-row column
+     #Now re-Sort by difference row number, and fill in any blanks in the reference-row column.
      $expandedDiff = $expandedDiff | Sort-Object -Property "$DiffPrefix Row"  
      for ($i = 1; $i -lt $expandedDiff.Count; $i++) {if (-not $expandedDiff[$i]."_Row") {$expandedDiff[$i]."_Row" = $expandedDiff[$i-1]."_Row" } }   
       
@@ -278,27 +280,30 @@
      }  
 }
 
-Function Merge-MulipleSheets {
-<#
+Function Merge-MultipleSheets {
+  <#
     .Synopsis
         Merges worksheets into a single worksheet with differences marked up. 
     .Description
         The Merge worksheet command combines 2 sheets. Merge-MultipleSheets is designed to merge more than 2. 
         So if asked to merge sheets A,B,C  which contain Services, with a Name, Displayname and Start mode, where "name" is treated as the key 
-        it calls Merge-Worksheet to merge Name, Displayname and Start mode,from sheets A and C  the result has column headings 
-        -Row, Name, DisplayName, Startmode, C-DisplayName, C-StartMode C-Is, C-Row
-        Then it calls merge-worsheet with this result and sheet B, comparing 'Name', 'Displayname' and 'Start mode' columns on each side and outputting
-        _Row, Name, DisplayName, Startmode, B-DisplayName, B-StartMode B-Is, B-Row, C-DisplayName, C-StartMode C-Is, C-Row 
-        Any columns in the "reference" side which are not used in the comparison are appended on the right, which is we compare the sheets in reverse order 
+        Merge-MultipleSheets calls Merge-Worksheet to merge Name, Displayname and Start mode, from sheets A and C  
+        the result has column headings  -Row, Name, DisplayName, Startmode, C-DisplayName, C-StartMode C-Is, C-Row
+        Merge-MultipleSheets then calls Merge-Worsheet with this result and sheet B, comparing 'Name', 'Displayname' and 'Start mode' columns on each side
+        which outputs  _Row, Name, DisplayName, Startmode, B-DisplayName, B-StartMode B-Is, B-Row, C-DisplayName, C-StartMode C-Is, C-Row 
+        Any columns in the "reference" side which are not used in the comparison are appended on the right, which is we compare the sheets in reverse order. 
+        
         The "Is" column holds "Same", "Added", "Removed" or "Changed" and is used for conditional formatting in the output sheet (this is hidden by default), 
-        and when the data is written to Excel the "reference" columns "DisplayName" and "Start" are renamed "A-DisplayName" and "A-Start"
+        and when the data is written to Excel the "reference" columns, in this case "DisplayName" and "Start" are renamed to reflect their source, 
+        so become  "A-DisplayName" and "A-Start".
+        
         Conditional formatting is also applied to the "key" column (name in this case) so the view can be filtered to rows with changes by filtering this column on color. 
         
         Note: the processing order can affect what is seen as a change. For example if there is an extra item in sheet B in the example above, 
-        Sheet C will be processed and that row and nothing will be seen to be missing. When sheet B is processed it is marked as an addition, and the conditional formatting marks
+        Sheet C will be processed and that row and will not be seen to be missing. When sheet B is processed it is marked as an addition, and the conditional formatting marks
         the entries from sheet A to show that a values were added in at least one sheet.  
-        However of Sheet B is the reference sheet, A and C will be seen to have an item removed; and if B is processed before C, the extra item is known when C is processed and 
-        so C is considered to be missing that item.   
+        However if Sheet B is the reference sheet, A and C will be seen to have an item removed; 
+        and if B is processed before C, the extra item is known when C is processed and so C is considered to be missing that item.   
     .Example
         dir Server*.xlsx | Merge-MulipleSheets   -WorkSheetName Services -OutputFile Test2.xlsx -OutputSheetName Services -Show
         We are auditing servers and each one has a workbook in the current directory which contains a "Services" worksheet (the result of 
@@ -313,7 +318,7 @@ Function Merge-MulipleSheets {
         This time all the servers have written their hofix information to their own worksheets in a shared Excel workbook named "Hotfixes"
         (the information was obtained by running Get-Hotfix | Sort-Object -Property description,hotfixid  | Select-Object -Property Description,HotfixID)
         This ignores any sheets which are not named "Serv*", and uses the HotfixID as the key ; in this version the row numbers are hidden. 
-#>
+  #>
 
    param   (
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]  

@@ -1,22 +1,22 @@
 ﻿Function Add-ConditionalFormatting {
-<#
-.Synopsis
-    Adds contitional formatting to worksheet
-.Example
-    $excel = $avdata | Export-Excel -Path (Join-path $FilePath "\Machines.XLSX" ) -WorksheetName "Server Anti-Virus" -AutoSize -FreezeTopRow -AutoFilter -PassThru
+    <#
+      .Synopsis
+        Adds contitional formatting to worksheet.
+      .Example
+        $excel = $avdata | Export-Excel -Path (Join-path $FilePath "\Machines.XLSX" ) -WorksheetName "Server Anti-Virus" -AutoSize -FreezeTopRow -AutoFilter -PassThru
 
-    Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "b":b1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "2003"
-    Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "i2:i1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "Disabled"
-    $excel.Workbook.Worksheets[1].Cells["D1:G1048576"].Style.Numberformat.Format = [cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern
-    $excel.Workbook.Worksheets[1].Row(1).style.font.bold = $true
-    $excel.Save() ; $excel.Dispose()
+        Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "b2:b1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "2003"
+        Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "i2:i1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "Disabled"
+        $excel.Workbook.Worksheets[1].Cells["D1:G1048576"].Style.Numberformat.Format = [cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern
+        $excel.Workbook.Worksheets[1].Row(1).style.font.bold = $true
+        $excel.Save() ; $excel.Dispose()
 
-    Here Export-Excel is called with the -passThru parameter so the Excel Package object is stored in $Excel
-    The desired worksheet is selected and the then columns B and i are conditially formatted (excluding the top row) to show
-    Fixed formats are then applied to dates in columns D..G and the top row is formatted
-    Finally the workbook is saved and the Excel closed.
+        Here Export-Excel is called with the -passThru parameter so the Excel Package object is stored in $Excel
+        The desired worksheet is selected and the then columns B and i are conditially formatted (excluding the top row) to show red text if 
+        the columns contain "2003" or "Disabled respectively. A fixed date formats are then applied to columns D..G, and the top row is formatted.
+        Finally the workbook is saved and the Excel object closed.
 
-#>
+    #>
     Param (
         #The worksheet where the format is to be applied
         [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
@@ -70,7 +70,7 @@
         #Background colour for matching items
         [System.Drawing.Color]$BackgroundColor,
         #Background pattern for matching items
-        [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern = [OfficeOpenXml.Style.ExcelFillStyle]::Solid,
+        [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern = [OfficeOpenXml.Style.ExcelFillStyle]::None ,
         #Secondary colour when a background pattern requires it
         [System.Drawing.Color]$PatternColor,
         #Sets the numeric format for matching items
@@ -84,13 +84,12 @@
         #Strikethrough text of matching items
         [switch]$StrikeThru
     )
-    #Allow add conditional formatting to work like Set-Format (with single ADDRESS parameter) split it to get worksheet and Range of cells.  
-    if ($Address -and -not $WorkSheet -and -not $Range) {
+    #Allow conditional formatting to work like Set-Format (with single ADDRESS parameter), split it to get worksheet and range of cells.  
+    If ($Address -and -not $WorkSheet -and -not $Range) {
         $WorkSheet = $Address.Worksheet[0]
         $Range     = $Address.Address 
-    }
-    if ($rule -eq "Databar" -and -not $databarColor) {Write-Warning -Message "-DatabarColor must be specified for the Databar rule type"    }    
-    if (   $ThreeIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)}
+    }    
+    If ($ThreeIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)}
     elseif ($FourIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet) }
     elseif ($FiveIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Range , $IconType)     }
     elseif ($DataBarColor) {$rule = $WorkSheet.ConditionalFormatting.AddDatabar(     $Range , $DataBarColor) }
