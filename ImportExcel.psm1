@@ -20,6 +20,7 @@
     . $PSScriptRoot\Import-Html.ps1
     . $PSScriptRoot\InferData.ps1
     . $PSScriptRoot\Invoke-Sum.ps1
+    . $PSScriptRoot\Join-WorkSheet.ps1
     . $PSScriptRoot\Merge-Worksheet.ps1
     . $PSScriptRoot\New-ConditionalFormattingIconSet.ps1
     . $PSScriptRoot\New-ConditionalText.ps1
@@ -53,7 +54,7 @@
         Write-Warning 'PowerShell Excel is ready, except for that functionality'
     }
 #endregion
-Function Import-Excel {
+function Import-Excel {
   <#
    .SYNOPSIS
        Create custom objects from the rows in an Excel worksheet.
@@ -92,7 +93,13 @@ Function Import-Excel {
        When the parameters ‘-NoHeader’ and ‘-HeaderName’ are not provided, this row will contain the column headers that will be used as property names. When one of both parameters are provided, the property names are automatically created and this row will be treated as a regular row containing data.
 
    .PARAMETER EndRow
-       By default all rows up to the last cell in the sheet will be imported. If specified, import stops at this row.  
+       By default all rows up to the last cell in the sheet will be imported. If specified, import stops at this row.
+
+   .PARAMETER StartColumn
+        The number of the first column to read data from (1 by default).
+
+   .PARAMETER EndColumn
+        By default the import reads up to the last populated column, -EndColumn tells the import to stop at an earlier number.
 
    .PARAMETER Password
        Accepts a string that will be used to open a password protected Excel file.
@@ -318,12 +325,12 @@ Function Import-Excel {
             #region Open file
             $Path = (Resolve-Path $Path).ProviderPath
             Write-Verbose "Import Excel workbook '$Path' with worksheet '$Worksheetname'"
-            
+
             $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
-            
+
             if ($Password) {
                 $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage
-            
+
                 Try {
                     $Excel.Load($Stream,$Password)
                 }
@@ -335,7 +342,7 @@ Function Import-Excel {
                 $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
             }
             #endregion
-            
+
             #region Select worksheet
             if ($WorksheetName) {
                 if (-not ($Worksheet = $Excel.Workbook.Worksheets[$WorkSheetName])) {
@@ -359,7 +366,7 @@ Function Import-Excel {
                 #We're going to look at every cell and build 2 hash tables holding rows & columns which contain data.
                 #Want to Avoid 'select unique' operations & large Sorts, becuse time time taken increases with square
                 #of number of items (PS uses heapsort at large size). Instead keep a list of what we have seen,
-                #using Hash tables: "we've seen it" is all we need, no need to worry about "seen it before" / "Seen it many times"
+                #using Hash tables: "we've seen it" is all we need, no need to worry about "seen it before" / "Seen it many times".
                 $colHash = @{}
                 $rowHash = @{}
                 foreach ($cell in $Worksheet.Cells[$range]) {
@@ -415,39 +422,18 @@ Function Import-Excel {
     }
 }
 
-function Add-WorkSheet {
-    param(
-        #TODO Use parametersets to allow a workbook to be passed instead of a package
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [OfficeOpenXml.ExcelPackage] $ExcelPackage,
-        [Parameter(Mandatory=$true)]
-        [string] $WorkSheetname,
-        [switch] $ClearSheet,
-        [Switch] $NoClobber
-    )
-
-    $ws = $ExcelPackage.Workbook.Worksheets[$WorkSheetname]
-    if($ClearSheet -and $ws) {$ExcelPackage.Workbook.Worksheets.Delete($WorkSheetname) ; $ws = $null }
-    if(!$ws) {
-        Write-Verbose "Add worksheet '$WorkSheetname'"
-        $ws=$ExcelPackage.Workbook.Worksheets.Add($WorkSheetname)
-    }
-
-    return $ws
-}
-
 function ConvertFrom-ExcelSheet {
     <#
-        .Synopsis
-        Reads an Excel file an converts the data to a delimited text file
+      .Synopsis
+        Reads an Excel file an converts the data to a delimited text file.
 
-        .Example
+      .Example
         ConvertFrom-ExcelSheet .\TestSheets.xlsx .\data
-        Reads each sheet in TestSheets.xlsx and outputs it to the data directory as the sheet name with the extension .txt
+        Reads each sheet in TestSheets.xlsx and outputs it to the data directory as the sheet name with the extension .txt.
 
-        .Example
+      .Example
         ConvertFrom-ExcelSheet .\TestSheets.xlsx .\data sheet?0
-        Reads and outputs sheets like Sheet10 and Sheet20 form TestSheets.xlsx and outputs it to the data directory as the sheet name with the extension .txt
+        Reads and outputs sheets like Sheet10 and Sheet20 form TestSheets.xlsx and outputs it to the data directory as the sheet name with the extension .txt.
     #>
 
     [CmdletBinding()]
@@ -496,7 +482,7 @@ function ConvertFrom-ExcelSheet {
 
     $stream.Close()
     $stream.Dispose()
-    $xl.Dispose() 
+    $xl.Dispose()
 }
 
 function Export-MultipleExcelSheets {
