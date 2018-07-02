@@ -93,14 +93,14 @@ function Import-Excel {
        When the parameters ‘-NoHeader’ and ‘-HeaderName’ are not provided, this row will contain the column headers that will be used as property names. When one of both parameters are provided, the property names are automatically created and this row will be treated as a regular row containing data.
 
    .PARAMETER EndRow
-       By default all rows up to the last cell in the sheet will be imported. If specified, import stops at this row.  
+       By default all rows up to the last cell in the sheet will be imported. If specified, import stops at this row.
 
    .PARAMETER StartColumn
-        The number of the first column to read data from (1 by default). 
-        
+        The number of the first column to read data from (1 by default).
+
    .PARAMETER EndColumn
-        By default the import reads up to the last populated column, -EndColumn tells the import to stop at an earlier number. 
-     
+        By default the import reads up to the last populated column, -EndColumn tells the import to stop at an earlier number.
+
    .PARAMETER Password
        Accepts a string that will be used to open a password protected Excel file.
 
@@ -325,12 +325,12 @@ function Import-Excel {
             #region Open file
             $Path = (Resolve-Path $Path).ProviderPath
             Write-Verbose "Import Excel workbook '$Path' with worksheet '$Worksheetname'"
-            
+
             $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
-            
+
             if ($Password) {
                 $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage
-            
+
                 Try {
                     $Excel.Load($Stream,$Password)
                 }
@@ -342,7 +342,7 @@ function Import-Excel {
                 $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
             }
             #endregion
-            
+
             #region Select worksheet
             if ($WorksheetName) {
                 if (-not ($Worksheet = $Excel.Workbook.Worksheets[$WorkSheetName])) {
@@ -482,7 +482,7 @@ function ConvertFrom-ExcelSheet {
 
     $stream.Close()
     $stream.Dispose()
-    $xl.Dispose() 
+    $xl.Dispose()
 }
 
 function Export-MultipleExcelSheets {

@@ -44,6 +44,7 @@ Begin {
             'Import-Html.ps1',
             'InferData.ps1',
             'Invoke-Sum.ps1',
+            'Merge-Worksheet.ps1',
             'New-ConditionalFormattingIconSet.ps1',
             'New-ConditionalText.ps1',
             'New-ExcelChart.ps1',
