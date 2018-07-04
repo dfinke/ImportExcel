@@ -690,7 +690,7 @@
                 }
                 #If named range exists, update it, else create it
                 if ($ws.Names[$RangeName]) { $ws.Names[$rangename].Address = $ws.Cells[$dataRange].FullAddressAbsolute }
-                else {$ws.Names.Add($RangeName, $ws.Cells[$dataRange]) | Out-Null }
+                else {$ws.Names.Add($RangeName, $ws.Cells[$0ange]) | Out-Null }
             }
         }
         Catch { Write-Warning -Message "Failed adding range '$RangeName' to worksheet '$WorkSheetname': $_"   }
@@ -822,8 +822,8 @@
 
         foreach ($chartDef in $ExcelChartDefinition) {
             $params = @{}
-            $chardef.PSObject.Properties | ForEach-Object {if ($_.value -ne $null) {$params[$_.name] = $_.value}}
-            Add-ExcelChart $params
+            $chartDef.PSObject.Properties | ForEach-Object {if ($_.value -ne $null) {$params[$_.name] = $_.value}}
+            Add-ExcelChart @params
         }
 
         foreach ($ct in $ConditionalText) {
@@ -841,8 +841,8 @@
 
         if ($CellStyleSB) {
             try {
-                $TotalRows = $ws.Dimension.Rows
-                $LastColumn = (Get-ExcelColumnName $ws.Dimension.Columns).ColumnName
+                $TotalRows  =  $ws.Dimension.Rows
+                $LastColumn =  $ws.Dimension.Address -replace "^.*:(\w*)\d+$" , '$1'
                 & $CellStyleSB $ws $TotalRows $LastColumn
             }
             catch {Write-Warning -Message "Failed processing CellStyleSB in worksheet '$WorkSheetname': $_"}
@@ -1164,34 +1164,88 @@ function Add-PivotTable {
     }
 }
 function Add-ExcelChart {
+    [cmdletbinding()]
     param(
-        $Worksheet,
-        $Title = "Chart Title",
-        $Header,
+        [OfficeOpenXml.ExcelWorksheet]$Worksheet,
+        [String]$Title = "Chart Title",
+        #$Header,   Not used but referenced previously 
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = "ColumnStacked",
         $XRange,
         $YRange,
-        $Width = 500,
-        $Height = 350,
-        $Row = 0,
-        $RowOffSetPixels = 10,
-        $Column = 6,
-        $ColumnOffSetPixels = 5,
+        [int]$Width = 500,
+        [int]$Height = 350,
+        [int]$Row = 0,
+        [int]$RowOffSetPixels = 10,
+        [int]$Column = 6,
+        [int]$ColumnOffSetPixels = 5,
+        [OfficeOpenXml.Drawing.Chart.eLegendPosition]$LegendPostion,
+        $LegendSize,
+        [Switch]$legendBold,
         [Switch]$NoLegend,
         [Switch]$ShowCategory,
         [Switch]$ShowPercent,
-        $SeriesHeader
-    )
+        $SeriesHeader,
+        [Switch]$TitleBold,
+        [Int]$TitleSize ,
+        [String]$XAxisTitleText, 
+        [Switch]$XAxisTitleBold,
+        $XAxisTitleSize ,
+        [string]$XAxisNumberformat,
+        [double]$XMajorUnit, 
+        [double]$XMinorUnit, 
+        [double]$XMaxValue,
+        [double]$XMinValue,
+        [OfficeOpenXml.Drawing.Chart.eAxisPosition]$XAxisPosition        ,
+        [String]$YAxisTitleText, 
+        [Switch]$YAxisTitleBold,
+        $YAxisTitleSize,
+        [string]$YAxisNumberformat,
+        [double]$YMajorUnit, 
+        [double]$YMinorUnit, 
+        [double]$YMaxValue,
+        [double]$YMinValue,
+        [OfficeOpenXml.Drawing.Chart.eAxisPosition]$YAxisPosition   )
     try {
         $ChartName = 'Chart' + (Split-Path -Leaf ([System.IO.path]::GetTempFileName())) -replace 'tmp|\.', ''
         $chart = $Worksheet.Drawings.AddChart($ChartName, $ChartType)
         $chart.Title.Text = $Title
-
+        if ($TitleBold) {$chart.Title.Font.Bold = $true}
+        if ($TitleSize) {$chart.Title.Font.Size = $TitleSize}
+        
         if ($NoLegend) { $chart.Legend.Remove() }
+        else {
+            if ($LegendPostion) {$Chart.Legend.Position    = $LegendPostion}
+            if ($LegendSize)    {$chart.Legend.Font.Size   = $LegendSize}
+            if ($legendBold)    {$chart.Legend.Font.Bold   = $legendBold}
+        }
 
+        if ($XAxisTitleText) {
+            $chart.XAxis.Title.Text = $XAxisTitleText
+            if ($XAxisTitleBold) {$chart.XAxis.Title.Font.Bold = $true}
+            if ($XAxisTitleSize) {$chart.XAxis.Title.Font.Size = $XAxisTitleSize}
+        }
+        if ($XAxisPosition)     {$chart.XAxis.AxisPosition = $XAxisPosition}    
+        if ($XMajorUnit)        {$chart.XAxis.MajorUnit    = $XMajorUnit}         
+        if ($XMinorUnit)        {$chart.XAxis.MinorUnit    = $XMinorUnit}     
+        if ($XMinValue)         {$chart.XAxis.MinValue     = $XMinValue}     
+        if ($XMaxValue)         {$chart.XAxis.MaxValue     = $XMaxValue}     
+        if ($XAxisNumberformat) {$chart.XAxis.Format       = $XAxisNumberformat}
+
+        if ($YAxisTitleText) {
+            $chart.YAxis.Title.Text = $YAxisTitleText
+            if ($YAxisTitleBold) {$chart.YAxis.Title.Font.Bold = $true}
+            if ($YAxisTitleSize) {$chart.YAxis.Title.Font.Size = $YAxisTitleSize}
+        }
+        if ($YAxisPosition)     {$chart.YAxis.AxisPosition = $YAxisPosition}
+        if ($YMajorUnit)        {$chart.YAxis.MajorUnit    = $YMajorUnit}         
+        if ($YMinorUnit)        {$chart.YAxis.MinorUnit    = $YMinorUnit}     
+        if ($YMinValue)         {$chart.YAxis.MinValue     = $YMinValue}      
+        if ($YMaxValue)         {$chart.YAxis.MaxValue     = $YMaxValue}     
+        if ($YAxisNumberformat) {$chart.YAxis.Format       = $YAxisNumberformat}
+        
         if ($chart.Datalabel -ne $null) {
             $chart.Datalabel.ShowCategory = [boolean]$ShowCategory
-            $chart.Datalabel.ShowPercent = [boolean]$ShowPercent
+            $chart.Datalabel.ShowPercent  = [boolean]$ShowPercent
         }
 
         $chart.SetPosition($Row, $RowOffsetPixels, $Column, $ColumnOffsetPixels)
@@ -1201,13 +1255,13 @@ function Add-ExcelChart {
         if ($chartDefCount -eq 1) {
             $Series = $chart.Series.Add($YRange, $XRange)
             if ($SeriesHeader) { $Series.Header = $SeriesHeader}
-            else               { $Series.Header = 'Series 1'}
+            else { $Series.Header = 'Series 1'}
         }
         else {
             for ($idx = 0; $idx -lt $chartDefCount; $idx += 1) {
                 $Series = $chart.Series.Add($YRange[$idx], $XRange)
                 if ($SeriesHeader.Count -gt 0) { $Series.Header = $SeriesHeader[$idx] }
-                else                           { $Series.Header = "Series $($idx)"}
+                else { $Series.Header = "Series $($idx)"}
             }
         }
     }

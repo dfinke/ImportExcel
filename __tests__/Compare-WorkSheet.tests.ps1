@@ -25,7 +25,7 @@ Describe "Compare Worksheet" {
 
     $s | Export-Excel -Path $env:temp\server2.xlsx  
     #Assume default worksheet name, (sheet1) and column header for key ("name") 
-    $comp = compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" 
+    $comp = compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" | Sort-Object -Property _row, _file 
 
     Context "Simple comparison output" {
         it "Found the right number of differences                         " {
@@ -38,8 +38,8 @@ Describe "Compare Worksheet" {
             $comp[0]._Row             | should     be 4 
             $comp[1]._Row             | should     be 4 
             $comp[1].Name             | should     be $comp[0].Name 
-            $comp[1].DisplayName      | should     be $row4Displayname 
-            $comp[0].DisplayName      | should     be "Changed from the orginal" 
+            $comp[0].DisplayName      | should     be $row4Displayname 
+            $comp[1].DisplayName      | should     be "Changed from the orginal" 
         }
         it "Found the inserted data row                                   " {
             $comp                     | should not beNullOrEmpty  
@@ -125,14 +125,13 @@ Describe "Compare Worksheet" {
 
     $s | Select-Object -Property ServiceName, DisplayName, StartType, ServiceType | Export-Excel -Path $env:temp\server2.xlsx -WorkSheetname server2 
     #Assume default worksheet name, (sheet1) and column header for key ("name") 
-    $comp = compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -WorkSheetName Server1,Server2 -Key ServiceName -Property DisplayName,StartType -AllDataBackgroundColor AliceBlue -BackgroundColor White -FontColor Red  
-   
+    $comp = compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -WorkSheetName Server1,Server2 -Key ServiceName -Property DisplayName,StartType -AllDataBackgroundColor AliceBlue -BackgroundColor White -FontColor Red   | Sort-Object _row,_file  
     $xl1  = Open-ExcelPackage -Path "$env:temp\Server1.xlsx"
     $xl2  = Open-ExcelPackage -Path "$env:temp\Server2.xlsx"
     
     $s1Sheet = $xl1.Workbook.Worksheets["server1"]
     $s2Sheet = $xl2.Workbook.Worksheets["server2"]
-    Context "More complex comparison output etc different worksheet names " {
+    Context "More complex comparison: output check and different worksheet names " {
         it "Found the right number of differences                         " {
             $comp                     | should not beNullOrEmpty  
             $comp.Count               | should     be 4
@@ -143,8 +142,8 @@ Describe "Compare Worksheet" {
             $comp[0]._Row             | should     be 4 
             $comp[1]._Row             | should     be 4 
             $comp[1].ServiceName      | should     be $comp[0].ServiceName 
-            $comp[1].DisplayName      | should     be $row4Displayname 
-            $comp[0].DisplayName      | should     be "Changed from the orginal" 
+            $comp[0].DisplayName      | should     be $row4Displayname 
+            $comp[1].DisplayName      | should     be "Changed from the orginal" 
         }
         it "Found the inserted data row                                   " {
             $comp                     | should not beNullOrEmpty  

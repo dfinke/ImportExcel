@@ -32,8 +32,13 @@ To install to your personal modules folder (e.g. ~\Documents\WindowsPowerShell\M
 iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfinke/ImportExcel/master/Install.ps1')
 ```
 
-# What's new
+# What's new to 4th July 18
+- Moved chart creatation into its own function (Add-Excel chart) within Export-Excel.ps1. Renamed New-Excelchart to New-ExcelChartDefinition to make it clearer that it is not making anything in the workbook (but for compatiblity put an alias of New-ExcelChart in so existing code does not break). Found -Header does nothing, so removed it.  
+- Fixed a bug introduced into Compare-Worksheet by the change descibed in the June changes below, this meant the font color was only being set in one sheet, when a row was changed. Also found that the PowerShell ISE and shell return Compare-Object resuls in different sequences which broke some tests. Applied a sort to ensure things are in a predictable order.    
+- Added chart tests to Export-Excel.tests.ps1. 
+- Removed (2) calls to Get-ExcelColumnName
 
+# New in June 18
 - New commands - Diff , Merge and Join
     - `Compare-Worksheet` (introduced in 5.0) uses the built in `Compare-object` command, to output a command-line DIFF and/or colour the worksheet to show differences. For example, if my sheets are Windows services the *extra* rows or rows where the startup status has changed get highlighted
     - `Merge-Worksheet` (also introduced in 5.0) joins two lumps, side by highlighting the differences. So now I can have server A's services and Server Bs Services on the same page.  I figured out a way to do multiple sheets. So I can have Server A,B,C,D on one page :-) that is `Merge-MultpleSheets`
