@@ -1,3 +1,9 @@
+#Requires -Modules Pester
+
+# $here = Split-Path -Parent $MyInvocation.MyCommand.Path
+# Import-Module $here -Force -Verbose
+Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
+
 Describe "Compare Worksheet" {
 
     Remove-Item -Path  "$env:temp\server*.xlsx"
@@ -28,8 +34,7 @@ Describe "Compare Worksheet" {
         }
         it "Found the data row with a changed property                    " {
             $comp                     | should not beNullOrEmpty  
-            $comp[0]._Side            | should     be '=>' 
-            $comp[1]._Side            | should     be '<=' 
+            $comp[0]._Side            | should not be $comp[1]._Side
             $comp[0]._Row             | should     be 4 
             $comp[1]._Row             | should     be 4 
             $comp[1].Name             | should     be $comp[0].Name 
@@ -134,8 +139,7 @@ Describe "Compare Worksheet" {
         }
         it "Found the data row with a changed property                    " {
             $comp                     | should not beNullOrEmpty  
-            $comp[0]._Side            | should     be '=>' 
-            $comp[1]._Side            | should     be '<=' 
+            $comp[0]._Side            | should not be $comp[1]._Side  
             $comp[0]._Row             | should     be 4 
             $comp[1]._Row             | should     be 4 
             $comp[1].ServiceName      | should     be $comp[0].ServiceName 
