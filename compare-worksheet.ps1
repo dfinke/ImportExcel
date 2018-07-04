@@ -185,7 +185,7 @@ Function Compare-WorkSheet {
                     }
                     if($u.Group[0].$p -ne $u.Group[1].$p ) {
                         Set-Format -WorkSheet $ws1 -Range ($Columns[$p] + $u.Group[0]._Row) -FontColor $FontColor
-                        Set-Format -WorkSheet $ws1 -Range ($Columns[$p] + $u.Group[1]._Row) -FontColor $FontColor
+                        Set-Format -WorkSheet $ws2 -Range ($Columns[$p] + $u.Group[1]._Row) -FontColor $FontColor
                     } 
                 } 
             }
