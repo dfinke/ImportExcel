@@ -7,5 +7,5 @@ if ((Get-Module -ListAvailable pester) -eq $null) {
 $result = Invoke-Pester -Script $PSScriptRoot\__tests__ -Verbose -PassThru
 
 if ($result.FailedCount -gt 0) {
-    throw "$($FailedCount) tests failed."
+    throw "$($result.FailedCount) tests failed."
 }
