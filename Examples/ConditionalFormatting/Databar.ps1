@@ -1,4 +1,6 @@
-﻿Remove-Item -Path .\test.xlsx -ErrorAction Ignore
+﻿try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+
+Remove-Item -Path .\test.xlsx -ErrorAction Ignore
 
 $excel = Get-Process |
     Select-Object -Property Name,Company,Handles,CPU,PM,NPM,WS |
