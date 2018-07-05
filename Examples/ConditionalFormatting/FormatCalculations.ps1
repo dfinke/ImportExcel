@@ -1,11 +1,13 @@
+try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+
 $f = ".\testExport.xlsx"
 
-rm $f -ErrorAction Ignore
+Remove-Item $f -ErrorAction Ignore
 
 $data = $(
 
     New-PSItem North 111 (echo Region Amount )
-    New-PSItem East 111 
+    New-PSItem East 111
     New-PSItem West 122
     New-PSItem South 200
 
@@ -14,11 +16,11 @@ $data = $(
     New-PSItem SouthWest 136
     New-PSItem South 127
 
-    New-PSItem NorthByNory 100 
-    New-PSItem NothEast 110 
-    New-PSItem Westerly 120 
+    New-PSItem NorthByNory 100
+    New-PSItem NothEast 110
+    New-PSItem Westerly 120
     New-PSItem SouthWest 118
-) 
+)
 
 
 #$data  | Export-Excel $f -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType AboveAverage)

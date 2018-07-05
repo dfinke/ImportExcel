@@ -1,6 +1,8 @@
-rm .\testExport.xlsx -ErrorAction Ignore
+try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
-ps | where Company | select Company, Name, PM, Handles, *mem* |
+Remove-Item .\testExport.xlsx -ErrorAction Ignore
+
+Get-Process | Where-Object Company | Select-Object Company, Name, PM, Handles, *mem* |
 
     Export-Excel .\testExport.xlsx -Show -AutoSize -AutoNameRange `
         -ConditionalFormat $(
