@@ -1,11 +1,10 @@
-﻿function Join-Worksheet { 
-    [CmdletBinding(DefaultParameterSetName = 'Default')]
+﻿function Join-Worksheet {
     <#
       .SYNOPSIS
         Combines data on all the sheets in an Excel worksheet onto a single sheet.
       .DESCRIPTION
         Join worksheet can work in two main ways:
-        Either Combining data which has the same layout from many pages into one, or combining pages which have nothing in common. 
+        Either Combining data which has the same layout from many pages into one, or combining pages which have nothing in common.
         In the former case the header row is copied from the first sheet and, by default, each row of data is labelled with the name of the sheet it came from.
         In the latter case -NoHeader is specified, and each copied block can have the sheet it came from placed above it as a title.
       .EXAMPLE
@@ -14,35 +13,37 @@
                 Export-Excel -Path .\test.xlsx -WorkSheetname $computerName -AutoSize
         }
         $ptDef =New-PivotTableDefinition -PivotTableName "Pivot1" -SourceWorkSheet "Combined" -PivotRows "Status" -PivotFilter "MachineName" -PivotData @{Status='Count'} -IncludePivotChart -ChartType BarClustered3D
-        Join-Worksheet -Path .\test.xlsx -WorkSheetName combined -FromLabel "MachineName" -HideSource  -AutoSize -FreezeTopRow -BoldTopRow  -PivotTableDefinition $pt -Show 
+        Join-Worksheet -Path .\test.xlsx -WorkSheetName combined -FromLabel "MachineName" -HideSource  -AutoSize -FreezeTopRow -BoldTopRow  -PivotTableDefinition $pt -Show
 
         The foreach command gets the services running on four servers and exports each to its own page in Test.xlsx.
         $PtDef=  creates a defintion for a single Pivot table.
-        The Join-Worksheet command uses the same file and merges the results onto a sheet named "Combined". It sets a column header of "Machinename", 
-        this column will contain the name of the sheet the data was copied from; after copying the data to the sheet "combined", the other sheets will be hidden. 
-        Join-Worksheet finishes by calling export-Excel to AutoSize cells, freeze the top row and make it bold and add the Pivot table.    
+        The Join-Worksheet command uses the same file and merges the results onto a sheet named "Combined". It sets a column header of "Machinename",
+        this column will contain the name of the sheet the data was copied from; after copying the data to the sheet "combined", the other sheets will be hidden.
+        Join-Worksheet finishes by calling export-Excel to AutoSize cells, freeze the top row and make it bold and add the Pivot table.
 
       .EXAMPLE
-        Get-WmiObject -Class win32_logicaldisk | select -Property DeviceId,VolumeName, Size,Freespace | 
-           Export-Excel -Path "$env:computerName.xlsx" -WorkSheetname Volumes 
-        Get-NetAdapter  | Select-Object Name,InterfaceDescription,MacAddress,LinkSpeed | 
+        Get-WmiObject -Class win32_logicaldisk | select -Property DeviceId,VolumeName, Size,Freespace |
+           Export-Excel -Path "$env:computerName.xlsx" -WorkSheetname Volumes
+        Get-NetAdapter  | Select-Object Name,InterfaceDescription,MacAddress,LinkSpeed |
             Export-Excel -Path "$env:COMPUTERNAME.xlsx" -WorkSheetname NetAdapter
         Join-Worksheet -Path "$env:COMPUTERNAME.xlsx"  -WorkSheetName Summay -Title "Summary" -TitleBold -TitleSize 22 -NoHeader -LabelBlocks -AutoSize -HideSource
 
-        The first two command get logical disk and network card information; each type is exported to its own sheet in a workbook. 
-        The Join-worksheet command copies both onto a page named "Summary". Because the data is disimilar -NoHeader is specified, ensuring the whole of each page is copied. 
-        Specifying -LabelBlocks causes each sheet's name to become a title on the summary page above the copied data. 
+        The first two command get logical disk and network card information; each type is exported to its own sheet in a workbook.
+        The Join-worksheet command copies both onto a page named "Summary". Because the data is disimilar -NoHeader is specified, ensuring the whole of each page is copied.
+        Specifying -LabelBlocks causes each sheet's name to become a title on the summary page above the copied data.
         The source data is hidden, a title is addded in 22 point boldface and the columns are sized to fit the data.
     #>
+
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
         # Path to a new or existing .XLSX file.
         [Parameter(ParameterSetName = "Default", Position = 0)]
-        [String]$Path  , 
+        [String]$Path  ,
         # An object representing an Excel Package - usually this is returned by specifying -Passthru allowing multiple commands to work on the same Workbook without saving and reloading each time.
         [Parameter(Mandatory = $true, ParameterSetName = "Package")]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         # The name of a sheet within the workbook where the other sheets will be joined together - "Combined" by default.
-        $WorkSheetName = 'Combined', 
+        $WorkSheetName = 'Combined',
         # If specified any pre-existing target for the joined data will be deleted and re-created; otherwise data will be appended on this sheet.
         [switch]$Clearsheet,
         #Join-Worksheet assumes each sheet has identical headers and the headers should be copied to the target sheet, unless -NoHeader is specified.
@@ -51,7 +52,7 @@
         $FromLabel = "From" ,
         #If specified, the copied blocks of data will have the name of the sheet they were copied from inserted above them as a title.
         [switch]$LabelBlocks,
-        #Sizes the width of the Excel column to the maximum width needed to display all the containing data in that cell. 
+        #Sizes the width of the Excel column to the maximum width needed to display all the containing data in that cell.
         [Switch]$AutoSize,
         #Freezes headers etc. in the top row.
         [Switch]$FreezeTopRow,
@@ -65,7 +66,7 @@
         [Switch]$AutoFilter,
         #Makes the top Row boldface.
         [Switch]$BoldTopRow,
-        #If Specified hides the sheets that the data is copied from. 
+        #If Specified hides the sheets that the data is copied from.
         [switch]$HideSource,
         #Text of a title to be placed in Cell A1.
         [String]$Title,
@@ -76,24 +77,24 @@
         #Sets the title in boldface type.
         [Switch]$TitleBold,
         #Sets the point size for the title.
-        [Int]$TitleSize = 22, 
+        [Int]$TitleSize = 22,
         # Hashtable(s) with Sheet PivotRows, PivotColumns, PivotData, IncludePivotChart and ChartType values to specify a definition for one or more pivot table(s).
         [Hashtable]$PivotTableDefinition,
         # A hashtable containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts.
         [Object[]]$ExcelChartDefinition,
         #Opens the Excel file immediately after creation. Convenient for viewing the results instantly without having to search for the file first.
         [switch]$Show,
-        #If specified, an object representing the unsaved Excel package will be returned, it then needs to be saved. 
+        #If specified, an object representing the unsaved Excel package will be returned, it then needs to be saved.
         [switch]$PassThru
     )
-    #region get target worksheet, select it and move it to the end. 
+    #region get target worksheet, select it and move it to the end.
     if ($Path -and -not $ExcelPackage) {$ExcelPackage = Open-ExcelPackage -path $Path  }
     $destinationSheet = Add-WorkSheet -ExcelPackage $ExcelPackage -WorkSheetname $WorkSheetName -ClearSheet:$Clearsheet
     $destinationSheet.View.TabSelected = $true
     $ExcelPackage.Workbook.Worksheets.MoveToEnd($WorkSheetName)
     #row to insert at will be 1 on a blank sheet and lastrow + 1 on populated one
-    $row = (1 + $destinationSheet.Dimension.End.Row )   
-    #endregion 
+    $row = (1 + $destinationSheet.Dimension.End.Row )
+    #endregion
 
     #region Setup title and header rows
     #Title parameters work as they do in Export-Excel .
@@ -108,7 +109,7 @@
         }
         elseif ($TitleBackgroundColor) { Write-Warning "Title Background Color ignored. You must set the TitleFillPattern parameter to a value other than 'None'. Try 'Solid'." }
         $row = 2
-    } 
+    }
 
     if (-not $noHeader) {
         #Assume every row has titles in row 1, copy row 1 from first sheet to new sheet.
@@ -117,47 +118,47 @@
         if ($FromLabel ) {
             #Add a column which says where the data comes from.
             $fromColumn = ($destinationSheet.Dimension.Columns + 1)
-            $destinationSheet.Cells[$row, $fromColumn].Value = $FromLabel 
+            $destinationSheet.Cells[$row, $fromColumn].Value = $FromLabel
         }
-        $row += 1 
+        $row += 1
     }
     #endregion
 
     foreach ($i in 1..($ExcelPackage.Workbook.Worksheets.Count - 1) ) {
-        $sourceWorksheet = $ExcelPackage.Workbook.Worksheets[$i] 
-        #Assume row one is titles, so data itself starts at A2. 
+        $sourceWorksheet = $ExcelPackage.Workbook.Worksheets[$i]
+        #Assume row one is titles, so data itself starts at A2.
         if ($NoHeader) {$sourceRange = $sourceWorksheet.Dimension.Address}
-        else {$sourceRange = $sourceWorksheet.Dimension.Address -replace "A1:", "A2:"} 
-        #Position insertion point/ 
+        else {$sourceRange = $sourceWorksheet.Dimension.Address -replace "A1:", "A2:"}
+        #Position insertion point/
         $destinationSheet.Select("A$row")
         if ($LabelBlocks) {
             $destinationSheet.Cells[$row, 1].value = $sourceWorksheet.Name
             $destinationSheet.Cells[$row, 1].Style.Font.Bold = $true
             $destinationSheet.Cells[$row, 1].Style.Font.Size += 2
-            $row += 1  
+            $row += 1
         }
         $destinationSheet.Select("A$row")
-     
-        #And finally we're ready to copy the data. 
+
+        #And finally we're ready to copy the data.
         $sourceWorksheet.Cells[$sourceRange].Copy($destinationSheet.SelectedRange)
-        #Fill in column saying where data came from. 
+        #Fill in column saying where data came from.
         if ($fromColumn) { $row..$destinationSheet.Dimension.Rows | ForEach-Object {$destinationSheet.Cells[$_, $fromColumn].Value = $sourceWorksheet.Name} }
-        #Update where next insertion will go. 
-        $row = $destinationSheet.Dimension.Rows + 1  
-        if ($HideSource) {$sourceWorksheet.Hidden = [OfficeOpenXml.eWorkSheetHidden]::Hidden}  
+        #Update where next insertion will go.
+        $row = $destinationSheet.Dimension.Rows + 1
+        if ($HideSource) {$sourceWorksheet.Hidden = [OfficeOpenXml.eWorkSheetHidden]::Hidden}
     }
-   
-    #We accept a bunch of parameters work to pass on to Export-excel ( Autosize, Autofilter, boldtopRow Freeze ); if we have any of those call export-excel otherwise close the package here. 
+
+    #We accept a bunch of parameters work to pass on to Export-excel ( Autosize, Autofilter, boldtopRow Freeze ); if we have any of those call export-excel otherwise close the package here.
     $params = @{} + $PSBoundParameters
     'Path', 'Clearsheet', 'NoHeader', 'FromLabel', 'LabelBlocks', 'HideSource',
-    'Title', 'TitleFillPattern', 'TitleBackgroundColor', 'TitleBold', 'TitleSize' | ForEach-Object {[void]$params.Remove($_)} 
+    'Title', 'TitleFillPattern', 'TitleBackgroundColor', 'TitleBold', 'TitleSize' | ForEach-Object {[void]$params.Remove($_)}
     if ($params.Keys.Count) {
         $params.WorkSheetName = $WorkSheetName
         $params.ExcelPackage = $ExcelPackage
-        Export-Excel @Params  
+        Export-Excel @Params
     }
     else {
-        Close-ExcelPackage -ExcelPackage $ExcelPackage 
+        Close-ExcelPackage -ExcelPackage $ExcelPackage
         $ExcelPackage.Dispose()
         $ExcelPackage = $null
     }
