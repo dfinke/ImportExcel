@@ -1,3 +1,5 @@
+try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+
 $header = echo `
     'Date/Time - Peak Brightness (UT)' `
     'Latitude (Deg)' `
@@ -12,8 +14,8 @@ $header = echo `
 
 $splat=@{
     url='http://neo.jpl.nasa.gov/fireballs/'
-    index=5 
-    Header=$header     
+    index=5
+    Header=$header
     FirstDataRow=1
 }
 

@@ -1,3 +1,5 @@
+try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+
 Remove-Item .\testFormula.xlsx -ErrorAction Ignore
 
 @"

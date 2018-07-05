@@ -1,10 +1,11 @@
-﻿ipmo .\ImportExcel.psd1 -Force
+﻿try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+
 
 . .\ConvertExcelToImageFile.ps1
 
 $xlFileName = "C:\Temp\testPNG.xlsx"
 
-rm C:\Temp\testPNG.xlsx -ErrorAction Ignore
+Remove-Item C:\Temp\testPNG.xlsx -ErrorAction Ignore
 
 $range = @"
 Region,Item,Cost
@@ -16,8 +17,8 @@ North,Pear,1
 South,Apple,2
 East,Grapes,3
 West,Berry,4
-"@ | ConvertFrom-Csv | 
+"@ | ConvertFrom-Csv |
     Export-Excel $xlFileName -ReturnRange `
-        -ConditionalText (New-ConditionalText Apple), (New-ConditionalText Berry -ConditionalTextColor White -BackgroundColor Purple) 
+        -ConditionalText (New-ConditionalText Apple), (New-ConditionalText Berry -ConditionalTextColor White -BackgroundColor Purple)
 
 Convert-XlRangeToImage -Path $xlFileName -workSheetname sheet1 -range $range -Show

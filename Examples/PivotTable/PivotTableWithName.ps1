@@ -1,4 +1,4 @@
-Import-Module ..\..\ImportExcel.psd1 -Force
+try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 Remove-Item .\test1.xlsx -ErrorAction Ignore
 

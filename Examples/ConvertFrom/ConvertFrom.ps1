@@ -1,3 +1,4 @@
+try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 ConvertFrom-ExcelToSQLInsert People .\testSQLGen.xlsx
 
