@@ -42,6 +42,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 testExport.xlsx
+test.xlsx
 test.ps1
 testPwd.xlsx
 test.csv
@@ -55,3 +56,5 @@ test.xlsx
 testCCFMT.ps1
 testHide.ps1
 ImportExcel.zip
+.vscode/launch.json
+

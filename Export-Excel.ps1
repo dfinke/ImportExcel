@@ -356,7 +356,7 @@
         [Int]$TitleSize = 22,
         [System.Drawing.Color]$TitleBackgroundColor,
         [Switch]$IncludePivotTable,
-		[String]$PivotTableName,
+        [String]$PivotTableName,
         [String[]]$PivotRows,
         [String[]]$PivotColumns,
         $PivotData,
@@ -458,17 +458,10 @@
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as value"
                     break
                 }
-
-                {(($NoNumberConversion) -and ($NoNumberConversion -contains $Name)) -or
-                    ($NoNumberConversion -eq '*')} {
-                    #Save text without it to converting to number
-                    $TargetCell.Value = $_
-                    #Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' unconverted"
-                    break
-                }
                 {($_ -is [String]) -and ($_[0] -eq '=')} {
                     #region Save an Excel formula
                     $TargetCell.Formula = $_
+                    if ($setNumformat) {$targetCell.Style.Numberformat.Format = $Numberformat }
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as formula"
                     break
                 }
@@ -481,12 +474,18 @@
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($_.AbsoluteUri)' as Hyperlink"
                     break
                 }
-
+                {(($NoNumberConversion) -and ($NoNumberConversion -contains $Name)) -or
+                    ($NoNumberConversion -eq '*')} {
+                    #Save text without it to converting to number
+                    $TargetCell.Value = $_
+                    #Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' unconverted"
+                    break
+                }
                 Default {
                     #Save a value as a number if possible
                     $number = $null
-                    if ([Double]::TryParse( $_ , [ref]$number)) {
-                        #was  [Double]::TryParse([String]$_, [System.Globalization.NumberStyles]::Any,[System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)) {
+                    if ( [Double]::TryParse([String]$_, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)) {
+                        # as simpler version using [Double]::TryParse( $_ , [ref]$number)) was found to cause problems reverted back to the longer version
                         $TargetCell.Value = $number
                         if ($setNumformat) {$targetCell.Style.Numberformat.Format = $Numberformat }
                         #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' as number converted from '$_' with format '$Numberformat'"
@@ -629,6 +628,7 @@
                         $ColumnIndex += 1
                         #endregion
                     }
+                    $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false 
                 }
             }
             Catch {
@@ -638,6 +638,20 @@
     }
 
     End {
+        if ($firstTimeThru) {
+              $LastRow      = $ws.Dimension.End.Row
+              $LastCol      = $ws.Dimension.End.Column
+              $endAddress   = $ws.Dimension.End.Address
+        }
+        else {
+              $LastRow      = $Row      
+              $LastCol      = $ColumnIndex
+              $endAddress   = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$LastRow]C[$LastCol]", 0, 0)
+        }
+        $startAddress = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$StartRow]C[$StartColumn]", 0, 0) 
+        $dataRange = "{0}:{1}" -f $startAddress, $endAddress
+
+        Write-Debug "Data Range '$dataRange'"
         if ($AutoNameRange) {
             Try {
                 if (-not $script:header) {
@@ -657,10 +671,10 @@
                 #, but start.column is the first populated one and .Columns is the count of populated ones.
                 # if we have 5 columns from 3 to 8, headers are numbered 0..4, so that is in the for loop and used for getting the name...
                 # but we have to add the start column on when referencing positions
-                foreach ($c in 0..($ws.Dimension.Columns - 1)) {
+                foreach ($c in 0..($LastCol - $StartColumn)) {
                     $targetRangeName = $script:Header[$c] -replace '\W' , '_'
                     $targetColumn = $c + $StartColumn
-                    $theRange = $ws.Cells[$targetRow, $targetColumn, $ws.Dimension.End.Row , $targetColumn ]
+                    $theRange = $ws.Cells[$targetRow, $targetColumn, $LastRow , $targetColumn ]
                     if ($ws.names[$targetRangeName]) { $ws.names[$targetRangeName].Address = $theRange.FullAddressAbsolute }
                     else {$ws.Names.Add($targetRangeName, $theRange) | Out-Null }
 
@@ -671,19 +685,9 @@
             }
             Catch {Write-Warning -Message "Failed adding named ranges to worksheet '$WorkSheetname': $_"  }
         }
-        try {
-            if ($Title) {
-                $startAddress = $ws.Dimension.Start.address -replace "$($ws.Dimension.Start.row)`$", "$($ws.Dimension.Start.row + 1)"
-            }
-            else {
-                $startAddress = $ws.Dimension.Start.Address
-            }
-
-            $dataRange = "{0}:{1}" -f $startAddress, $ws.Dimension.End.Address
-
-            Write-Debug "Data Range '$dataRange'"
-
-            if (-not [String]::IsNullOrEmpty($RangeName)) {
+        
+        if ($RangeName) {
+            try {
                 if ($RangeName -match "\W") {
                     Write-Warning -Message "At least one character in $RangeName is illegal in a range name and will be replaced with '_' . "
                     $RangeName = $RangeName -replace '\W', '_'
@@ -692,65 +696,27 @@
                 if ($ws.Names[$RangeName]) { $ws.Names[$rangename].Address = $ws.Cells[$dataRange].FullAddressAbsolute }
                 else {$ws.Names.Add($RangeName, $ws.Cells[$dataRange]) | Out-Null }
             }
+            Catch { Write-Warning -Message "Failed adding range '$RangeName' to worksheet '$WorkSheetname': $_"   }
         }
-        Catch { Write-Warning -Message "Failed adding range '$RangeName' to worksheet '$WorkSheetname': $_"   }
-        if (-not [String]::IsNullOrEmpty($TableName)) {
-            try {
-                $csr = $StartRow
 
-                $csc = $StartColumn
-                $cer = $ws.Dimension.End.Row
-                $cec = $ws.Dimension.End.Column # was $script:Header.Count
+        if ($TableName) {
+            try {
                 if ($TableName -match "\W") {
                     Write-Warning -Message "At least one character in $TableName is illegal in a table name and will be replaced with '_' . "
                     $TableName = $TableName -replace '\W', '_'
                 }
-                $targetRange = $ws.Cells[$csr, $csc, $cer, $cec]
                 #if the table exists, update it.
                 if ($ws.Tables[$TableName]) {
-                    $ws.Tables[$TableName].TableXml.table.ref = $targetRange.Address
+                    $ws.Tables[$TableName].TableXml.table.ref = $dataRange
                     $ws.Tables[$TableName].TableStyle = $TableStyle
                 }
                 else {
-                    $tbl = $ws.Tables.Add($targetRange, $TableName)
+                    $tbl = $ws.Tables.Add($ws.Cells[$dataRange], $TableName)
                     $tbl.TableStyle = $TableStyle
                 }
                 Write-Verbose -Message "Defined table '$TableName' at $($targetRange.Address)"
             }
             catch {Write-Warning -Message "Failed adding table '$TableName' to worksheet '$WorkSheetname': $_"}
-        }
-        if ($PivotTableDefinition) {
-            foreach ($item in $PivotTableDefinition.GetEnumerator()) {
-                $params = $item.value
-                if ($params.keys -notcontains "SourceRange" -and
-                    ($params.Keys -notcontains "SourceWorkSheet" -or $params.SourceWorkSheet -eq $WorkSheetname)) {$params.SourceRange = $dataRange}
-                if ($params.Keys -notcontains "SourceWorkSheet") {$params.SourceWorkSheet = $ws }
-                if ($params.Keys -notcontains "NoTotalsInPivot" -and $NoTotalsInPivot    ) {$params.NoTotalsInPivot = $true}
-                if ($params.Keys -notcontains "PivotDataToColumn" -and $PivotDataToColumn) {$params.PivotDataToColumn = $true}
-
-                Add-PivotTable -ExcelPackage $pkg -PivotTableName $item.key @Params
-            }
-        }
-        if ($IncludePivotTable -or $IncludePivotChart) {
-            $params = @{
-                "SourceRange"    = $dataRange
-            }
-			if ($PivotTableName)    {$params.PivotTableName    = $PivotTableName}
-			else                    {$params.PivotTableName    = $WorkSheetname + 'PivotTable'}
-            if ($PivotFilter)       {$params.PivotFilter       = $PivotFilter}
-            if ($PivotRows)         {$params.PivotRows         = $PivotRows}
-            if ($PivotColumns)      {$Params.PivotColumns      = $PivotColumns}
-            if ($PivotData)         {$Params.PivotData         = $PivotData}
-            if ($NoTotalsInPivot)   {$params.NoTotalsInPivot   = $true}
-            if ($PivotDataToColumn) {$params.PivotDataToColumn = $true}
-            if ($IncludePivotChart) {
-                $params.IncludePivotChart = $true
-                $Params.ChartType =  $ChartType
-                if ($ShowCategory)  {$params.ShowCategory = $true}
-                if ($ShowPercent)   {$params.ShowPercent = $true}
-                if ($NoLegend)      {$params.NoLegend = $true}
-            }
-            Add-PivotTable -ExcelPackage $pkg -SourceWorkSheet $ws   @params
         }
 
         if ($AutoFilter) {
@@ -759,6 +725,40 @@
                 Write-Verbose -Message "Enabeld autofilter. "
             }
             catch {Write-Warning -Message "Failed adding autofilter to worksheet '$WorkSheetname': $_"}
+        }
+
+        if ($PivotTableDefinition) {
+            foreach ($item in $PivotTableDefinition.GetEnumerator()) {
+                $params = $item.value
+                if ($params.keys -notcontains "SourceRange" -and
+                   ($params.Keys -notcontains "SourceWorkSheet"   -or  $params.SourceWorkSheet -eq $WorkSheetname)) {$params.SourceRange = $dataRange}
+                if ($params.Keys -notcontains "SourceWorkSheet")      {$params.SourceWorkSheet = $ws }
+                if ($params.Keys -notcontains "NoTotalsInPivot"   -and $NoTotalsInPivot    ) {$params.NoTotalsInPivot = $true}
+                if ($params.Keys -notcontains "PivotDataToColumn" -and $PivotDataToColumn) {$params.PivotDataToColumn = $true}
+
+                Add-PivotTable -ExcelPackage $pkg -PivotTableName $item.key @Params
+            }
+        }
+        if ($IncludePivotTable -or $IncludePivotChart) {
+            $params = @{
+                "SourceRange" = $dataRange
+            }
+            if ($PivotTableName) {$params.PivotTableName = $PivotTableName}
+            else {$params.PivotTableName = $WorkSheetname + 'PivotTable'}
+            if ($PivotFilter) {$params.PivotFilter = $PivotFilter}
+            if ($PivotRows) {$params.PivotRows = $PivotRows}
+            if ($PivotColumns) {$Params.PivotColumns = $PivotColumns}
+            if ($PivotData) {$Params.PivotData = $PivotData}
+            if ($NoTotalsInPivot) {$params.NoTotalsInPivot = $true}
+            if ($PivotDataToColumn) {$params.PivotDataToColumn = $true}
+            if ($IncludePivotChart) {
+                $params.IncludePivotChart = $true
+                $Params.ChartType = $ChartType
+                if ($ShowCategory) {$params.ShowCategory = $true}
+                if ($ShowPercent) {$params.ShowPercent = $true}
+                if ($NoLegend) {$params.NoLegend = $true}
+            }
+            Add-PivotTable -ExcelPackage $pkg -SourceWorkSheet $ws   @params
         }
 
         try {
@@ -822,8 +822,8 @@
 
         foreach ($chartDef in $ExcelChartDefinition) {
             $params = @{}
-            $chardef.PSObject.Properties | ForEach-Object {if ($_.value -ne $null) {$params[$_.name] = $_.value}}
-            Add-ExcelChart $params
+            $chartDef.PSObject.Properties | ForEach-Object {if ($_.value -ne $null) {$params[$_.name] = $_.value}}
+            Add-ExcelChart -Worksheet $ws @params
         }
 
         foreach ($ct in $ConditionalText) {
@@ -842,7 +842,7 @@
         if ($CellStyleSB) {
             try {
                 $TotalRows = $ws.Dimension.Rows
-                $LastColumn = (Get-ExcelColumnName $ws.Dimension.Columns).ColumnName
+                $LastColumn = $ws.Dimension.Address -replace "^.*:(\w*)\d+$" , '$1'
                 & $CellStyleSB $ws $TotalRows $LastColumn
             }
             catch {Write-Warning -Message "Failed processing CellStyleSB in worksheet '$WorkSheetname': $_"}
@@ -1164,34 +1164,87 @@ function Add-PivotTable {
     }
 }
 function Add-ExcelChart {
+    [cmdletbinding()]
     param(
-        $Worksheet,
-        $Title = "Chart Title",
-        $Header,
+        [OfficeOpenXml.ExcelWorksheet]$Worksheet,
+        [String]$Title = "Chart Title",
+        #$Header,   Not used but referenced previously 
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = "ColumnStacked",
         $XRange,
         $YRange,
-        $Width = 500,
-        $Height = 350,
-        $Row = 0,
-        $RowOffSetPixels = 10,
-        $Column = 6,
-        $ColumnOffSetPixels = 5,
+        [int]$Width              = 500,
+        [int]$Height             = 350,
+        [int]$Row                =   0,
+        [int]$RowOffSetPixels    =  10,
+        [int]$Column             =   6,
+        [int]$ColumnOffSetPixels =   5,
+        [OfficeOpenXml.Drawing.Chart.eLegendPosition]$LegendPostion,
+        $LegendSize,
+        [Switch]$legendBold,
         [Switch]$NoLegend,
         [Switch]$ShowCategory,
         [Switch]$ShowPercent,
-        $SeriesHeader
-    )
+        $SeriesHeader,
+        [Switch]$TitleBold,
+        [Int]$TitleSize ,
+        [String]$XAxisTitleText, 
+        [Switch]$XAxisTitleBold,
+        $XAxisTitleSize ,
+        [string]$XAxisNumberformat,
+        $XMajorUnit, 
+        $XMinorUnit, 
+        $XMaxValue,
+        $XMinValue,
+        [OfficeOpenXml.Drawing.Chart.eAxisPosition]$XAxisPosition        ,
+        [String]$YAxisTitleText, 
+        [Switch]$YAxisTitleBold,
+        $YAxisTitleSize,
+        [string]$YAxisNumberformat,
+        $YMajorUnit, 
+        $YMinorUnit, 
+        $YMaxValue,
+        $YMinValue,
+        [OfficeOpenXml.Drawing.Chart.eAxisPosition]$YAxisPosition   )
     try {
         $ChartName = 'Chart' + (Split-Path -Leaf ([System.IO.path]::GetTempFileName())) -replace 'tmp|\.', ''
         $chart = $Worksheet.Drawings.AddChart($ChartName, $ChartType)
         $chart.Title.Text = $Title
-
+        if ($TitleBold) {$chart.Title.Font.Bold = $true}
+        if ($TitleSize) {$chart.Title.Font.Size = $TitleSize}
+        
         if ($NoLegend) { $chart.Legend.Remove() }
+       else {
+            if ($LegendPostion) {$Chart.Legend.Position    = $LegendPostion}
+            if ($LegendSize)    {$chart.Legend.Font.Size   = $LegendSize}
+            if ($legendBold)    {$chart.Legend.Font.Bold   = $true}
+        }
 
+        if ($XAxisTitleText)      {
+            $chart.XAxis.Title.Text = $XAxisTitleText
+            if ($XAxisTitleBold)  {$chart.XAxis.Title.Font.Bold = $true}
+            if ($XAxisTitleSize)  {$chart.XAxis.Title.Font.Size = $XAxisTitleSize}
+        }
+        if ($XAxisPosition)       {$chart.XAxis.AxisPosition    = $XAxisPosition}    
+        if ($XMajorUnit)          {$chart.XAxis.MajorUnit       = $XMajorUnit}         
+        if ($XMinorUnit)          {$chart.XAxis.MinorUnit       = $XMinorUnit}     
+        if ($XMinValue -ne $null) {$chart.XAxis.MinValue        = $XMinValue}     
+        if ($XMaxValue -ne $null) {$chart.XAxis.MaxValue        = $XMaxValue}     
+        if ($XAxisNumberformat)   {$chart.XAxis.Format          = $XAxisNumberformat}
+
+       if ($YAxisTitleText)     {
+            $chart.YAxis.Title.Text = $YAxisTitleText
+            if ($YAxisTitleBold) {$chart.YAxis.Title.Font.Bold = $true}
+            if ($YAxisTitleSize) {$chart.YAxis.Title.Font.Size = $YAxisTitleSize}
+        }
+        if ($YAxisPosition)      {$chart.YAxis.AxisPosition    = $YAxisPosition}
+        if ($YMajorUnit)         {$chart.YAxis.MajorUnit       = $YMajorUnit}         
+        if ($YMinorUnit)         {$chart.YAxis.MinorUnit       = $YMinorUnit}     
+        if ($YMinValue-ne $null) {$chart.YAxis.MinValue        = $YMinValue}      
+        if ($YMaxValue-ne $null) {$chart.YAxis.MaxValue        = $YMaxValue}     
+        if ($YAxisNumberformat)  {$chart.YAxis.Format          = $YAxisNumberformat}
         if ($chart.Datalabel -ne $null) {
             $chart.Datalabel.ShowCategory = [boolean]$ShowCategory
-            $chart.Datalabel.ShowPercent = [boolean]$ShowPercent
+            $chart.Datalabel.ShowPercent  = [boolean]$ShowPercent
         }
 
         $chart.SetPosition($Row, $RowOffsetPixels, $Column, $ColumnOffsetPixels)
@@ -1201,13 +1254,13 @@ function Add-ExcelChart {
         if ($chartDefCount -eq 1) {
             $Series = $chart.Series.Add($YRange, $XRange)
             if ($SeriesHeader) { $Series.Header = $SeriesHeader}
-            else               { $Series.Header = 'Series 1'}
+            else { $Series.Header = 'Series 1'}
         }
         else {
             for ($idx = 0; $idx -lt $chartDefCount; $idx += 1) {
                 $Series = $chart.Series.Add($YRange[$idx], $XRange)
                 if ($SeriesHeader.Count -gt 0) { $Series.Header = $SeriesHeader[$idx] }
-                else                           { $Series.Header = "Series $($idx)"}
+                else { $Series.Header = "Series $($idx)"}
             }
         }
     }
