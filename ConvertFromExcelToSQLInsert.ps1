@@ -103,11 +103,13 @@ function ConvertFrom-ExcelToSQLInsert {
         [string[]]$Header,
         [switch]$NoHeader,
         [switch]$DataOnly,
-        [switch]$ConvertEmptyStringsToNull
+        [switch]$ConvertEmptyStringsToNull,
+        [switch]$UseMSSQLSyntax
     )
 
     $null = $PSBoundParameters.Remove('TableName')
     $null = $PSBoundParameters.Remove('ConvertEmptyStringsToNull')
+    $null = $PSBoundParameters.Remove('UseMSSQLSyntax')
 
     $params = @{} + $PSBoundParameters
 
@@ -115,6 +117,10 @@ function ConvertFrom-ExcelToSQLInsert {
         param($propertyNames, $record)
 
         $ColumnNames = "'" + ($PropertyNames -join "', '") + "'"
+        if($UseMSSQLSyntax) {
+            $ColumnNames = "[" + ($PropertyNames -join "], [") + "]"
+        }
+
         $values = foreach ($propertyName in $PropertyNames) {
             if ($ConvertEmptyStringsToNull.IsPresent -and [string]::IsNullOrEmpty($record.$propertyName)) {
                 'NULL'
