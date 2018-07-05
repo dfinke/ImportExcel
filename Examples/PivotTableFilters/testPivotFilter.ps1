@@ -1,4 +1,4 @@
-﻿Import-Module ..\..\ImportExcel.psd1 -Force
+﻿try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 $xlFile=".\testPivot.xlsx"
 Remove-Item $xlFile -ErrorAction Ignore

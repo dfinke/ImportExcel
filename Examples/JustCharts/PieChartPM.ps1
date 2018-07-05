@@ -2,6 +2,8 @@
 # Sum up PM by company
 # Show the Pie Chart
 
+try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+
 PieChart -Title "Total PM by Company" `
-    (Invoke-Sum (Get-Process|Where company) company pm)
+    (Invoke-Sum (Get-Process|Where-Object company) company pm)
 
