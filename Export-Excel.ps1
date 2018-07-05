@@ -465,7 +465,8 @@
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as formula"
                     break
                 }
-                { $_ -is [Uri] } {
+                #{ $_ -is [Uri] } {
+                {[System.Uri]::IsWellFormedUriString($_, [System.UriKind]::Absolute)} {
                     # Save a hyperlink
                     $TargetCell.Value = $_.AbsoluteUri
                     $TargetCell.HyperLink = $_
@@ -628,7 +629,7 @@
                         $ColumnIndex += 1
                         #endregion
                     }
-                    $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false 
+                    $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false
                 }
             }
             Catch {
@@ -644,11 +645,11 @@
               $endAddress   = $ws.Dimension.End.Address
         }
         else {
-              $LastRow      = $Row      
+              $LastRow      = $Row
               $LastCol      = $ColumnIndex
               $endAddress   = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$LastRow]C[$LastCol]", 0, 0)
         }
-        $startAddress = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$StartRow]C[$StartColumn]", 0, 0) 
+        $startAddress = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$StartRow]C[$StartColumn]", 0, 0)
         $dataRange = "{0}:{1}" -f $startAddress, $endAddress
 
         Write-Debug "Data Range '$dataRange'"
@@ -685,7 +686,7 @@
             }
             Catch {Write-Warning -Message "Failed adding named ranges to worksheet '$WorkSheetname': $_"  }
         }
-        
+
         if ($RangeName) {
             try {
                 if ($RangeName -match "\W") {
@@ -1168,7 +1169,7 @@ function Add-ExcelChart {
     param(
         [OfficeOpenXml.ExcelWorksheet]$Worksheet,
         [String]$Title = "Chart Title",
-        #$Header,   Not used but referenced previously 
+        #$Header,   Not used but referenced previously
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = "ColumnStacked",
         $XRange,
         $YRange,
@@ -1187,21 +1188,21 @@ function Add-ExcelChart {
         $SeriesHeader,
         [Switch]$TitleBold,
         [Int]$TitleSize ,
-        [String]$XAxisTitleText, 
+        [String]$XAxisTitleText,
         [Switch]$XAxisTitleBold,
         $XAxisTitleSize ,
         [string]$XAxisNumberformat,
-        $XMajorUnit, 
-        $XMinorUnit, 
+        $XMajorUnit,
+        $XMinorUnit,
         $XMaxValue,
         $XMinValue,
         [OfficeOpenXml.Drawing.Chart.eAxisPosition]$XAxisPosition        ,
-        [String]$YAxisTitleText, 
+        [String]$YAxisTitleText,
         [Switch]$YAxisTitleBold,
         $YAxisTitleSize,
         [string]$YAxisNumberformat,
-        $YMajorUnit, 
-        $YMinorUnit, 
+        $YMajorUnit,
+        $YMinorUnit,
         $YMaxValue,
         $YMinValue,
         [OfficeOpenXml.Drawing.Chart.eAxisPosition]$YAxisPosition   )
@@ -1211,7 +1212,7 @@ function Add-ExcelChart {
         $chart.Title.Text = $Title
         if ($TitleBold) {$chart.Title.Font.Bold = $true}
         if ($TitleSize) {$chart.Title.Font.Size = $TitleSize}
-        
+
         if ($NoLegend) { $chart.Legend.Remove() }
        else {
             if ($LegendPostion) {$Chart.Legend.Position    = $LegendPostion}
@@ -1224,11 +1225,11 @@ function Add-ExcelChart {
             if ($XAxisTitleBold)  {$chart.XAxis.Title.Font.Bold = $true}
             if ($XAxisTitleSize)  {$chart.XAxis.Title.Font.Size = $XAxisTitleSize}
         }
-        if ($XAxisPosition)       {$chart.XAxis.AxisPosition    = $XAxisPosition}    
-        if ($XMajorUnit)          {$chart.XAxis.MajorUnit       = $XMajorUnit}         
-        if ($XMinorUnit)          {$chart.XAxis.MinorUnit       = $XMinorUnit}     
-        if ($XMinValue -ne $null) {$chart.XAxis.MinValue        = $XMinValue}     
-        if ($XMaxValue -ne $null) {$chart.XAxis.MaxValue        = $XMaxValue}     
+        if ($XAxisPosition)       {$chart.XAxis.AxisPosition    = $XAxisPosition}
+        if ($XMajorUnit)          {$chart.XAxis.MajorUnit       = $XMajorUnit}
+        if ($XMinorUnit)          {$chart.XAxis.MinorUnit       = $XMinorUnit}
+        if ($XMinValue -ne $null) {$chart.XAxis.MinValue        = $XMinValue}
+        if ($XMaxValue -ne $null) {$chart.XAxis.MaxValue        = $XMaxValue}
         if ($XAxisNumberformat)   {$chart.XAxis.Format          = $XAxisNumberformat}
 
        if ($YAxisTitleText)     {
@@ -1237,10 +1238,10 @@ function Add-ExcelChart {
             if ($YAxisTitleSize) {$chart.YAxis.Title.Font.Size = $YAxisTitleSize}
         }
         if ($YAxisPosition)      {$chart.YAxis.AxisPosition    = $YAxisPosition}
-        if ($YMajorUnit)         {$chart.YAxis.MajorUnit       = $YMajorUnit}         
-        if ($YMinorUnit)         {$chart.YAxis.MinorUnit       = $YMinorUnit}     
-        if ($YMinValue-ne $null) {$chart.YAxis.MinValue        = $YMinValue}      
-        if ($YMaxValue-ne $null) {$chart.YAxis.MaxValue        = $YMaxValue}     
+        if ($YMajorUnit)         {$chart.YAxis.MajorUnit       = $YMajorUnit}
+        if ($YMinorUnit)         {$chart.YAxis.MinorUnit       = $YMinorUnit}
+        if ($YMinValue-ne $null) {$chart.YAxis.MinValue        = $YMinValue}
+        if ($YMaxValue-ne $null) {$chart.YAxis.MaxValue        = $YMaxValue}
         if ($YAxisNumberformat)  {$chart.YAxis.Format          = $YAxisNumberformat}
         if ($chart.Datalabel -ne $null) {
             $chart.Datalabel.ShowCategory = [boolean]$ShowCategory
