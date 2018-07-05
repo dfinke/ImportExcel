@@ -7,62 +7,62 @@ Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
 if (Get-process -Name Excel,xlim -ErrorAction SilentlyContinue) {    Write-Warning -Message "You need to close Excel before running the tests." ; return}
 Describe ExportExcel {
 
-    Context "#Example 1      # Creates and opens a file with the right number of rows and columns" {
-        $path = "$env:TEMP\Test.xlsx"
-        Remove-item -Path $path -ErrorAction SilentlyContinue
-        $processes = Get-Process
-        $propertyNames = $Processes[0].psobject.properties.name
-        $rowcount = $Processes.Count
-        $Processes | Export-Excel $path  -show
+    # Context "#Example 1      # Creates and opens a file with the right number of rows and columns" {
+    #     $path = "$env:TEMP\Test.xlsx"
+    #     Remove-item -Path $path -ErrorAction SilentlyContinue
+    #     $processes = Get-Process
+    #     $propertyNames = $Processes[0].psobject.properties.name
+    #     $rowcount = $Processes.Count
+    #     $Processes | Export-Excel $path  -show
 
-        it "Created a new file                                                                     " {
-            Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
-        }
+    #     it "Created a new file                                                                     " {
+    #         Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
+    #     }
 
-        it "Started Excel to display the file                                                      " {
-            Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should not benullorempty
-        }
+    #     it "Started Excel to display the file                                                      " {
+    #         Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should not benullorempty
+    #     }
 
-        Start-Sleep -Seconds 5 ;
+    #     Start-Sleep -Seconds 5 ;
 
-        #Open-ExcelPackage with -Create is tested in Export-Excel
-        #This is a test of  using it with -KillExcel
-        #TODO Need to test opening pre-existing file with no -create switch (and graceful failure when file does not exist) somewhere else
-        $Excel = Open-ExcelPackage -Path $path -KillExcel
-        it "Killed Excel when Open-Excelpackage was told to                                        " {
-            Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should     benullorempty
-        }
+    #     #Open-ExcelPackage with -Create is tested in Export-Excel
+    #     #This is a test of  using it with -KillExcel
+    #     #TODO Need to test opening pre-existing file with no -create switch (and graceful failure when file does not exist) somewhere else
+    #     $Excel = Open-ExcelPackage -Path $path -KillExcel
+    #     it "Killed Excel when Open-Excelpackage was told to                                        " {
+    #         Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should     benullorempty
+    #     }
 
-        it "Created 1 worksheet                                                                    " {
-            $Excel.Workbook.Worksheets.count                            | Should     be 1
-        }
+    #     it "Created 1 worksheet                                                                    " {
+    #         $Excel.Workbook.Worksheets.count                            | Should     be 1
+    #     }
 
-        $ws = $Excel.Workbook.Worksheets[1]
-        it "Created the worksheet with the expected name, number of rows and number of columns     " {
-            $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be  $propertyNames.Count
-            $ws.Dimension.Rows                                          | Should     be ($rowcount + 1)
-        }
+    #     $ws = $Excel.Workbook.Worksheets[1]
+    #     it "Created the worksheet with the expected name, number of rows and number of columns     " {
+    #         $ws.Name                                                    | Should     be "sheet1"
+    #         $ws.Dimension.Columns                                       | Should     be  $propertyNames.Count
+    #         $ws.Dimension.Rows                                          | Should     be ($rowcount + 1)
+    #     }
 
-        $headingNames = $ws.cells["1:1"].Value
-        it "Created the worksheet with the correct header names                                    " {
-            foreach ($p in $propertyNames) {
-                $headingnames -contains $p                              | Should     be $true
-            }
-        }
+    #     $headingNames = $ws.cells["1:1"].Value
+    #     it "Created the worksheet with the correct header names                                    " {
+    #         foreach ($p in $propertyNames) {
+    #             $headingnames -contains $p                              | Should     be $true
+    #         }
+    #     }
 
-        it "Formatted the process StartTime field as 'local short date'                            " {
-            $STHeader = $ws.cells["1:1"].where( {$_.Value -eq "StartTime"})[0]
-            $STCell = $STHeader.Address -replace '1$', '2'
-            $ws.cells[$stcell].Style.Numberformat.NumFmtID              | Should     be 22
-        }
+    #     it "Formatted the process StartTime field as 'local short date'                            " {
+    #         $STHeader = $ws.cells["1:1"].where( {$_.Value -eq "StartTime"})[0]
+    #         $STCell = $STHeader.Address -replace '1$', '2'
+    #         $ws.cells[$stcell].Style.Numberformat.NumFmtID              | Should     be 22
+    #     }
 
-        it "Formatted the process ID field as 'General'                                            " {
-            $IDHeader = $ws.cells["1:1"].where( {$_.Value -eq "ID"})[0]
-            $IDCell = $IDHeader.Address -replace '1$', '2'
-            $ws.cells[$IDcell].Style.Numberformat.NumFmtID              | Should     be 0
-        }
-    }
+    #     it "Formatted the process ID field as 'General'                                            " {
+    #         $IDHeader = $ws.cells["1:1"].where( {$_.Value -eq "ID"})[0]
+    #         $IDCell = $IDHeader.Address -replace '1$', '2'
+    #         $ws.cells[$IDcell].Style.Numberformat.NumFmtID              | Should     be 0
+    #     }
+    # }
 
     Context "                # NoAliasOrScriptPropeties -ExcludeProperty and -DisplayPropertySet work" {
         $path = "$env:TEMP\Test.xlsx"
@@ -609,7 +609,7 @@ Describe ExportExcel {
                 Should     be $sheet.Dimension.address
         }
     }
-  
+
     Context "                # Chart from MultiSeries.ps1 in the Examples\charts Directory" {
         $path = "$env:TEMP\Test.xlsx"
         Remove-Item -Path   $path -ErrorAction SilentlyContinue
@@ -623,40 +623,40 @@ Describe ExportExcel {
             $data[1].VirtualMemorySize                                  | Should  not beNullOrEmpty
         }
         $c = New-ExcelChartDefinition -Title Stats -ChartType LineMarkersStacked   -XRange "Processes[Name]" -YRange "Processes[PM]", "Processes[VirtualMemorySize]" -SeriesHeader 'PM', 'VMSize'
- 
+
         it "Created the Excel chart definition                                                     " {
-            $c                                                          | Should not beNullOrEmpty 
-            $c.ChartType.gettype().name                                 | Should     be "eChartType" 
+            $c                                                          | Should not beNullOrEmpty
+            $c.ChartType.gettype().name                                 | Should     be "eChartType"
             $c.ChartType.tostring()                                     | Should     be "LineMarkersStacked"
             $c.yrange -is [array]                                       | Should     be $true
-            $c.yrange.count                                             | Should     be 2 
-            $c.yrange[0]                                                | Should     be "Processes[PM]" 
+            $c.yrange.count                                             | Should     be 2
+            $c.yrange[0]                                                | Should     be "Processes[PM]"
             $c.yrange[1]                                                | Should     be "Processes[VirtualMemorySize]"
             $c.xrange                                                   | Should     be "Processes[Name]"
             $c.Title                                                    | Should     be "Stats"
-            $c.Nolegend                                                 | Should not be $true 
-            $c.ShowCategory                                             | Should not be $true 
-            $c.ShowPercent                                              | Should not be $true       
+            $c.Nolegend                                                 | Should not be $true
+            $c.ShowCategory                                             | Should not be $true
+            $c.ShowPercent                                              | Should not be $true
         }
-        $data | Export-Excel $path -AutoSize -TableName Processes -ExcelChartDefinition $c 
-        $excel = Open-ExcelPackage -Path $path  
+        $data | Export-Excel $path -AutoSize -TableName Processes -ExcelChartDefinition $c
+        $excel = Open-ExcelPackage -Path $path
         $drawings = $excel.Workbook.Worksheets[1].drawings
         it "Used the Excel chart definition with Export-Excel                                      " {
             $drawings.count                                             | Should     be 1
             $drawings[0].ChartType                                      | Should     be "LineMarkersStacked"
-            $drawings[0].Series.count                                   | Should     be 2 
+            $drawings[0].Series.count                                   | Should     be 2
             $drawings[0].Series[0].Series                               | Should     be "'Sheet1'!Processes[PM]"
             $drawings[0].Series[0].XSeries                              | Should     be "'Sheet1'!Processes[Name]"
             $drawings[0].Series[1].Series                               | Should     be "'Sheet1'!Processes[VirtualMemorySize]"
             $drawings[0].Series[1].XSeries                              | Should     be "'Sheet1'!Processes[Name]"
             $drawings[0].Title.text                                     | Should     be "Stats"
         }
-        Close-ExcelPackage $excel 
+        Close-ExcelPackage $excel
     }
-   
+
     Context "                # variation of plot.ps1 from Examples Directory using Add chart outside ExportExcel" {
         $path = "$env:TEMP\Test.xlsx"
-        $excel = 0..360 | ForEach-Object {[pscustomobject][ordered]@{x = $_; Sinx = "=Sin(Radians(x)) "}} | Export-Excel -AutoNameRange -Path $path -WorkSheetname SinX -ClearSheet -PassThru    
+        $excel = 0..360 | ForEach-Object {[pscustomobject][ordered]@{x = $_; Sinx = "=Sin(Radians(x)) "}} | Export-Excel -AutoNameRange -Path $path -WorkSheetname SinX -ClearSheet -PassThru
         Add-ExcelChart -Worksheet $excel.Workbook.Worksheets["Sinx"] -XRange "X" -YRange "Sinx" -Title "Graph of Sine X" -ChartType line -SeriesHeader "Sin(x)" -Column 2 -ColumnOffSetPixels 35 -TitleBold -TitleSize 14 -XAxisTitleText "Degrees" -XAxisTitleBold -XAxisTitleSize 12 -XMajorUnit 30 -XMinorUnit 10 -XMinValue 0 -XMaxValue 361 -Width 800 -YMinValue -1.25 -YMaxValue 1.25 -YMajorUnit 0.25 -YAxisNumberformat "0.00" -LegendPostion Bottom -LegendSize 8 -legendBold
         $d = $excel.Workbook.Worksheets["Sinx"].Drawings[0]
         It "Controled the axes and title and legend of the chart" {
@@ -666,23 +666,23 @@ Describe ExportExcel {
             $d.XAxis.Title.Text                                         | Should     be "degrees"
             $d.XAxis.Title.Font.bold                                    | Should     be $true
             $d.XAxis.Title.Font.Size                                    | Should     be 12
-            $d.XAxis.MajorUnit                                          | Should     be 30     
-            $d.XAxis.MinorUnit                                          | Should     be 10  
-            $d.XAxis.MinValue                                           | Should     be 0 
+            $d.XAxis.MajorUnit                                          | Should     be 30
+            $d.XAxis.MinorUnit                                          | Should     be 10
+            $d.XAxis.MinValue                                           | Should     be 0
             $d.XAxis.MaxValue                                           | Should     be 361
-            $d.YAxis.Format                                             | Should     be "0.00"    
-            $d.Title.Text                                               | Should     be "Graph of Sine X" 
-            $d.Title.Font.Bold                                          | Should     be $true 
+            $d.YAxis.Format                                             | Should     be "0.00"
+            $d.Title.Text                                               | Should     be "Graph of Sine X"
+            $d.Title.Font.Bold                                          | Should     be $true
             $d.Title.Font.Size                                          | Should     be 14
             $d.yAxis.MajorUnit                                          | Should     be 0.25
             $d.yAxis.MaxValue                                           | Should     be 1.25
-            $d.yaxis.MinValue                                           | Should     be -1.25 
+            $d.yaxis.MinValue                                           | Should     be -1.25
             $d.Legend.Position.ToString()                               | Should     be "Bottom"
-            $d.Legend.Font.Bold                                         | Should     be $true   
+            $d.Legend.Font.Bold                                         | Should     be $true
             $d.Legend.Font.Size                                         | Should     be 8
-            $d.ChartType.tostring()                                     | Should     be "line" 
-            $d.From.Column                                              | Should     be 2      
-        }        
+            $d.ChartType.tostring()                                     | Should     be "line"
+            $d.From.Column                                              | Should     be 2
+        }
         Close-ExcelPackage -ExcelPackage $excel -nosave
     }
 
