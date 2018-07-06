@@ -1,1 +1,4 @@
 - [ ] Create an autocomplete for WorkSheetName param on ImportExcel
+- [ ] Add help text for parmaters which don't have it in Export Excel
+- [ ] Add checks for valid worksheet names (also check pivot names, range names and table names are valid)
+- [ ] Investigate regional support for number conversion

@@ -686,6 +686,43 @@ Describe ExportExcel {
         Close-ExcelPackage -ExcelPackage $excel -nosave
     }
 
+    Context "                # Awkward multiple tables" {
+        $path = "$Env:TEMP\test.xlsx"
+        remove-item -Path $path -ErrorAction SilentlyContinue
+        $r = Get-ChildItem -path C:\WINDOWS\system32 -File
+
+        "Biggest files" | Export-Excel -Path $path -StartRow 1 -StartColumn 7
+        $r | Sort-Object length -Descending | Select -First 14 Name, @{n="Size";e={$_.Length}}  | 
+            Export-Excel -Path $path -TableName FileSize -StartRow 2 -StartColumn 7 -TableStyle Medium2
+
+        $r.extension | Group-Object | Sort-Object -Property count -Descending | Select-Object -First 12 Name, Count   |
+            Export-Excel -Path $path -TableName ExtSize -Title "Frequent Extensions"  -TitleSize 11
+
+        $r | Group-Object -Property extension | Select-Object Name, @{n="Size"; e={($_.group  | measure -property length -sum).sum}} |
+          Sort-Object -Property size -Descending | Select-Object -First 10 |
+            Export-Excel -Path $path -TableName ExtCount -Title "Biggest extensions"  -TitleSize 11 -StartColumn 4 -AutoSize  
+
+        $excel = Open-ExcelPackage -Path $path
+        $ws = $excel.Workbook.Worksheets[1]
+        it "Created 3 tables                                                                       " {
+            $ws.tables.count | should be 3 
+        }
+        it "Created the FileSize table in the right places with the right size                     " {
+            $ws.Tables["FileSize"].Address.Address                      | should     be "G2:H16" #Insert at row 2, Column 7, 14 rows x 2 columns of data
+            $ws.Tables["FileSize"].StyleName                            | should     be "TableStyleMedium2"
+        }
+        it "Created the ExtSize table in the right places with the right size                      " {
+            $ws.Tables["ExtSize"].Address.Address                      | should     be "A2:B14" #tile, then 12 rows x 2 columns of data
+            $ws.Tables["ExtSize"].TableStyle.tostring()                | should     be "medium6"
+        }
+        it "Created the ExtSize table in the right places with the right size                      " {
+            $ws.Tables["ExtSize"].Address.Address                      | should     be "A2:B14" #tile, then 12 rows x 2 columns of data
+            $ws.Tables["ExtSize"].TableStyle.tostring()                | should     be "medium6"
+        }
+    } 
+
+
+
     ## To do
     ## More Charts , pivot options & other FreezePanes settings   ?
     ## Style script block
