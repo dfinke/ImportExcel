@@ -465,7 +465,6 @@
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as formula"
                     break
                 }
-                #{ $_ -is [Uri] } {
                 {[System.Uri]::IsWellFormedUriString($_, [System.UriKind]::Absolute)} {
                     # Save a hyperlink
                     $TargetCell.Value = $_.AbsoluteUri
