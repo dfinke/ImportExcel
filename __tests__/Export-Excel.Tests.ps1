@@ -5,7 +5,7 @@
 Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
 
 if (Get-process -Name Excel,xlim -ErrorAction SilentlyContinue) {    Write-Warning -Message "You need to close Excel before running the tests." ; return}
-#53Describe ExportExcel {
+Describe ExportExcel {
 
     Context "#Example 1      # Creates and opens a file with the right number of rows and columns" {
         $path = "$env:TEMP\Test.xlsx"
@@ -685,7 +685,7 @@ if (Get-process -Name Excel,xlim -ErrorAction SilentlyContinue) {    Write-Warni
         }        
         Close-ExcelPackage -ExcelPackage $excel -nosave
     }
-describe "foo" {
+
     Context "                # Awkward multiple tables" {
         $path = "$Env:TEMP\test.xlsx"
         remove-item -Path $path -ErrorAction SilentlyContinue
