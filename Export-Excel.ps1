@@ -465,7 +465,7 @@
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as formula"
                     break
                 }
-                { $_ -is [Uri] } {
+                { [System.Uri]::IsWellFormedUriString($_ , [System.UriKind]::Absolute) } {
                     # Save a hyperlink
                     $TargetCell.Value = $_.AbsoluteUri
                     $TargetCell.HyperLink = $_
@@ -484,7 +484,8 @@
                 Default {
                     #Save a value as a number if possible
                     $number = $null
-                    if ( [Double]::TryParse([String]$_, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)) {
+                    if (($NoNumberConversion -NotContains $Name) -and  ($NoNumberConversion -ne '*') -and                     
+                     [Double]::TryParse([String]$_, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)) {
                         # as simpler version using [Double]::TryParse( $_ , [ref]$number)) was found to cause problems reverted back to the longer version
                         $TargetCell.Value = $number
                         if ($setNumformat) {$targetCell.Style.Numberformat.Format = $Numberformat }
@@ -708,7 +709,7 @@
                 #if the table exists, update it.
                 if ($ws.Tables[$TableName]) {
                     $ws.Tables[$TableName].TableXml.table.ref = $dataRange
-                    $ws.Tables[$TableName].TableStyle = $TableStyle
+                    $ws.Tables[$TableName].TableStyle         = $TableStyle
                 }
                 else {
                     $tbl = $ws.Tables.Add($ws.Cells[$dataRange], $TableName)
@@ -743,36 +744,35 @@
             $params = @{
                 "SourceRange" = $dataRange
             }
-            if ($PivotTableName) {$params.PivotTableName = $PivotTableName}
-            else {$params.PivotTableName = $WorkSheetname + 'PivotTable'}
-            if ($PivotFilter) {$params.PivotFilter = $PivotFilter}
-            if ($PivotRows) {$params.PivotRows = $PivotRows}
-            if ($PivotColumns) {$Params.PivotColumns = $PivotColumns}
-            if ($PivotData) {$Params.PivotData = $PivotData}
-            if ($NoTotalsInPivot) {$params.NoTotalsInPivot = $true}
+            if ($PivotTableName)    {$params.PivotTableName    = $PivotTableName}
+            else                    {$params.PivotTableName    = $WorkSheetname + 'PivotTable'}
+            if ($PivotFilter)       {$params.PivotFilter       = $PivotFilter}
+            if ($PivotRows)         {$params.PivotRows         = $PivotRows}
+            if ($PivotColumns)      {$Params.PivotColumns      = $PivotColumns}
+            if ($PivotData)         {$Params.PivotData         = $PivotData}
+            if ($NoTotalsInPivot)   {$params.NoTotalsInPivot   = $true}
             if ($PivotDataToColumn) {$params.PivotDataToColumn = $true}
             if ($IncludePivotChart) {
-                $params.IncludePivotChart = $true
-                $Params.ChartType = $ChartType
-                if ($ShowCategory) {$params.ShowCategory = $true}
-                if ($ShowPercent) {$params.ShowPercent = $true}
-                if ($NoLegend) {$params.NoLegend = $true}
+                                     $params.IncludePivotChart = $true
+                                     $Params.ChartType         = $ChartType
+                if ($ShowCategory)  {$params.ShowCategory      = $true}
+                if ($ShowPercent)   {$params.ShowPercent       = $true}
+                if ($NoLegend)      {$params.NoLegend          = $true}
             }
             Add-PivotTable -ExcelPackage $pkg -SourceWorkSheet $ws   @params
         }
 
         try {
-            if ($FreezeTopRow) {
-                $ws.View.FreezePanes(2, 1)
-                Write-Verbose -Message "Froze top row"
-            }
-
-            if ($FreezeTopRowFirstColumn) {
+            #Allow single switch or two seperate ones.
+            if ($FreezeTopRowFirstColumn -or ($FreezeTopRow -and $FreezeFirstColumn)) {
                 $ws.View.FreezePanes(2, 2)
                 Write-Verbose -Message "Froze top row and first column"
             }
-
-            if ($FreezeFirstColumn) {
+            elseif ($FreezeTopRow) {
+                $ws.View.FreezePanes(2, 1)
+                Write-Verbose -Message "Froze top row"
+            }
+            elseif ($FreezeFirstColumn) {
                 $ws.View.FreezePanes(1, 2)
                 Write-Verbose -Message "Froze first column"
             }
@@ -791,8 +791,8 @@
         }
         catch {Write-Warning -Message "Failed adding Freezing the panes in worksheet '$WorkSheetname': $_"}
 
-        if ($BoldTopRow) {
-            try {
+        if ($BoldTopRow) { #it sets bold as far as there are populated cells: for whole row could do $ws.row($x).style.font.bold = $true
+            try { 
                 if ($Title) {
                     $range = $ws.Dimension.Address -replace '\d+', ($StartRow + 1)
                 }
@@ -859,7 +859,7 @@
 
         if ($PassThru) {       $pkg   }
         else {
-            if ($ReturnRange) {$ws.Dimension.Address }
+            if ($ReturnRange) {$dataRange }
 
             $pkg.Save()
             Write-Verbose -Message "Saved workbook $($pkg.File)"
