@@ -24,10 +24,10 @@
 
       .EXAMPLE
         Get-WmiObject -Class win32_logicaldisk | select -Property DeviceId,VolumeName, Size,Freespace | 
-           Export-Excel -Path "$env:computerName.xlsx" -WorkSheetname Volumes 
+           Export-Excel -Path "$env:computerName.xlsx" -WorkSheetname Volumes -NumberFormat "0,000"
         Get-NetAdapter  | Select-Object Name,InterfaceDescription,MacAddress,LinkSpeed | 
             Export-Excel -Path "$env:COMPUTERNAME.xlsx" -WorkSheetname NetAdapter
-        Join-Worksheet -Path "$env:COMPUTERNAME.xlsx"  -WorkSheetName Summay -Title "Summary" -TitleBold -TitleSize 22 -NoHeader -LabelBlocks -AutoSize -HideSource
+        Join-Worksheet -Path "$env:COMPUTERNAME.xlsx"  -WorkSheetName Summary -Title "Summary" -TitleBold -TitleSize 22 -NoHeader -LabelBlocks -AutoSize -HideSource -show
 
         The first two command get logical disk and network card information; each type is exported to its own sheet in a workbook. 
         The Join-worksheet command copies both onto a page named "Summary". Because the data is disimilar -NoHeader is specified, ensuring the whole of each page is copied. 

@@ -390,8 +390,8 @@
                 elseif ($_[0] -notmatch '[a-z]') { throw 'Tablename starts with an invalid character.'  }
                 else { $true }
             })]
-        [Parameter(ParameterSetName = 'Table'        , Mandatory = $true)]
-        [Parameter(ParameterSetName = 'PackageTable' , Mandatory = $true)]
+        [Parameter(ParameterSetName = 'Table'        , Mandatory = $true, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'PackageTable' , Mandatory = $true, ValueFromPipelineByPropertyName)]
         [String]$TableName,
         [Parameter(ParameterSetName = 'Table')]
         [Parameter(ParameterSetName = 'PackageTable')]
