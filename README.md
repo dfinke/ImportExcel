@@ -1,8 +1,24 @@
 PowerShell Import-Excel
 -
 
-[![Build status](https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true)](https://ci.appveyor.com/project/dfinke/importexcel/branch/master)
 
+<!-- <p align="center"> <a
+href="https://travis-ci.com/dylanaraps/pure-bash-bible"><img
+src="https://travis-ci.com/dylanaraps/pure-bash-bible.svg?branch=master"></a>
+<a href="https://discord.gg/yfa5BDw"><img src="https://img.shields.io/discord/440354555197128704.svg"></a>
+<a href="./LICENSE.txt"><img
+src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+</p> -->
+
+<p align="center">
+<a href="https://ci.appveyor.com/project/dfinke/importexcel/branch/master"><img src="https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true"></a>
+<a href="./LICENSE.txt"><img
+src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"></a>
+<a href="https://www.powershellgallery.com/packages/ImportExcel"><img
+src="https://img.shields.io/powershellgallery/dt/ImportExcel.svg"></a>
+<a href="https://www.powershellgallery.com/packages/ImportExcel"><img
+src="https://img.shields.io/powershellgallery/v/ImportExcel.svg"></a>
+</p>
 
 Install from the [PowerShell Gallery](https://www.powershellgallery.com/packages/ImportExcel/).
 
