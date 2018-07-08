@@ -1,6 +1,3 @@
-PowerShell Import-Excel
--
-
 <p align="center">
 <a href="https://ci.appveyor.com/project/dfinke/importexcel/branch/master"><img src="https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true"></a>
 <a href="./LICENSE.txt"><img
@@ -10,6 +7,9 @@ src="https://img.shields.io/powershellgallery/dt/ImportExcel.svg"></a>
 <a href="https://www.powershellgallery.com/packages/ImportExcel"><img
 src="https://img.shields.io/powershellgallery/v/ImportExcel.svg"></a>
 </p>
+
+PowerShell Import-Excel
+-
 
 This PowerShell Module allows you to read and write Excel files without installing Microsoft Excel on your system. No need to bother with the cumbersome Excel COM-object. Creating Tables, Pivot Tables, Charts and much more has just become a lot easier.
 
