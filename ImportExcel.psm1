@@ -11,7 +11,6 @@
     . $PSScriptRoot\Copy-ExcelWorkSheet.ps1
     . $PSScriptRoot\Export-Excel.ps1
     . $PSScriptRoot\Export-ExcelSheet.ps1
-    . $PSScriptRoot\Get-ExcelColumnName.ps1
     . $PSScriptRoot\Get-ExcelSheetInfo.ps1
     . $PSScriptRoot\Get-ExcelWorkbookInfo.ps1
     . $PSScriptRoot\Get-HtmlTable.ps1
