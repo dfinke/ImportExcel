@@ -32,14 +32,14 @@
         [Parameter(Mandatory = $true, ParameterSetName = "FourIconSet")]
         [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSet")]
         [OfficeOpenXml.ExcelAddress]$Range ,
-        #One or more row(s), Column(s) and/or block(s) of cells to format
+        #One or more row(s), column(s) and/or block(s) of cells to format
         [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
         [Parameter(Mandatory = $true, ParameterSetName = "DataBarAddress")]
         [Parameter(Mandatory = $true, ParameterSetName = "ThreeIconSetAddress")]
         [Parameter(Mandatory = $true, ParameterSetName = "FourIconSetAddress")]
         [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSetAddress")]
         $Address ,
-        #One of the standard named rules - Top / Bottom / Less than / Greater than / Contains etc
+        #One of the standard named rules - Top / Bottom / Less than / Greater than / Contains etc.
         [Parameter(Mandatory = $true, ParameterSetName = "NamedRule", Position = 3)]
         [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress", Position = 3)]
         [OfficeOpenXml.ConditionalFormatting.eExcelConditionalFormattingRuleType]$RuleType ,
@@ -65,7 +65,7 @@
         [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting5IconsSetType]$FiveIconsSet,
         #A value for the condition (e.g. "2000" if the test is 'lessthan 2000')
         [string]$ConditionValue,
-        #A second value for the conditions like between x and Y
+        #A second value for the conditions like "between x and Y"
         [string]$ConditionValue2,
         #Background colour for matching items
         [System.Drawing.Color]$BackgroundColor,

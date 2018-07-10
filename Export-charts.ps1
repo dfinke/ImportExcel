@@ -2,7 +2,7 @@
     .Synopsis
         Exports the charts in an Excel spreadSheet 
     .Example
-        Export-Charts .\test,xlsx
+        Export-Charts .\test.xlsx
         Exports the charts in test.xlsx to JPEG files in the current directory.
 
     .Example
@@ -13,7 +13,7 @@
 Param (
     #Path to the Excel file whose chars we will export.  
     $Path          = "C:\Users\public\Documents\stats.xlsx", 
-    #If specified, output file objects representing the image files.  
+    #If specified, output file objects representing the image files  
     [switch]$Passthru, 
     #Format to write - JPG by default 
     [ValidateSet("JPG","PNG","GIF")]

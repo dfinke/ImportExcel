@@ -1,24 +1,20 @@
 Function Get-ExcelSheetInfo {
     <#
-    .SYNOPSIS
+      .SYNOPSIS
         Get worksheet names and their indices of an Excel workbook.
-
-    .DESCRIPTION
+      .DESCRIPTION
         The Get-ExcelSheetInfo cmdlet gets worksheet names and their indices of an Excel workbook.
-
-    .PARAMETER Path
+      .PARAMETER Path
         Specifies the path to the Excel file. This parameter is required.
-
-    .EXAMPLE
+      .EXAMPLE
         Get-ExcelSheetInfo .\Test.xlsx
 
-    .NOTES
+      .NOTES
         CHANGELOG
         2016/01/07 Added Created by Johan Akerstrom (https://github.com/CosmosKey)
 
-    .LINK
+      .LINK
         https://github.com/dfinke/ImportExcel
-
     #>
 
     [CmdletBinding()]

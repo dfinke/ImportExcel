@@ -1,15 +1,12 @@
 ﻿Function Get-ExcelWorkbookInfo {
     <# 
-    .SYNOPSIS 
+      .SYNOPSIS 
         Retrieve information of an Excel workbook.
- 
-    .DESCRIPTION 
+      .DESCRIPTION 
         The Get-ExcelWorkbookInfo cmdlet retrieves information (LastModifiedBy, LastPrinted, Created, Modified, ...) fron an Excel workbook. These are the same details that are visible in Windows Explorer when right clicking the Excel file, selecting Properties and check the Details tabpage.
- 
-    .PARAMETER Path
+      .PARAMETER Path
         Specifies the path to the Excel file. This parameter is required.
-             
-    .EXAMPLE
+      .EXAMPLE
         Get-ExcelWorkbookInfo .\Test.xlsx
 
         CorePropertiesXml     : #document
@@ -32,11 +29,11 @@
         Modified              : 10/02/2017 12:45:37
         CustomPropertiesXml   : #document
 
-    .NOTES
+      .NOTES
         CHANGELOG
         2016/01/07 Added Created by Johan Akerstrom (https://github.com/CosmosKey)
 
-    .LINK
+      .LINK
         https://github.com/dfinke/ImportExcel
     #> 
     

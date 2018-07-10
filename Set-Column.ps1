@@ -1,31 +1,32 @@
 ﻿Function Set-Column {
-<#
-    .SYNOPSIS
+    <#
+      .SYNOPSIS
         Adds a column to the existing data area in an Excel sheet, fills values and sets formatting
-    .DESCRIPTION
+      .DESCRIPTION
         Set-Column takes a value which is either string containing a value or formula or a scriptblock
         which evaluates to a string, and optionally a column number and fills that value down the column.
         A column name can be specified and the new column can be made a named range.
         The column can be formatted.
-    .Example
+      .Example
         C:> Set-Column -Worksheet $ws -Heading "WinsToFastLaps"  -Value {"=E$row/C$row"} -Column 7 -AutoSize -AutoNameRange
         Here $WS already contains a worksheet which contains counts of races won and fastest laps recorded by racing drivers (in columns C and E)
         Set-Column specifies that Column 7 should have a heading of "WinsToFastLaps" and the data cells should contain =E2/C2 , =E3/C3
-        the data celss should become a named range, which will also be "WinsToFastLaps" the column width will be set automatically
-
-#>
-[cmdletbinding()]
+        the data cells should become a named range, which will also be "WinsToFastLaps" the column width will be set automatically
+    #>
+    [cmdletbinding()]
     Param (
         [Parameter(ParameterSetName="Package",Mandatory=$true)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
-        #Sheet to update
+        #The sheet to update can be a given as a name or an Excel Worksheet object - this sets it by name
         [Parameter(ParameterSetName="Package")]
+        #The sheet to update can be a given as a name or an Excel Worksheet object - $workSheet contains the object
         $Worksheetname = "Sheet1",
         [Parameter(ParameterSetName="sheet",Mandatory=$true)]
         [OfficeOpenXml.ExcelWorksheet]
         $Worksheet,
         #Column to fill down - first column is 1. 0 will be interpreted as first unused column
         $Column = 0 ,
+        #First row to fill data in 
         [Int]$StartRow ,
         #value, formula or script block for to fill in. Script block can use $row, $column [number], $ColumnName [letter(s)], $startRow, $startColumn, $endRow, $endColumn
         [parameter(Mandatory=$true)]
@@ -76,8 +77,9 @@
         [Switch]$AutoSize,
         #Set cells to a fixed width, ignored if Autosize is specified
         [float]$Width,
-        #Set the inserted data to be a named range (ignored if header is not specified) d
+        #Set the inserted data to be a named range (ignored if header is not specified)
         [Switch]$AutoNameRange,
+        #If Specified, return an ExcelPackage object to allow further work to be done on the file. 
         [switch]$PassThru
     )
     #if we were passed a package object and a worksheet name , get the worksheet.
@@ -125,7 +127,7 @@
     if      ($HorizontalAlignment)     { $Worksheet.Column(     $Column).Style.HorizontalAlignment         = $HorizontalAlignment}
     if      ($VerticalAlignment)       { $Worksheet.Column(     $Column).Style.VerticalAlignment           = $VerticalAlignment  }
     if      ($FontColor)               { $Worksheet.Column(     $Column).Style.Font.Color.SetColor(          $FontColor        ) }
-    if      ($BorderAround)             { $Worksheet.Column(     $Column).Style.Border.BorderAround(          $BorderAround     ) }
+    if      ($BorderAround)            { $Worksheet.Column(     $Column).Style.Border.BorderAround(          $BorderAround     ) }
     if      ($BackgroundColor)         {
                                          $Worksheet.Column(     $Column).Style.Fill.PatternType            = $BackgroundPattern
                                          $Worksheet.Column(     $Column).Style.Fill.BackgroundColor.SetColor($BackgroundColor  )
