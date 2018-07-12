@@ -1,4 +1,9 @@
 - [ ] Create an autocomplete for WorkSheetName param on ImportExcel
-- [ ] Add help text for parmaters which don't have it in Export Excel
+- [ ] Add help text for parmaters which don't have it ( PivotDataToColumn , NoClobber and CellStyleSB ) in Export Excel, copy to Send-SQLDataToExcel
 - [ ] Add checks for valid worksheet names (also check pivot names, range names and table names are valid)
 - [ ] Investigate regional support for number conversion
+- [ ] Add help in ConvertToExcelXLSx.ps1, Copy-ExcelWorkSheet.ps1 (probably re-write copy)
+- [ ] Add Help (continued) in Get-HTMLTable.ps1, GetRange.PS1,  GetExcelTable.Ps1, Import-HTML.PS1,  New-ConditionalFormattingIconSet.Ps1, NewConditionalText.PS1, New-Psitem.PS1, Remove-Worksheet.ps1
+  [ ] Copy parameter help from function Add-ExcelChart into New-ExcelChart.ps1
+- [ ] Examples and tests for new "Quick charts" in Export Excel 
+- [ ]  Charting.ps1,GetXYRange.ps1, InferData.PS1 move to deprecated. (replace examples)

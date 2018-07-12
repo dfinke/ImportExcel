@@ -81,7 +81,7 @@ Describe ExportExcel {
             $ws.Dimension.Columns                                       | Should     be  $propertyNames.Count
             $ws.Dimension.Rows                                          | Should     be  ($rowcount + 1 ) # +1 for the header.
         }
-        it "Created a Range - even though the name given was invalid.                               " {
+        it "Created a Range - even though the name given was invalid.                              " {
             $ws.Names["No_spaces"]                                      | Should not beNullOrEmpty
             $ws.Names["No_spaces"].End.Column                           | Should     be  $propertyNames.Count
             $ws.names["No_spaces"].End.Row                              | Should     be  ($rowcount + 1 ) # +1 for the header.
@@ -146,60 +146,92 @@ Describe ExportExcel {
 
     Context "#Examples 3 & 4 # Setting cells for different data types Also added test for URI type" {
 
+        if ((Get-Culture).NumberFormat.CurrencySymbol -eq "£") {$OtherCurrencySymbol = "$"}
+        else {$OtherCurrencySymbol = "£"}
         $path = "$env:TEMP\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
         [PSCustOmobject][Ordered]@{
-            Date      = Get-Date
-            Formula1  = '=SUM(F2:G2)'
-            String1   = 'My String'
-            String2   = 'a'
-            IPAddress = '10.10.25.5'
-            Number1   = '07670'
-            Number2   = '0,26'
-            Number3   = '1.555,83'
-            Number4   = '1.2'
-            Number5   = '-31'
-            PhoneNr1  = '+32 44'
-            PhoneNr2  = '+32 4 4444 444'
-            PhoneNr3  = '+3244444444'
-            Link      = [uri]"https://github.com/dfinke/ImportExcel"
-        } | Export-Excel  -NoNumberConversion IPAddress, Number1  -Path $path
+            Date             = Get-Date      
+            Formula1         = '=SUM(F2:G2)' 
+            String1          = 'My String'   
+            Float            = [math]::pi    
+            IPAddress        = '10.10.25.5'  
+            StrLeadZero      = '07670'       
+            StrComma         = '0,26'        
+            StrEngThousand   = '1,234.56' 
+            StrEuroThousand  = '1.555,83'    
+            StrDot           = '1.2'         
+            StrNegInt        = '-31'         
+            StrTrailingNeg   = '31-'
+            StrParens        = '(123)'
+            strLocalCurrency = ('{0}123.45' -f (Get-Culture).NumberFormat.CurrencySymbol )
+            strOtherCurrency = ('{0}123.45' -f $OtherCurrencySymbol ) 
+            StrE164Phone     = '+32 (444) 444 4444' 
+            StrAltPhone1     = '+32 4 4444 444'  
+            StrAltPhone2     = '+3244444444' 
+            StrLeadSpace    = '  123'
+            StrTrailSpace   = '123   '
+            Link1            = [uri]"https://github.com/dfinke/ImportExcel" #2,15
+            Link2            = "https://github.com/dfinke/ImportExcel"   #2, 16
+        } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2  -Path $path
         it "Created a new file                                                                     " {
             Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
         }
-
         $Excel = Open-ExcelPackage -Path $path
         it "Created 1 worksheet                                                                    " {
             $Excel.Workbook.Worksheets.count                            | Should     be 1
         }
-
         $ws = $Excel.Workbook.Worksheets[1]
         it "Created the worksheet with the expected name, number of rows and number of columns     " {
             $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be  14
+            $ws.Dimension.Columns                                       | Should     be  22
             $ws.Dimension.Rows                                          | Should     be  2
         }
-
-        it "Set a date      in Cell A2                                                             " {
-            $ws.Cells[2, 1].Value.Gettype().name                         | Should     be  'DateTime'
+        it "Set a date     in Cell A2                                                              " {
+            $ws.Cells[2, 1].Value.Gettype().name                        | Should     be  'DateTime'
         }
-
-        it "Set a formula   in Cell B2                                                             " {
-            $ws.Cells[2, 2].Formula                                      | Should     be  '=SUM(F2:G2)'
+        it "Set a formula  in Cell B2                                                              " {
+            $ws.Cells[2, 2].Formula                                     | Should     be  '=SUM(F2:G2)'
         }
-
-        it "Set strings     in Cells E2 and F2                                                     " {
-            $ws.Cells[2, 5].Value.GetType().name                        | Should     be  'String'
-            $ws.Cells[2, 6].Value.GetType().name                        | Should     be  'String'
+        it "Set strings    in Cells E2, F2 and R2  (no number conversion)                          " {
+            $ws.Cells[2,  5].Value.GetType().name                        | Should     be  'String'
+            $ws.Cells[2,  6].Value.GetType().name                        | Should     be  'String'
+            $ws.Cells[2, 18].Value.GetType().name                        | Should     be  'String'
         }
-
-        it "Set a number    in Cell I2                                                             " {
-            ($ws.Cells[2, 9].Value -is [valuetype] )                     | Should     be  $true
+        it "Set numbers    in Cells K2,L2,M2   (diferent Negative integer formats)                 " {
+            ($ws.Cells[2, 11].Value -is [valuetype] )                   | Should     be  $true
+            ($ws.Cells[2, 12].Value -is [valuetype] )                   | Should     be  $true
+            ($ws.Cells[2, 13].Value -is [valuetype] )                   | Should     be  $true
+             $ws.Cells[2, 11].Value                                     | Should     beLessThan 0
+             $ws.Cells[2, 12].Value                                     | Should     beLessThan 0
+             $ws.Cells[2, 13].Value                                     | Should     beLessThan 0
         }
-
-        it "Set a hyperlink in Cell N2                                                             " {
-            $ws.Cells[2, 14].Hyperlink                                   | Should     be  "https://github.com/dfinke/ImportExcel"
+        it "Set hyperlinks in Cells U2 and V2                                                      " {
+            $ws.Cells[2, 21].Hyperlink                                 | Should     be  "https://github.com/dfinke/ImportExcel"
+            $ws.Cells[2, 22].Hyperlink                                 | Should     be  "https://github.com/dfinke/ImportExcel"
         }
+        it "Processed thousands according to local settings   (Cells H2 and I2)                    " {
+            if ((Get-Culture).NumberFormat.NumberGroupSeparator = ",") {
+                ($ws.Cells[2, 8].Value -is [valuetype] )               | Should     be  $true
+                 $ws.Cells[2, 9].Value.GetType().name                  | Should     be  'String'
+            }
+            elseif ((Get-Culture).NumberFormat.NumberGroupSeparator = ".") {
+                ($ws.Cells[2, 9].Value -is [valuetype] )               | Should     be  $true
+                 $ws.Cells[2, 8].Value.GetType().name                  | Should     be  'String'
+            }
+        }     
+        it "Processed local currency as a number and other currency as a string (N2 & O2)          " {
+            ($ws.Cells[2, 14].Value -is [valuetype] )                   | Should     be  $true
+             $ws.Cells[2, 15].Value.GetType().name                      | Should     be  'String'
+        } 
+        it "Processed numbers with spaces between digits as strings (P2 & Q2)                      " {
+             $ws.Cells[2, 16].Value.GetType().name                      | Should     be  'String' 
+             $ws.Cells[2, 17].Value.GetType().name                      | Should     be  'String'
+        } 
+        it "Processed numbers leading or trailing speaces as Numbers (S2 & T2)                     " {
+            ($ws.Cells[2, 19].Value -is [valuetype] )                   | Should     be  $true
+            ($ws.Cells[2, 20].Value -is [valuetype] )                   | Should     be  $true
+        } 
     }
 
     Context "#               # Setting cells for different data types with -noHeader" {
@@ -438,7 +470,7 @@ Describe ExportExcel {
             $excel.Workbook.Worksheets[6].Name  | Should be "Sheet1"
         }
 
-        it "Cloned 'Sheet1' to 'NewSheet'                                                           " {
+        it "Cloned 'Sheet1' to 'NewSheet'                                                          " {
             $newWs = $excel.Workbook.Worksheets["NewSheet"]
             $newWs.Dimension.Address                          | Should     be ($excel.Workbook.Worksheets["Sheet1"].Dimension.Address)
             $newWs.ConditionalFormatting.Count                | Should     be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting.Count)
@@ -692,13 +724,13 @@ Describe ExportExcel {
         $r = Get-ChildItem -path C:\WINDOWS\system32 -File
 
         "Biggest files" | Export-Excel -Path $path -StartRow 1 -StartColumn 7
-        $r | Sort-Object length -Descending | Select -First 14 Name, @{n="Size";e={$_.Length}}  | 
+        $r | Sort-Object length -Descending | Select-Object -First 14 Name, @{n="Size";e={$_.Length}}  | 
             Export-Excel -Path $path -TableName FileSize -StartRow 2 -StartColumn 7 -TableStyle Medium2
 
         $r.extension | Group-Object | Sort-Object -Property count -Descending | Select-Object -First 12 Name, Count   |
             Export-Excel -Path $path -TableName ExtSize -Title "Frequent Extensions"  -TitleSize 11
 
-        $r | Group-Object -Property extension | Select-Object Name, @{n="Size"; e={($_.group  | measure -property length -sum).sum}} |
+        $r | Group-Object -Property extension | Select-Object Name, @{n="Size"; e={($_.group  | Measure-Object -property length -sum).sum}} |
           Sort-Object -Property size -Descending | Select-Object -First 10 |
             Export-Excel -Path $path -TableName ExtCount -Title "Biggest extensions"  -TitleSize 11 -StartColumn 4 -AutoSize  
 
@@ -707,17 +739,15 @@ Describe ExportExcel {
         it "Created 3 tables                                                                       " {
             $ws.tables.count | should be 3 
         }
-        it "Created the FileSize table in the right places with the right size                     " {
+        it "Created the FileSize table in the right place with the right size and style            " {
             $ws.Tables["FileSize"].Address.Address                      | should     be "G2:H16" #Insert at row 2, Column 7, 14 rows x 2 columns of data
             $ws.Tables["FileSize"].StyleName                            | should     be "TableStyleMedium2"
         }
-        it "Created the ExtSize table in the right places with the right size                      " {
+        it "Created the ExtSize  table in the right place with the right size                      " {
             $ws.Tables["ExtSize"].Address.Address                      | should     be "A2:B14" #tile, then 12 rows x 2 columns of data
-            $ws.Tables["ExtSize"].TableStyle.tostring()                | should     be "medium6"
         }
-        it "Created the ExtSize table in the right places with the right size                      " {
-            $ws.Tables["ExtSize"].Address.Address                      | should     be "A2:B14" #tile, then 12 rows x 2 columns of data
-            $ws.Tables["ExtSize"].TableStyle.tostring()                | should     be "medium6"
+        it "Created the ExtCount table in the right place with the right size                      " {
+            $ws.Tables["ExtCount"].Address.Address                      | should     be "D2:E12" #title, then 10 rows x 2 columns of data
         }
     } 
 

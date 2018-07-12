@@ -31,18 +31,21 @@ To install to your personal modules folder (e.g. ~\Documents\WindowsPowerShell\M
 iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfinke/ImportExcel/master/Install.ps1')
 ```
 
-# What's new to 7th July 18
+# What's new to 11th July 18
 - Moved chart creatation into its own function (Add-Excel chart) within Export-Excel.ps1. Renamed New-Excelchart to New-ExcelChartDefinition to make it clearer that it is not making anything in the workbook (but for compatiblity put an alias of New-ExcelChart in so existing code does not break). Found that -Header does nothing, so it isn't Add-Excel chart and there is a message that does nothing in New-ExcelChartDefinition .  
-- Added paramters for managing Axes and legend (these are currently in Add-ExcelChart but not new-ExcelChartDefinition) 
-- Fixed a bug introduced into Compare-Worksheet by the change descibed in the June changes below, this meant the font color was only being set in one sheet, when a row was changed. Also found that the PowerShell ISE and shell return Compare-Object resuls in different sequences which broke some tests. Applied a sort to ensure things are in a predictable order.  (#375)
+- Added -BarChart -ColumnChart -LineChart -PieChart parameters to Export-Excel for quick charts without giving a full chart definition. 
+- Added parameters for managing chart Axes and legend 
+- Added some chart tests to Export-Excel.tests.ps1. (but tests & examples for quick charts , axes or legends still on the to do list )
 - Fixed some bad code which had been checked-in in-error and caused adding charts to break. (This was not seen outside Github #377)  
-- Added chart tests to Export-Excel.tests.ps1. 
+- Fixed a bug introduced into Compare-Worksheet by the change descibed in the June changes below, this meant the font color was only being set in one sheet, when a row was changed. Also found that the PowerShell ISE and shell return Compare-Object resuls in different sequences which broke some tests. Applied a sort to ensure things are in a predictable order.  (#375)
 - Removed (2) calls to Get-ExcelColumnName
 - Fixed an issue in Export-Excel where formulas were inserted as strings if "NoNumberConversion" is applied (#374), and made sure formatting is applied to formula cells
-- Fixed an issue with parameter sets in Export-Excel not being determined correctly in some case (I think this has been resolved before and might have regressed) 
-- Reverted the [double]::tryParse in export excel to the previous way, as the shorter way was not behaving correctly with with the number formats in certain regions. (also #374)
+- Fixed an issue with parameter sets in Export-Excel not being determined correctly in some cases (I think this had been resolved before and might have regressed) 
+- Reverted the [double]::tryParse in export excel to the previous (longer) way, as the shorter way was not behaving correctly with with the number formats in certain regions. (also #374)
 - Changed Table, Range and AutoRangeNames to apply to whole data area if no data has been inserted OR to inserted data only if it has.(#376) This means that if there are multiple inserts only inserted data is touched, rather than going as far down and/or right as the furthest used cell. Added a test for this.
-- Added more of the Parameters from Export-Excel to Join-worksheet, join just calls export with these parameters so there is no code behind them (#383)
+- Added more of the Parameters from Export-Excel to Join-worksheet, join just calls export-excel with these parameters so there is no code behind them (#383)
+- Added more of the Parameters from Export-Excel to Send-SQLDataToExcel, send just calls export-excel with these parameters... 
+- Added support for passing a System.Data.DataTable directly to Send-SQLDataToExcel
 
 # New in June 18
 - New commands - Diff , Merge and Join
