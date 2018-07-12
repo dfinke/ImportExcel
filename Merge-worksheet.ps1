@@ -162,20 +162,18 @@
      $diffpart         = @() 
      $refpart          = @()
      foreach ($p in $proplist.Where({$key -ne $_}) ) {$refPart += $p ; $diffPart += "$DiffPrefix $p" } 
-     #Last reference column will be A if there the only one property (which might be the key), B  if there are two properties, C if there are 3 etc
-     $lastRefCol   = [char](64 +       $propList.count)
-     #First difference column will be the next one (we'll trap the case of only having the key later)  
-     $FirstDiffCol = [char](65 +       $propList.count)
+     $lastRefColNo     = $proplist.count 
+     $FirstDiffColNo   = $lastRefColNo + 1 
             
      if ($key -ne '*') { 
-            $outputProps = @($key) + $refpart + $diffpart 
+            $outputProps   = @($key) + $refpart + $diffpart 
             #If we are using a single column as the key, don't duplicate it, so the last difference column will be A if there is one property, C if there are two, E if there are 3 
-            $lastDiffCol  = [char](63 +  2  * $propList.count)
+            $lastDiffColNo = (2 * $proplist.count) - 1 
      }
      else {
-            $outputProps = @( )    + $refpart + $diffpart 
+            $outputProps   = @( )    + $refpart + $diffpart 
             #If we not using a single column as a key all columns are duplicated so, the Last difference column will be B if there is one property, D if there are two, F if there are 3 
-            $lastDiffCol  = [char](64 +  2  * $propList.count)
+            $lastDiffColNo = (2 * $proplist.count )
      } 
           
      #Add RowNumber to every row
@@ -265,12 +263,14 @@
                 Set-Format -WorkSheet $ws     -Range $range            -BackgroundColor $ChangeBackgroundColor
             }
             elseif ( $expandedDiff[$i].side -eq "<=" )  {
-                $range = "A" + ($i + 2 ) + ":" + $lastRefCol + ($i + 2 ) 
+                $rangeR1C1 = "R[{0}]C[1]:R[{0}]C[{1}]" -f ($i + 2 ) , $lastRefColNo
+                $range = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1($rangeR1C1,0,0) 
                 Set-Format -WorkSheet $ws     -Range $range            -BackgroundColor $DeleteBackgroundColor 
             }
             elseif ( $expandedDiff[$i].side -eq "=>" )  {
                 if ($propList.count -gt 1) {
-                    $range = $FirstDiffCol + ($i + 2 ) + ":" + $lastDiffCol + ($i + 2 ) 
+                    $rangeR1C1 = "R[{0}]C[{1}]:R[{0}]C[{2}]" -f ($i + 2 ) , $FirstDiffColNo , $lastDiffColNo
+                    $range = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1($rangeR1C1,0,0) 
                     Set-Format -WorkSheet $ws -Range $range            -BackgroundColor $AddBackgroundColor
                 }
                 Set-Format -WorkSheet $ws     -Range ("A" + ($i + 2 )) -BackgroundColor $AddBackgroundColor  

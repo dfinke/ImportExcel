@@ -1,4 +1,6 @@
-﻿ColumnChart -Title "Central Limit Theorem" -NoLegend ($(
+﻿try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+
+ColumnChart -Title "Central Limit Theorem" -NoLegend ($(
         for ($i = 1; $i -le 500; $i++) {
             $s = 0
             for ($j = 1; $j -le 100; $j++) {
