@@ -7,62 +7,62 @@ Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
 if (Get-process -Name Excel,xlim -ErrorAction SilentlyContinue) {    Write-Warning -Message "You need to close Excel before running the tests." ; return}
 Describe ExportExcel {
 
-    # Context "#Example 1      # Creates and opens a file with the right number of rows and columns" {
-    #     $path = "$env:TEMP\Test.xlsx"
-    #     Remove-item -Path $path -ErrorAction SilentlyContinue
-    #     $processes = Get-Process
-    #     $propertyNames = $Processes[0].psobject.properties.name
-    #     $rowcount = $Processes.Count
-    #     $Processes | Export-Excel $path  -show
+    Context "#Example 1      # Creates and opens a file with the right number of rows and columns" {
+        $path = "$env:TEMP\Test.xlsx"
+        Remove-item -Path $path -ErrorAction SilentlyContinue
+        $processes = Get-Process
+        $propertyNames = $Processes[0].psobject.properties.name
+        $rowcount = $Processes.Count
+        $Processes | Export-Excel $path  -show
 
-    #     it "Created a new file                                                                     " {
-    #         Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
-    #     }
+        it "Created a new file                                                                     " {
+            Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
+        }
 
-    #     it "Started Excel to display the file                                                      " {
-    #         Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should not benullorempty
-    #     }
+        it "Started Excel to display the file                                                      " {
+            Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should not benullorempty
+        }
 
-    #     Start-Sleep -Seconds 5 ;
+        Start-Sleep -Seconds 5 ;
 
-    #     #Open-ExcelPackage with -Create is tested in Export-Excel
-    #     #This is a test of  using it with -KillExcel
-    #     #TODO Need to test opening pre-existing file with no -create switch (and graceful failure when file does not exist) somewhere else
-    #     $Excel = Open-ExcelPackage -Path $path -KillExcel
-    #     it "Killed Excel when Open-Excelpackage was told to                                        " {
-    #         Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should     benullorempty
-    #     }
+        #Open-ExcelPackage with -Create is tested in Export-Excel
+        #This is a test of  using it with -KillExcel
+        #TODO Need to test opening pre-existing file with no -create switch (and graceful failure when file does not exist) somewhere else
+        $Excel = Open-ExcelPackage -Path $path -KillExcel
+        it "Killed Excel when Open-Excelpackage was told to                                        " {
+            Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should     benullorempty
+        }
 
-    #     it "Created 1 worksheet                                                                    " {
-    #         $Excel.Workbook.Worksheets.count                            | Should     be 1
-    #     }
+        it "Created 1 worksheet                                                                    " {
+            $Excel.Workbook.Worksheets.count                            | Should     be 1
+        }
 
-    #     $ws = $Excel.Workbook.Worksheets[1]
-    #     it "Created the worksheet with the expected name, number of rows and number of columns     " {
-    #         $ws.Name                                                    | Should     be "sheet1"
-    #         $ws.Dimension.Columns                                       | Should     be  $propertyNames.Count
-    #         $ws.Dimension.Rows                                          | Should     be ($rowcount + 1)
-    #     }
+        $ws = $Excel.Workbook.Worksheets[1]
+        it "Created the worksheet with the expected name, number of rows and number of columns     " {
+            $ws.Name                                                    | Should     be "sheet1"
+            $ws.Dimension.Columns                                       | Should     be  $propertyNames.Count
+            $ws.Dimension.Rows                                          | Should     be ($rowcount + 1)
+        }
 
-    #     $headingNames = $ws.cells["1:1"].Value
-    #     it "Created the worksheet with the correct header names                                    " {
-    #         foreach ($p in $propertyNames) {
-    #             $headingnames -contains $p                              | Should     be $true
-    #         }
-    #     }
+        $headingNames = $ws.cells["1:1"].Value
+        it "Created the worksheet with the correct header names                                    " {
+            foreach ($p in $propertyNames) {
+                $headingnames -contains $p                              | Should     be $true
+            }
+        }
 
-    #     it "Formatted the process StartTime field as 'local short date'                            " {
-    #         $STHeader = $ws.cells["1:1"].where( {$_.Value -eq "StartTime"})[0]
-    #         $STCell = $STHeader.Address -replace '1$', '2'
-    #         $ws.cells[$stcell].Style.Numberformat.NumFmtID              | Should     be 22
-    #     }
+        it "Formatted the process StartTime field as 'local short date'                            " {
+            $STHeader = $ws.cells["1:1"].where( {$_.Value -eq "StartTime"})[0]
+            $STCell = $STHeader.Address -replace '1$', '2'
+            $ws.cells[$stcell].Style.Numberformat.NumFmtID              | Should     be 22
+        }
 
-    #     it "Formatted the process ID field as 'General'                                            " {
-    #         $IDHeader = $ws.cells["1:1"].where( {$_.Value -eq "ID"})[0]
-    #         $IDCell = $IDHeader.Address -replace '1$', '2'
-    #         $ws.cells[$IDcell].Style.Numberformat.NumFmtID              | Should     be 0
-    #     }
-    # }
+        it "Formatted the process ID field as 'General'                                            " {
+            $IDHeader = $ws.cells["1:1"].where( {$_.Value -eq "ID"})[0]
+            $IDCell = $IDHeader.Address -replace '1$', '2'
+            $ws.cells[$IDcell].Style.Numberformat.NumFmtID              | Should     be 0
+        }
+    }
 
     Context "                # NoAliasOrScriptPropeties -ExcludeProperty and -DisplayPropertySet work" {
         $path = "$env:TEMP\Test.xlsx"
@@ -151,24 +151,24 @@ Describe ExportExcel {
         $path = "$env:TEMP\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
         [PSCustOmobject][Ordered]@{
-            Date             = Get-Date      
-            Formula1         = '=SUM(F2:G2)' 
-            String1          = 'My String'   
-            Float            = [math]::pi    
-            IPAddress        = '10.10.25.5'  
-            StrLeadZero      = '07670'       
-            StrComma         = '0,26'        
-            StrEngThousand   = '1,234.56' 
-            StrEuroThousand  = '1.555,83'    
-            StrDot           = '1.2'         
-            StrNegInt        = '-31'         
+            Date             = Get-Date
+            Formula1         = '=SUM(F2:G2)'
+            String1          = 'My String'
+            Float            = [math]::pi
+            IPAddress        = '10.10.25.5'
+            StrLeadZero      = '07670'
+            StrComma         = '0,26'
+            StrEngThousand   = '1,234.56'
+            StrEuroThousand  = '1.555,83'
+            StrDot           = '1.2'
+            StrNegInt        = '-31'
             StrTrailingNeg   = '31-'
             StrParens        = '(123)'
             strLocalCurrency = ('{0}123.45' -f (Get-Culture).NumberFormat.CurrencySymbol )
-            strOtherCurrency = ('{0}123.45' -f $OtherCurrencySymbol ) 
-            StrE164Phone     = '+32 (444) 444 4444' 
-            StrAltPhone1     = '+32 4 4444 444'  
-            StrAltPhone2     = '+3244444444' 
+            strOtherCurrency = ('{0}123.45' -f $OtherCurrencySymbol )
+            StrE164Phone     = '+32 (444) 444 4444'
+            StrAltPhone1     = '+32 4 4444 444'
+            StrAltPhone2     = '+3244444444'
             StrLeadSpace    = '  123'
             StrTrailSpace   = '123   '
             Link1            = [uri]"https://github.com/dfinke/ImportExcel" #2,15
@@ -211,27 +211,27 @@ Describe ExportExcel {
             $ws.Cells[2, 22].Hyperlink                                 | Should     be  "https://github.com/dfinke/ImportExcel"
         }
         it "Processed thousands according to local settings   (Cells H2 and I2)                    " {
-            if ((Get-Culture).NumberFormat.NumberGroupSeparator = ",") {
+            if ((Get-Culture).NumberFormat.NumberGroupSeparator -EQ ",") {
                 ($ws.Cells[2, 8].Value -is [valuetype] )               | Should     be  $true
                  $ws.Cells[2, 9].Value.GetType().name                  | Should     be  'String'
             }
-            elseif ((Get-Culture).NumberFormat.NumberGroupSeparator = ".") {
+            elseif ((Get-Culture).NumberFormat.NumberGroupSeparator -EQ ".") {
                 ($ws.Cells[2, 9].Value -is [valuetype] )               | Should     be  $true
                  $ws.Cells[2, 8].Value.GetType().name                  | Should     be  'String'
             }
-        }     
+        }
         it "Processed local currency as a number and other currency as a string (N2 & O2)          " {
             ($ws.Cells[2, 14].Value -is [valuetype] )                   | Should     be  $true
              $ws.Cells[2, 15].Value.GetType().name                      | Should     be  'String'
-        } 
+        }
         it "Processed numbers with spaces between digits as strings (P2 & Q2)                      " {
-             $ws.Cells[2, 16].Value.GetType().name                      | Should     be  'String' 
+             $ws.Cells[2, 16].Value.GetType().name                      | Should     be  'String'
              $ws.Cells[2, 17].Value.GetType().name                      | Should     be  'String'
-        } 
+        }
         it "Processed numbers leading or trailing speaces as Numbers (S2 & T2)                     " {
             ($ws.Cells[2, 19].Value -is [valuetype] )                   | Should     be  $true
             ($ws.Cells[2, 20].Value -is [valuetype] )                   | Should     be  $true
-        } 
+        }
     }
 
     Context "#               # Setting cells for different data types with -noHeader" {
@@ -724,7 +724,7 @@ Describe ExportExcel {
         $r = Get-ChildItem -path C:\WINDOWS\system32 -File
 
         "Biggest files" | Export-Excel -Path $path -StartRow 1 -StartColumn 7
-        $r | Sort-Object length -Descending | Select-Object -First 14 Name, @{n="Size";e={$_.Length}}  | 
+        $r | Sort-Object length -Descending | Select-Object -First 14 Name, @{n="Size";e={$_.Length}}  |
             Export-Excel -Path $path -TableName FileSize -StartRow 2 -StartColumn 7 -TableStyle Medium2
 
         $r.extension | Group-Object | Sort-Object -Property count -Descending | Select-Object -First 12 Name, Count   |
@@ -732,12 +732,12 @@ Describe ExportExcel {
 
         $r | Group-Object -Property extension | Select-Object Name, @{n="Size"; e={($_.group  | Measure-Object -property length -sum).sum}} |
           Sort-Object -Property size -Descending | Select-Object -First 10 |
-            Export-Excel -Path $path -TableName ExtCount -Title "Biggest extensions"  -TitleSize 11 -StartColumn 4 -AutoSize  
+            Export-Excel -Path $path -TableName ExtCount -Title "Biggest extensions"  -TitleSize 11 -StartColumn 4 -AutoSize
 
         $excel = Open-ExcelPackage -Path $path
         $ws = $excel.Workbook.Worksheets[1]
         it "Created 3 tables                                                                       " {
-            $ws.tables.count | should be 3 
+            $ws.tables.count | should be 3
         }
         it "Created the FileSize table in the right place with the right size and style            " {
             $ws.Tables["FileSize"].Address.Address                      | should     be "G2:H16" #Insert at row 2, Column 7, 14 rows x 2 columns of data
@@ -749,7 +749,7 @@ Describe ExportExcel {
         it "Created the ExtCount table in the right place with the right size                      " {
             $ws.Tables["ExtCount"].Address.Address                      | should     be "D2:E12" #title, then 10 rows x 2 columns of data
         }
-    } 
+    }
 
 
 
