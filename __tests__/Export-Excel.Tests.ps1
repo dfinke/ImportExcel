@@ -13,15 +13,15 @@ Describe ExportExcel {
         $processes = Get-Process
         $propertyNames = $Processes[0].psobject.properties.name
         $rowcount = $Processes.Count
-        $Processes | Export-Excel $path  -show
+        $Processes | Export-Excel $path  #-show
 
         it "Created a new file                                                                     " {
             Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
         }
 
-        it "Started Excel to display the file                                                      " {
-            Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should not benullorempty
-        }
+       # it "Started Excel to display the file                                                      " {
+       #     Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should not benullorempty
+       # }
 
         Start-Sleep -Seconds 5 ;
 
