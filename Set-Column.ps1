@@ -26,7 +26,7 @@
         $Worksheet,
         #Column to fill down - first column is 1. 0 will be interpreted as first unused column
         $Column = 0 ,
-        #First row to fill data in 
+        #First row to fill data in
         [Int]$StartRow ,
         #value, formula or script block for to fill in. Script block can use $row, $column [number], $ColumnName [letter(s)], $startRow, $startColumn, $endRow, $endColumn
         [parameter(Mandatory=$true)]
@@ -79,7 +79,7 @@
         [float]$Width,
         #Set the inserted data to be a named range (ignored if header is not specified)
         [Switch]$AutoNameRange,
-        #If Specified, return an ExcelPackage object to allow further work to be done on the file. 
+        #If Specified, return an ExcelPackage object to allow further work to be done on the file.
         [switch]$PassThru
     )
     #if we were passed a package object and a worksheet name , get the worksheet.

@@ -12,7 +12,7 @@
         $excel.Save() ; $excel.Dispose()
 
         Here Export-Excel is called with the -passThru parameter so the Excel Package object is stored in $Excel
-        The desired worksheet is selected and the then columns B and i are conditially formatted (excluding the top row) to show red text if 
+        The desired worksheet is selected and the then columns B and i are conditially formatted (excluding the top row) to show red text if
         the columns contain "2003" or "Disabled respectively. A fixed date formats are then applied to columns D..G, and the top row is formatted.
         Finally the workbook is saved and the Excel object closed.
 
@@ -84,11 +84,11 @@
         #Strikethrough text of matching items
         [switch]$StrikeThru
     )
-    #Allow conditional formatting to work like Set-Format (with single ADDRESS parameter), split it to get worksheet and range of cells.  
+    #Allow conditional formatting to work like Set-Format (with single ADDRESS parameter), split it to get worksheet and range of cells.
     If ($Address -and -not $WorkSheet -and -not $Range) {
         $WorkSheet = $Address.Worksheet[0]
-        $Range     = $Address.Address 
-    }    
+        $Range     = $Address.Address
+    }
     If ($ThreeIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)}
     elseif ($FourIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet) }
     elseif ($FiveIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Range , $IconType)     }

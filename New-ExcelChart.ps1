@@ -1,6 +1,6 @@
 function New-ExcelChartDefinition {
     [cmdletbinding()]
-    [Alias("New-ExcelChart")] #This was the former name. The new name reflects that we are defining a chart, not making one in the workbook. 
+    [Alias("New-ExcelChart")] #This was the former name. The new name reflects that we are defining a chart, not making one in the workbook.
     param(
         $Title = "Chart Title",
         $Header,
@@ -21,26 +21,26 @@ function New-ExcelChartDefinition {
         $SeriesHeader,
         [Switch]$TitleBold,
         [Int]$TitleSize ,
-        [String]$XAxisTitleText, 
+        [String]$XAxisTitleText,
         [Switch]$XAxisTitleBold,
         $XAxisTitleSize ,
         [string]$XAxisNumberformat,
-        $XMajorUnit, 
-        $XMinorUnit, 
+        $XMajorUnit,
+        $XMinorUnit,
         $XMaxValue,
         $XMinValue,
         [OfficeOpenXml.Drawing.Chart.eAxisPosition]$XAxisPosition        ,
-        [String]$YAxisTitleText, 
+        [String]$YAxisTitleText,
         [Switch]$YAxisTitleBold,
         $YAxisTitleSize,
         [string]$YAxisNumberformat,
-        $YMajorUnit, 
-        $YMinorUnit, 
+        $YMajorUnit,
+        $YMinorUnit,
         $YMaxValue,
         $YMinValue,
         [OfficeOpenXml.Drawing.Chart.eAxisPosition]$YAxisPosition
     )
-    if ( $Header ) {Write-Warning "The header parameter is ignored."} #Nothing was done with it when creating a chart. 
+    if ( $Header ) {Write-Warning "The header parameter is ignored."} #Nothing was done with it when creating a chart.
     #might be able to do [PSCustomObject]$PsboundParameters,   the defaults here match those in Add-Excel Chart
     [PSCustomObject]@{
         Title              = $Title
@@ -57,22 +57,22 @@ function New-ExcelChartDefinition {
         ShowCategory       = $ShowCategory -as [Boolean]
         ShowPercent        = $ShowPercent  -as [Boolean]
         TitleBold          = $TitleBold    -as [Boolean]
-        TitleSize          = $TitleSize 
+        TitleSize          = $TitleSize
         SeriesHeader       = $SeriesHeader
         XAxisTitleText     = $XAxisTitleText
         XAxisTitleBold     = $XAxisTitleBold -as [Boolean]
-        XAxisTitleSize     = $XAxisTitleSize 
+        XAxisTitleSize     = $XAxisTitleSize
         XAxisNumberformat  = $XAxisNumberformat
-        XMajorUnit         = $XMajorUnit 
+        XMajorUnit         = $XMajorUnit
         XMinorUnit         = $XMinorUnit
         XMaxValue          = $XMaxValue
         XMinValue          = $XMinValue
         XAxisPosition      = $XAxisPosition
-        YAxisTitleText     = $YAxisTitleText 
-        YAxisTitleBold     = $YAxisTitleBold  -as [Boolean] 
+        YAxisTitleText     = $YAxisTitleText
+        YAxisTitleBold     = $YAxisTitleBold  -as [Boolean]
         YAxisTitleSize     = $YAxisTitleSize
-        YAxisNumberformat  = $YAxisNumberformat 
-        YMajorUnit         = $YMajorUnit         
+        YAxisNumberformat  = $YAxisNumberformat
+        YMajorUnit         = $YMajorUnit
         YMinorUnit         = $YMinorUnit
         YMaxValue          = $YMaxValue
         YMinValue          = $YMinValue
