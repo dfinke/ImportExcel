@@ -1,25 +1,25 @@
 function ConvertFrom-ExcelData {
     <#
-    .SYNOPSIS
-    Reads data from a sheet, and for each row, calls a custom scriptblock with a list of property names and the row of data.
+      .SYNOPSIS
+        Reads data from a sheet, and for each row, calls a custom scriptblock with a list of property names and the row of data.
 
-    
-    .EXAMPLE
-    ConvertFrom-ExcelData .\testSQLGen.xlsx {
-        param($propertyNames, $record)
+        
+      .EXAMPLE
+        ConvertFrom-ExcelData .\testSQLGen.xlsx {
+            param($propertyNames, $record)
 
-        $reportRecord = @()
-        foreach ($pn in $propertyNames) {
-            $reportRecord += "{0}: {1}" -f $pn, $record.$pn
+            $reportRecord = @()
+            foreach ($pn in $propertyNames) {
+                $reportRecord += "{0}: {1}" -f $pn, $record.$pn
+            }
+            $reportRecord +=""
+            $reportRecord -join "`r`n"
         }
-        $reportRecord +=""
-        $reportRecord -join "`r`n"
-}
 
-First: John
-Last: Doe
-The Zip: 12345
-....
+        First: John
+        Last: Doe
+        The Zip: 12345
+        ....
     #>
     param(
         [Alias("FullName")]

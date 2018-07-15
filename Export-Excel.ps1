@@ -16,14 +16,14 @@
             If specified data will be added to the end of an existing sheet, using the same column headings.
         .PARAMETER TargetData
             Data to insert onto the worksheet - this is often provided from the pipeline.
+        .PARAMETER DisplayPropertySet
+            Many (but not all) objects have a hidden property named psStandardmembers with a child property DefaultDisplayPropertySet ; this parameter reduces the properties exported to those in this set.
+        .PARAMETER NoAliasOrScriptPropeties
+            Some objects duplicate existing properties by adding aliases, or have Script properties which take a long time to return a value and slow the export down, if specified this removes these properties
         .PARAMETER ExcludeProperty
             Specifies properties which may exist in the target data but should not be placed on the worksheet.
-        .PARAMETER NoAliasOrScriptPropeties
-            Some objects duplicate properties with aliases, or have Script properties which take a long time to return a value and slow the export down, if specified this removes these properties
-        .PARAMETER DisplayPropertySet,
-            Many (but not all) objects have a hidden property named psStandardmembers with a child property DefaultDisplayPropertySet ; this parameter reduces the properties exported to those in this set.
         .PARAMETER Title
-            Text of a title to be placed in Cell A1.
+            Text of a title to be placed in the top left cell.
         .PARAMETER TitleBold
             Sets the title in boldface type.
         .PARAMETER TitleSize
@@ -36,22 +36,33 @@
             Sets password protection on the workbook.
         .PARAMETER IncludePivotTable
             Adds a Pivot table using the data in the worksheet.
+        .PARAMETER PivotTableName
+            If a Pivot table is created from command line parameters, specificies the name of the new sheet holding the pivot. If Omitted this will be "WorksheetName-PivotTable"
         .PARAMETER PivotRows
-            Name(s) columns from the spreadhseet which will provide the row name(s) in the pivot table.
+            Name(s) columns from the spreadhseet which will provide the Row name(s) in a pivot table created from command line parameters.
         .PARAMETER PivotColumns
-            Name(s) columns from the spreadhseet which will provide the Column name(s) in the pivot table.
+            Name(s) columns from the spreadhseet which will provide the Column name(s) in a pivot table created from command line parameters.
+        .PARAMETER PivotFilter
+            Name(s) columns from the spreadhseet which will provide the Filter name(s) in a pivot table created from command line parameters.
         .PARAMETER PivotData
-            Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP to provide the data in the Pivot table.
-        .PARAMETER PivotTableDefinition,
-            HashTable(s) with Sheet PivotTows, PivotColumns, PivotData, IncludePivotChart and ChartType values to make it easier to specify a definition or multiple Pivots.
-        .PARAMETER IncludePivotChart,
-             Include a chart with the Pivot table - implies Include Pivot Table.
+            In a pivot table created from command line parameters, the fields to use in the table body is given as a Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP .
+        .PARAMETER NoTotalsInPivot
+            In a pivot table created from command line parameters, prevents the addition of totals to rows and columns.
+        .PARAMETER PivotTableDefinition
+            Instead of describing a single pivot table with mutliple commandline paramters; you can use a HashTable in the form PivotTableName = Definition;
+            Definition is itself a hashtable with Sheet PivotTows, PivotColumns, PivotData, IncludePivotChart and ChartType values.
+        .PARAMETER IncludePivotChart
+            Include a chart with the Pivot table - implies -IncludePivotTable.
+        .PARAMETER ChartType
+            The type for Pivot chart (one of Excel's defined chart types)
         .PARAMETER NoLegend
             Exclude the legend from the pivot chart.
         .PARAMETER ShowCategory
             Add category labels to the pivot chart.
         .PARAMETER ShowPercent
             Add Percentage labels to the pivot chart.
+        .PARAMETER ConditionalFormat
+            One or more conditional formatting rules defined with New-ConditionalFormattingIconSet.
         .PARAMETER ConditionalText
             Applies a 'Conditional formatting rule' in Excel on all the cells. When specific conditions are met a rule is triggered.
         .PARAMETER NoNumberConversion
@@ -66,6 +77,14 @@
             Makes the data in the worksheet a table with a name applies a style to it. Name must not contain spaces.
         .PARAMETER TableStyle
             Selects the style for the named table - defaults to 'Medium6'.
+        .PARAMETER BarChart
+            Creates a "quick" bar chart using the first text column as labels and the first numeric column as values
+        .PARAMETER ColumnChart
+            Creates a "quick" column chart using the first text column as labels and the first numeric column as values
+        .PARAMETER LineChart
+            Creates a "quick" line chart using the first text column as labels and the first numeric column as values
+        .PARAMETER PieChart
+            Creates a "quick" pie chart using the first text column as labels and the first numeric column as values
         .PARAMETER ExcelChartDefinition
             A hash table containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts.
         .PARAMETER HideSheet
@@ -99,7 +118,7 @@
         .PARAMETER FreezePane
              Freezes panes at specified coordinates (in the form  RowNumber , ColumnNumber).
         .PARAMETER AutoFilter
-            Enables the 'Filter' in Excel on the complete header row. So users can easily sort, filter and/or search the data in the select column from within Excel.
+            Enables the 'Filter' in Excel on the complete header row. So users can easily sort, filter and/or search the data in the selected column from within Excel.
         .PARAMETER AutoSize
             Sizes the width of the Excel column to the maximum width needed to display all the containing data in that cell.
         .PARAMETER Now
@@ -132,8 +151,12 @@
             # Blue color for positive numbers and a red color for negative numbers. All numbers will be proceeded by a dollar sign '$'.
             '[Blue]$#,##0.00;[Red]-$#,##0.00'
 
+        .PARAMETER ReZip
+            If specified, Export-Excel will expand the contents of the .XLSX file (which is multiple files in a zip archive) and rebuilt it.
         .PARAMETER Show
             Opens the Excel file immediately after creation. Convenient for viewing the results instantly without having to search for the file first.
+        .PARAMETER ReturnRange
+            If specified, Export-Excel returns the range of added cells in the format "A1:Z100"
         .PARAMETER PassThru
             If specified, Export-Excel returns an object representing the Excel package without saving the package first. To save it you need to call the save or Saveas method or send it back to Export-Excel.
 
@@ -390,12 +413,16 @@
                 elseif ($_[0] -notmatch '[a-z]') { throw 'Tablename starts with an invalid character.'  }
                 else { $true }
             })]
-        [Parameter(ParameterSetName = 'Table'        , Mandatory = $true)]
-        [Parameter(ParameterSetName = 'PackageTable' , Mandatory = $true)]
+        [Parameter(ParameterSetName = 'Table'        , Mandatory = $true, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'PackageTable' , Mandatory = $true, ValueFromPipelineByPropertyName)]
         [String]$TableName,
         [Parameter(ParameterSetName = 'Table')]
         [Parameter(ParameterSetName = 'PackageTable')]
         [OfficeOpenXml.Table.TableStyles]$TableStyle = 'Medium6',
+        [Switch]$Barchart,
+        [Switch]$PieChart,
+        [Switch]$LineChart ,
+        [Switch]$ColumnChart ,
         [Object[]]$ExcelChartDefinition,
         [String[]]$HideSheet,
         [Switch]$MoveToStart,
@@ -438,8 +465,8 @@
             #>
 
             Param (
-                [Object]$TargetCell,
-                [Object]$CellValue
+                $TargetCell,
+                $CellValue
             )
             #The write-verbose commands have been commented out below - even if verbose is silenced they cause a significiant performance impact and if it's on they will cause a flood of messages.
             Switch ($CellValue) {
@@ -465,7 +492,7 @@
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as formula"
                     break
                 }
-                {[System.Uri]::IsWellFormedUriString($_, [System.UriKind]::Absolute)} {
+                { [System.Uri]::IsWellFormedUriString($_ , [System.UriKind]::Absolute) } {
                     # Save a hyperlink
                     $TargetCell.Value = $_.AbsoluteUri
                     $TargetCell.HyperLink = $_
@@ -474,8 +501,8 @@
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($_.AbsoluteUri)' as Hyperlink"
                     break
                 }
-                {(($NoNumberConversion) -and ($NoNumberConversion -contains $Name)) -or
-                    ($NoNumberConversion -eq '*')} {
+                {( $NoNumberConversion -and (
+                  ($NoNumberConversion -contains $Name) -or ($NoNumberConversion -eq '*'))) } {
                     #Save text without it to converting to number
                     $TargetCell.Value = $_
                     #Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' unconverted"
@@ -484,7 +511,7 @@
                 Default {
                     #Save a value as a number if possible
                     $number = $null
-                    if ( [Double]::TryParse([String]$_, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)) {
+                    if ([Double]::TryParse($_, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)) {
                         # as simpler version using [Double]::TryParse( $_ , [ref]$number)) was found to cause problems reverted back to the longer version
                         $TargetCell.Value = $number
                         if ($setNumformat) {$targetCell.Style.Numberformat.Format = $Numberformat }
@@ -583,15 +610,14 @@
                 if ($firstTimeThru) {
                     $firstTimeThru = $false
                     $isDataTypeValueType = $TargetData.GetType().name -match 'string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
+                    if ($isDataTypeValueType) {$row -= 1} #row incremented before adding values, so it is set to the number of rows inserted at the end
                     Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'"
                 }
 
                 if ($isDataTypeValueType) {
                     $ColumnIndex = $StartColumn
-
-                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData
-
                     $Row += 1
+                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData
                 }
                 else {
                     #region Add headers
@@ -708,7 +734,7 @@
                 #if the table exists, update it.
                 if ($ws.Tables[$TableName]) {
                     $ws.Tables[$TableName].TableXml.table.ref = $dataRange
-                    $ws.Tables[$TableName].TableStyle = $TableStyle
+                    $ws.Tables[$TableName].TableStyle         = $TableStyle
                 }
                 else {
                     $tbl = $ws.Tables.Add($ws.Cells[$dataRange], $TableName)
@@ -743,36 +769,35 @@
             $params = @{
                 "SourceRange" = $dataRange
             }
-            if ($PivotTableName) {$params.PivotTableName = $PivotTableName}
-            else {$params.PivotTableName = $WorkSheetname + 'PivotTable'}
-            if ($PivotFilter) {$params.PivotFilter = $PivotFilter}
-            if ($PivotRows) {$params.PivotRows = $PivotRows}
-            if ($PivotColumns) {$Params.PivotColumns = $PivotColumns}
-            if ($PivotData) {$Params.PivotData = $PivotData}
-            if ($NoTotalsInPivot) {$params.NoTotalsInPivot = $true}
+            if ($PivotTableName)    {$params.PivotTableName    = $PivotTableName}
+            else                    {$params.PivotTableName    = $WorkSheetname + 'PivotTable'}
+            if ($PivotFilter)       {$params.PivotFilter       = $PivotFilter}
+            if ($PivotRows)         {$params.PivotRows         = $PivotRows}
+            if ($PivotColumns)      {$Params.PivotColumns      = $PivotColumns}
+            if ($PivotData)         {$Params.PivotData         = $PivotData}
+            if ($NoTotalsInPivot)   {$params.NoTotalsInPivot   = $true}
             if ($PivotDataToColumn) {$params.PivotDataToColumn = $true}
             if ($IncludePivotChart) {
-                $params.IncludePivotChart = $true
-                $Params.ChartType = $ChartType
-                if ($ShowCategory) {$params.ShowCategory = $true}
-                if ($ShowPercent) {$params.ShowPercent = $true}
-                if ($NoLegend) {$params.NoLegend = $true}
+                                     $params.IncludePivotChart = $true
+                                     $Params.ChartType         = $ChartType
+                if ($ShowCategory)  {$params.ShowCategory      = $true}
+                if ($ShowPercent)   {$params.ShowPercent       = $true}
+                if ($NoLegend)      {$params.NoLegend          = $true}
             }
             Add-PivotTable -ExcelPackage $pkg -SourceWorkSheet $ws   @params
         }
 
         try {
-            if ($FreezeTopRow) {
-                $ws.View.FreezePanes(2, 1)
-                Write-Verbose -Message "Froze top row"
-            }
-
-            if ($FreezeTopRowFirstColumn) {
+            #Allow single switch or two seperate ones.
+            if ($FreezeTopRowFirstColumn -or ($FreezeTopRow -and $FreezeFirstColumn)) {
                 $ws.View.FreezePanes(2, 2)
                 Write-Verbose -Message "Froze top row and first column"
             }
-
-            if ($FreezeFirstColumn) {
+            elseif ($FreezeTopRow) {
+                $ws.View.FreezePanes(2, 1)
+                Write-Verbose -Message "Froze top row"
+            }
+            elseif ($FreezeFirstColumn) {
                 $ws.View.FreezePanes(1, 2)
                 Write-Verbose -Message "Froze first column"
             }
@@ -791,7 +816,7 @@
         }
         catch {Write-Warning -Message "Failed adding Freezing the panes in worksheet '$WorkSheetname': $_"}
 
-        if ($BoldTopRow) {
+        if ($BoldTopRow) { #it sets bold as far as there are populated cells: for whole row could do $ws.row($x).style.font.bold = $true
             try {
                 if ($Title) {
                     $range = $ws.Dimension.Address -replace '\d+', ($StartRow + 1)
@@ -822,8 +847,32 @@
 
         foreach ($chartDef in $ExcelChartDefinition) {
             $params = @{}
-            $chartDef.PSObject.Properties | ForEach-Object {if ($_.value -ne $null) {$params[$_.name] = $_.value}}
+            $chartDef.PSObject.Properties | ForEach-Object {if ( $null -ne $_.value) {$params[$_.name] = $_.value}}
             Add-ExcelChart -Worksheet $ws @params
+        }
+
+        if ($Barchart -or $PieChart -or $LineChart -or $ColumnChart) {
+            if ($NoHeader) {$FirstDataRow = $startRow}
+            else           {$FirstDataRow = $startRow + 1 }
+            $range = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$startColumn]:R[$FirstDataRow]C[$lastCol]",0,0)
+            $xCol  = $ws.cells[$range] | Where-Object {$_.value -is [string]    } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1
+            $yCol  = $ws.cells[$range] | Where-Object {$_.value -is [valueType] } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1
+            $params = @{
+               xrange = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$xcol]:R[$($lastrow)]C[$xcol]",0,0) ;
+               yrange = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$ycol]:R[$($lastrow)]C[$ycol]",0,0) ;
+               title  =  "";
+               Column = ($lastCol +1)  ;
+               Width  = 1200
+            }
+            if ($NoHeader)      {$params["NoHeader"]     = $true}
+            else                {$Params["SeriesHeader"] = $ws.Cells[$startRow, $YCol].Value}
+            if   ($ColumnChart) {$Params["chartType"]    = "ColumnStacked" }
+            elseif  ($Barchart) {$Params["chartType"]    = "BarStacked" }
+            elseif  ($PieChart) {$Params["chartType"]    = "PieExploded3D" }
+            elseif ($LineChart) {$Params["chartType"]   = "Line" }
+
+            Add-ExcelChart -Worksheet $ws @params
+
         }
 
         foreach ($ct in $ConditionalText) {
@@ -859,7 +908,7 @@
 
         if ($PassThru) {       $pkg   }
         else {
-            if ($ReturnRange) {$ws.Dimension.Address }
+            if ($ReturnRange) {$dataRange }
 
             $pkg.Save()
             Write-Verbose -Message "Saved workbook $($pkg.File)"
@@ -874,7 +923,7 @@
                 }
                 try {
                     $TempZipPath = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath ([System.IO.Path]::GetRandomFileName())
-                    [io.compression.zipfile]::ExtractToDirectory($pkg.File, $TempZipPath)   | Out-Null
+                    [io.compression.zipfile]::ExtractToDirectory($pkg.File, $TempZipPath)  | Out-Null
                     Remove-Item $pkg.File -Force
                     [io.compression.zipfile]::CreateFromDirectory($TempZipPath, $pkg.File) | Out-Null
                 }
@@ -892,7 +941,7 @@
 function New-PivotTableDefinition {
     <#
       .Synopsis
-        Creates Pivot table definitons for export excel
+        Creates Pivot table definitons for Export-Excel
       .Description
         Export-Excel allows a single Pivot table to be defined using the parameters -IncludePivotTable, -PivotColumns -PivotRows,
         =PivotData, -PivotFilter, -NoTotalsInPivot, -PivotDataToColumn, -IncludePivotChart and -ChartType.
@@ -963,6 +1012,13 @@ function New-PivotTableDefinition {
     @{$PivotTableName = $parameters}
 }
 function Add-WorkSheet  {
+    <#
+      .Synopsis
+        Adds a workshet to an existing workbook.
+      .Description
+        If the named worksheet already exists, the -clearsheet parameter decides whether it should be deleted and a new one returned,
+        or if not specified the existing sheet will be returned.
+    #>
     [cmdletBinding()]
     [OutputType([OfficeOpenXml.ExcelWorksheet])]
     param(
@@ -1040,15 +1096,21 @@ function Add-WorkSheet  {
     return $ws
 }
 function Add-PivotTable {
-
+<#
+      .Synopsis
+        Adds a Pivot table (and optional pivot chart) to a workbook
+      .Description
+        If the pivot table already exists, the source data will be updated.
+#>
     param (
-        # Parameter help description
+        #Name for the new Pivot table - this will be the name of a sheet in the workbook
         [Parameter(Mandatory = $true)]
         $PivotTableName,
+        #An excel package object for the workbook.
         $ExcelPackage,
         #Worksheet where the data is found
         $SourceWorkSheet,
-        #Address range in the worksheet e.g "A10:F20" - the first row must be column names: if not specified the whole sheet will be used/
+        #Address range in the worksheet e.g "A10:F20" - the first row must be column names: if not specified the whole sheet will be used.
         $SourceRange,
         #Fields to set as rows in the Pivot table
         $PivotRows,
@@ -1164,11 +1226,17 @@ function Add-PivotTable {
     }
 }
 function Add-ExcelChart {
+    <#
+      .Synopsis
+        Creates a chart in an Existing excel worksheet
+    #>
     [cmdletbinding()]
     param(
+        #An object representing the worksheet where the chart should be added.
         [OfficeOpenXml.ExcelWorksheet]$Worksheet,
         [String]$Title = "Chart Title",
         #$Header,   Not used but referenced previously
+        #The Type of chart (Area, Line, Pie etc)
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = "ColumnStacked",
         $XRange,
         $YRange,
@@ -1208,12 +1276,13 @@ function Add-ExcelChart {
     try {
         $ChartName = 'Chart' + (Split-Path -Leaf ([System.IO.path]::GetTempFileName())) -replace 'tmp|\.', ''
         $chart = $Worksheet.Drawings.AddChart($ChartName, $ChartType)
-        $chart.Title.Text = $Title
-        if ($TitleBold) {$chart.Title.Font.Bold = $true}
-        if ($TitleSize) {$chart.Title.Font.Size = $TitleSize}
-
+        if ($Title) {
+            $chart.Title.Text = $Title
+            if ($TitleBold) {$chart.Title.Font.Bold = $true}
+            if ($TitleSize) {$chart.Title.Font.Size = $TitleSize}
+        }
         if ($NoLegend) { $chart.Legend.Remove() }
-       else {
+        else {
             if ($LegendPostion) {$Chart.Legend.Position    = $LegendPostion}
             if ($LegendSize)    {$chart.Legend.Font.Size   = $LegendSize}
             if ($legendBold)    {$chart.Legend.Font.Bold   = $true}
@@ -1227,8 +1296,8 @@ function Add-ExcelChart {
         if ($XAxisPosition)       {$chart.XAxis.AxisPosition    = $XAxisPosition}
         if ($XMajorUnit)          {$chart.XAxis.MajorUnit       = $XMajorUnit}
         if ($XMinorUnit)          {$chart.XAxis.MinorUnit       = $XMinorUnit}
-        if ($XMinValue -ne $null) {$chart.XAxis.MinValue        = $XMinValue}
-        if ($XMaxValue -ne $null) {$chart.XAxis.MaxValue        = $XMaxValue}
+        if ($null -ne $XMinValue) {$chart.XAxis.MinValue        = $XMinValue}
+        if ($null -ne $XMaxValue) {$chart.XAxis.MaxValue        = $XMaxValue}
         if ($XAxisNumberformat)   {$chart.XAxis.Format          = $XAxisNumberformat}
 
        if ($YAxisTitleText)     {
@@ -1239,12 +1308,12 @@ function Add-ExcelChart {
         if ($YAxisPosition)      {$chart.YAxis.AxisPosition    = $YAxisPosition}
         if ($YMajorUnit)         {$chart.YAxis.MajorUnit       = $YMajorUnit}
         if ($YMinorUnit)         {$chart.YAxis.MinorUnit       = $YMinorUnit}
-        if ($YMinValue-ne $null) {$chart.YAxis.MinValue        = $YMinValue}
-        if ($YMaxValue-ne $null) {$chart.YAxis.MaxValue        = $YMaxValue}
+        if ($null -ne $YMinValue){$chart.YAxis.MinValue        = $YMinValue}
+        if ($null -ne $YMaxValue){$chart.YAxis.MaxValue        = $YMaxValue}
         if ($YAxisNumberformat)  {$chart.YAxis.Format          = $YAxisNumberformat}
-        if ($chart.Datalabel -ne $null) {
-            $chart.Datalabel.ShowCategory = [boolean]$ShowCategory
-            $chart.Datalabel.ShowPercent  = [boolean]$ShowPercent
+        if ($null -ne $chart.Datalabel) {
+                                  $chart.Datalabel.ShowCategory = [boolean]$ShowCategory
+                                  $chart.Datalabel.ShowPercent  = [boolean]$ShowPercent
         }
 
         $chart.SetPosition($Row, $RowOffsetPixels, $Column, $ColumnOffsetPixels)

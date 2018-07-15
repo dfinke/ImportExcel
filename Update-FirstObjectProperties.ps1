@@ -72,7 +72,8 @@ Function Update-FirstObjectProperties {
 
         .NOTES
             CHANGELOG
-            2017/06/08 Function born #>
+            2017/06/08 Function born
+    #>
 
     Try {
         $Union = @()

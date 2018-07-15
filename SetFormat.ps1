@@ -83,7 +83,7 @@
     begin {
         #Allow Set-Format to take Worksheet and range parameters (like Add Contitional formatting) -  convert them to an address
         if ($WorkSheet -and $Range) {$Address = $WorkSheet.Cells[$Range] }
-    } 
+    }
 
     process {
         if   ($Address -is [Array])  {
@@ -92,51 +92,49 @@
         }
         else {
             if ($ResetFont) {
-                $Address.Style.Font.Color.SetColor("Black")
-                $Address.Style.Font.Bold = $false
-                $Address.Style.Font.Italic = $false
-                $Address.Style.Font.UnderLine = $false
-                $Address.Style.Font.Strike = $false
+                                       $Address.Style.Font.Color.SetColor("Black")
+                                       $Address.Style.Font.Bold      = $false
+                                       $Address.Style.Font.Italic    = $false
+                                       $Address.Style.Font.UnderLine = $false
+                                       $Address.Style.Font.Strike    = $false
             }
-            if ($Underline) {
-                $Address.Style.Font.UnderLine = $true
-                $Address.Style.Font.UnderLineType = $UnderLineType
+            if ($Underline)           {
+                                       $Address.Style.Font.UnderLine      = $true
+                                       $Address.Style.Font.UnderLineType  = $UnderLineType
             }
-            if ($Bold) {$Address.Style.Font.Bold = $true                }
-            if ($Italic) {$Address.Style.Font.Italic = $true                }
-            if ($StrikeThru) {$Address.Style.Font.Strike = $true                }
-            if ($FontShift) {$Address.Style.Font.VerticalAlign = $FontShift           }
-            if ($FontColor) {$Address.Style.Font.Color.SetColor( $FontColor    )      }
-            
-            if ($BorderAround) {
-                $Address.Style.Border.BorderAround($BorderAround, $BorderColor)
-            }            
+            if ($Bold)                {$Address.Style.Font.Bold           = $true                }
+            if ($Italic)              {$Address.Style.Font.Italic         = $true                }
+            if ($StrikeThru)          {$Address.Style.Font.Strike         = $true                }
+            if ($FontShift)           {$Address.Style.Font.VerticalAlign  = $FontShift           }
+            if ($FontColor)           {$Address.Style.Font.Color.SetColor(  $FontColor    )      }
+            if ($NumberFormat)        {$Address.Style.Numberformat.Format = $NumberFormat        }
+            if ($TextRotation)        {$Address.Style.TextRotation        = $TextRotation        }
+            if ($WrapText)            {$Address.Style.WrapText            = $true                }
+            if ($HorizontalAlignment) {$Address.Style.HorizontalAlignment = $HorizontalAlignment }
+            if ($VerticalAlignment)   {$Address.Style.VerticalAlignment   = $VerticalAlignment   }
+            if ($Value)               {$Address.Value = $Value                                   }
+            if ($Formula)             {$Address.Formula = $Formula                               }
+            if ($BorderAround)        {$Address.Style.Border.BorderAround($BorderAround, $BorderColor)}
 
-            if ($BorderBottom) {             
+            if ($BorderBottom)        {
                 $Address.Style.Border.Bottom.Style=$BorderBottom
                 $Address.Style.Border.Bottom.Color.SetColor($BorderColor)
             }
 
-            if ($BorderTop) {             
+            if ($BorderTop) {
                 $Address.Style.Border.Top.Style=$BorderTop
                 $Address.Style.Border.Top.Color.SetColor($BorderColor)
             }
 
-            if ($BorderLeft) {             
+            if ($BorderLeft) {
                 $Address.Style.Border.Left.Style=$BorderLeft
                 $Address.Style.Border.Left.Color.SetColor($BorderColor)
             }
 
-            if ($BorderRight) {             
+            if ($BorderRight) {
                 $Address.Style.Border.Right.Style=$BorderRight
                 $Address.Style.Border.Right.Color.SetColor($BorderColor)
             }
-            
-            if ($NumberFormat) {$Address.Style.Numberformat.Format = $NumberFormat        }
-            if ($TextRotation) {$Address.Style.TextRotation = $TextRotation        }
-            if ($WrapText) {$Address.Style.WrapText = $true                }
-            if ($HorizontalAlignment) {$Address.Style.HorizontalAlignment = $HorizontalAlignment }
-            if ($VerticalAlignment) {$Address.Style.VerticalAlignment = $VerticalAlignment   }
 
             if ($BackgroundColor) {
                 $Address.Style.Fill.PatternType = $BackgroundPattern
@@ -157,7 +155,7 @@
             if ($Autosize) {
                 if ($Address -is [OfficeOpenXml.ExcelColumn]) {$Address.AutoFit() }
                 elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {
-                    $Address.AutoFitColumns() 
+                    $Address.AutoFitColumns()
                 }
                 else {Write-Warning -Message ("Can autofit a column or a range but not a {0} object" -f ($Address.GetType().name)) }
 
@@ -179,13 +177,6 @@
                 else {Write-Warning -Message ("Can hide a row or a column but not a {0} object" -f ($Address.GetType().name)) }
             }
 
-            if ($Value) {
-                $Address.Value = $Value                
-            }
-
-            if ($Formula) {
-                $Address.Formula = $Formula
-            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿function Join-Worksheet {
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     <#
       .SYNOPSIS
         Combines data on all the sheets in an Excel worksheet onto a single sheet.
@@ -23,24 +24,24 @@
 
       .EXAMPLE
         Get-WmiObject -Class win32_logicaldisk | select -Property DeviceId,VolumeName, Size,Freespace |
-           Export-Excel -Path "$env:computerName.xlsx" -WorkSheetname Volumes
+           Export-Excel -Path "$env:computerName.xlsx" -WorkSheetname Volumes -NumberFormat "0,000"
         Get-NetAdapter  | Select-Object Name,InterfaceDescription,MacAddress,LinkSpeed |
             Export-Excel -Path "$env:COMPUTERNAME.xlsx" -WorkSheetname NetAdapter
-        Join-Worksheet -Path "$env:COMPUTERNAME.xlsx"  -WorkSheetName Summay -Title "Summary" -TitleBold -TitleSize 22 -NoHeader -LabelBlocks -AutoSize -HideSource
+        Join-Worksheet -Path "$env:COMPUTERNAME.xlsx"  -WorkSheetName Summary -Title "Summary" -TitleBold -TitleSize 22 -NoHeader -LabelBlocks -AutoSize -HideSource -show
 
         The first two command get logical disk and network card information; each type is exported to its own sheet in a workbook.
         The Join-worksheet command copies both onto a page named "Summary". Because the data is disimilar -NoHeader is specified, ensuring the whole of each page is copied.
         Specifying -LabelBlocks causes each sheet's name to become a title on the summary page above the copied data.
         The source data is hidden, a title is addded in 22 point boldface and the columns are sized to fit the data.
     #>
-
-    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
         # Path to a new or existing .XLSX file.
         [Parameter(ParameterSetName = "Default", Position = 0)]
+        [Parameter(ParameterSetName = "Table"  , Position = 0)]
         [String]$Path  ,
         # An object representing an Excel Package - usually this is returned by specifying -Passthru allowing multiple commands to work on the same Workbook without saving and reloading each time.
-        [Parameter(Mandatory = $true, ParameterSetName = "Package")]
+        [Parameter(Mandatory = $true, ParameterSetName = "PackageDefault")]
+        [Parameter(Mandatory = $true, ParameterSetName = "PackageTable")]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         # The name of a sheet within the workbook where the other sheets will be joined together - "Combined" by default.
         $WorkSheetName = 'Combined',
@@ -63,6 +64,8 @@
         # Freezes panes at specified coordinates (in the form  RowNumber , ColumnNumber).
         [Int[]]$FreezePane,
         #Enables the 'Filter' in Excel on the complete header row. So users can easily sort, filter and/or search the data in the select column from within Excel.
+        [Parameter(ParameterSetName = 'Default')]
+        [Parameter(ParameterSetName = 'PackageDefault')]
         [Switch]$AutoFilter,
         #Makes the top Row boldface.
         [Switch]$BoldTopRow,
@@ -78,10 +81,36 @@
         [Switch]$TitleBold,
         #Sets the point size for the title.
         [Int]$TitleSize = 22,
-        # Hashtable(s) with Sheet PivotRows, PivotColumns, PivotData, IncludePivotChart and ChartType values to specify a definition for one or more pivot table(s).
+        #Hashtable(s) with Sheet PivotRows, PivotColumns, PivotData, IncludePivotChart and ChartType values to specify a definition for one or more pivot table(s).
         [Hashtable]$PivotTableDefinition,
-        # A hashtable containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts.
+        #A hashtable containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts.
         [Object[]]$ExcelChartDefinition,
+        [Object[]]$ConditionalFormat,
+        #Applies a 'Conditional formatting rule' in Excel on all the cells. When specific conditions are met a rule is triggered.
+        [Object[]]$ConditionalText,
+        #Makes each column a named range.
+        [switch]$AutoNameRange,
+        #Makes the data in the worksheet a named range.
+        [ValidateScript( {
+                if (-not $_) {  throw 'RangeName is null or empty.'  }
+                elseif ($_[0] -notmatch '[a-z]') { throw 'RangeName starts with an invalid character.'  }
+                else { $true }
+            })]
+        [String]$RangeName,
+        [ValidateScript( {
+                if (-not $_) {  throw 'Tablename is null or empty.'  }
+                elseif ($_[0] -notmatch '[a-z]') { throw 'Tablename starts with an invalid character.'  }
+                else { $true }
+            })]
+        [Parameter(ParameterSetName = 'Table'        , Mandatory = $true)]
+        [Parameter(ParameterSetName = 'PackageTable' , Mandatory = $true)]
+        # Makes the data in the worksheet a table with a name applies a style to it. Name must not contain spaces.
+        [String]$TableName,
+        [Parameter(ParameterSetName = 'Table')]
+        [Parameter(ParameterSetName = 'PackageTable')]
+        [OfficeOpenXml.Table.TableStyles]$TableStyle = 'Medium6',
+        #Selects the style for the named table - defaults to 'Medium6'.
+        [switch]$ReturnRange,
         #Opens the Excel file immediately after creation. Convenient for viewing the results instantly without having to search for the file first.
         [switch]$Show,
         #If specified, an object representing the unsaved Excel package will be returned, it then needs to be saved.
@@ -90,6 +119,7 @@
     #region get target worksheet, select it and move it to the end.
     if ($Path -and -not $ExcelPackage) {$ExcelPackage = Open-ExcelPackage -path $Path  }
     $destinationSheet = Add-WorkSheet -ExcelPackage $ExcelPackage -WorkSheetname $WorkSheetName -ClearSheet:$Clearsheet
+    foreach ($w in $ExcelPackage.Workbook.Worksheets) {$w.view.TabSelected = $false}
     $destinationSheet.View.TabSelected = $true
     $ExcelPackage.Workbook.Worksheets.MoveToEnd($WorkSheetName)
     #row to insert at will be 1 on a blank sheet and lastrow + 1 on populated one
@@ -153,6 +183,7 @@
     'Path', 'Clearsheet', 'NoHeader', 'FromLabel', 'LabelBlocks', 'HideSource',
     'Title', 'TitleFillPattern', 'TitleBackgroundColor', 'TitleBold', 'TitleSize' | ForEach-Object {[void]$params.Remove($_)}
     if ($params.Keys.Count) {
+        if ($Title) { $params.StartRow = 2}
         $params.WorkSheetName = $WorkSheetName
         $params.ExcelPackage = $ExcelPackage
         Export-Excel @Params

@@ -12,7 +12,7 @@
         $excel.Save() ; $excel.Dispose()
 
         Here Export-Excel is called with the -passThru parameter so the Excel Package object is stored in $Excel
-        The desired worksheet is selected and the then columns B and i are conditially formatted (excluding the top row) to show red text if 
+        The desired worksheet is selected and the then columns B and i are conditially formatted (excluding the top row) to show red text if
         the columns contain "2003" or "Disabled respectively. A fixed date formats are then applied to columns D..G, and the top row is formatted.
         Finally the workbook is saved and the Excel object closed.
 
@@ -32,14 +32,14 @@
         [Parameter(Mandatory = $true, ParameterSetName = "FourIconSet")]
         [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSet")]
         [OfficeOpenXml.ExcelAddress]$Range ,
-        #One or more row(s), Column(s) and/or block(s) of cells to format
+        #One or more row(s), column(s) and/or block(s) of cells to format
         [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
         [Parameter(Mandatory = $true, ParameterSetName = "DataBarAddress")]
         [Parameter(Mandatory = $true, ParameterSetName = "ThreeIconSetAddress")]
         [Parameter(Mandatory = $true, ParameterSetName = "FourIconSetAddress")]
         [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSetAddress")]
         $Address ,
-        #One of the standard named rules - Top / Bottom / Less than / Greater than / Contains etc
+        #One of the standard named rules - Top / Bottom / Less than / Greater than / Contains etc.
         [Parameter(Mandatory = $true, ParameterSetName = "NamedRule", Position = 3)]
         [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress", Position = 3)]
         [OfficeOpenXml.ConditionalFormatting.eExcelConditionalFormattingRuleType]$RuleType ,
@@ -65,7 +65,7 @@
         [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting5IconsSetType]$FiveIconsSet,
         #A value for the condition (e.g. "2000" if the test is 'lessthan 2000')
         [string]$ConditionValue,
-        #A second value for the conditions like between x and Y
+        #A second value for the conditions like "between x and Y"
         [string]$ConditionValue2,
         #Background colour for matching items
         [System.Drawing.Color]$BackgroundColor,
@@ -84,11 +84,11 @@
         #Strikethrough text of matching items
         [switch]$StrikeThru
     )
-    #Allow conditional formatting to work like Set-Format (with single ADDRESS parameter), split it to get worksheet and range of cells.  
+    #Allow conditional formatting to work like Set-Format (with single ADDRESS parameter), split it to get worksheet and range of cells.
     If ($Address -and -not $WorkSheet -and -not $Range) {
         $WorkSheet = $Address.Worksheet[0]
-        $Range     = $Address.Address 
-    }    
+        $Range     = $Address.Address
+    }
     If ($ThreeIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)}
     elseif ($FourIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet) }
     elseif ($FiveIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Range , $IconType)     }

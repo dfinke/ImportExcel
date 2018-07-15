@@ -1,51 +1,34 @@
 function ConvertFrom-ExcelToSQLInsert {
     <#
-    .SYNOPSIS
+      .SYNOPSIS
         Generate SQL insert statements from Excel spreadsheet.
-
-    .DESCRIPTION
+      .DESCRIPTION
         Generate SQL insert statements from Excel spreadsheet.
-
-    .PARAMETER TableName
+      .PARAMETER TableName
         Name of the target database table.
-
-    .PARAMETER Path
+      .PARAMETER Path
         Path to an existing .XLSX file
-
         This parameter is passed to Import-Excel as is.
-
-    .PARAMETER WorkSheetname
+      .PARAMETER WorkSheetname
         Specifies the name of the worksheet in the Excel workbook to import. By default, if no name is provided, the first worksheet will be imported.
-
         This parameter is passed to Import-Excel as is.
-
-    .PARAMETER StartRow
+      .PARAMETER StartRow
         The row from where we start to import data, all rows above the StartRow are disregarded. By default this is the first row.
-
         When the parameters ‘-NoHeader’ and ‘-HeaderName’ are not provided, this row will contain the column headers that will be used as property names. When one of both parameters are provided, the property names are automatically created and this row will be treated as a regular row containing data.
-
-    .PARAMETER Header
+      .PARAMETER Header
         Specifies custom property names to use, instead of the values defined in the column headers of the TopRow.
-
-        In case you provide less header names than there is data in the worksheet, then only the data with a corresponding header name will be imported and the data without header name will be disregarded.
-
-        In case you provide more header names than there is data in the worksheet, then all data will be imported and all objects will have all the property names you defined in the header names. As such, the last properties will be blanc as there is no data for them.
-
-    .PARAMETER NoHeader
+        If you provide fewr header names than there is data in the worksheet, then only the data with a corresponding header name will be imported and the data without header name will be disregarded.
+        If you provide more header names than there is data in the worksheet, then all data will be imported and all objects will have all the property names you defined in the header names. As such, the last properties will be blank as there is no data for them.
+      .PARAMETER NoHeader
         Automatically generate property names (P1, P2, P3, ..) instead of the ones defined in the column headers of the TopRow.
-
         This switch is best used when you want to import the complete worksheet ‘as is’ and are not concerned with the property names.
-
-    .PARAMETER DataOnly
+      .PARAMETER DataOnly
         Import only rows and columns that contain data, empty rows and empty columns are not imported.
-
-
-    .PARAMETER ConvertEmptyStringsToNull
+      .PARAMETER ConvertEmptyStringsToNull
         If specified, cells without any data are replaced with NULL, instead of an empty string.
-
         This is to address behviors in certain DBMS where an empty string is insert as 0 for INT column, instead of a NULL value.
 
-    .EXAMPLE
+      .EXAMPLE
         Generate SQL insert statements from Movies.xlsx file, leaving blank cells as empty strings:
 
         ----------------------------------------------------------
@@ -65,7 +48,7 @@ function ConvertFrom-ExcelToSQLInsert {
         INSERT INTO Movies ('Movie Name', 'Year', 'Rating') Values('Skyfall', '2012', '9');
         INSERT INTO Movies ('Movie Name', 'Year', 'Rating') Values('The Avengers', '2012', '');
 
-    .EXAMPLE
+      .EXAMPLE
         Generate SQL insert statements from Movies.xlsx file, specify NULL instead of an empty string.
 
         ----------------------------------------------------------
@@ -85,7 +68,6 @@ function ConvertFrom-ExcelToSQLInsert {
         INSERT INTO Movies ('Movie Name', 'Year', 'Rating') Values('Skyfall', '2012', '9');
         INSERT INTO Movies ('Movie Name', 'Year', 'Rating') Values('The Avengers', '2012', NULL);
 
-    .NOTES
     #>
     [CmdletBinding()]
     param(

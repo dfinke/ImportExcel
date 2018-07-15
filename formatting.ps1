@@ -1,22 +1,22 @@
 ﻿Function Add-ConditionalFormatting {
-<#
-.Synopsis
-    Adds contitional formatting to worksheet
-.Example
-    $excel = $avdata | Export-Excel -Path (Join-path $FilePath "\Machines.XLSX" ) -WorksheetName "Server Anti-Virus" -AutoSize -FreezeTopRow -AutoFilter -PassThru
+    <#
+      .Synopsis
+        Adds contitional formatting to worksheet
+      .Example
+        $excel = $avdata | Export-Excel -Path (Join-path $FilePath "\Machines.XLSX" ) -WorksheetName "Server Anti-Virus" -AutoSize -FreezeTopRow -AutoFilter -PassThru
 
-    Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "b":b1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "2003"
-    Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "i2:i1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "Disabled"
-    $excel.Workbook.Worksheets[1].Cells["D1:G1048576"].Style.Numberformat.Format = [cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern
-    $excel.Workbook.Worksheets[1].Row(1).style.font.bold = $true
-    $excel.Save() ; $excel.Dispose()
+        Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "b":b1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "2003"
+        Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "i2:i1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "Disabled"
+        $excel.Workbook.Worksheets[1].Cells["D1:G1048576"].Style.Numberformat.Format = [cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern
+        $excel.Workbook.Worksheets[1].Row(1).style.font.bold = $true
+        $excel.Save() ; $excel.Dispose()
 
-    Here Export-Excel is called with the -passThru parameter so the Excel Package object is stored in $Excel
-    The desired worksheet is selected and the then columns B and i are conditially formatted (excluding the top row) to show
-    Fixed formats are then applied to dates in columns D..G and the top row is formatted
-    Finally the workbook is saved and the Excel closed.
+        Here Export-Excel is called with the -passThru parameter so the Excel Package object is stored in $Excel
+        The desired worksheet is selected and the then columns B and i are conditially formatted (excluding the top row) to show
+        Fixed formats are then applied to dates in columns D..G and the top row is formatted
+        Finally the workbook is saved and the Excel closed.
 
-#>
+    #>
     Param (
         #The worksheet where the format is to be applied
         [OfficeOpenXml.ExcelWorksheet]$WorkSheet ,
@@ -89,17 +89,17 @@
 }
 
 Function Set-Format {
-<#
-.SYNOPSIS
-    Applies Number, font, alignment and colour formatting to a range of Excel Cells
-.EXAMPLE
-    $sheet.Column(3) | Set-Format -HorizontalAlignment Right -NumberFormat "#,###"
-    Selects column 3 from a sheet object (within a workbook object, which is a child of the ExcelPackage object) and passes it to Set-Format which formats as an integer with comma seperated groups
-.EXAMPLE
-    Set-Format -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NumberFormat "#,###"
-    Instead of piping the address in this version specifies a block of cells and applies similar formatting
+    <#
+      .SYNOPSIS
+        Applies Number, font, alignment and colour formatting to a range of Excel Cells
+      .EXAMPLE
+        $sheet.Column(3) | Set-Format -HorizontalAlignment Right -NumberFormat "#,###"
+        Selects column 3 from a sheet object (within a workbook object, which is a child of the ExcelPackage object) and passes it to Set-Format which formats as an integer with comma seperated groups
+      .EXAMPLE
+        Set-Format -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NumberFormat "#,###"
+        Instead of piping the address in this version specifies a block of cells and applies similar formatting
 
-#>
+    #>
     Param   (
         #One or more row(s), Column(s) and/or block(s) of cells to format
         [Parameter(ValueFromPipeline=$true)]

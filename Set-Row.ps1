@@ -1,24 +1,22 @@
 ﻿Function Set-Row {
-<#
-.Synopsis
-    Fills values into a row in a Excel spreadsheet
-.Description
-    Set-Row accepts either a Worksheet object or an Excel package object returned by Export-Excel and the name of a sheet,
-    and inserts the chosen contents into a row of the sheet.
-    The contents can be a constant "42" , a formula or a script block which is converted into a constant or formula.
-    The first cell of the row can optional be given a heading.
-.Example
-    Set-row -Worksheet $ws -Heading Total -Value {"=sum($columnName`2:$columnName$endrow)" }
+    <#
+      .Synopsis
+        Fills values into a row in a Excel spreadsheet
+      .Description
+        Set-Row accepts either a Worksheet object or an Excel package object returned by Export-Excel and the name of a sheet,
+        and inserts the chosen contents into a row of the sheet.
+        The contents can be a constant "42" , a formula or a script block which is converted into a constant or formula.
+        The first cell of the row can optional be given a heading.
+      .Example
+        Set-row -Worksheet $ws -Heading Total -Value {"=sum($columnName`2:$columnName$endrow)" }
 
-    $Ws contains a worksheet object, and no Row number is specified so Set-Row will select the next row after the end of the data in the sheet
-    The first cell will contain "Total", and each other cell will contain
-        =Sum(xx2:xx99)  - where xx is the column name, and 99 is the last row of data.
-        Note the use of `2 to Prevent 2 becoming part of the variable "ColumnName"
-    The script block can use $row, $column, $ColumnName, $startRow/Column $endRow/Column
-
-
-#>
-[cmdletbinding()]
+        $Ws contains a worksheet object, and no Row number is specified so Set-Row will select the next row after the end of the data in the sheet
+        The first cell will contain "Total", and each other cell will contain
+            =Sum(xx2:xx99)  - where xx is the column name, and 99 is the last row of data.
+            Note the use of `2 to Prevent 2 becoming part of the variable "ColumnName"
+        The script block can use $row, $column, $ColumnName, $startRow/Column $endRow/Column
+    #>
+    [cmdletbinding()]
     Param (
         #An Excel package object - e.g. from Export-Excel -passthru - requires a sheet name
         [Parameter(ParameterSetName="Package",Mandatory=$true)]
@@ -75,11 +73,12 @@
         [OfficeOpenXml.Style.ExcelHorizontalAlignment]$HorizontalAlignment,
         #Position cell contents to top bottom or centre
         [OfficeOpenXml.Style.ExcelVerticalAlignment]$VerticalAlignment,
-        #Degrees to rotate text. Up to +90 for anti-clockwise ("upwards"), or to -90 for clockwise.
+        #Degrees to rotate text. Up to +90 for anti-clockwise ("upwards"), or to -90 for clockwise
         [ValidateRange(-90, 90)]
         [int]$TextRotation ,
         #Set cells to a fixed hieght
         [float]$Height,
+         #If Specified, return an ExcelPackage object to allow further work to be done on the file
         [switch]$PassThru
     )
 
@@ -130,7 +129,7 @@
     if      ($VerticalAlignment)         { $worksheet.row(  $Row  ).Style.VerticalAlignment           = $VerticalAlignment  }
     if      ($Height)                    { $worksheet.row(  $Row  ).Height                            = $Height             }
     if      ($FontColor)                 { $worksheet.row(  $Row  ).Style.Font.Color.SetColor(          $FontColor        ) }
-    if      ($BorderAround)               { $worksheet.row(  $Row  ).Style.Border.BorderAround(          $BorderAround     ) }
+    if      ($BorderAround)              { $worksheet.row(  $Row  ).Style.Border.BorderAround(          $BorderAround     ) }
     if      ($BackgroundColor)           {
                                            $worksheet.row(  $Row  ).Style.Fill.PatternType            = $BackgroundPattern
                                            $worksheet.row(  $Row  ).Style.Fill.BackgroundColor.SetColor($BackgroundColor  )

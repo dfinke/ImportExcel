@@ -370,7 +370,7 @@ function Import-Excel {
                 $colHash = @{}
                 $rowHash = @{}
                 foreach ($cell in $Worksheet.Cells[$range]) {
-                     if ($cell.Value -ne $null) {$colHash[$cell.Start.Column]=1;  $rowHash[$cell.Start.row]=1 }
+                     if ($null -ne $cell.Value ) {$colHash[$cell.Start.Column]=1;  $rowHash[$cell.Start.row]=1 }
                 }
                 $rows    = (   $StartRow..$EndRow   ).Where({$rowHash[$_]})
                 $columns = ($StartColumn..$EndColumn).Where({$colHash[$_]})
