@@ -37,7 +37,7 @@
         .PARAMETER IncludePivotTable
             Adds a Pivot table using the data in the worksheet.
         .PARAMETER PivotTableName
-            If a Pivot table is created from command line parameters, specificies the name of the new sheet holding the pivot. If Omitted this will be "WorksheetName-PivotTable" 
+            If a Pivot table is created from command line parameters, specificies the name of the new sheet holding the pivot. If Omitted this will be "WorksheetName-PivotTable"
         .PARAMETER PivotRows
             Name(s) columns from the spreadhseet which will provide the Row name(s) in a pivot table created from command line parameters.
         .PARAMETER PivotColumns
@@ -50,19 +50,19 @@
             In a pivot table created from command line parameters, prevents the addition of totals to rows and columns.
         .PARAMETER PivotTableDefinition
             Instead of describing a single pivot table with mutliple commandline paramters; you can use a HashTable in the form PivotTableName = Definition;
-            Definition is itself a hashtable with Sheet PivotTows, PivotColumns, PivotData, IncludePivotChart and ChartType values. 
+            Definition is itself a hashtable with Sheet PivotTows, PivotColumns, PivotData, IncludePivotChart and ChartType values.
         .PARAMETER IncludePivotChart
             Include a chart with the Pivot table - implies -IncludePivotTable.
         .PARAMETER ChartType
-            The type for Pivot chart (one of Excel's defined chart types)  
+            The type for Pivot chart (one of Excel's defined chart types)
         .PARAMETER NoLegend
             Exclude the legend from the pivot chart.
         .PARAMETER ShowCategory
             Add category labels to the pivot chart.
         .PARAMETER ShowPercent
             Add Percentage labels to the pivot chart.
-        .PARAMETER ConditionalFormat 
-            One or more conditional formatting rules defined with New-ConditionalFormattingIconSet. 
+        .PARAMETER ConditionalFormat
+            One or more conditional formatting rules defined with New-ConditionalFormattingIconSet.
         .PARAMETER ConditionalText
             Applies a 'Conditional formatting rule' in Excel on all the cells. When specific conditions are met a rule is triggered.
         .PARAMETER NoNumberConversion
@@ -82,9 +82,9 @@
         .PARAMETER ColumnChart
             Creates a "quick" column chart using the first text column as labels and the first numeric column as values
         .PARAMETER LineChart
-            Creates a "quick" line chart using the first text column as labels and the first numeric column as values    
+            Creates a "quick" line chart using the first text column as labels and the first numeric column as values
         .PARAMETER PieChart
-            Creates a "quick" pie chart using the first text column as labels and the first numeric column as values    
+            Creates a "quick" pie chart using the first text column as labels and the first numeric column as values
         .PARAMETER ExcelChartDefinition
             A hash table containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts.
         .PARAMETER HideSheet
@@ -152,11 +152,11 @@
             '[Blue]$#,##0.00;[Red]-$#,##0.00'
 
         .PARAMETER ReZip
-            If specified, Export-Excel will expand the contents of the .XLSX file (which is multiple files in a zip archive) and rebuilt it.  
+            If specified, Export-Excel will expand the contents of the .XLSX file (which is multiple files in a zip archive) and rebuilt it.
         .PARAMETER Show
             Opens the Excel file immediately after creation. Convenient for viewing the results instantly without having to search for the file first.
         .PARAMETER ReturnRange
-            If specified, Export-Excel returns the range of added cells in the format "A1:Z100" 
+            If specified, Export-Excel returns the range of added cells in the format "A1:Z100"
         .PARAMETER PassThru
             If specified, Export-Excel returns an object representing the Excel package without saving the package first. To save it you need to call the save or Saveas method or send it back to Export-Excel.
 
@@ -422,7 +422,7 @@
         [Switch]$Barchart,
         [Switch]$PieChart,
         [Switch]$LineChart ,
-        [Switch]$ColumnChart ,    
+        [Switch]$ColumnChart ,
         [Object[]]$ExcelChartDefinition,
         [String[]]$HideSheet,
         [Switch]$MoveToStart,
@@ -616,7 +616,7 @@
 
                 if ($isDataTypeValueType) {
                     $ColumnIndex = $StartColumn
-                    $Row += 1 
+                    $Row += 1
                     Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData
                 }
                 else {
@@ -654,7 +654,7 @@
                         $ColumnIndex += 1
                         #endregion
                     }
-                    $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false 
+                    $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false
                 }
             }
             Catch {
@@ -670,11 +670,11 @@
               $endAddress   = $ws.Dimension.End.Address
         }
         else {
-              $LastRow      = $Row      
+              $LastRow      = $Row
               $LastCol      = $ColumnIndex
               $endAddress   = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$LastRow]C[$LastCol]", 0, 0)
         }
-        $startAddress = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$StartRow]C[$StartColumn]", 0, 0) 
+        $startAddress = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$StartRow]C[$StartColumn]", 0, 0)
         $dataRange = "{0}:{1}" -f $startAddress, $endAddress
 
         Write-Debug "Data Range '$dataRange'"
@@ -711,7 +711,7 @@
             }
             Catch {Write-Warning -Message "Failed adding named ranges to worksheet '$WorkSheetname': $_"  }
         }
-        
+
         if ($RangeName) {
             try {
                 if ($RangeName -match "\W") {
@@ -817,7 +817,7 @@
         catch {Write-Warning -Message "Failed adding Freezing the panes in worksheet '$WorkSheetname': $_"}
 
         if ($BoldTopRow) { #it sets bold as far as there are populated cells: for whole row could do $ws.row($x).style.font.bold = $true
-            try { 
+            try {
                 if ($Title) {
                     $range = $ws.Dimension.Address -replace '\d+', ($StartRow + 1)
                 }
@@ -847,33 +847,33 @@
 
         foreach ($chartDef in $ExcelChartDefinition) {
             $params = @{}
-            $chartDef.PSObject.Properties | ForEach-Object {if ($_.value -ne $null) {$params[$_.name] = $_.value}}
+            $chartDef.PSObject.Properties | ForEach-Object {if ( $null -ne $_.value) {$params[$_.name] = $_.value}}
             Add-ExcelChart -Worksheet $ws @params
         }
 
         if ($Barchart -or $PieChart -or $LineChart -or $ColumnChart) {
-            if ($NoHeader) {$FirstDataRow = $startRow} 
+            if ($NoHeader) {$FirstDataRow = $startRow}
             else           {$FirstDataRow = $startRow + 1 }
-            $range = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$startColumn]:R[$FirstDataRow]C[$lastCol]",0,0)  
-            $xCol  = $ws.cells[$range] | Where-Object {$_.value -is [string]    } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1                                                             
-            $yCol  = $ws.cells[$range] | Where-Object {$_.value -is [valueType] } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1                                                          
+            $range = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$startColumn]:R[$FirstDataRow]C[$lastCol]",0,0)
+            $xCol  = $ws.cells[$range] | Where-Object {$_.value -is [string]    } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1
+            $yCol  = $ws.cells[$range] | Where-Object {$_.value -is [valueType] } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1
             $params = @{
                xrange = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$xcol]:R[$($lastrow)]C[$xcol]",0,0) ;
-               yrange = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$ycol]:R[$($lastrow)]C[$ycol]",0,0) ; 
+               yrange = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$ycol]:R[$($lastrow)]C[$ycol]",0,0) ;
                title  =  "";
-               Column = ($lastCol +1)  ; 
-               Width  = 1200 
+               Column = ($lastCol +1)  ;
+               Width  = 1200
             }
-            if ($NoHeader)      {$params["NoHeader"]     = $true} 
+            if ($NoHeader)      {$params["NoHeader"]     = $true}
             else                {$Params["SeriesHeader"] = $ws.Cells[$startRow, $YCol].Value}
-            if   ($ColumnChart) {$Params["chartType"]    = "ColumnStacked" } 
-            elseif  ($Barchart) {$Params["chartType"]    = "BarStacked" } 
-            elseif  ($PieChart) {$Params["chartType"]    = "PieExploded3D" } 
-            elseif ($LineChart) {$Params["chartType"]   = "Line" } 
-            
-            Add-ExcelChart -Worksheet $ws @params 
+            if   ($ColumnChart) {$Params["chartType"]    = "ColumnStacked" }
+            elseif  ($Barchart) {$Params["chartType"]    = "BarStacked" }
+            elseif  ($PieChart) {$Params["chartType"]    = "PieExploded3D" }
+            elseif ($LineChart) {$Params["chartType"]   = "Line" }
 
-        } 
+            Add-ExcelChart -Worksheet $ws @params
+
+        }
 
         foreach ($ct in $ConditionalText) {
             try {
@@ -1017,7 +1017,7 @@ function Add-WorkSheet  {
         Adds a workshet to an existing workbook.
       .Description
         If the named worksheet already exists, the -clearsheet parameter decides whether it should be deleted and a new one returned,
-        or if not specified the existing sheet will be returned. 
+        or if not specified the existing sheet will be returned.
     #>
     [cmdletBinding()]
     [OutputType([OfficeOpenXml.ExcelWorksheet])]
@@ -1098,10 +1098,10 @@ function Add-WorkSheet  {
 function Add-PivotTable {
 <#
       .Synopsis
-        Adds a Pivot table (and optional pivot chart) to a workbook 
+        Adds a Pivot table (and optional pivot chart) to a workbook
       .Description
-        If the pivot table already exists, the source data will be updated. 
-#>    
+        If the pivot table already exists, the source data will be updated.
+#>
     param (
         #Name for the new Pivot table - this will be the name of a sheet in the workbook
         [Parameter(Mandatory = $true)]
@@ -1235,8 +1235,8 @@ function Add-ExcelChart {
         #An object representing the worksheet where the chart should be added.
         [OfficeOpenXml.ExcelWorksheet]$Worksheet,
         [String]$Title = "Chart Title",
-        #$Header,   Not used but referenced previously 
-        #The Type of chart (Area, Line, Pie etc) 
+        #$Header,   Not used but referenced previously
+        #The Type of chart (Area, Line, Pie etc)
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = "ColumnStacked",
         $XRange,
         $YRange,
@@ -1255,21 +1255,21 @@ function Add-ExcelChart {
         $SeriesHeader,
         [Switch]$TitleBold,
         [Int]$TitleSize ,
-        [String]$XAxisTitleText, 
+        [String]$XAxisTitleText,
         [Switch]$XAxisTitleBold,
         $XAxisTitleSize ,
         [string]$XAxisNumberformat,
-        $XMajorUnit, 
-        $XMinorUnit, 
+        $XMajorUnit,
+        $XMinorUnit,
         $XMaxValue,
         $XMinValue,
         [OfficeOpenXml.Drawing.Chart.eAxisPosition]$XAxisPosition        ,
-        [String]$YAxisTitleText, 
+        [String]$YAxisTitleText,
         [Switch]$YAxisTitleBold,
         $YAxisTitleSize,
         [string]$YAxisNumberformat,
-        $YMajorUnit, 
-        $YMinorUnit, 
+        $YMajorUnit,
+        $YMinorUnit,
         $YMaxValue,
         $YMinValue,
         [OfficeOpenXml.Drawing.Chart.eAxisPosition]$YAxisPosition   )
@@ -1280,7 +1280,7 @@ function Add-ExcelChart {
             $chart.Title.Text = $Title
             if ($TitleBold) {$chart.Title.Font.Bold = $true}
             if ($TitleSize) {$chart.Title.Font.Size = $TitleSize}
-        } 
+        }
         if ($NoLegend) { $chart.Legend.Remove() }
         else {
             if ($LegendPostion) {$Chart.Legend.Position    = $LegendPostion}
@@ -1293,11 +1293,11 @@ function Add-ExcelChart {
             if ($XAxisTitleBold)  {$chart.XAxis.Title.Font.Bold = $true}
             if ($XAxisTitleSize)  {$chart.XAxis.Title.Font.Size = $XAxisTitleSize}
         }
-        if ($XAxisPosition)       {$chart.XAxis.AxisPosition    = $XAxisPosition}    
-        if ($XMajorUnit)          {$chart.XAxis.MajorUnit       = $XMajorUnit}         
-        if ($XMinorUnit)          {$chart.XAxis.MinorUnit       = $XMinorUnit}     
-        if ($XMinValue -ne $null) {$chart.XAxis.MinValue        = $XMinValue}     
-        if ($XMaxValue -ne $null) {$chart.XAxis.MaxValue        = $XMaxValue}     
+        if ($XAxisPosition)       {$chart.XAxis.AxisPosition    = $XAxisPosition}
+        if ($XMajorUnit)          {$chart.XAxis.MajorUnit       = $XMajorUnit}
+        if ($XMinorUnit)          {$chart.XAxis.MinorUnit       = $XMinorUnit}
+        if ($null -ne $XMinValue) {$chart.XAxis.MinValue        = $XMinValue}
+        if ($null -ne $XMaxValue) {$chart.XAxis.MaxValue        = $XMaxValue}
         if ($XAxisNumberformat)   {$chart.XAxis.Format          = $XAxisNumberformat}
 
        if ($YAxisTitleText)     {
@@ -1306,14 +1306,14 @@ function Add-ExcelChart {
             if ($YAxisTitleSize) {$chart.YAxis.Title.Font.Size = $YAxisTitleSize}
         }
         if ($YAxisPosition)      {$chart.YAxis.AxisPosition    = $YAxisPosition}
-        if ($YMajorUnit)         {$chart.YAxis.MajorUnit       = $YMajorUnit}         
-        if ($YMinorUnit)         {$chart.YAxis.MinorUnit       = $YMinorUnit}     
-        if ($YMinValue-ne $null) {$chart.YAxis.MinValue        = $YMinValue}      
-        if ($YMaxValue-ne $null) {$chart.YAxis.MaxValue        = $YMaxValue}     
+        if ($YMajorUnit)         {$chart.YAxis.MajorUnit       = $YMajorUnit}
+        if ($YMinorUnit)         {$chart.YAxis.MinorUnit       = $YMinorUnit}
+        if ($null -ne $YMinValue){$chart.YAxis.MinValue        = $YMinValue}
+        if ($null -ne $YMaxValue){$chart.YAxis.MaxValue        = $YMaxValue}
         if ($YAxisNumberformat)  {$chart.YAxis.Format          = $YAxisNumberformat}
-        if ($chart.Datalabel -ne $null) {
-            $chart.Datalabel.ShowCategory = [boolean]$ShowCategory
-            $chart.Datalabel.ShowPercent  = [boolean]$ShowPercent
+        if ($null -ne $chart.Datalabel) {
+                                  $chart.Datalabel.ShowCategory = [boolean]$ShowCategory
+                                  $chart.Datalabel.ShowPercent  = [boolean]$ShowPercent
         }
 
         $chart.SetPosition($Row, $RowOffsetPixels, $Column, $ColumnOffsetPixels)

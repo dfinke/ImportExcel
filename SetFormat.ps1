@@ -83,7 +83,7 @@
     begin {
         #Allow Set-Format to take Worksheet and range parameters (like Add Contitional formatting) -  convert them to an address
         if ($WorkSheet -and $Range) {$Address = $WorkSheet.Cells[$Range] }
-    } 
+    }
 
     process {
         if   ($Address -is [Array])  {
@@ -113,29 +113,29 @@
             if ($HorizontalAlignment) {$Address.Style.HorizontalAlignment = $HorizontalAlignment }
             if ($VerticalAlignment)   {$Address.Style.VerticalAlignment   = $VerticalAlignment   }
             if ($Value)               {$Address.Value = $Value                                   }
-            if ($Formula)             {$Address.Formula = $Formula                               }            
-            if ($BorderAround)        {$Address.Style.Border.BorderAround($BorderAround, $BorderColor)}            
+            if ($Formula)             {$Address.Formula = $Formula                               }
+            if ($BorderAround)        {$Address.Style.Border.BorderAround($BorderAround, $BorderColor)}
 
-            if ($BorderBottom)        {             
+            if ($BorderBottom)        {
                 $Address.Style.Border.Bottom.Style=$BorderBottom
                 $Address.Style.Border.Bottom.Color.SetColor($BorderColor)
             }
 
-            if ($BorderTop) {             
+            if ($BorderTop) {
                 $Address.Style.Border.Top.Style=$BorderTop
                 $Address.Style.Border.Top.Color.SetColor($BorderColor)
             }
 
-            if ($BorderLeft) {             
+            if ($BorderLeft) {
                 $Address.Style.Border.Left.Style=$BorderLeft
                 $Address.Style.Border.Left.Color.SetColor($BorderColor)
             }
 
-            if ($BorderRight) {             
+            if ($BorderRight) {
                 $Address.Style.Border.Right.Style=$BorderRight
                 $Address.Style.Border.Right.Color.SetColor($BorderColor)
             }
-            
+
             if ($BackgroundColor) {
                 $Address.Style.Fill.PatternType = $BackgroundPattern
                 $Address.Style.Fill.BackgroundColor.SetColor($BackgroundColor)
@@ -155,7 +155,7 @@
             if ($Autosize) {
                 if ($Address -is [OfficeOpenXml.ExcelColumn]) {$Address.AutoFit() }
                 elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {
-                    $Address.AutoFitColumns() 
+                    $Address.AutoFitColumns()
                 }
                 else {Write-Warning -Message ("Can autofit a column or a range but not a {0} object" -f ($Address.GetType().name)) }
 

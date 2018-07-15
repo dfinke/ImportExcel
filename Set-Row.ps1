@@ -129,7 +129,7 @@
     if      ($VerticalAlignment)         { $worksheet.row(  $Row  ).Style.VerticalAlignment           = $VerticalAlignment  }
     if      ($Height)                    { $worksheet.row(  $Row  ).Height                            = $Height             }
     if      ($FontColor)                 { $worksheet.row(  $Row  ).Style.Font.Color.SetColor(          $FontColor        ) }
-    if      ($BorderAround)               { $worksheet.row(  $Row  ).Style.Border.BorderAround(          $BorderAround     ) }
+    if      ($BorderAround)              { $worksheet.row(  $Row  ).Style.Border.BorderAround(          $BorderAround     ) }
     if      ($BackgroundColor)           {
                                            $worksheet.row(  $Row  ).Style.Fill.PatternType            = $BackgroundPattern
                                            $worksheet.row(  $Row  ).Style.Fill.BackgroundColor.SetColor($BackgroundColor  )
