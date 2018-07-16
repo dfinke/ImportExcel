@@ -1,6 +1,8 @@
 <p align="center">
-<a href="https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=8"><img src="https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true"></a>
-<a href="https://ci.appveyor.com/project/dfinke/importexcel/branch/master"><img src="https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/ImportExcel-CI"></a>
+
+<a href="https://ci.appveyor.com/project/dfinke/importexcel/branch/master"><img src="https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true"></a>
+
+<a href="https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=8"><img src="https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/ImportExcel-CI"></a>
 </p>
 
 <p align="center">
