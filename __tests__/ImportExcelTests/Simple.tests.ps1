@@ -17,8 +17,8 @@ Describe "Tests" {
         $data[1].p1 | Should be "b"
     }
 
-    It "Should read fast < 1000 milliseconds" {
-        $timer.TotalMilliseconds | should BeLessThan 1000
+    It "Should read fast < 2000 milliseconds" {
+        $timer.TotalMilliseconds | should BeLessThan 2000
     }
 
     It "Should read larger xlsx, 4k rows 1 col < 2000 milliseconds" {
