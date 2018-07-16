@@ -1,5 +1,9 @@
 <p align="center">
-<a href="https://ci.appveyor.com/project/dfinke/importexcel/branch/master"><img src="https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true"></a>
+<a href="https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=8"><img src="https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true"></a>
+<a href="https://ci.appveyor.com/project/dfinke/importexcel/branch/master"><img src="https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/ImportExcel-CI"></a>
+</p>
+
+<p align="center">
 <a href="./LICENSE.txt"><img
 src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"></a>
 <a href="https://www.powershellgallery.com/packages/ImportExcel"><img
@@ -7,8 +11,6 @@ src="https://img.shields.io/powershellgallery/dt/ImportExcel.svg"></a>
 <a href="https://www.powershellgallery.com/packages/ImportExcel"><img
 src="https://img.shields.io/powershellgallery/v/ImportExcel.svg"></a>
 </p>
-
-[![Build status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/ImportExcel-CI)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=8)
 
 PowerShell Import-Excel
 -
