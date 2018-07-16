@@ -1,3 +1,5 @@
+try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+
 function Test-APIReadXls {
     param(
         [parameter(Mandatory)]

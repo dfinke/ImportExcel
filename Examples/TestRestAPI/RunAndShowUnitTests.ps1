@@ -1,4 +1,5 @@
-﻿
+﻿try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+
 $xlfilename=".\test.xlsx"
 rm $xlfilename -ErrorAction Ignore
 
