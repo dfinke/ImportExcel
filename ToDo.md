@@ -8,4 +8,4 @@
 - [ ] Examples and tests for new "Quick charts" in Export Excel 
 - [ ]  Charting.ps1,GetXYRange.ps1, InferData.PS1 move to deprecated. (replace examples)
 - [ ] Refactor Set-Row and Set-Column to use set-format and add conditional format support.
-- [ ] Examples and tests for set-Row and Set-column; review test coverage and examples for Set-Format adn Add-Conditional formatting
+- [ ] Examples and tests for set-Row and Set-column; review test coverage and examples for Set-Format and Add-Conditional formatting

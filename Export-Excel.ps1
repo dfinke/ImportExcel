@@ -545,9 +545,9 @@
             }
             Else { $pkg = Open-ExcelPackage -Path $Path -Create -KillExcel:$KillExcel}
 
-            $params = @{}
+            $params = @{WorkSheetname=$worksheetName}
             if ($NoClobber) {Write-Warning -Message "-NoClobber parameter is no longer used" }
-            foreach ($p in @("WorkSheetname", "ClearSheet", "MoveToStart", "MoveToEnd", "MoveBefore", "MoveAfter")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
+            foreach ($p in @("ClearSheet", "MoveToStart", "MoveToEnd", "MoveBefore", "MoveAfter")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
             $ws = $pkg | Add-WorkSheet @params
 
             foreach ($format in $ConditionalFormat ) {
@@ -1029,7 +1029,7 @@ function Add-WorkSheet  {
         [Parameter(Mandatory = $true, ParameterSetName = "WorkBook")]
         [OfficeOpenXml.ExcelWorkbook]$ExcelWorkbook,
         #The name of the worksheet 'Sheet1' by default.
-        [string]$WorkSheetname = 'Sheet1',
+        [string]$WorkSheetname ,
         #If the worksheet already exists, by default it will returned, unless -ClearSheet is specified in which case it will be deleted and re-created.
         [switch]$ClearSheet,
         #If specified, the worksheet will be moved to the start of the workbook.
@@ -1049,21 +1049,30 @@ function Add-WorkSheet  {
         #Ignored but retained for backwards compatibility.
         [Switch] $NoClobber
     )
+    #if we were given a workbook use it, if we were given a package, use its workbook
+    if      ($ExcelPackage -and -not $ExcelWorkbook) {$ExcelWorkbook = $ExcelPackage.Workbook}
 
-    if ($ExcelPackage -and -not $ExcelWorkbook) {$ExcelWorkbook = $ExcelPackage.Workbook}
+    # If worksheetName was given, try to use that worksheet. If it wasn't, and we are copying an existing sheet, try to use the sheet name
+    # if we are not copying a sheet or the name is in use, use the name "SheetX" where X is the number of the new sheet
+    if      (-not $WorkSheetname -and $CopySource -and -not $ExcelWorkbook[$CopySource.Name]) {$WorkSheetname = $CopySource.Name}
+    elseif  (-not $WorkSheetname) {$WorkSheetname = "Sheet" + (1 + $ExcelWorkbook.Worksheets.Count)}
+    else    {$ws = $ExcelWorkbook.Worksheets[$WorkSheetname]}
 
-    $ws = $ExcelWorkbook.Worksheets[$WorkSheetname]
-    if ( $ws -and $ClearSheet) { $ExcelWorkbook.Worksheets.Delete($WorkSheetname) ; $ws = $null }
-    if (!$ws -and $CopySource) {
-        Write-Verbose -Message "Copying into worksheet '$WorkSheetname'."
-        $ws = $ExcelWorkbook.Worksheets.Add($WorkSheetname, $CopySource)
+    #If -clearsheet was specified and the named sheet exists, delete it
+    if      ($ws -and $ClearSheet) { $ExcelWorkbook.Worksheets.Delete($WorkSheetname) ; $ws = $null }
+
+    #copy or create new sheet as needed
+    if (-not $ws -and $CopySource) {
+          Write-Verbose -Message "Copying into worksheet '$WorkSheetname'."
+          $ws = $ExcelWorkbook.Worksheets.Add($WorkSheetname, $CopySource)
     }
-    elseif (!$ws) {
-        Write-Verbose -Message "Adding worksheet '$WorkSheetname'."
-        $ws = $ExcelWorkbook.Worksheets.Add($WorkSheetname)
+    elseif (-not $ws) {
+          $ws = $ExcelWorkbook.Worksheets.Add($WorkSheetname)
+          Write-Verbose -Message "Adding worksheet '$WorkSheetname'."
     }
     else {Write-Verbose -Message "Worksheet '$WorkSheetname' already existed."}
-    if ($MoveToStart) {$ExcelWorkbook.Worksheets.MoveToStart($worksheetName) }
+    #region Move sheet if needed
+    if     ($MoveToStart) {$ExcelWorkbook.Worksheets.MoveToStart($worksheetName) }
     elseif ($MoveToEnd  ) {$ExcelWorkbook.Worksheets.MoveToEnd($worksheetName)   }
     elseif ($MoveBefore ) {
         if ($ExcelWorkbook.Worksheets[$MoveBefore]) {
@@ -1075,7 +1084,7 @@ function Add-WorkSheet  {
         else {Write-Warning "Can't find worksheet '$MoveBefore'; worsheet '$WorkSheetname' will not be moved."}
     }
     elseif ($MoveAfter  ) {
-        if ($MoveAfter = "*") {
+        if ($MoveAfter -eq "*") {
             if ($WorkSheetname -lt $ExcelWorkbook.Worksheets[1].Name) {$ExcelWorkbook.Worksheets.MoveToStart($worksheetName)}
             else {
                 $i = 1
@@ -1093,6 +1102,7 @@ function Add-WorkSheet  {
         }
         else {Write-Warning "Can't find worksheet '$MoveAfter'; worsheet '$WorkSheetname' will not be moved."}
     }
+    #endregion
     return $ws
 }
 function Add-PivotTable {
