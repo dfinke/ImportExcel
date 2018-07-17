@@ -1,5 +1,12 @@
 $PSVersionTable.PSVersion
 
+## Create the zip before the tests run
+## Otherwise the EPPlus.dll is in use after the Pester run
+$ModuleVersion = (Get-Content -Raw .\ImportExcel.psd1)  | Invoke-Expression | ForEach-Object ModuleVersion
+
+$dest = "ImportExcel-{0}-{1}.zip" -f $ModuleVersion, (Get-Date).ToString("yyyyMMddHHmmss")
+Compress-Archive -Path . -DestinationPath .\$dest
+
 if ((Get-Module -ListAvailable pester) -eq $null) {
     Install-Module -Name Pester -Repository PSGallery -Force
 }
