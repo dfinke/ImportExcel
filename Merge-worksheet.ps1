@@ -406,8 +406,9 @@ Function Merge-MultipleSheets {
         #if the process didn't return data then abandon now.
         if (-not $merged) {Write-Warning -Message "The merge operation did not return any data."; return }
 
+        $orderByProperties  = $merged[0].psobject.properties.where({$_.name -match "row$"}).name
         Write-Progress -Activity "Merging sheets" -CurrentOperation "Creating output sheet '$OutputSheetName' in $OutputFile"
-        $excel                 = $merged | Sort-Object "_row"  | Update-FirstObjectProperties |
+        $excel                 = $merged | Sort-Object -Property $orderByProperties  | Update-FirstObjectProperties |
                                   Export-Excel -Path $OutputFile -WorkSheetname $OutputSheetName -ClearSheet -BoldTopRow -AutoFilter -PassThru
         $sheet                 = $excel.Workbook.Worksheets[$OutputSheetName]
 

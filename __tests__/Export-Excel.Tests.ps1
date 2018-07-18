@@ -63,7 +63,7 @@ Describe ExportExcel {
             $ws.cells[$IDcell].Style.Numberformat.NumFmtID              | Should     be 0
         }
     }
- 
+
     Context "                # NoAliasOrScriptPropeties -ExcludeProperty and -DisplayPropertySet work" {
         $path = "$env:TEMP\Test.xlsx"
         Remove-item -Path $path  -ErrorAction SilentlyContinue
