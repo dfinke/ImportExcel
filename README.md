@@ -31,12 +31,16 @@ To install to your personal modules folder (e.g. ~\Documents\WindowsPowerShell\M
 iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfinke/ImportExcel/master/Install.ps1')
 ```
 
-# What's new to 17th July 18
+# What's new to 18th July 18
 - Moved chart creation into its own function (Add-Excel chart) within Export-Excel.ps1. Renamed New-Excelchart to New-ExcelChartDefinition to make it clearer that it is not making anything in the workbook (but for compatiblity put an alias of New-ExcelChart in so existing code does not break). Found that -Header does nothing, so it isn't Add-Excel chart and there is a message that does nothing in New-ExcelChartDefinition .
 - Added -BarChart -ColumnChart -LineChart -PieChart parameters to Export-Excel for quick charts without giving a full chart definition.
 - Added parameters for managing chart Axes and legend
 - Added some chart tests to Export-Excel.tests.ps1. (but tests & examples for quick charts , axes or legends still on the to do list )
 - Fixed some bad code which had been checked-in in-error and caused adding charts to break. (This was not seen outside Github #377)
+- Added "Revese" parameter to Add-ConditionalFormatting ; and added -PassThru to make it easier to modify details of conditional formating rules after creation (#396)
+- Refactored ConditionalFormatting code in Export excel to use Add-ConditionalFormatting. 
+- Rewrote Copy-ExcelWorksheet to use copy functionality rather than import | export (395)
+- Found sorts could be inconsitent in Merge-MultipleWorksheet, so now sort on more columns. 
 - Fixed a bug introduced into Compare-Worksheet by the change descibed in the June changes below, this meant the font color was only being set in one sheet, when a row was changed. Also found that the PowerShell ISE and shell return Compare-Object resuls in different sequences which broke some tests. Applied a sort to ensure things are in a predictable order.  (#375)
 - Removed (2) calls to Get-ExcelColumnName (Removed and then restored function itself)
 - Fixed an issue in Export-Excel where formulas were inserted as strings if "NoNumberConversion" is applied (#374), and made sure formatting is applied to formula cells
@@ -47,7 +51,7 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 - Added more of the Parameters from Export-Excel to Send-SQLDataToExcel, send just calls export-excel with these parameters...
 - Added support for passing a System.Data.DataTable directly to Send-SQLDataToExcel
 - Fixed a bug in Merge-MultipleSheets where if the key was "name", columns like "displayName" would not be processed correctly, nor would names like "something_ROW". Added tests for Compare, Merge and Join Worksheet
-- Add-Worksheet , fixed a regression with move-after, changed way default worksheet name is decided, so if none is specified, and an existing worksheet is copied (see June additions) and the name doesn't already exist, the orginal sheet name will be kept. If no name is given an a blank sheet is created, then it will be named sheetX where X is the number of the sheet (so if you have sheets FOO and BAR the new sheet will be Sheet3).  
+- Add-Worksheet , fixed a regression with move-after (#392), changed way default worksheet name is decided, so if none is specified, and an existing worksheet is copied (see June additions) and the name doesn't already exist, the orginal sheet name will be kept. (#393) If no name is given an a blank sheet is created, then it will be named sheetX where X is the number of the sheet (so if you have sheets FOO and BAR the new sheet will be Sheet3). 
 
 # New in June 18
 - New commands - Diff , Merge and Join

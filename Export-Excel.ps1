@@ -551,12 +551,14 @@
             $ws = $pkg | Add-WorkSheet @params
 
             foreach ($format in $ConditionalFormat ) {
-                $target = "Add$($format.Formatter)"
-                $rule = ($ws.ConditionalFormatting).PSObject.Methods[$target].Invoke($format.Range, $format.IconType)
-                $rule.Reverse = $format.Reverse
+                switch ($format.formatter) {
+                    "ThreeIconSet" {Add-ConditionalFormatting -WorkSheet $ws -ThreeIconsSet $format.IconType -range $format.range -reverse:$format.reverse  }
+                    "FourIconSet"  {Add-ConditionalFormatting -WorkSheet $ws  -FourIconsSet $format.IconType -range $format.range -reverse:$format.reverse  }
+                    "FiveIconSet"  {Add-ConditionalFormatting -WorkSheet $ws  -FiveIconsSet $format.IconType -range $format.range -reverse:$format.reverse  }
+                }
             }
 
-            if ($append -and $ws.Dimension) {
+            if ($Append -and $ws.Dimension) {
                 #if there is a title or anything else above the header row, append needs to be combined wih a suitable startrow parameter
                 $headerRange = $ws.Dimension.Address -replace "\d+$", $StartRow
                 #using a slightly odd syntax otherwise header ends up as a 2D array
@@ -864,22 +866,21 @@
                Column = ($lastCol +1)  ;
                Width  = 1200
             }
-            if ($NoHeader)      {$params["NoHeader"]     = $true}
+            if      ($NoHeader) {$params["NoHeader"]     = $true}
             else                {$Params["SeriesHeader"] = $ws.Cells[$startRow, $YCol].Value}
             if   ($ColumnChart) {$Params["chartType"]    = "ColumnStacked" }
             elseif  ($Barchart) {$Params["chartType"]    = "BarStacked" }
             elseif  ($PieChart) {$Params["chartType"]    = "PieExploded3D" }
-            elseif ($LineChart) {$Params["chartType"]   = "Line" }
+            elseif ($LineChart) {$Params["chartType"]    = "Line" }
 
             Add-ExcelChart -Worksheet $ws @params
-
         }
 
         foreach ($ct in $ConditionalText) {
             try {
-                $cfParams = @{RuleType = $ct.ConditionalType; ConditionValue = $ct.text ;
-                    BackgroundColor = $ct.BackgroundColor; BackgroundPattern = $ct.PatternType  ;
-                    ForeGroundColor = $ct.ConditionalTextColor
+                $cfParams = @{RuleType = $ct.ConditionalType;    ConditionValue = $ct.text ;
+                       BackgroundColor = $ct.BackgroundColor; BackgroundPattern = $ct.PatternType  ;
+                       ForeGroundColor = $ct.ConditionalTextColor
                 }
                 if ($ct.Range) {$cfParams.range = $ct.range} else { $cfParams.Range = $ws.Dimension.Address }
                 Add-ConditionalFormatting -WorkSheet $ws @cfParams
