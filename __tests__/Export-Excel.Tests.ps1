@@ -66,7 +66,7 @@ Describe ExportExcel {
 
     Context "                # NoAliasOrScriptPropeties -ExcludeProperty and -DisplayPropertySet work" {
         $path = "$env:TEMP\Test.xlsx"
-        Remove-item -Path $path -ErrorAction SilentlyContinue
+        Remove-item -Path $path  -ErrorAction SilentlyContinue
         $processes = Get-Process
         $propertyNames = $Processes[0].psobject.properties.where( {$_.MemberType -eq 'Property'}).name
         $rowcount = $Processes.Count
@@ -454,7 +454,7 @@ Describe ExportExcel {
         #At this point Sheets Should be in the order Sheet1, Processes, ProcessesPivotTable
         $null = Add-WorkSheet -ExcelPackage $Excel -WorkSheetname "Processes" -MoveToEnd   # order now  Sheet1, ProcessesPivotTable, Processes
         $null = Add-WorkSheet -ExcelPackage $Excel -WorkSheetname "NewSheet"  -MoveAfter "*" -CopySource ($excel.Workbook.Worksheets["Sheet1"]) # Now its NewSheet, Sheet1, ProcessesPivotTable, Processes
-        $null = Add-WorkSheet -ExcelPackage $Excel -WorkSheetname "Sheet1"    -MoveAfter "*"  # Now its NewSheet, ProcessesPivotTable, Processes, Sheet1
+        $null = Add-WorkSheet -ExcelPackage $Excel -WorkSheetname "Sheet1"    -MoveAfter "Processes"  # Now its NewSheet, ProcessesPivotTable, Processes, Sheet1
         $null = Add-WorkSheet -ExcelPackage $Excel -WorkSheetname "Another"   -MoveToStart    # Now its Another, NewSheet, ProcessesPivotTable, Processes, Sheet1
         $null = Add-WorkSheet -ExcelPackage $Excel -WorkSheetname "OneLast"   -MoveBefore "ProcessesPivotTable"   # Now its Another, NewSheet, Onelast, ProcessesPivotTable, Processes, Sheet1
         Close-ExcelPackage $Excel

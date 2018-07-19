@@ -63,6 +63,14 @@
         [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSet")]
         [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSetAddress")]
         [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting5IconsSetType]$FiveIconsSet,
+        #Use the icon set in reverse order
+        [Parameter(ParameterSetName = "ThreeIconSet")]
+        [Parameter(ParameterSetName = "ThreeIconSetAddress")]
+        [Parameter(ParameterSetName = "FourIconSet")]
+        [Parameter(ParameterSetName = "FourIconSetAddress")]
+        [Parameter(ParameterSetName = "FiveIconSet")]
+        [Parameter(ParameterSetName = "FiveIconSetAddress")]
+        [switch]$Reverse,
         #A value for the condition (e.g. "2000" if the test is 'lessthan 2000')
         [string]$ConditionValue,
         #A second value for the conditions like "between x and Y"
@@ -82,36 +90,39 @@
         #Underline matching items
         [switch]$Underline,
         #Strikethrough text of matching items
-        [switch]$StrikeThru
+        [switch]$StrikeThru,
+        #If specified pass the rule back to the caller to allow additional customization.
+        [switch]$Passthru
     )
     #Allow conditional formatting to work like Set-Format (with single ADDRESS parameter), split it to get worksheet and range of cells.
     If ($Address -and -not $WorkSheet -and -not $Range) {
         $WorkSheet = $Address.Worksheet[0]
         $Range     = $Address.Address
     }
-    If ($ThreeIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)}
-    elseif ($FourIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet) }
-    elseif ($FiveIconsSet) {$rule = $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Range , $IconType)     }
-    elseif ($DataBarColor) {$rule = $WorkSheet.ConditionalFormatting.AddDatabar(     $Range , $DataBarColor) }
-    else {                  $rule = ($WorkSheet.ConditionalFormatting)."Add$RuleType"($Range)}
-
-    if ($ConditionValue -and $RuleType -match "Top|Botom") {$rule.Rank = $ConditionValue }
-    if ($ConditionValue -and $RuleType -match "StdDev") {$rule.StdDev = $ConditionValue }
-    if ($ConditionValue -and $RuleType -match "Than|Equal|Expression") {$rule.Formula = $ConditionValue }
-    if ($ConditionValue -and $RuleType -match "Text|With") {$rule.Text = $ConditionValue }
-    if ($ConditionValue -and
+    If    ($ThreeIconsSet) {$rule =  $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)}
+    elseif ($FourIconsSet) {$rule =  $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet) }
+    elseif ($FiveIconsSet) {$rule =  $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Range , $IconType)     }
+    elseif ($DataBarColor) {$rule =  $WorkSheet.ConditionalFormatting.AddDatabar(     $Range , $DataBarColor) }
+    else                   {$rule = ($WorkSheet.ConditionalFormatting)."Add$RuleType"($Range)}
+    if ($reverse)          {$rule.reverse = $true}
+    if ($ConditionValue  -and $RuleType -match "Top|Botom")             {$rule.Rank    = $ConditionValue }
+    if ($ConditionValue  -and $RuleType -match "StdDev")                {$rule.StdDev  = $ConditionValue }
+    if ($ConditionValue  -and $RuleType -match "Than|Equal|Expression") {$rule.Formula = $ConditionValue }
+    if ($ConditionValue  -and $RuleType -match "Text|With")             {$rule.Text    = $ConditionValue }
+    if ($ConditionValue  -and
         $ConditionValue2 -and $RuleType -match "Between") {
-        $rule.Formula = $ConditionValue
+        $rule.Formula  = $ConditionValue
         $rule.Formula2 = $ConditionValue2
     }
 
-    if ($NumberFormat) {$rule.Style.NumberFormat.Format = $NumberFormat }
-    if ($Underline) {$rule.Style.Font.Underline = [OfficeOpenXml.Style.ExcelUnderLineType]::Single }
-    if ($Bold) {$rule.Style.Font.Bold = $true}
-    if ($Italic) {$rule.Style.Font.Italic = $true}
-    if ($StrikeThru) {$rule.Style.Font.Strike = $true}
-    if ($ForeGroundColor) {$rule.Style.Font.Color.color = $ForeGroundColor   }
-    if ($BackgroundColor) {$rule.Style.Fill.BackgroundColor.color = $BackgroundColor   }
-    if ($BackgroundPattern) {$rule.Style.Fill.PatternType = $BackgroundPattern }
-    if ($PatternColor) {$rule.Style.Fill.PatternColor.color = $PatternColor      }
+    if ($NumberFormat)      {$rule.Style.NumberFormat.Format        = $NumberFormat      }
+    if ($Underline)         {$rule.Style.Font.Underline             = [OfficeOpenXml.Style.ExcelUnderLineType]::Single }
+    if ($Bold)              {$rule.Style.Font.Bold                  = $true              }
+    if ($Italic)            {$rule.Style.Font.Italic                = $true              }
+    if ($StrikeThru)        {$rule.Style.Font.Strike                = $true              }
+    if ($ForeGroundColor)   {$rule.Style.Font.Color.color           = $ForeGroundColor   }
+    if ($BackgroundColor)   {$rule.Style.Fill.BackgroundColor.color = $BackgroundColor   }
+    if ($BackgroundPattern) {$rule.Style.Fill.PatternType           = $BackgroundPattern }
+    if ($PatternColor)      {$rule.Style.Fill.PatternColor.color    = $PatternColor      }
+    if ($Passthru)          {$rule}
 }
