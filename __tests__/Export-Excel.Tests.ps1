@@ -171,8 +171,10 @@ Describe ExportExcel {
             StrAltPhone2     = '+3244444444'
             StrLeadSpace    = '  123'
             StrTrailSpace   = '123   '
-            Link1            = [uri]"https://github.com/dfinke/ImportExcel" #2,15
-            Link2            = "https://github.com/dfinke/ImportExcel"   #2, 16
+            Link1            = [uri]"https://github.com/dfinke/ImportExcel"
+            Link2            = "https://github.com/dfinke/ImportExcel"
+            Link3            = "xl://internal/sheet1!A1"
+            Link4            = "xl://internal/sheet1!C5"
         } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2  -Path $path
         it "Created a new file                                                                     " {
             Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
@@ -184,7 +186,7 @@ Describe ExportExcel {
         $ws = $Excel.Workbook.Worksheets[1]
         it "Created the worksheet with the expected name, number of rows and number of columns     " {
             $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be  22
+            $ws.Dimension.Columns                                       | Should     be  24
             $ws.Dimension.Rows                                          | Should     be  2
         }
         it "Set a date     in Cell A2                                                              " {
@@ -206,9 +208,17 @@ Describe ExportExcel {
              $ws.Cells[2, 12].Value                                     | Should     beLessThan 0
              $ws.Cells[2, 13].Value                                     | Should     beLessThan 0
         }
-        it "Set hyperlinks in Cells U2 and V2                                                      " {
+        it "Set external hyperlinks in Cells U2 and V2                                             " {
             $ws.Cells[2, 21].Hyperlink                                 | Should     be  "https://github.com/dfinke/ImportExcel"
             $ws.Cells[2, 22].Hyperlink                                 | Should     be  "https://github.com/dfinke/ImportExcel"
+        }
+        it "Set internal hyperlinks in Cells W2 and X2                                             " {
+            $ws.Cells[2, 23].Hyperlink.Scheme                          | Should     be  "xl"
+            $ws.Cells[2, 23].Hyperlink.ReferenceAddress                | Should     be  "sheet1!A1"
+            $ws.Cells[2, 23].Hyperlink.Display                         | Should     be  "sheet1"
+            $ws.Cells[2, 24].Hyperlink.Scheme                          | Should     be  "xl"
+            $ws.Cells[2, 24].Hyperlink.ReferenceAddress                | Should     be  "sheet1!c5"
+            $ws.Cells[2, 24].Hyperlink.Display                         | Should     be  "sheet1!c5"
         }
         it "Processed thousands according to local settings   (Cells H2 and I2)                    " {
             if ((Get-Culture).NumberFormat.NumberGroupSeparator -EQ ",") {

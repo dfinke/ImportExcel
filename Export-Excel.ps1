@@ -493,9 +493,14 @@
                     break
                 }
                 { [System.Uri]::IsWellFormedUriString($_ , [System.UriKind]::Absolute) } {
-                    # Save a hyperlink
-                    $TargetCell.Value = $_.AbsoluteUri
-                    $TargetCell.HyperLink = $_
+                    # Save a hyperlink : internal links can be in the form xl://sheet!E419 (use A1 as goto sheet), or xl://RangeName
+                    if ($_ -match "^xl://internal/") {
+                          $referenceAddress = $_ -replace "^xl://internal/" , ""
+                          $display          = $referenceAddress -replace "!A1$"   , ""
+                          $h = New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList $referenceAddress , $display
+                          $TargetCell.HyperLink = $h
+                    }
+                    else {$TargetCell.HyperLink = $_ }   #$TargetCell.Value = $_.AbsoluteUri
                     $TargetCell.Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
                     $TargetCell.Style.Font.UnderLine = $true
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($_.AbsoluteUri)' as Hyperlink"
