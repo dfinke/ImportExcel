@@ -1,3 +1,16 @@
+## Donation
+
+If this project helped you reduce the time to get your job done, let me know.
+
+<!-- BADGES -->
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UCSB9YVPFSNCY)
+
+![](https://media.giphy.com/media/hpXxJ78YtpT0s/giphy.gif)
+
+
+<br/>
+<br/>
+<br/>
 <p align="center">
 <a href="https://ci.appveyor.com/project/dfinke/importexcel/branch/master"><img src="https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true"></a>
 </p>
@@ -10,6 +23,8 @@ src="https://img.shields.io/powershellgallery/dt/ImportExcel.svg"></a>
 <a href="https://www.powershellgallery.com/packages/ImportExcel"><img
 src="https://img.shields.io/powershellgallery/v/ImportExcel.svg"></a>
 </p>
+
+<!-- /BADGES -->
 
 PowerShell Import-Excel
 -
