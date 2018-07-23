@@ -123,7 +123,7 @@
     if      ($FontShift)               { $Worksheet.Column(     $Column).Style.Font.VerticalAlign          = $FontShift          }
     if      ($NumberFormat)            { $Worksheet.Column(     $Column).Style.Numberformat.Format         = $NumberFormat       }
 
-    if      ($TextRotation) {
+    if      ($PSBoundParameters.ContainsKey('TextRotation')) {
             if ($TextRotation -lt 0)  {
                                          $Worksheet.Column(     $Column).Style.TextRotation                = 90 - $TextRotation    # Convert -1 to -90 -> 91 to 180  
             } else {

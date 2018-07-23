@@ -173,7 +173,7 @@ Function Set-Format {
         if ($BorderAround)        {$Range.Style.Border.BorderAround( $BorderAround )      }
         if ($NumberFormat)        {$Range.Style.Numberformat.Format= $NumberFormat        }
 
-        if ($TextRotation) {
+        if ($PSBoundParameters.ContainsKey('TextRotation')) {
             if ($TextRotation -lt 0) {
                                    $Range.Style.TextRotation       = 90 - $TextRotation     # Convert -1 to -90 -> 91 to 180 
             } else {

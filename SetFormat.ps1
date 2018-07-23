@@ -109,7 +109,7 @@
             if ($FontColor)           {$Address.Style.Font.Color.SetColor(  $FontColor    )      }
             if ($NumberFormat)        {$Address.Style.Numberformat.Format = $NumberFormat        }
 
-            if ($TextRotation) {
+            if ($PSBoundParameters.ContainsKey('TextRotation')) {
                 if ($TextRotation -lt 0) {
                                        $Address.Style.TextRotation        = 90 - $TextRotation     # Convert -1 to -90 -> 91 to 180 
                 } else {
