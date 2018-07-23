@@ -122,7 +122,15 @@
     if      ($StrikeThru)              { $Worksheet.Column(     $Column).Style.Font.Strike                 = $true               }
     if      ($FontShift)               { $Worksheet.Column(     $Column).Style.Font.VerticalAlign          = $FontShift          }
     if      ($NumberFormat)            { $Worksheet.Column(     $Column).Style.Numberformat.Format         = $NumberFormat       }
-    if      ($TextRotation)            { $Worksheet.Column(     $Column).Style.TextRotation                = $TextRotation       }
+
+    if      ($TextRotation) {
+            if ($TextRotation -lt 0)  {
+                                         $Worksheet.Column(     $Column).Style.TextRotation                = 90 - $TextRotation    # Convert -1 to -90 -> 91 to 180  
+            } else {
+                                         $Worksheet.Column(     $Column).Style.TextRotation                = $TextRotation
+            }
+    }
+
     if      ($WrapText)                { $Worksheet.Column(     $Column).Style.WrapText                    = $true               }
     if      ($HorizontalAlignment)     { $Worksheet.Column(     $Column).Style.HorizontalAlignment         = $HorizontalAlignment}
     if      ($VerticalAlignment)       { $Worksheet.Column(     $Column).Style.VerticalAlignment           = $VerticalAlignment  }
@@ -131,7 +139,7 @@
     if      ($BackgroundColor)         {
                                          $Worksheet.Column(     $Column).Style.Fill.PatternType            = $BackgroundPattern
                                          $Worksheet.Column(     $Column).Style.Fill.BackgroundColor.SetColor($BackgroundColor  )
-         if ($PatternColor)            { $Worksheet.Column(     $Column).Style.Fill.PatternColor.SetColor(   $PatternColor     ) }
+        if  ($PatternColor)            { $Worksheet.Column(     $Column).Style.Fill.PatternColor.SetColor(   $PatternColor     ) }
      }
      if     ($Autosize)                { $Worksheet.Column(     $Column).AutoFit()                                               }
      elseif ($Width)                   { $Worksheet.Column(     $Column).Width                             = $Width              }

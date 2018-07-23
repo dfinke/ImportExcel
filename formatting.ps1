@@ -170,10 +170,18 @@ Function Set-Format {
         if ($StrikeThru)          {$Range.Style.Font.Strike        = $true                }
         if ($FontShift)           {$Range.Style.Font.VerticalAlign = $FontShift           }
         if ($FontColor)           {$Range.Style.Font.Color.SetColor( $FontColor    )      }
-        if ($BorderAround)         {$Range.Style.Border.BorderAround( $BorderAround )      }
+        if ($BorderAround)        {$Range.Style.Border.BorderAround( $BorderAround )      }
         if ($NumberFormat)        {$Range.Style.Numberformat.Format= $NumberFormat        }
-        if ($TextRotation)        {$Range.Style.TextRotation       = $TextRotation        }
-        if ($WrapText)            {$Range.Style.WrapText           = $true                }
+
+        if ($TextRotation) {
+            if ($TextRotation -lt 0) {
+                                   $Range.Style.TextRotation       = 90 - $TextRotation     # Convert -1 to -90 -> 91 to 180 
+            } else {
+                                   $Range.Style.TextRotation       = $TextRotation
+            }
+        }
+        
+    if ($WrapText)            {$Range.Style.WrapText           = $true                }
         if ($HorizontalAlignment) {$Range.Style.HorizontalAlignment= $HorizontalAlignment }
         if ($VerticalAlignment)   {$Range.Style.VerticalAlignment  = $VerticalAlignment   }
 

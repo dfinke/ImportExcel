@@ -108,8 +108,15 @@
             if ($FontShift)           {$Address.Style.Font.VerticalAlign  = $FontShift           }
             if ($FontColor)           {$Address.Style.Font.Color.SetColor(  $FontColor    )      }
             if ($NumberFormat)        {$Address.Style.Numberformat.Format = $NumberFormat        }
-            if ($TextRotation)        {$Address.Style.TextRotation        = $TextRotation        }
-            if ($WrapText)            {$Address.Style.WrapText            = $true                }
+
+            if ($TextRotation) {
+                if ($TextRotation -lt 0) {
+                                       $Address.Style.TextRotation        = 90 - $TextRotation     # Convert -1 to -90 -> 91 to 180 
+                } else {
+                                       $Address.Style.TextRotation        = $TextRotation
+                }
+            }
+            
             if ($HorizontalAlignment) {$Address.Style.HorizontalAlignment = $HorizontalAlignment }
             if ($VerticalAlignment)   {$Address.Style.VerticalAlignment   = $VerticalAlignment   }
             if ($Value)               {$Address.Value = $Value                                   }

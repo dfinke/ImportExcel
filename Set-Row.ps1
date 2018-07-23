@@ -123,7 +123,15 @@
     if      ($StrikeThru)                { $worksheet.row(  $Row  ).Style.Font.Strike                 = $true               }
     if      ($FontShift)                 { $worksheet.row(  $Row  ).Style.Font.VerticalAlign          = $FontShift          }
     if      ($NumberFormat)              { $worksheet.row(  $Row  ).Style.Numberformat.Format         = $NumberFormat       }
-    if      ($TextRotation)              { $worksheet.row(  $Row  ).Style.TextRotation                = $TextRotation       }
+
+    if      ($TextRotation) {
+        if  ($TextRotation -lt 0)  {
+                                           $Worksheet.row(  $Row  ).Style.TextRotation                = 90 - $TextRotation    # Convert -1 to -90 -> 91 to 180  
+        } else {
+                                           $Worksheet.row(  $Row  ).Style.TextRotation                = $TextRotation
+        }
+    }
+
     if      ($WrapText)                  { $worksheet.row(  $Row  ).Style.WrapText                    = $true               }
     if      ($HorizontalAlignment)       { $worksheet.row(  $Row  ).Style.HorizontalAlignment         = $HorizontalAlignment}
     if      ($VerticalAlignment)         { $worksheet.row(  $Row  ).Style.VerticalAlignment           = $VerticalAlignment  }
