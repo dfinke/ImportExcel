@@ -117,6 +117,7 @@
                 }
             }
             
+            if ($WrapText)            {$Address.Style.WrapText            = $true                }
             if ($HorizontalAlignment) {$Address.Style.HorizontalAlignment = $HorizontalAlignment }
             if ($VerticalAlignment)   {$Address.Style.VerticalAlignment   = $VerticalAlignment   }
             if ($Value)               {$Address.Value = $Value                                   }

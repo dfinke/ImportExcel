@@ -181,7 +181,7 @@ Function Set-Format {
             }
         }
         
-    if ($WrapText)            {$Range.Style.WrapText           = $true                }
+        if ($WrapText)            {$Range.Style.WrapText           = $true                }
         if ($HorizontalAlignment) {$Range.Style.HorizontalAlignment= $HorizontalAlignment }
         if ($VerticalAlignment)   {$Range.Style.VerticalAlignment  = $VerticalAlignment   }
 
