@@ -27,6 +27,7 @@ if (Get-Command -Name register-argumentCompleter -ErrorAction SilentlyContinue) 
     Register-ArgumentCompleter -CommandName New-ConditionalText        -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName FontColor              -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName BorderColor            -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName PatternColor           -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Set-Column                 -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Set-Column                 -ParameterName FontColor              -ScriptBlock $Function:ColorCompletion

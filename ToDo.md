@@ -4,6 +4,9 @@
 - [ ] Investigate regional support for number conversion & possible date conversion
 - [ ] Add help in ConvertToExcelXLSx.ps1, Get-HTMLTable.ps1, GetRange.PS1,  GetExcelTable.Ps1, Import-HTML.PS1,  New-ConditionalFormattingIconSet.Ps1, NewConditionalText.PS1, New-Psitem.PS1, Remove-Worksheet.ps1 and  Add-ExcelChart - Copy parameter help from function Add-ExcelChart into New-ExcelChart.ps1
 - [ ] Examples and tests for new "Quick charts" in Export Excel  (replace examples) that use Charting.ps1, GetXYRange.ps1, InferData.PS1 (move these to deprecated). 
-- [ ] Refactor Set-Row and Set-Column to use set-format and add conditional format and return range support.
-- [ ] Examples and tests for set-Row and Set-column
+- [ ] Add conditional format and return range support to Set-Row and Set-Column to use set-format and 
+- [ ] Examples for set-Row and Set-column (e.g. from tests)
 - [ ] Add PivotTable can't select sheet by position. 
+- [ ] Increase code covereage for import-excel and Set-Format 
+- [ ] Wildcard support for hide worksheet, add show-worksheet, make worksheet active in Export-Excel  
+

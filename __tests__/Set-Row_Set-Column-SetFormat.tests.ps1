@@ -16,14 +16,17 @@ Describe "Set-Column, Set-Row and Set Format" {
         $excel = $data| Export-Excel -Path $path -AutoNameRange -PassThru
         $ws = $excel.Workbook.Worksheets["Sheet1"]
 
-        Set-Column -Worksheet $ws -Heading "Total" -Value "=Quantity*Price" -NumberFormat "£#,###.00" -FontColor Blue -Bold -HorizontalAlignment Right -VerticalAlignment Top
-        Set-Row    -Worksheet $ws -StartColumn 3 -BorderAround Thin -Italic -Underline -FontSize 14 -Value {"=sum($columnName`2:$columnName$endrow)" } -VerticalAlignment Bottom
-        Set-Format -Address   $excel.Workbook.Worksheets["Sheet1"].cells["b3"]-HorizontalAlignment Right -VerticalAlignment Center -BorderAround Thick -BorderColor Red -StrikeThru
-        Set-Format -WorkSheet $ws -Range "E3" -Bold:$false -FontShift Superscript -HorizontalAlignment Left
-        Set-Format -WorkSheet $ws -Range "E1" -ResetFont -HorizontalAlignment General
-        Set-Format -Address   $ws.cells["E7"] -ResetFont -WrapText -BackgroundColor AliceBlue -BackgroundPattern DarkTrellis -PatternColor Red  -NumberFormat "£#,###.00"
-        Set-Format -Address   $ws.Column(1)   -Width  0
-        Set-Format -Address   $ws.row(5)      -Height 0
+        $c = Set-Column -PassThru -Worksheet $ws -Heading "Total" -Value "=Quantity*Price" -NumberFormat "£#,###.00" -FontColor Blue -Bold -HorizontalAlignment Right -VerticalAlignment Top
+        $r = Set-Row    -PassThru   -Worksheet $ws -StartColumn 3 -BorderAround Thin -Italic -Underline -FontSize 14 -Value {"=sum($columnName`2:$columnName$endrow)" } -VerticalAlignment Bottom
+        Set-Format -Address   $excel.Workbook.Worksheets["Sheet1"].cells["b3"] -HorizontalAlignment Right -VerticalAlignment Center -BorderAround Thick -BorderColor Red -StrikeThru
+        Set-Format -Address   $excel.Workbook.Worksheets["Sheet1"].cells["c3"] -BorderColor Red -BorderTop DashDot -BorderLeft DashDotDot -BorderBottom Dashed -BorderRight Dotted 
+        Set-Format -WorkSheet $ws -Range "E3"  -Bold:$false -FontShift Superscript -HorizontalAlignment Left
+        Set-Format -WorkSheet $ws -Range "E1"  -ResetFont -HorizontalAlignment General
+        Set-Format -Address   $ws.cells["E7"]  -ResetFont -WrapText -BackgroundColor AliceBlue -BackgroundPattern DarkTrellis -PatternColor Red  -NumberFormat "£#,###.00"
+        Set-Format -Address   $ws.Column(1)    -Width  0
+        Set-Format -Address   $ws.Column(2)    -AutoFit
+        Set-Format -Address   $ws.Cells["E:E"] -AutoFit
+        Set-Format -Address   $ws.row(5)       -Height 0
         Close-ExcelPackage $excel
 
         $excel = Open-ExcelPackage $path
@@ -31,6 +34,8 @@ Describe "Set-Column, Set-Row and Set Format" {
     }
     Context "Rows and Columns" {
         it "Set a row and a column to have zero width/height  " {
+            $r                                            | should not beNullorEmpty
+            $c                                            | should not beNullorEmpty
             $ws.Column(1).width                           | should be  0
             $ws.Row(5).height                             | should be  0
         }

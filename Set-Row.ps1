@@ -78,7 +78,7 @@
         [int]$TextRotation ,
         #Set cells to a fixed hieght
         [float]$Height,
-         #If Specified, return an ExcelPackage object to allow further work to be done on the file
+         #If Specified, return a row object to allow further work to be done
         [switch]$PassThru
     )
 

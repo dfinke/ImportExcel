@@ -224,7 +224,7 @@ Describe "Merge Worksheet" {
             $ws.cells[5,1].Style.font.color.rgb                           | Should     be "FF8b0000"
             $ws.cells[7,1].Style.font.color.rgb                           | Should     be "FF8b0000"
         }
-        it "Set the background  for the added / deleted /changed rows                              " {
+        it "Set the background  for the added / deleted / changed rows                             " {
             $ws.cells["A3:E3"].style.Fill.BackgroundColor.Rgb             | Should     beNullOrEmpty
             $ws.cells["A4:E4"].style.Fill.BackgroundColor.Rgb             | Should     be "FFFFA500"
             $ws.cells["A5"   ].style.Fill.BackgroundColor.Rgb             | Should     be "FF98FB98"

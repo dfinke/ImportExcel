@@ -51,7 +51,7 @@ iex (new-object System.Net.WebClient).DownloadString('https://raw.github.com/dfi
 - Quick charts in Export-excel were too wide (now 800 pixels instead of 1200), and now support show percent, ShowCategory and NoLegend Parameters 
 - Fixed bug in Add-ExcelChart where XAxisPosition and YAxisPostion would not be set correctly 
 - Fixed bug in Set-Format where enums with a value of zero, or zero numbers would not be set; added functionality to set-format to support -bold:$false -italic:$false etc.  (see #400)
-- Added tests for better coverage, and tweaked some tests to use few rows and/or columns for speed
+- Added tests for better coverage (now at >80% average - set-row/colum set-format less than 80%) , and tweaked some tests to use few rows and/or columns for speed
 
 # What's new to 18th July 18
 - Moved chart creation into its own function (Add-Excel chart) within Export-Excel.ps1. Renamed New-Excelchart to New-ExcelChartDefinition to make it clearer that it is not making anything in the workbook (but for compatibility put an alias of New-ExcelChart in so existing code does not break). Found that -Header does nothing, so it isn't Add-Excel chart and there is a message that does nothing in New-ExcelChartDefinition .

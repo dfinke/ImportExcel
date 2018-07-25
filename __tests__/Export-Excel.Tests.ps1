@@ -302,8 +302,6 @@ Describe ExportExcel {
     }
 
     Context "#Example 5      # Adding a single conditional format " {
-        ### TODO New-ConditionalText doesn't a lot of options in Add-ConditionalFormat.
-        #        It would be good to pull the logic out of Export-Excel and have EE call Add-ConditionalFormat.
         $ct = New-ConditionalText -ConditionalType GreaterThan 525 -ConditionalTextColor DarkRed -BackgroundColor LightPink
         it "Created a Conditional format description                                               " {
             $ct.BackgroundColor -is [System.Drawing.Color]         | Should     be $true
@@ -407,7 +405,7 @@ Describe ExportExcel {
         #This time we are not deleting the XLSX file so this Should create a new, named, sheet.
         $Excel = Get-Process |  Select-Object -first 50 -Property Name, cpu, pm, handles, company |  Export-Excel  $path -WorkSheetname Processes -PassThru
         #Testing -passthru and adding the Pivot as a second step. Want to save and re-open it ...
-        Export-Excel -ExcelPackage $Excel -WorkSheetname Processes -IncludePivotTable -PivotRows Company -PivotData PM -NoTotalsInPivot  
+        Export-Excel -ExcelPackage $Excel -WorkSheetname Processes -IncludePivotTable -PivotRows Company -PivotData PM -NoTotalsInPivot
 
         $Excel = Open-ExcelPackage  $path
         $PTws = $Excel.Workbook.Worksheets["ProcessesPivotTable"]
@@ -604,6 +602,7 @@ Describe ExportExcel {
         Set-Format -Address $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#,##0.0" -Bold
         Set-Format -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
         Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor Red
+        $rule = Add-ConditionalFormatting -passthru -Address $sheet.cells["C:C"] -RuleType TopPercent -ConditionValue 20 -Bold -StrikeThru
         Add-ConditionalFormatting -WorkSheet $sheet -Range "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600" -ForeGroundColor Red -Bold -Italic -Underline -BackgroundColor Beige -BackgroundPattern LightUp -PatternColor Gray
         foreach ($c in 5..9) {Set-Format $sheet.Column($c)  -AutoFit }
         Add-PivotTable -PivotTableName "PT_Procs" -ExcelPackage $excel -SourceWorkSheet "Processes" -PivotRows Company -PivotData  @{'Name' = 'Count'} -IncludePivotChart -ChartType ColumnClustered -NoLegend
@@ -611,7 +610,11 @@ Describe ExportExcel {
 
         $excel = Open-ExcelPackage $path
         $sheet = $excel.Workbook.Worksheets["Processes"]
-
+        it "Returned the rule when calling Add-ConditionalFormatting -passthur                     " {
+            $rule                                                       | should not beNullOrEmpty
+            $rule.getType().fullname                                    | should     be "OfficeOpenXml.ConditionalFormatting.ExcelConditionalFormattingTopPercent"
+            $rule.Style.Font.Strike                                     | should be true
+        }
         it "Applied the formating                                                                  " {
             $sheet                                                      | Should not beNullOrEmpty
             $sheet.Column(1).wdith                                      | Should not be  $sheet.DefaultColWidth
@@ -635,6 +638,8 @@ Describe ExportExcel {
             $sheet.ConditionalFormatting[1].type                        | Should     be  'GreaterThan'
             $sheet.ConditionalFormatting[1].Formula                     | Should     be  '104857600'
             $sheet.ConditionalFormatting[1].Style.Font.Color.Color.Name | Should     be  'ffff0000'
+            $sheet.ConditionalFormatting[2].Style.Font.Strike           | Should     be  $true
+            $sheet.ConditionalFormatting[2].type                        | Should     be  "TopPercent"
         }
         it "Froze the panes                                                                        " {
             $sheet.view.Panes.Count                                     | Should     be 3
@@ -737,7 +742,7 @@ Describe ExportExcel {
              Select-Object -Property Name, @{n="TotalPm";e={($_.group | Measure-Object -sum -Property pm).sum }} |
                  Export-Excel -NoHeader -AutoNameRange -path $path -ReturnRange  -PieChart -ShowPercent
         $Cf = New-ConditionalFormattingIconSet -Range ($range -replace "^.*:","B2:") -ConditionalFormat ThreeIconSet -Reverse -IconType Flags
-        $ct = New-ConditionalText -Text "Microsoft" -ConditionalTextColor red -BackgroundColor AliceBlue -ConditionalType ContainsText        
+        $ct = New-ConditionalText -Text "Microsoft" -ConditionalTextColor red -BackgroundColor AliceBlue -ConditionalType ContainsText
         it "Created the Conditional formatting rules                                               " {
             $cf.Formatter                                               | should     be "ThreeIconSet"
             $cf.IconType                                                | should     be "Flags"
@@ -749,22 +754,22 @@ Describe ExportExcel {
             $ct.Text                                                    | Should     be "Microsoft"
         }
 
-        Export-Excel -Path $path -ConditionalFormat $cf -ConditionalText $ct 
+        Export-Excel -Path $path -ConditionalFormat $cf -ConditionalText $ct
         $excel = Open-ExcelPackage -Path $path
         $rows  = $range -replace "^.*?(\d+)$", '$1'
         $chart = $excel.Workbook.Worksheets["sheet1"].Drawings[0]
         $cFmt  = $excel.Workbook.Worksheets["sheet1"].ConditionalFormatting
         it "Created the chart with the right series                                                " {
             $chart.ChartType                                            | should     be "PieExploded3D"
-            $chart.series.series                                        | should     be "'Sheet1'!B1:B$rows" #would be B2 and A2 if we had a header. 
+            $chart.series.series                                        | should     be "'Sheet1'!B1:B$rows" #would be B2 and A2 if we had a header.
             $chart.series.Xseries                                       | should     be "'Sheet1'!A1:A$rows"
             $chart.DataLabel.ShowPercent                                | should     be $true
         }
         it "Created two Conditional formatting rules                                               " {
             $cFmt.Count                                                 | should     be $true
             $cFmt.Where({$_.type -eq "ContainsText"})                   | Should not beNullOrEmpty
-            $cFmt.Where({$_.type -eq "ThreeIconSet"})                   | Should not beNullOrEmpty 
-        } 
+            $cFmt.Where({$_.type -eq "ThreeIconSet"})                   | Should not beNullOrEmpty
+        }
     }
 
     Context "                # Awkward multiple tables" {
