@@ -869,14 +869,16 @@
                yrange = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$ycol]:R[$($lastrow)]C[$ycol]",0,0) ;
                title  =  "";
                Column = ($lastCol +1)  ;
-               Width  = 1200
+               Width  = 800
             }
-            if      ($NoHeader) {$params["NoHeader"]     = $true}
-            else                {$Params["SeriesHeader"] = $ws.Cells[$startRow, $YCol].Value}
+            if   ($ShowPercent) {$params["ShowPercent"]  = $true}
+            if  ($ShowCategory) {$params["ShowCategory"] = $true}
+            if      ($NoLegend) {$params["NoLegend"]     = $true}
+            if (-not $NoHeader) {$params["SeriesHeader"] = $ws.Cells[$startRow, $YCol].Value}
             if   ($ColumnChart) {$Params["chartType"]    = "ColumnStacked" }
-            elseif  ($Barchart) {$Params["chartType"]    = "BarStacked" }
+            elseif  ($Barchart) {$Params["chartType"]    = "BarStacked"    }
             elseif  ($PieChart) {$Params["chartType"]    = "PieExploded3D" }
-            elseif ($LineChart) {$Params["chartType"]    = "Line" }
+            elseif ($LineChart) {$Params["chartType"]    = "Line"          }
 
             Add-ExcelChart -Worksheet $ws @params
         }
@@ -1309,8 +1311,8 @@ function Add-ExcelChart {
             if ($XAxisTitleBold)  {$chart.XAxis.Title.Font.Bold = $true}
             if ($XAxisTitleSize)  {$chart.XAxis.Title.Font.Size = $XAxisTitleSize}
         }
-        if ($XAxisPosition)       {$chart.XAxis.AxisPosition    = $XAxisPosition}
-        if ($XMajorUnit)          {$chart.XAxis.MajorUnit       = $XMajorUnit}
+        if ($XAxisPosition)       {$chart.ChartXml.chartSpace.chart.plotArea.catAx.axPos.val = $XAxisPosition.ToString().substring(0,1)}
+        if ($XMajorUnit)          {$chart.XAxis.MajorUnit        = $XMajorUnit}
         if ($XMinorUnit)          {$chart.XAxis.MinorUnit       = $XMinorUnit}
         if ($null -ne $XMinValue) {$chart.XAxis.MinValue        = $XMinValue}
         if ($null -ne $XMaxValue) {$chart.XAxis.MaxValue        = $XMaxValue}
@@ -1321,7 +1323,7 @@ function Add-ExcelChart {
             if ($YAxisTitleBold) {$chart.YAxis.Title.Font.Bold = $true}
             if ($YAxisTitleSize) {$chart.YAxis.Title.Font.Size = $YAxisTitleSize}
         }
-        if ($YAxisPosition)      {$chart.YAxis.AxisPosition    = $YAxisPosition}
+        if ($YAxisPosition)      {$chart.ChartXml.chartSpace.chart.plotArea.valAx.axPos.val= $YAxisPosition.ToString().substring(0,1)}
         if ($YMajorUnit)         {$chart.YAxis.MajorUnit       = $YMajorUnit}
         if ($YMinorUnit)         {$chart.YAxis.MinorUnit       = $YMinorUnit}
         if ($null -ne $YMinValue){$chart.YAxis.MinValue        = $YMinValue}

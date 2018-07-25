@@ -102,7 +102,7 @@
       if    ($AutoNameRange)           { $Worksheet.Names.Add(  $heading, ($Worksheet.Cells[$startrow, $Column, $endRow, $Column]) ) | Out-Null }
     }
     #Fill in the data
-    if      ($value)                   { foreach ($row in ($StartRow.. $endRow)) {
+    if      ($PSBoundParameters.ContainsKey('value')) { foreach ($row in ($StartRow.. $endRow)) {
         if  ($Value -is [scriptblock]) { #re-create the script block otherwise variables from this function are out of scope.
              $cellData = & ([scriptblock]::create( $Value ))
              Write-Verbose  -Message     $cellData
@@ -113,29 +113,16 @@
         if  ($cellData -is [datetime]) { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format         = 'm/d/yy h:mm'       } # This is not a custom format, but a preset recognized as date and localized.
     }}
     #region Apply formatting
-    if      ($Underline)               {
-                                         $Worksheet.Column(     $Column).Style.Font.UnderLine              = $true
-                                         $Worksheet.Column(     $Column).Style.Font.UnderLineType          = $UnderLineType
+    $params = @{}
+    foreach ($p in @('Underline','Bold','Italic','StrikeThru','FontSize','FontShift','NumberFormat','TextRotation',
+                     'WrapText', 'HorizontalAlignment','VerticalAlignment', 'Autosize', 'Width', 'FontColor'
+                     'BorderAround', 'BackgroundColor', 'BackgroundPattern', 'PatternColor')) {
+        if ($PSBoundParameters.ContainsKey($p)) {$params[$p] = $PSBoundParameters[$p]}
     }
-    if      ($Bold)                    { $Worksheet.Column(     $Column).Style.Font.Bold                   = $true               }
-    if      ($Italic)                  { $Worksheet.Column(     $Column).Style.Font.Italic                 = $true               }
-    if      ($StrikeThru)              { $Worksheet.Column(     $Column).Style.Font.Strike                 = $true               }
-    if      ($FontShift)               { $Worksheet.Column(     $Column).Style.Font.VerticalAlign          = $FontShift          }
-    if      ($NumberFormat)            { $Worksheet.Column(     $Column).Style.Numberformat.Format         = $NumberFormat       }
-    if      ($TextRotation)            { $Worksheet.Column(     $Column).Style.TextRotation                = $TextRotation       }
-    if      ($WrapText)                { $Worksheet.Column(     $Column).Style.WrapText                    = $true               }
-    if      ($HorizontalAlignment)     { $Worksheet.Column(     $Column).Style.HorizontalAlignment         = $HorizontalAlignment}
-    if      ($VerticalAlignment)       { $Worksheet.Column(     $Column).Style.VerticalAlignment           = $VerticalAlignment  }
-    if      ($FontColor)               { $Worksheet.Column(     $Column).Style.Font.Color.SetColor(          $FontColor        ) }
-    if      ($BorderAround)            { $Worksheet.Column(     $Column).Style.Border.BorderAround(          $BorderAround     ) }
-    if      ($BackgroundColor)         {
-                                         $Worksheet.Column(     $Column).Style.Fill.PatternType            = $BackgroundPattern
-                                         $Worksheet.Column(     $Column).Style.Fill.BackgroundColor.SetColor($BackgroundColor  )
-         if ($PatternColor)            { $Worksheet.Column(     $Column).Style.Fill.PatternColor.SetColor(   $PatternColor     ) }
-     }
-     if     ($Autosize)                { $Worksheet.Column(     $Column).AutoFit()                                               }
-     elseif ($Width)                   { $Worksheet.Column(     $Column).Width                             = $Width              }
-     #endregion
+    if ($params.Count) {
+        Set-Format -WorkSheet $Worksheet -Range "$ColumnName$startRow`:$ColumnName$endRow" @params
+    }
+    #endregion
     #return the new data if -passthru was specified.
     if     ($passThru)                 { $Worksheet.Column(     $Column)}
 }

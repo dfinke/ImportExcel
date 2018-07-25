@@ -1,6 +1,6 @@
 $path1 = "$env:TEMP\Test1.xlsx"
 $path2 = "$env:TEMP\Test2.xlsx"
-Remove-item -Path $path1, $path2 # -ErrorAction SilentlyContinue
+Remove-item -Path $path1, $path2  -ErrorAction SilentlyContinue
 
 $ProcRange =  Get-Process | Export-Excel $path1 -DisplayPropertySet -WorkSheetname Processes -ReturnRange
 

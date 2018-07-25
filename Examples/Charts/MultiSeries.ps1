@@ -2,13 +2,13 @@ try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 Remove-Item temp.xlsx -ErrorAction Ignore
 
-$data = invoke-sum (Get-Process) company handles,pm,VirtualMemorySize
+$data = Invoke-Sum -data (Get-Process) -dimension Company -measure Handles, PM, VirtualMemorySize
 
-$c = New-ExcelChart -Title Stats `
+$c = New-ExcelChartDefinition -Title "ProcessStats" `
     -ChartType LineMarkersStacked `
-    -Header "Stuff" `
-    -XRange "Processes[Company]" `
-    -YRange "Processes[PM]","Processes[VirtualMemorySize]"
+    -XRange "Processes[Name]" `
+    -YRange "Processes[PM]","Processes[VirtualMemorySize]" `
+    -SeriesHeader "PM","VM"
 
 $data |
-    Export-Excel temp.xlsx -AutoSize -TableName Processes -Show -ExcelChartDefinition $c
+    Export-Excel -Path temp.xlsx -AutoSize -TableName Processes -ExcelChartDefinition $c  -Show

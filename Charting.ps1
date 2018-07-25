@@ -9,7 +9,7 @@ function DoChart {
      )
 
      if($targetData[0] -is [System.ValueType]) {
-         $chart = New-ExcelChart -YRange "A1:A$($targetData.count)" -Title $title -ChartType $ChartType
+         $chart = New-ExcelChartDefinition -YRange "A1:A$($targetData.count)" -Title $title -ChartType $ChartType
      } else {
          $xyRange = Get-XYRange $targetData
 
@@ -19,7 +19,7 @@ function DoChart {
          $Y = $xyRange.YRange.ExcelColumn
          $YRange = "{0}2:{0}{1}" -f $Y,($targetData.count+1)
 
-         $chart = New-ExcelChart -XRange $xRange -YRange $yRange -Title $title -ChartType $ChartType `
+         $chart = New-ExcelChartDefinition -XRange $xRange -YRange $yRange -Title $title -ChartType $ChartType `
             -NoLegend:$NoLegend -ShowCategory:$ShowCategory -ShowPercent:$ShowPercent
      }
 

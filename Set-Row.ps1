@@ -100,7 +100,7 @@
                                            $StartColumn ++
     }
     #Fill in the data
-    if      ($value) {foreach ($column in ($StartColumn..$EndColumn)) {
+    if      ($PSBoundParameters.ContainsKey('Value')) {foreach ($column in ($StartColumn..$EndColumn)) {
         #We might want the column name in a script block
         $ColumnName = [OfficeOpenXml.ExcelCellAddress]::new(1,$column).Address -replace "1",""
         if  ($Value -is [scriptblock] ) {
@@ -110,30 +110,19 @@
         }
         else{$cellData = $Value}
         if  ($cellData -match "^=")      { $Worksheet.Cells[$Row, $column].Formula                    = $cellData           }
-        else                             { $Worksheet.Cells[$Row, $Column].Value                      = $cellData           }
-        if  ($cellData -is [datetime])   { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format  = 'm/d/yy h:mm'       } # This is not a custom format, but a preset recognized as date and localized.
+        else                             { $Worksheet.Cells[$Row, $column].Value                      = $cellData           }
+        if  ($cellData -is [datetime])   { $Worksheet.Cells[$Row, $column].Style.Numberformat.Format  = 'm/d/yy h:mm'       } # This is not a custom format, but a preset recognized as date and localized.
     }}
     #region Apply formatting
-    if      ($Underline)                 {
-                                           $worksheet.row(  $Row  ).Style.Font.UnderLine              = $true
-                                           $worksheet.row(  $Row  ).Style.Font.UnderLineType          = $UnderLineType
+    $params = @{}
+    foreach ($p in @('Underline','Bold','Italic','StrikeThru','FontSize', 'FontShift','NumberFormat','TextRotation',
+                     'WrapText', 'HorizontalAlignment','VerticalAlignment', 'Height', 'FontColor'
+                     'BorderAround', 'BackgroundColor', 'BackgroundPattern', 'PatternColor')) {
+        if ($PSBoundParameters.ContainsKey($p)) {$params[$p] = $PSBoundParameters[$p]}
     }
-    if      ($Bold)                      { $worksheet.row(  $Row  ).Style.Font.Bold                   = $true               }
-    if      ($Italic)                    { $worksheet.row(  $Row  ).Style.Font.Italic                 = $true               }
-    if      ($StrikeThru)                { $worksheet.row(  $Row  ).Style.Font.Strike                 = $true               }
-    if      ($FontShift)                 { $worksheet.row(  $Row  ).Style.Font.VerticalAlign          = $FontShift          }
-    if      ($NumberFormat)              { $worksheet.row(  $Row  ).Style.Numberformat.Format         = $NumberFormat       }
-    if      ($TextRotation)              { $worksheet.row(  $Row  ).Style.TextRotation                = $TextRotation       }
-    if      ($WrapText)                  { $worksheet.row(  $Row  ).Style.WrapText                    = $true               }
-    if      ($HorizontalAlignment)       { $worksheet.row(  $Row  ).Style.HorizontalAlignment         = $HorizontalAlignment}
-    if      ($VerticalAlignment)         { $worksheet.row(  $Row  ).Style.VerticalAlignment           = $VerticalAlignment  }
-    if      ($Height)                    { $worksheet.row(  $Row  ).Height                            = $Height             }
-    if      ($FontColor)                 { $worksheet.row(  $Row  ).Style.Font.Color.SetColor(          $FontColor        ) }
-    if      ($BorderAround)              { $worksheet.row(  $Row  ).Style.Border.BorderAround(          $BorderAround     ) }
-    if      ($BackgroundColor)           {
-                                           $worksheet.row(  $Row  ).Style.Fill.PatternType            = $BackgroundPattern
-                                           $worksheet.row(  $Row  ).Style.Fill.BackgroundColor.SetColor($BackgroundColor  )
-         if ($PatternColor)              { $worksheet.row(  $Row  ).Style.Fill.PatternColor.SetColor(   $PatternColor     ) }
+    if ($params.Count) {
+        $theRange = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$Row]C[$StartColumn]:R[$Row]C[$EndColumn]",0,0)
+        Set-Format -WorkSheet $Worksheet -Range $theRange @params
     }
     #endregion
     #return the new data if -passthru was specified.
