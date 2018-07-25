@@ -91,52 +91,52 @@
             $Address | Set-Format @PSBoundParameters
         }
         else {
-            if ($ResetFont) {
+            if ($ResetFont.IsPresent) {
                                        $Address.Style.Font.Color.SetColor("Black")
                                        $Address.Style.Font.Bold      = $false
                                        $Address.Style.Font.Italic    = $false
                                        $Address.Style.Font.UnderLine = $false
                                        $Address.Style.Font.Strike    = $false
             }
-            if ($Underline)           {
+            if ($Underline.IsPresent)           {
                                        $Address.Style.Font.UnderLine      = $true
                                        $Address.Style.Font.UnderLineType  = $UnderLineType
             }
-            if ($Bold)                {$Address.Style.Font.Bold           = $true                }
-            if ($Italic)              {$Address.Style.Font.Italic         = $true                }
-            if ($StrikeThru)          {$Address.Style.Font.Strike         = $true                }
-            if ($FontShift)           {$Address.Style.Font.VerticalAlign  = $FontShift           }
-            if ($FontColor)           {$Address.Style.Font.Color.SetColor(  $FontColor    )      }
-            if ($NumberFormat)        {$Address.Style.Numberformat.Format = $NumberFormat        }
-            if ($TextRotation)        {$Address.Style.TextRotation        = $TextRotation        }
-            if ($WrapText)            {$Address.Style.WrapText            = $true                }
-            if ($HorizontalAlignment) {$Address.Style.HorizontalAlignment = $HorizontalAlignment }
-            if ($VerticalAlignment)   {$Address.Style.VerticalAlignment   = $VerticalAlignment   }
-            if ($Value)               {$Address.Value = $Value                                   }
-            if ($Formula)             {$Address.Formula = $Formula                               }
-            if ($BorderAround)        {$Address.Style.Border.BorderAround($BorderAround, $BorderColor)}
+            if ($Bold.IsPresent)                {$Address.Style.Font.Bold           = $true                }
+            if ($Italic.IsPresent)              {$Address.Style.Font.Italic         = $true                }
+            if ($StrikeThru.IsPresent)          {$Address.Style.Font.Strike         = $true                }
+            if ($PSBoundParameters.ContainsKey('FontShift'))           {$Address.Style.Font.VerticalAlign  = $FontShift           }
+            if ($PSBoundParameters.ContainsKey('FontColor'))           {$Address.Style.Font.Color.SetColor(  $FontColor    )      }
+            if ($PSBoundParameters.ContainsKey('NumberFormat'))        {$Address.Style.Numberformat.Format = $NumberFormat        }
+            if ($PSBoundParameters.ContainsKey('TextRotation'))        {$Address.Style.TextRotation        = $TextRotation        }
+            if ($WrapText.IsPresent)            {$Address.Style.WrapText            = $true                }
+            if ($PSBoundParameters.ContainsKey('HorizontalAlignment')) {$Address.Style.HorizontalAlignment = $HorizontalAlignment }
+            if ($PSBoundParameters.ContainsKey('VerticalAlignment'))   {$Address.Style.VerticalAlignment   = $VerticalAlignment   }
+            if ($PSBoundParameters.ContainsKey('Value'))               {$Address.Value = $Value                                   }
+            if ($PSBoundParameters.ContainsKey('Formula'))             {$Address.Formula = $Formula                               }
+            if ($PSBoundParameters.ContainsKey('BorderAround'))        {$Address.Style.Border.BorderAround($BorderAround, $BorderColor)}
 
-            if ($BorderBottom)        {
+            if ($PSBoundParameters.ContainsKey('BorderBottom'))        {
                 $Address.Style.Border.Bottom.Style=$BorderBottom
                 $Address.Style.Border.Bottom.Color.SetColor($BorderColor)
             }
 
-            if ($BorderTop) {
+            if ($PSBoundParameters.ContainsKey('BorderTop')) {
                 $Address.Style.Border.Top.Style=$BorderTop
                 $Address.Style.Border.Top.Color.SetColor($BorderColor)
             }
 
-            if ($BorderLeft) {
+            if ($PSBoundParameters.ContainsKey('BorderLeft')) {
                 $Address.Style.Border.Left.Style=$BorderLeft
                 $Address.Style.Border.Left.Color.SetColor($BorderColor)
             }
 
-            if ($BorderRight) {
+            if ($PSBoundParameters.ContainsKey('BorderRight')) {
                 $Address.Style.Border.Right.Style=$BorderRight
                 $Address.Style.Border.Right.Color.SetColor($BorderColor)
             }
 
-            if ($BackgroundColor) {
+            if ($PSBoundParameters.ContainsKey('BackgroundColor')) {
                 $Address.Style.Fill.PatternType = $BackgroundPattern
                 $Address.Style.Fill.BackgroundColor.SetColor($BackgroundColor)
                 if ($PatternColor) {
@@ -144,7 +144,7 @@
                 }
             }
 
-            if ($Height) {
+            if ($PSBoundParameters.ContainsKey('Height')) {
                 if ($Address -is [OfficeOpenXml.ExcelRow]   ) {$Address.Height = $Height }
                 elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {
                     ($Address.Start.Row)..($Address.Start.Row + $Address.Rows) |
@@ -152,7 +152,7 @@
                 }
                 else {Write-Warning -Message ("Can set the height of a row or a range but not a {0} object" -f ($Address.GetType().name)) }
             }
-            if ($Autosize) {
+            if ($Autosize.IsPresent) {
                 if ($Address -is [OfficeOpenXml.ExcelColumn]) {$Address.AutoFit() }
                 elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {
                     $Address.AutoFitColumns()
@@ -160,7 +160,7 @@
                 else {Write-Warning -Message ("Can autofit a column or a range but not a {0} object" -f ($Address.GetType().name)) }
 
             }
-            elseif ($Width) {
+            elseif ($PSBoundParameters.ContainsKey('Width')) {
                 if ($Address -is [OfficeOpenXml.ExcelColumn]) {$Address.Width = $Width}
                 elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {
                     ($Address.Start.Column)..($Address.Start.Column + $Address.Columns - 1) |
@@ -171,7 +171,7 @@
                 }
                 else {Write-Warning -Message ("Can set the width of a column or a range but not a {0} object" -f ($Address.GetType().name)) }
             }
-            if ($Hidden) {
+            if ($Hidden.IsPresent) {
                 if ($Address -is [OfficeOpenXml.ExcelRow] -or
                     $Address -is [OfficeOpenXml.ExcelColumn]  ) {$Address.Hidden = $True}
                 else {Write-Warning -Message ("Can hide a row or a column but not a {0} object" -f ($Address.GetType().name)) }
