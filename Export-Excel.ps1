@@ -88,7 +88,9 @@
         .PARAMETER ExcelChartDefinition
             A hash table containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts.
         .PARAMETER HideSheet
-            Name(s) of Sheet(s) to hide in the workbook.
+            Name(s) of Sheet(s) to hide in the workbook, supports wildcards. If all sheets would be hidden, the sheet being worked on will be revealed .
+        .PARAMETER UnHideSheet
+            Name(s) of Sheet(s) to Reveal in the workbook, supports wildcards.
         .PARAMETER MoveToStart
             If specified, the worksheet will be moved to the start of the workbook.
             MoveToStart takes precedence over MoveToEnd, Movebefore and MoveAfter if more than one is specified.
@@ -425,6 +427,7 @@
         [Switch]$ColumnChart ,
         [Object[]]$ExcelChartDefinition,
         [String[]]$HideSheet,
+        [String[]]$UnHideSheet,
         [Switch]$MoveToStart,
         [Switch]$MoveToEnd,
         $MoveBefore ,
@@ -766,7 +769,7 @@
                 if ($params.keys -notcontains "SourceRange" -and
                    ($params.Keys -notcontains "SourceWorkSheet"   -or  $params.SourceWorkSheet -eq $WorkSheetname)) {$params.SourceRange = $dataRange}
                 if ($params.Keys -notcontains "SourceWorkSheet")      {$params.SourceWorkSheet = $ws }
-                if ($params.Keys -notcontains "NoTotalsInPivot"   -and $NoTotalsInPivot    ) {$params.NoTotalsInPivot = $true}
+                if ($params.Keys -notcontains "NoTotalsInPivot"   -and $NoTotalsInPivot  ) {$params.NoTotalsInPivot   = $true}
                 if ($params.Keys -notcontains "PivotDataToColumn" -and $PivotDataToColumn) {$params.PivotDataToColumn = $true}
 
                 Add-PivotTable -ExcelPackage $pkg -PivotTableName $item.key @Params
@@ -846,10 +849,25 @@
 
         foreach ($Sheet in $HideSheet) {
             try {
-                $pkg.Workbook.WorkSheets[$Sheet].Hidden = 'Hidden'
-                Write-verbose -Message "Sheet '$sheet' Hidden."
+                $pkg.Workbook.WorkSheets.Where({$_.Name -like $sheet}) | ForEach-Object {
+                    $_.Hidden = 'Hidden'
+                    Write-verbose -Message "Sheet '$($_.Name)' Hidden."
+                }
             }
             catch {Write-Warning -Message  "Failed hiding worksheet '$sheet': $_"}
+        }
+        foreach ($Sheet in $UnHideSheet) {
+            try {
+                $pkg.Workbook.WorkSheets.Where({$_.Name -like $sheet}) | ForEach-Object {
+                    $_.Hidden = 'Visible'
+                    Write-verbose -Message "Sheet '$($_.Name)' shown"
+                }
+            }
+            catch {Write-Warning -Message  "Failed showing worksheet '$sheet': $_"}
+        }
+        if (-not $pkg.Workbook.Worksheets.Where({$_.Hidden -eq 'visible'})) {
+            Write-Verbose -Message "No Sheets were left visible, making $WorkSheetname visible"
+            $ws.Hidden = 'Visible'
         }
 
         foreach ($chartDef in $ExcelChartDefinition) {
@@ -1115,10 +1133,10 @@ function Add-WorkSheet  {
 }
 function Add-PivotTable {
 <#
-      .Synopsis
-        Adds a Pivot table (and optional pivot chart) to a workbook
-      .Description
-        If the pivot table already exists, the source data will be updated.
+  .Synopsis
+    Adds a Pivot table (and optional pivot chart) to a workbook
+  .Description
+    If the pivot table already exists, the source data will be updated.
 #>
     param (
         #Name for the new Pivot table - this will be the name of a sheet in the workbook
@@ -1177,6 +1195,9 @@ function Add-PivotTable {
             #Accept a string or a worksheet object as $Source Worksheet.
             if ($SourceWorkSheet -is [string]) {
                 $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets.where( {$_.name -match $SourceWorkSheet})[0]
+            }
+            elseif ($SourceWorkSheet -is [int]) {
+                $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets[$SourceWorkSheet]
             }
             if (-not ($SourceWorkSheet -is  [OfficeOpenXml.ExcelWorksheet])) {Write-Warning -Message "Could not find source Worksheet for pivot-table '$pivotTableName'." }
             else {

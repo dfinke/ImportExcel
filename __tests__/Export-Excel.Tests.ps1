@@ -610,7 +610,7 @@ Describe ExportExcel {
 
         $excel = Open-ExcelPackage $path
         $sheet = $excel.Workbook.Worksheets["Processes"]
-        it "Returned the rule when calling Add-ConditionalFormatting -passthur                     " {
+        it "Returned the rule when calling Add-ConditionalFormatting -passthru                     " {
             $rule                                                       | should not beNullOrEmpty
             $rule.getType().fullname                                    | should     be "OfficeOpenXml.ConditionalFormatting.ExcelConditionalFormattingTopPercent"
             $rule.Style.Font.Strike                                     | should be true
@@ -631,7 +631,7 @@ Describe ExportExcel {
             $sheet.Cells['E2'].style.numberformat.format                | Should     be  '#,###'
             $sheet.Column(3).style.numberformat.format                  | Should     be  '#,###'
             $sheet.Column(4).style.numberformat.format                  | Should     be  '#,##0.0'
-            $sheet.ConditionalFormatting.Count                          | Should     be  2
+            $sheet.ConditionalFormatting.Count                          | Should     be  3
             $sheet.ConditionalFormatting[0].type                        | Should     be  'Databar'
             $sheet.ConditionalFormatting[0].Color.name                  | Should     be  'ffff0000'
             $sheet.ConditionalFormatting[0].Address.Address             | Should     be  'D2:D1048576'

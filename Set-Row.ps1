@@ -78,6 +78,8 @@
         [int]$TextRotation ,
         #Set cells to a fixed hieght
         [float]$Height,
+        #If Sepecified returns the range of cells which affected
+        [switch]$ReturnRange,
          #If Specified, return a row object to allow further work to be done
         [switch]$PassThru
     )
@@ -92,7 +94,6 @@
     $endColumn                           = $Worksheet.Dimension.End.Column
     $endRow                              = $Worksheet.Dimension.End.Row
     if ($Row  -lt 2 )      {$Row         = $endRow + 1 }
-
     Write-Verbose -Message "Updating Row $Row"
     #Add a row label
     if      ($Heading)                   {
@@ -120,11 +121,12 @@
                      'BorderAround', 'BackgroundColor', 'BackgroundPattern', 'PatternColor')) {
         if ($PSBoundParameters.ContainsKey($p)) {$params[$p] = $PSBoundParameters[$p]}
     }
+    $theRange                            = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$Row]C[$StartColumn]:R[$Row]C[$EndColumn]",0,0)
     if ($params.Count) {
-        $theRange = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$Row]C[$StartColumn]:R[$Row]C[$EndColumn]",0,0)
         Set-Format -WorkSheet $Worksheet -Range $theRange @params
     }
     #endregion
     #return the new data if -passthru was specified.
-    if ($passThru) {$Worksheet.Row($Row)}
+    if     ($passThru)    {$Worksheet.Row($Row)}
+    elseif ($ReturnRange) {$theRange}
 }
