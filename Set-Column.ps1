@@ -79,6 +79,8 @@
         [float]$Width,
         #Set the inserted data to be a named range (ignored if header is not specified)
         [Switch]$AutoNameRange,
+        #If Sepecified returns the range of cells which affected
+        [switch]$ReturnRange,
         #If Specified, return an ExcelPackage object to allow further work to be done on the file.
         [switch]$PassThru
     )
@@ -119,10 +121,12 @@
                      'BorderAround', 'BackgroundColor', 'BackgroundPattern', 'PatternColor')) {
         if ($PSBoundParameters.ContainsKey($p)) {$params[$p] = $PSBoundParameters[$p]}
     }
+    $theRange = "$ColumnName$startRow`:$ColumnName$endRow"
     if ($params.Count) {
-        Set-Format -WorkSheet $Worksheet -Range "$ColumnName$startRow`:$ColumnName$endRow" @params
+        Set-Format -WorkSheet $Worksheet -Range $theRange @params
     }
     #endregion
     #return the new data if -passthru was specified.
     if     ($passThru)                 { $Worksheet.Column(     $Column)}
+    elseif ($ReturnRange)              { $theRange}
 }
