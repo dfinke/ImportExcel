@@ -52,7 +52,15 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
-# What's new to 18th July 18
+# New to 25th July 2018
+- Added color parameter completer to a few places where it was missing (Add-ConditionalFormatting/PatternColor  New-ConditionalText PatternColor&BackgroundColor) 
+- Changed charting.ps1 and examples\charts\*.ps1 to use New-ExcelChartDefinition instead of New-ExcelChart
+- Quick charts in Export-excel were too wide (now 800 pixels instead of 1200), and now support ShowPercent, ShowCategory and NoLegend Parameters 
+- Fixed bug in Add-ExcelChart where XAxisPosition and YAxisPostion would not be set correctly 
+- Fixed bug in Set-Format where enums with a value of zero, or zero numbers would not be set; added functionality to set-format to support -bold:$false -italic:$false etc.  (see #400) 
+- Changed HideSheet in Export-Excel to support wildcards, and added UnhideSheet. 
+- Added returnRange support to set-Column and Set-row
+- Added tests for better coverage (now at >80% average - set-row/colum set-format less than 80%) , and tweaked some tests to use few rows and/or columns for speed
 - Moved chart creation into its own function (Add-Excel chart) within Export-Excel.ps1. Renamed New-Excelchart to New-ExcelChartDefinition to make it clearer that it is not making anything in the workbook (but for compatibility put an alias of New-ExcelChart in so existing code does not break). Found that -Header does nothing, so it isn't Add-Excel chart and there is a message that does nothing in New-ExcelChartDefinition .
 - Added -BarChart -ColumnChart -LineChart -PieChart parameters to Export-Excel for quick charts without giving a full chart definition.
 - Added parameters for managing chart Axes and legend
