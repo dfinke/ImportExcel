@@ -1,7 +1,7 @@
 ﻿Function Set-Row {
     <#
       .Synopsis
-        Fills values into a row in a Excel spreadsheet
+        Fills values into a [new] row in an Excel spreadsheet. To format a row without setting values, use Set-Format.
       .Description
         Set-Row accepts either a Worksheet object or an Excel package object returned by Export-Excel and the name of a sheet,
         and inserts the chosen contents into a row of the sheet.
@@ -37,26 +37,25 @@
         $Value,
         #Optional Row heading
         $Heading ,
-        #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "Â£#,##0.00;[Red]-Â£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc
+        #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "£#,##0.00;[Red]-£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc
         [Alias("NFormat")]
         $NumberFormat,
         #Style of border to draw around the row
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderAround,
         #Colour for the text - if none specified it will be left as it it is
         [System.Drawing.Color]$FontColor,
-        #Make text bold
+        #Make text bold; use -Bold:$false to remove bold
         [switch]$Bold,
-        #Make text italic
+        #Make text italic;  use -Italic:$false to remove italic
         [switch]$Italic,
-        #Underline the text using the underline style in -underline type
+        #Underline the text using the underline style in -underline type;  use -Underline:$false to remove underlining
         [switch]$Underline,
         #Should Underline use single or double, normal or accounting mode : default is single normal
         [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
-        #StrikeThrough text
+        #Strike through text; use -Strikethru:$false to remove Strike through
         [switch]$StrikeThru,
-        #Subscript or superscript
+        #Subscript or superscript (or none)
         [OfficeOpenXml.Style.ExcelVerticalAlignmentFont]$FontShift,
-        #Font to use - Excel defaults to Calibri
         [String]$FontName,
         #Point size for the text
         [float]$FontSize,
@@ -67,9 +66,9 @@
         #Secondary colour for background pattern
         [Alias("PatternColour")]
         [System.Drawing.Color]$PatternColor,
-        #Turn on text wrapping
+        #Turn on text wrapping; use -WrapText:$false to turn off word wrapping
         [switch]$WrapText,
-        #Position cell contents to left, right or centre ...
+        #Position cell contents to left, right, center etc. default is 'General'
         [OfficeOpenXml.Style.ExcelHorizontalAlignment]$HorizontalAlignment,
         #Position cell contents to top bottom or centre
         [OfficeOpenXml.Style.ExcelVerticalAlignment]$VerticalAlignment,

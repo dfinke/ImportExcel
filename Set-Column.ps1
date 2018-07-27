@@ -40,34 +40,34 @@
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderAround,
         #Colour for the text - if none specified it will be left as it it is
         [System.Drawing.Color]$FontColor,
-        #Make text bold
-        [switch]$Bold,
-        #Make text italic
-        [switch]$Italic,
-        #Underline the text using the underline style in -underline type
-        [switch]$Underline,
-        #Should Underline use single or double, normal or accounting mode : default is single normal
-        [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
-        #StrikeThrough text
-        [switch]$StrikeThru,
-        #Subscript or superscript
-        [OfficeOpenXml.Style.ExcelVerticalAlignmentFont]$FontShift,
-        #Font to use - Excel defaults to Calibri
-        [String]$FontName,
-        #Point size for the text
-        [float]$FontSize,
-        #Change background colour
-        [System.Drawing.Color]$BackgroundColor,
-        #Background pattern - solid by default
-        [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern = [OfficeOpenXml.Style.ExcelFillStyle]::Solid ,
-        #Secondary colour for background pattern
-        [Alias("PatternColour")]
-        [System.Drawing.Color]$PatternColor,
-        #Turn on text wrapping
-        [switch]$WrapText,
-        #Position cell contents to left, right or centre ...
-        [OfficeOpenXml.Style.ExcelHorizontalAlignment]$HorizontalAlignment,
-        #Position cell contents to top bottom or centre
+       #Make text bold; use -Bold:$false to remove bold
+       [switch]$Bold,
+       #Make text italic;  use -Italic:$false to remove italic
+       [switch]$Italic,
+       #Underline the text using the underline style in -underline type;  use -Underline:$false to remove underlining
+       [switch]$Underline,
+       #Should Underline use single or double, normal or accounting mode : default is single normal
+       [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
+       #Strike through text; use -Strikethru:$false to remove Strike through
+       [switch]$StrikeThru,
+       #Subscript or superscript (or none)
+       [OfficeOpenXml.Style.ExcelVerticalAlignmentFont]$FontShift,
+       #Font to use - Excel defaults to Calibri
+       [String]$FontName,
+       #Point size for the text
+       [float]$FontSize,
+       #Change background colour
+       [System.Drawing.Color]$BackgroundColor,
+       #Background pattern - solid by default
+       [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern = [OfficeOpenXml.Style.ExcelFillStyle]::Solid ,
+       #Secondary colour for background pattern
+       [Alias("PatternColour")]
+       [System.Drawing.Color]$PatternColor,
+       #Turn on text wrapping; use -WrapText:$false to turn off word wrapping
+       [switch]$WrapText,
+       #Position cell contents to left, right, center etc. default is 'General'
+       [OfficeOpenXml.Style.ExcelHorizontalAlignment]$HorizontalAlignment,
+      #Position cell contents to top bottom or centre
         [OfficeOpenXml.Style.ExcelVerticalAlignment]$VerticalAlignment,
         #Degrees to rotate text. Up to +90 for anti-clockwise ("upwards"), or to -90 for clockwise.
         [ValidateRange(-90, 90)]

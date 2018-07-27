@@ -38,17 +38,17 @@
         $Formula,
         #Clear Bold, Italic, StrikeThrough and Underline and set colour to black
         [switch]$ResetFont,
-        #Make text bold
+        #Make text bold; use -Bold:$false to remove bold
         [switch]$Bold,
-        #Make text italic
+        #Make text italic;  use -Italic:$false to remove italic
         [switch]$Italic,
-        #Underline the text using the underline style in -underline type
+        #Underline the text using the underline style in -underline type;  use -Underline:$false to remove underlining
         [switch]$Underline,
         #Should Underline use single or double, normal or accounting mode : default is single normal
         [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
-        #StrikeThrough text
+        #Strike through text; use -Strikethru:$false to remove Strike through
         [switch]$StrikeThru,
-        #Subscript or superscript
+        #Subscript or superscript (or none)
         [OfficeOpenXml.Style.ExcelVerticalAlignmentFont]$FontShift,
         #Font to use - Excel defaults to Calibri
         [String]$FontName,
@@ -61,11 +61,11 @@
         #Secondary colour for background pattern
         [Alias("PatternColour")]
         [System.Drawing.Color]$PatternColor,
-        #Turn on text wrapping
+        #Turn on text wrapping; use -WrapText:$false to turn off word wrapping
         [switch]$WrapText,
-        #Position cell contents to left, right or centre ...
+        #Position cell contents to left, right, center etc. default is 'General'
         [OfficeOpenXml.Style.ExcelHorizontalAlignment]$HorizontalAlignment,
-        #Position cell contents to top bottom or centre
+        #Position cell contents to top bottom or center
         [OfficeOpenXml.Style.ExcelVerticalAlignment]$VerticalAlignment,
         #Degrees to rotate text. Up to +90 for anti-clockwise ("upwards"), or to -90 for clockwise.
         [ValidateRange(-90, 90)]
@@ -77,7 +77,7 @@
         [float]$Width,
         #Set cells to a fixed hieght  (rows or ranges only)
         [float]$Height,
-        #Hide a row or column  (not a range)
+        #Hide a row or column  (not a range); use -Hidden:$false to unhide
         [switch]$Hidden
     )
     begin {
