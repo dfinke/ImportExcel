@@ -1,7 +1,7 @@
 ﻿Function Set-Row {
     <#
       .Synopsis
-        Fills values into a row in a Excel spreadsheet
+        Fills values into a [new] row in an Excel spreadsheet. To format a row without setting values, use Set-Format.
       .Description
         Set-Row accepts either a Worksheet object or an Excel package object returned by Export-Excel and the name of a sheet,
         and inserts the chosen contents into a row of the sheet.
@@ -37,26 +37,25 @@
         $Value,
         #Optional Row heading
         $Heading ,
-        #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "Â£#,##0.00;[Red]-Â£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc
+        #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "£#,##0.00;[Red]-£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc
         [Alias("NFormat")]
         $NumberFormat,
         #Style of border to draw around the row
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderAround,
         #Colour for the text - if none specified it will be left as it it is
         [System.Drawing.Color]$FontColor,
-        #Make text bold
+        #Make text bold; use -Bold:$false to remove bold
         [switch]$Bold,
-        #Make text italic
+        #Make text italic;  use -Italic:$false to remove italic
         [switch]$Italic,
-        #Underline the text using the underline style in -underline type
+        #Underline the text using the underline style in -underline type;  use -Underline:$false to remove underlining
         [switch]$Underline,
         #Should Underline use single or double, normal or accounting mode : default is single normal
         [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
-        #StrikeThrough text
+        #Strike through text; use -Strikethru:$false to remove Strike through
         [switch]$StrikeThru,
-        #Subscript or superscript
+        #Subscript or superscript (or none)
         [OfficeOpenXml.Style.ExcelVerticalAlignmentFont]$FontShift,
-        #Font to use - Excel defaults to Calibri
         [String]$FontName,
         #Point size for the text
         [float]$FontSize,
@@ -67,9 +66,9 @@
         #Secondary colour for background pattern
         [Alias("PatternColour")]
         [System.Drawing.Color]$PatternColor,
-        #Turn on text wrapping
+        #Turn on text wrapping; use -WrapText:$false to turn off word wrapping
         [switch]$WrapText,
-        #Position cell contents to left, right or centre ...
+        #Position cell contents to left, right, center etc. default is 'General'
         [OfficeOpenXml.Style.ExcelHorizontalAlignment]$HorizontalAlignment,
         #Position cell contents to top bottom or centre
         [OfficeOpenXml.Style.ExcelVerticalAlignment]$VerticalAlignment,
@@ -78,7 +77,9 @@
         [int]$TextRotation ,
         #Set cells to a fixed hieght
         [float]$Height,
-         #If Specified, return an ExcelPackage object to allow further work to be done on the file
+        #If Sepecified returns the range of cells which affected
+        [switch]$ReturnRange,
+         #If Specified, return a row object to allow further work to be done
         [switch]$PassThru
     )
 
@@ -92,7 +93,6 @@
     $endColumn                           = $Worksheet.Dimension.End.Column
     $endRow                              = $Worksheet.Dimension.End.Row
     if ($Row  -lt 2 )      {$Row         = $endRow + 1 }
-
     Write-Verbose -Message "Updating Row $Row"
     #Add a row label
     if      ($Heading)                   {
@@ -100,7 +100,7 @@
                                            $StartColumn ++
     }
     #Fill in the data
-    if      ($value) {foreach ($column in ($StartColumn..$EndColumn)) {
+    if      ($PSBoundParameters.ContainsKey('Value')) {foreach ($column in ($StartColumn..$EndColumn)) {
         #We might want the column name in a script block
         $ColumnName = [OfficeOpenXml.ExcelCellAddress]::new(1,$column).Address -replace "1",""
         if  ($Value -is [scriptblock] ) {
@@ -110,32 +110,22 @@
         }
         else{$cellData = $Value}
         if  ($cellData -match "^=")      { $Worksheet.Cells[$Row, $column].Formula                    = $cellData           }
-        else                             { $Worksheet.Cells[$Row, $Column].Value                      = $cellData           }
-        if  ($cellData -is [datetime])   { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format  = 'm/d/yy h:mm'       } # This is not a custom format, but a preset recognized as date and localized.
+        else                             { $Worksheet.Cells[$Row, $column].Value                      = $cellData           }
+        if  ($cellData -is [datetime])   { $Worksheet.Cells[$Row, $column].Style.Numberformat.Format  = 'm/d/yy h:mm'       } # This is not a custom format, but a preset recognized as date and localized.
     }}
     #region Apply formatting
-    if      ($Underline)                 {
-                                           $worksheet.row(  $Row  ).Style.Font.UnderLine              = $true
-                                           $worksheet.row(  $Row  ).Style.Font.UnderLineType          = $UnderLineType
+    $params = @{}
+    foreach ($p in @('Underline','Bold','Italic','StrikeThru','FontSize', 'FontShift','NumberFormat','TextRotation',
+                     'WrapText', 'HorizontalAlignment','VerticalAlignment', 'Height', 'FontColor'
+                     'BorderAround', 'BackgroundColor', 'BackgroundPattern', 'PatternColor')) {
+        if ($PSBoundParameters.ContainsKey($p)) {$params[$p] = $PSBoundParameters[$p]}
     }
-    if      ($Bold)                      { $worksheet.row(  $Row  ).Style.Font.Bold                   = $true               }
-    if      ($Italic)                    { $worksheet.row(  $Row  ).Style.Font.Italic                 = $true               }
-    if      ($StrikeThru)                { $worksheet.row(  $Row  ).Style.Font.Strike                 = $true               }
-    if      ($FontShift)                 { $worksheet.row(  $Row  ).Style.Font.VerticalAlign          = $FontShift          }
-    if      ($NumberFormat)              { $worksheet.row(  $Row  ).Style.Numberformat.Format         = $NumberFormat       }
-    if      ($TextRotation)              { $worksheet.row(  $Row  ).Style.TextRotation                = $TextRotation       }
-    if      ($WrapText)                  { $worksheet.row(  $Row  ).Style.WrapText                    = $true               }
-    if      ($HorizontalAlignment)       { $worksheet.row(  $Row  ).Style.HorizontalAlignment         = $HorizontalAlignment}
-    if      ($VerticalAlignment)         { $worksheet.row(  $Row  ).Style.VerticalAlignment           = $VerticalAlignment  }
-    if      ($Height)                    { $worksheet.row(  $Row  ).Height                            = $Height             }
-    if      ($FontColor)                 { $worksheet.row(  $Row  ).Style.Font.Color.SetColor(          $FontColor        ) }
-    if      ($BorderAround)              { $worksheet.row(  $Row  ).Style.Border.BorderAround(          $BorderAround     ) }
-    if      ($BackgroundColor)           {
-                                           $worksheet.row(  $Row  ).Style.Fill.PatternType            = $BackgroundPattern
-                                           $worksheet.row(  $Row  ).Style.Fill.BackgroundColor.SetColor($BackgroundColor  )
-         if ($PatternColor)              { $worksheet.row(  $Row  ).Style.Fill.PatternColor.SetColor(   $PatternColor     ) }
+    $theRange                            = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$Row]C[$StartColumn]:R[$Row]C[$EndColumn]",0,0)
+    if ($params.Count) {
+        Set-Format -WorkSheet $Worksheet -Range $theRange @params
     }
     #endregion
     #return the new data if -passthru was specified.
-    if ($passThru) {$Worksheet.Row($Row)}
+    if     ($passThru)    {$Worksheet.Row($Row)}
+    elseif ($ReturnRange) {$theRange}
 }

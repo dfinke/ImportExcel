@@ -40,17 +40,17 @@
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderAround,
         #Colour for the text - if none specified it will be left as it it is
         [System.Drawing.Color]$FontColor,
-        #Make text bold
+        #Make text bold; use -Bold:$false to remove bold
         [switch]$Bold,
-        #Make text italic
+        #Make text italic;  use -Italic:$false to remove italic
         [switch]$Italic,
-        #Underline the text using the underline style in -underline type
+        #Underline the text using the underline style in -underline type;  use -Underline:$false to remove underlining
         [switch]$Underline,
         #Should Underline use single or double, normal or accounting mode : default is single normal
         [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
-        #StrikeThrough text
+        #Strike through text; use -Strikethru:$false to remove Strike through
         [switch]$StrikeThru,
-        #Subscript or superscript
+        #Subscript or superscript (or none)
         [OfficeOpenXml.Style.ExcelVerticalAlignmentFont]$FontShift,
         #Font to use - Excel defaults to Calibri
         [String]$FontName,
@@ -63,9 +63,9 @@
         #Secondary colour for background pattern
         [Alias("PatternColour")]
         [System.Drawing.Color]$PatternColor,
-        #Turn on text wrapping
+        #Turn on text wrapping; use -WrapText:$false to turn off word wrapping
         [switch]$WrapText,
-        #Position cell contents to left, right or centre ...
+        #Position cell contents to left, right, center etc. default is 'General'
         [OfficeOpenXml.Style.ExcelHorizontalAlignment]$HorizontalAlignment,
         #Position cell contents to top bottom or centre
         [OfficeOpenXml.Style.ExcelVerticalAlignment]$VerticalAlignment,
@@ -79,6 +79,8 @@
         [float]$Width,
         #Set the inserted data to be a named range (ignored if header is not specified)
         [Switch]$AutoNameRange,
+        #If Sepecified returns the range of cells which affected
+        [switch]$ReturnRange,
         #If Specified, return an ExcelPackage object to allow further work to be done on the file.
         [switch]$PassThru
     )
@@ -102,7 +104,7 @@
       if    ($AutoNameRange)           { $Worksheet.Names.Add(  $heading, ($Worksheet.Cells[$startrow, $Column, $endRow, $Column]) ) | Out-Null }
     }
     #Fill in the data
-    if      ($value)                   { foreach ($row in ($StartRow.. $endRow)) {
+    if      ($PSBoundParameters.ContainsKey('value')) { foreach ($row in ($StartRow.. $endRow)) {
         if  ($Value -is [scriptblock]) { #re-create the script block otherwise variables from this function are out of scope.
              $cellData = & ([scriptblock]::create( $Value ))
              Write-Verbose  -Message     $cellData
@@ -113,29 +115,18 @@
         if  ($cellData -is [datetime]) { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format         = 'm/d/yy h:mm'       } # This is not a custom format, but a preset recognized as date and localized.
     }}
     #region Apply formatting
-    if      ($Underline)               {
-                                         $Worksheet.Column(     $Column).Style.Font.UnderLine              = $true
-                                         $Worksheet.Column(     $Column).Style.Font.UnderLineType          = $UnderLineType
+    $params = @{}
+    foreach ($p in @('Underline','Bold','Italic','StrikeThru','FontSize','FontShift','NumberFormat','TextRotation',
+                     'WrapText', 'HorizontalAlignment','VerticalAlignment', 'Autosize', 'Width', 'FontColor'
+                     'BorderAround', 'BackgroundColor', 'BackgroundPattern', 'PatternColor')) {
+        if ($PSBoundParameters.ContainsKey($p)) {$params[$p] = $PSBoundParameters[$p]}
     }
-    if      ($Bold)                    { $Worksheet.Column(     $Column).Style.Font.Bold                   = $true               }
-    if      ($Italic)                  { $Worksheet.Column(     $Column).Style.Font.Italic                 = $true               }
-    if      ($StrikeThru)              { $Worksheet.Column(     $Column).Style.Font.Strike                 = $true               }
-    if      ($FontShift)               { $Worksheet.Column(     $Column).Style.Font.VerticalAlign          = $FontShift          }
-    if      ($NumberFormat)            { $Worksheet.Column(     $Column).Style.Numberformat.Format         = $NumberFormat       }
-    if      ($TextRotation)            { $Worksheet.Column(     $Column).Style.TextRotation                = $TextRotation       }
-    if      ($WrapText)                { $Worksheet.Column(     $Column).Style.WrapText                    = $true               }
-    if      ($HorizontalAlignment)     { $Worksheet.Column(     $Column).Style.HorizontalAlignment         = $HorizontalAlignment}
-    if      ($VerticalAlignment)       { $Worksheet.Column(     $Column).Style.VerticalAlignment           = $VerticalAlignment  }
-    if      ($FontColor)               { $Worksheet.Column(     $Column).Style.Font.Color.SetColor(          $FontColor        ) }
-    if      ($BorderAround)            { $Worksheet.Column(     $Column).Style.Border.BorderAround(          $BorderAround     ) }
-    if      ($BackgroundColor)         {
-                                         $Worksheet.Column(     $Column).Style.Fill.PatternType            = $BackgroundPattern
-                                         $Worksheet.Column(     $Column).Style.Fill.BackgroundColor.SetColor($BackgroundColor  )
-         if ($PatternColor)            { $Worksheet.Column(     $Column).Style.Fill.PatternColor.SetColor(   $PatternColor     ) }
-     }
-     if     ($Autosize)                { $Worksheet.Column(     $Column).AutoFit()                                               }
-     elseif ($Width)                   { $Worksheet.Column(     $Column).Width                             = $Width              }
-     #endregion
+    $theRange = "$ColumnName$startRow`:$ColumnName$endRow"
+    if ($params.Count) {
+        Set-Format -WorkSheet $Worksheet -Range $theRange @params
+    }
+    #endregion
     #return the new data if -passthru was specified.
     if     ($passThru)                 { $Worksheet.Column(     $Column)}
+    elseif ($ReturnRange)              { $theRange}
 }

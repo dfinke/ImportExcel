@@ -6,13 +6,14 @@ $data = @"
 A,B,C,Date
 2,1,1,2016-03-29
 5,10,1,2016-03-29
-"@ | ConvertFrom-Csv
+"@
 
-$c = New-ExcelChart -Title Impressions `
-    -ChartType Line -Header "Something" `
+$c = New-ExcelChartDefinition -Title Impressions `
+    -ChartType Line   `
     -XRange "Impressions[Date]" `
-    -YRange @("Impressions[B]","Impressions[A]") `
-    -SeriesHeader 'B data','A data'
+    -YRange "Impressions[B]" #   @("Impressions[B]","Impressions[A]") `
+    -SeriesHeader 'B data','A data' `
+    -Row 0 -Column 0
 
-$data |
-    Export-Excel temp.xlsx -AutoSize -TableName Impressions -Show -ExcelChartDefinition $c
+$data | ConvertFrom-Csv |   Export-Excel -path temp.xlsx -AutoSize -TableName Impressions
+Export-Excel -path temp.xlsx -worksheetName chartPage -ExcelChartDefinition $c  -show

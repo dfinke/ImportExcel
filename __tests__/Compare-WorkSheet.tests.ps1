@@ -5,7 +5,7 @@ Describe "Compare Worksheet" {
     Context "Simple comparison output" {
         BeforeAll {
             Remove-Item -Path  "$env:temp\server*.xlsx"
-            [System.Collections.ArrayList]$s = get-service | Select-Object -Property *
+            [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property *
             $s | Export-Excel -Path $env:temp\server1.xlsx
             #$s is a zero based array, excel rows are 1 based and excel has a header row so Excel rows will be 2 + index in $s
             $row4Displayname  = $s[2].DisplayName
@@ -47,9 +47,10 @@ Describe "Compare Worksheet" {
         }
     }
 
-    Context "Setting the background to highlight different rows" {
+    Context "Setting the background to highlight different rows, use of grid view." {
         BeforeAll {
-            $null = compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -BackgroundColor LightGreen
+            Compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -BackgroundColor LightGreen -GridView
+            Start-Sleep -sec 5; [System.Windows.Forms.SendKeys]::Sendwait("%{F4}")
             $xl1  = Open-ExcelPackage -Path "$env:temp\Server1.xlsx"
             $xl2  = Open-ExcelPackage -Path "$env:temp\Server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets[1]
@@ -104,7 +105,7 @@ Describe "Compare Worksheet" {
 
     Context "More complex comparison: output check and different worksheet names " {
         BeforeAll {
-            [System.Collections.ArrayList]$s = get-service | Select-Object -Property * -ExcludeProperty Name
+            [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property * -ExcludeProperty Name
             $s | Export-Excel -Path $env:temp\server1.xlsx  -WorkSheetname Server1
             #$s is a zero based array, excel rows are 1 based and excel has a header row so Excel rows will be 2 + index in $s
             $row4Displayname  = $s[2].DisplayName
@@ -177,7 +178,7 @@ Describe "Merge Worksheet" {
     Context "Merge with 3 properties" {
         BeforeAll {
             Remove-Item -Path  "$env:temp\server*.xlsx" , "$env:temp\Combined*.xlsx" -ErrorAction SilentlyContinue
-            [System.Collections.ArrayList]$s = get-service | Select-Object -Property *
+            [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property *
 
             $s | Export-Excel -Path $env:temp\server1.xlsx
 
@@ -223,7 +224,7 @@ Describe "Merge Worksheet" {
             $ws.cells[5,1].Style.font.color.rgb                           | Should     be "FF8b0000"
             $ws.cells[7,1].Style.font.color.rgb                           | Should     be "FF8b0000"
         }
-        it "Set the background  for the added / deleted /changed rows                              " {
+        it "Set the background  for the added / deleted / changed rows                             " {
             $ws.cells["A3:E3"].style.Fill.BackgroundColor.Rgb             | Should     beNullOrEmpty
             $ws.cells["A4:E4"].style.Fill.BackgroundColor.Rgb             | Should     be "FFFFA500"
             $ws.cells["A5"   ].style.Fill.BackgroundColor.Rgb             | Should     be "FF98FB98"
@@ -243,7 +244,7 @@ Describe "Merge Multiple sheets" {
     Context "Merge 3 sheets with 3 properties" {
         BeforeAll {
             Remove-Item -Path  "$env:temp\server*.xlsx" , "$env:temp\Combined*.xlsx" -ErrorAction SilentlyContinue
-            [System.Collections.ArrayList]$s = get-service | Select-Object -Property Name,DisplayName,StartType
+            [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property Name,DisplayName,StartType
             $s | Export-Excel -Path $env:temp\server1.xlsx
 
             #$s is a zero based array, excel rows are 1 based and excel has a header row so Excel rows will be 2 + index in $s

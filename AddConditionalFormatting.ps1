@@ -15,7 +15,14 @@
         The desired worksheet is selected and the then columns B and i are conditially formatted (excluding the top row) to show red text if
         the columns contain "2003" or "Disabled respectively. A fixed date formats are then applied to columns D..G, and the top row is formatted.
         Finally the workbook is saved and the Excel object closed.
+      .Example
+        C:\> $r = Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Range "B1:B100" -ThreeIconsSet Flags -Passthru
+        C:\> $r.Reverse = $true ;   $r.Icon1.Type = "Num"; $r.Icon2.Type = "Num" ; $r.Icon2.value = 100 ; $r.Icon3.type = "Num" ;$r.Icon3.value = 1000
 
+        Again Export excel has been called with -passthru leaving a package object in $Excel
+        This time B1:B100 has been conditionally formatted with 3 icons, using the flags icon set.
+        Add-ConditionalFormatting does not provide access to every option in the formatting rule, so passthru has been used and the
+        rule is to apply the flags in reverse order, and boundaries for the number which will set the split are set to 100 and 1000
     #>
     Param (
         #The worksheet where the format is to be applied
