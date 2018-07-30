@@ -52,7 +52,7 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
-# What's new to 18th July 18
+# What's new to July 18
 - Moved chart creation into its own function (Add-Excel chart) within Export-Excel.ps1. Renamed New-Excelchart to New-ExcelChartDefinition to make it clearer that it is not making anything in the workbook (but for compatibility put an alias of New-ExcelChart in so existing code does not break). Found that -Header does nothing, so it isn't Add-Excel chart and there is a message that does nothing in New-ExcelChartDefinition .
 - Added -BarChart -ColumnChart -LineChart -PieChart parameters to Export-Excel for quick charts without giving a full chart definition.
 - Added parameters for managing chart Axes and legend
