@@ -120,9 +120,6 @@
             if ($PSBoundParameters.ContainsKey('FontColor')){
                 $Address.Style.Font.Color.SetColor(  $FontColor)
             }
-            if ($PSBoundParameters.ContainsKey('NumberFormat')) {
-                $Address.Style.Numberformat.Format = $NumberFormat
-            }
             if ($PSBoundParameters.ContainsKey('TextRotation')) {
                 $Address.Style.TextRotation        = $TextRotation
             }
@@ -136,10 +133,20 @@
                 $Address.Style.VerticalAlignment   = $VerticalAlignment
             }
             if ($PSBoundParameters.ContainsKey('Value')) {
-                $Address.Value = $Value
+                if ($Value -like '=*')      {$Address.Formula = $Value}
+                else {
+                    $Address.Value = $Value
+                    if ($Value -is  [DateTime])  {
+                        $Address.Style.Numberformat.Format = 'm/d/yy h:mm' # This is not a custom format, but a preset recognized as date and localized. It might be overwritten in a moment
+                    }
+                }
             }
+
             if ($PSBoundParameters.ContainsKey('Formula')) {
                 $Address.Formula = $Formula
+            }
+            if ($PSBoundParameters.ContainsKey('NumberFormat')) {
+                $Address.Style.Numberformat.Format = (Expand-NumberFormat $NumberFormat)
             }
             if ($PSBoundParameters.ContainsKey('BorderAround')) {
                 $Address.Style.Border.BorderAround($BorderAround, $BorderColor)
@@ -194,12 +201,79 @@
                 }
                 else {Write-Warning -Message ("Can set the width of a column or a range but not a {0} object" -f ($Address.GetType().name)) }
             }
-            if ($PSBoundParameters.ContainsKey('$Hidden')) {
+            if ($PSBoundParameters.ContainsKey('Hidden')) {
                 if ($Address -is [OfficeOpenXml.ExcelRow] -or
                     $Address -is [OfficeOpenXml.ExcelColumn]  ) {$Address.Hidden = [boolean]$Hidden}
                 else {Write-Warning -Message ("Can hide a row or a column but not a {0} object" -f ($Address.GetType().name)) }
             }
 
         }
+    }
+}
+
+Function NumberFormatCompletion {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+    $numformats = [ordered]@{
+        "General"       = "General"      # format ID  0
+        "Number"        = "0.00"         # format ID  2
+        "Percentage"    = "0.00%"        # format ID 10
+        "Scientific"    = "0.00E+00"     # format ID 11
+        "Fraction"      = "# ?/?"        # format ID 12
+        "Short Date"    = "Localized"    # format ID 14 - will be translated to "mm-dd-yy"     which is localized on load by Excel.
+        "Short Time"    = "Localized"    # format ID 20 - will be translated to "h:mm"         which is localized on load by Excel.
+        "Long Time"     = "Localized"    # format ID 21 - will be translated to "h:mm:ss"      which is localized on load by Excel.
+        "Date-Time"     = "Localized"    # format ID 22 - will be translated to "m/d/yy h:mm"  which is localized on load by Excel.
+        "Currency"      = [cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol + "#,##0.00"
+        "Text"          = "@"              # format ID 49
+        "h:mm AM/PM"    = "h:mm AM/PM"     # format ID 18
+        "h:mm:ss AM/PM" = "h:mm:ss AM/PM"  # format ID 19
+        "mm:ss"         = "mm:ss"          # format ID 45
+        "[h]:mm:ss"     = "Elapsed hours"  # format ID 46
+        "mm:ss.0"       = "mm:ss.0"        # format ID 47
+        "d-mmm-yy"      = "Localized"      # format ID 15 which is localized on load by Excel.
+        "d-mmm"         = "Localized"      # format ID 16 which is localized on load by Excel.
+        "mmm-yy"        = "mmm-yy"         # format ID 17 which is localized on load by Excel.
+        "0"             = "Whole number"                       # format ID  1
+        "0.00"          = "Number, 2 decimals"                 # format ID  2 or "number"
+        "#,##0"         = "Thousand separators"                # format ID  3
+        "#,##0.00"      = "Thousand separators and 2 decimals" # format ID  4
+        "#,"            = "Whole thousands"
+        "#.0,,"         = "Millions, 1 Decimal"
+        "0%"            = "Nearest whole percentage"           # format ID  9
+        "0.00%"         = "Percentage with decimals"           # format ID 10 or "Percentage"
+        "00E+00"        = "Scientific"                         # format ID 11 or "Scientific"
+        "# ?/?"         = "One Digit fraction"                 # format ID 12 or "Fraction"
+        "# ??/??"       = "Two Digit fraction"                 # format ID 13
+        "@"             = "Text"                               # format ID 49 or "Text"
+    }
+    $numformats.keys.where({$_ -like "$wordToComplete*"} ) | ForEach-Object {
+        New-Object -TypeName System.Management.Automation.CompletionResult -ArgumentList "'$_'" , $_ ,
+        ([System.Management.Automation.CompletionResultType]::ParameterValue) , $numformats[$_]
+    }
+}
+if (Get-Command -ErrorAction SilentlyContinue -name Register-ArgumentCompleter) {
+    Register-ArgumentCompleter -CommandName Add-ConditionalFormatting  -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName Export-Excel               -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName Set-Column                 -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName Set-Row                    -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName New-ExcelChartDefinition   -ParameterName XAxisNumberformat   -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName New-ExcelChartDefinition   -ParameterName YAxisNumberformat   -ScriptBlock $Function:NumberFormatCompletion
+}
+
+Function Expand-NumberFormat {
+    param  ($NumberFormat)
+    switch ($NumberFormat) {
+        "Currency"      {return  [cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol + "#,##0.00"}
+        "Number"        {return  "0.00"       } # format id  2
+        "Percentage"    {return  "0.00%"      } # format id 10
+        "Scientific"    {return  "0.00E+00"     } # format id 11
+        "Fraction"      {return  "# ?/?"      } # format id 12
+        "Short Date"    {return  "mm-dd-yy"   } # format id 14 localized on load by Excel.
+        "Short Time"    {return  "h:mm"       } # format id 20 localized on load by Excel.
+        "Long Time"     {return  "h:mm:ss"    } # format id 21 localized on load by Excel.
+        "Date-Time"     {return  "m/d/yy h:mm"} # format id 22 localized on load by Excel.
+        "Text"          {return  "@"          } # format ID 49
+        Default         {return  $NumberFormat}
     }
 }

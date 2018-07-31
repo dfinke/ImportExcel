@@ -32,7 +32,7 @@
         $Row = 0 ,
         #Position in the row to start from
         [Int]$StartColumn,
-        #value, formula or script block for to fill in. Script block can use $row, $column [number], $ColumnName [letter(s)], $startRow, $startColumn, $endRow, $endColumn
+        #value, formula or script block for to fill in. Script block can use $worksheet,  $row, $column [number], $ColumnName [letter(s)], $startRow, $startColumn, $endRow, $endColumn
         [parameter(Mandatory=$true)]
         $Value,
         #Optional Row heading
@@ -110,6 +110,18 @@
         }
         else{$cellData = $Value}
         if  ($cellData -match "^=")      { $Worksheet.Cells[$Row, $column].Formula                    = $cellData           }
+        elseif ( [System.Uri]::IsWellFormedUriString($cellData , [System.UriKind]::Absolute)) {
+            # Save a hyperlink : internal links can be in the form xl://sheet!E419 (use A1 as goto sheet), or xl://RangeName
+            if ($cellData -match "^xl://internal/") {
+                  $referenceAddress = $cellData -replace "^xl://internal/" , ""
+                  $display          = $referenceAddress -replace "!A1$"    , ""
+                  $h = New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList $referenceAddress , $display
+                  $Worksheet.Cells[$Row, $Column].HyperLink = $h
+            }
+            else {$Worksheet.Cells[$Row, $Column].HyperLink = $cellData }
+            $Worksheet.Cells[$Row, $Column].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
+            $Worksheet.Cells[$Row, $Column].Style.Font.UnderLine = $true
+        }
         else                             { $Worksheet.Cells[$Row, $column].Value                      = $cellData           }
         if  ($cellData -is [datetime])   { $Worksheet.Cells[$Row, $column].Style.Numberformat.Format  = 'm/d/yy h:mm'       } # This is not a custom format, but a preset recognized as date and localized.
     }}

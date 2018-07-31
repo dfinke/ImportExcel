@@ -512,3 +512,20 @@ function Export-MultipleExcelSheets {
 
     if($Show) {Invoke-Item $Path}
 }
+
+Function WorksheetArgumentCompleter {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+    $xlPath        = $fakeBoundParameter['Path']
+    if (Test-Path -Path $xlPath) {
+        $xlpkg = Open-ExcelPackage -Path $xlPath
+        $WorksheetNames = $xlPkg.Workbook.Worksheets.Name
+        Close-ExcelPackage -nosave -ExcelPackage $xlpkg
+        $WorksheetNames.where({$_ -like "*$wordToComplete*"}) | foreach-object {
+            New-Object -TypeName System.Management.Automation.CompletionResult -ArgumentList "'$_'",
+                            $_ , ([System.Management.Automation.CompletionResultType]::ParameterValue) ,$_
+        }
+    }
+}
+If (Get-Command -ErrorAction SilentlyContinue -name Register-ArgumentCompleter) {
+    Register-ArgumentCompleter -CommandName 'Import-Excel' -ParameterName 'WorksheetName' -ScriptBlock $Function:WorksheetArgumentCompleter
+}

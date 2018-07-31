@@ -50,7 +50,7 @@ Describe ExportExcel {
             }
         }
 
-        it "Formatted the process StartTime field as 'local short date'                            " {
+        it "Formatted the process StartTime field as 'localized Date-Time'                          " {
             $STHeader = $ws.cells["1:1"].where( {$_.Value -eq "StartTime"})[0]
             $STCell = $STHeader.Address -replace '1$', '2'
             $ws.cells[$stcell].Style.Numberformat.NumFmtID              | Should     be 22
@@ -605,7 +605,7 @@ Describe ExportExcel {
         $rule = Add-ConditionalFormatting -passthru -Address $sheet.cells["C:C"] -RuleType TopPercent -ConditionValue 20 -Bold -StrikeThru
         Add-ConditionalFormatting -WorkSheet $sheet -Range "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600" -ForeGroundColor Red -Bold -Italic -Underline -BackgroundColor Beige -BackgroundPattern LightUp -PatternColor Gray
         foreach ($c in 5..9) {Set-Format $sheet.Column($c)  -AutoFit }
-        Add-PivotTable -PivotTableName "PT_Procs" -ExcelPackage $excel -SourceWorkSheet "Processes" -PivotRows Company -PivotData  @{'Name' = 'Count'} -IncludePivotChart -ChartType ColumnClustered -NoLegend
+        Add-PivotTable -PivotTableName "PT_Procs" -ExcelPackage $excel -SourceWorkSheet 1 -PivotRows Company -PivotData  @{'Name' = 'Count'} -IncludePivotChart -ChartType ColumnClustered -NoLegend
         Close-ExcelPackage $excel
 
         $excel = Open-ExcelPackage $path

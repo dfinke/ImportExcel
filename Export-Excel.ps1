@@ -598,7 +598,8 @@
             }
             else {  $Row = $StartRow }
             $ColumnIndex = $StartColumn
-            $setNumformat = ($numberformat -ne $ws.Cells.Style.Numberformat.Format)
+            $Numberformat = Expand-NumberFormat -NumberFormat $Numberformat
+            $setNumformat = ($Numberformat -ne $ws.Cells.Style.Numberformat.Format)
 
             $firstTimeThru = $true
             $isDataTypeValueType = $false
@@ -1333,11 +1334,11 @@ function Add-ExcelChart {
             if ($XAxisTitleSize)  {$chart.XAxis.Title.Font.Size = $XAxisTitleSize}
         }
         if ($XAxisPosition)       {$chart.ChartXml.chartSpace.chart.plotArea.catAx.axPos.val = $XAxisPosition.ToString().substring(0,1)}
-        if ($XMajorUnit)          {$chart.XAxis.MajorUnit        = $XMajorUnit}
+        if ($XMajorUnit)          {$chart.XAxis.MajorUnit       = $XMajorUnit}
         if ($XMinorUnit)          {$chart.XAxis.MinorUnit       = $XMinorUnit}
         if ($null -ne $XMinValue) {$chart.XAxis.MinValue        = $XMinValue}
         if ($null -ne $XMaxValue) {$chart.XAxis.MaxValue        = $XMaxValue}
-        if ($XAxisNumberformat)   {$chart.XAxis.Format          = $XAxisNumberformat}
+        if ($XAxisNumberformat)   {$chart.XAxis.Format          = (Expand-NumberFormat $XAxisNumberformat)}
 
        if ($YAxisTitleText)     {
             $chart.YAxis.Title.Text = $YAxisTitleText
@@ -1349,7 +1350,7 @@ function Add-ExcelChart {
         if ($YMinorUnit)         {$chart.YAxis.MinorUnit       = $YMinorUnit}
         if ($null -ne $YMinValue){$chart.YAxis.MinValue        = $YMinValue}
         if ($null -ne $YMaxValue){$chart.YAxis.MaxValue        = $YMaxValue}
-        if ($YAxisNumberformat)  {$chart.YAxis.Format          = $YAxisNumberformat}
+        if ($YAxisNumberformat)  {$chart.YAxis.Format          = (Expand-NumberFormat $YAxisNumberformat)}
         if ($null -ne $chart.Datalabel) {
                                   $chart.Datalabel.ShowCategory = [boolean]$ShowCategory
                                   $chart.Datalabel.ShowPercent  = [boolean]$ShowPercent
