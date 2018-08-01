@@ -51,6 +51,13 @@ Install-Module ImportExcel -scope CurrentUser
 ```PowerShell
 Install-Module ImportExcel
 ```
+# What's new to Aug 2018
+- Set-Row and Set-Column will now create hyperlinks and insert dates correctly
+- Import-Excel now has an argument completer for Worksheet name - this can be slow on large files
+- The NumberFormat parameter (in Export-Excel, Set-Row, Set-Column, Set-Format and Add-ConditionalFormat) and X&YAxisNumberFormat paramaters (in New-ExcelChartDefinition and Add-ExcelChart) now have an argument completer and the names Currency, Number, Percentage, Scientific, Fraction, Short Date ,Short time,Long time, Date-Time and Text will be converted to the correct Excel formatting strings. 
+- Added new function Select-Worksheet to make a named sheet active: Added -Activate switch to Add-Worksheet, to make current sheet active, Export-Excel and Add-PivotTable support -Activate and pass it to Add-Worksheet, and New-PivotTableDefinition allows it to be part of the Pivot TableDefinition. 
+- Fixed a bug in Set-Format which caused -Hidden not to work 
+- Additional tests. 
 
 # What's new to July 18
 - Moved chart creation into its own function (Add-Excel chart) within Export-Excel.ps1. Renamed New-Excelchart to New-ExcelChartDefinition to make it clearer that it is not making anything in the workbook (but for compatibility put an alias of New-ExcelChart in so existing code does not break). Found that -Header does nothing, so it isn't Add-Excel chart and there is a message that does nothing in New-ExcelChartDefinition .

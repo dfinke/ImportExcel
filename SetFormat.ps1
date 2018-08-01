@@ -259,6 +259,8 @@ if (Get-Command -ErrorAction SilentlyContinue -name Register-ArgumentCompleter) 
     Register-ArgumentCompleter -CommandName Set-Row                    -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName New-ExcelChartDefinition   -ParameterName XAxisNumberformat   -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName New-ExcelChartDefinition   -ParameterName YAxisNumberformat   -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName Add-ExcelChart             -ParameterName XAxisNumberformat   -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName Add-ExcelChart             -ParameterName YAxisNumberformat   -ScriptBlock $Function:NumberFormatCompletion
 }
 
 Function Expand-NumberFormat {

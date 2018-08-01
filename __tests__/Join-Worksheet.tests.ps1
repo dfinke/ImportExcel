@@ -32,14 +32,14 @@ Describe "Join Worksheet" {
         $ptdef = New-PivotTableDefinition -PivotTableName "Summary" -PivotRows "Store" -PivotColumns "Product" -PivotData @{"Total"="SUM"} -IncludePivotChart -ChartTitle "Sales Breakdown" -ChartType ColumnStacked -ChartColumn 10
         Join-Worksheet -Path $path -WorkSheetName "Total" -Clearsheet -FromLabel "Store" -TableName "Summary" -TableStyle Light1 -AutoSize -BoldTopRow -FreezePane 2,1 -Title "Store Sales Summary" -TitleBold -TitleSize 14  -PivotTableDefinition $ptdef
 
-       $excel = Export-Excel -path $path -WorkSheetname Total -HideSheet * -UnHideSheet "Total","Summary" -PassThru
+       $excel = Export-Excel -path $path -WorkSheetname Summary -Activate -HideSheet * -UnHideSheet "Total","Summary" -PassThru
         # Open-ExcelPackage -Path $path
 
         $ws    = $excel.Workbook.Worksheets["Total"]
         $pt    = $excel.Workbook.Worksheets["Summary"].pivottables[0]
         $pc    = $excel.Workbook.Worksheets["Summary"].Drawings[0]
     }
-    Context "Export-Excel set spreadsheet visibility" {
+    Context "Export-Excel setting spreadsheet visibility" {
         it "Hid the worksheets                                                                     " {
             $excel.Workbook.Worksheets["Oxford"].Hidden                 | Should     be $true
             $excel.Workbook.Worksheets["Banbury"].Hidden                | Should     be $true
@@ -49,8 +49,13 @@ Describe "Join Worksheet" {
             $excel.Workbook.Worksheets["Total"].Hidden                  | Should     be $false
             $excel.Workbook.Worksheets["Summary"].Hidden                | Should     be $false
         }
+        it "Activated the correct worksheet                                                        " {
+            $excel.Workbook.worksheets["Summary"].View.TabSelected      | Should     be $true
+            $excel.Workbook.worksheets["Total"].View.TabSelected        | Should     be $false
+
+        }
     }
-    Context "Merging 3 blocks" {
+     Context "Merging 3 blocks" {
         it "Created sheet of the right size with a title and a table                               " {
             $ws.Dimension.Address                                       | Should     be "A1:F16"
             $ws.Tables[0].Address.Address                               | Should     be "A2:F16"
@@ -112,6 +117,5 @@ Describe "Join Worksheet" {
             $ws.Cells["B$NextRow"].Value                                | Should     be $excel.Workbook.Worksheets[2].Cells["B2"].value
         }
     }
-
 }
 

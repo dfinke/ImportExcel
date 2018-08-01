@@ -8,7 +8,7 @@
             Path to a new or existing .XLSX file.
         .PARAMETER  ExcelPackage
             An object representing an Excel Package - usually this is returned by specifying -Passthru allowing multiple commands to work on the same Workbook without saving and reloading each time.
-        .PARAMETER WorkSheetName
+        .PARAMETER WorksheetName
             The name of a sheet within the workbook - "Sheet1" by default.
         .PARAMETER ClearSheet
             If specified Export-Excel will remove any existing worksheet with the selected name. The Default behaviour is to overwrite cells in this sheet as needed (but leaving non-overwritten ones in place).
@@ -123,6 +123,8 @@
             Enables the 'Filter' in Excel on the complete header row. So users can easily sort, filter and/or search the data in the selected column from within Excel.
         .PARAMETER AutoSize
             Sizes the width of the Excel column to the maximum width needed to display all the containing data in that cell.
+        .PARAMETER Activate
+            If there is already content in the workbook, a new sheet will not be active UNLESS Activate is specified; if a Pivot table is included it will be the active sheet
         .PARAMETER Now
             The 'Now' switch is a shortcut that creates automatically a temporary file, enables 'AutoSize', 'AutoFiler' and 'Show', and opens the file immediately.
         .PARAMETER NumberFormat
@@ -287,15 +289,15 @@
 
             $Array = $Obj1, $Obj2, $Obj3
             $Array | Out-GridView -Title 'Not showing Member3 and Member4'
-            $Array | Update-FirstObjectProperties | Export-Excel @ExcelParams -WorkSheetname Numbers
+            $Array | Update-FirstObjectProperties | Export-Excel @ExcelParams -WorksheetName Numbers
 
             Updates the first object of the array by adding property 'Member3' and 'Member4'. Afterwards. all objects are exported to an Excel file and all column headers are visible.
 
         .EXAMPLE
-            Get-Process | Export-Excel .\test.xlsx -WorkSheetname Processes -IncludePivotTable -Show -PivotRows Company -PivotData PM
+            Get-Process | Export-Excel .\test.xlsx -WorksheetName Processes -IncludePivotTable -Show -PivotRows Company -PivotData PM
 
         .EXAMPLE
-            Get-Process | Export-Excel .\test.xlsx -WorkSheetname Processes -ChartType PieExploded3D -IncludePivotChart -IncludePivotTable -Show -PivotRows Company -PivotData PM
+            Get-Process | Export-Excel .\test.xlsx -WorksheetName Processes -ChartType PieExploded3D -IncludePivotChart -IncludePivotTable -Show -PivotRows Company -PivotData PM
 
         .EXAMPLE
             Get-Service | Export-Excel 'c:\temp\test.xlsx'  -Show -IncludePivotTable -PivotRows status -PivotData @{status='count'}
@@ -316,7 +318,7 @@
             }
             Remove-Item  -Path .\test.xlsx
             Get-Service | Select-Object    -Property Status,Name,DisplayName,StartType | Export-Excel -Path .\test.xlsx -AutoSize
-            Get-Process | Select-Object    -Property Name,Company,Handles,CPU,VM       | Export-Excel -Path .\test.xlsx -AutoSize -WorkSheetname 'sheet2'
+            Get-Process | Select-Object    -Property Name,Company,Handles,CPU,VM       | Export-Excel -Path .\test.xlsx -AutoSize -WorksheetName 'sheet2'
             Export-Excel -Path .\test.xlsx -PivotTableDefinition $pt -Show
 
             This example defines two pivot tables. Then it puts Service data on Sheet1 with one call to Export-Excel and Process Data on sheet2 with a second call to Export-Excel.
@@ -339,7 +341,7 @@
         .EXAMPLE
             Remove-Item -Path .\test.xlsx -ErrorAction Ignore
 
-            $excel = Get-Process | Select-Object -Property Name,Company,Handles,CPU,PM,NPM,WS | Export-Excel -Path .\test.xlsx -ClearSheet -WorkSheetname "Processes" -PassThru
+            $excel = Get-Process | Select-Object -Property Name,Company,Handles,CPU,PM,NPM,WS | Export-Excel -Path .\test.xlsx -ClearSheet -WorksheetName "Processes" -PassThru
             $sheet = $excel.Workbook.Worksheets["Processes"]
             $sheet.Column(1) | Set-Format -Bold -AutoFit
             $sheet.Column(2) | Set-Format -Width 29 -WrapText
@@ -350,7 +352,7 @@
             Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor Red
             Add-ConditionalFormatting -WorkSheet $sheet -Range "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600" -ForeGroundColor Red
             foreach ($c in 5..9) {Set-Format -Address $sheet.Column($c)  -AutoFit }
-            Export-Excel -ExcelPackage $excel -WorkSheetname "Processes" -IncludePivotChart -ChartType ColumnClustered -NoLegend -PivotRows company  -PivotData @{'Name'='Count'}  -Show
+            Export-Excel -ExcelPackage $excel -WorksheetName "Processes" -IncludePivotChart -ChartType ColumnClustered -NoLegend -PivotRows company  -PivotData @{'Name'='Count'}  -Show
 
             This a more sophisticated version of the previous example showing different ways of using Set-Format, and also adding conditional formatting.
             In the final command a Pivot chart is added and the workbook is opened in Excel.
@@ -371,7 +373,7 @@
         [Parameter(ValueFromPipeline = $true)]
         $TargetData,
         [Switch]$Show,
-        [String]$WorkSheetname = 'Sheet1',
+        [String]$WorksheetName = 'Sheet1',
         [String]$Password,
         [switch]$ClearSheet,
         [switch]$Append,
@@ -445,6 +447,8 @@
         [Object[]]$ConditionalFormat,
         [Object[]]$ConditionalText,
         [ScriptBlock]$CellStyleSB,
+        #If there is already content in the workbook the sheet with the Pivot table will not be active UNLESS Activate is specified
+        [switch]$Activate,
         [Parameter(ParameterSetName = 'Now')]
         [Switch]$Now,
         [Switch]$ReturnRange,
@@ -553,11 +557,14 @@
             }
             Else { $pkg = Open-ExcelPackage -Path $Path -Create -KillExcel:$KillExcel}
 
-            $params = @{WorkSheetname=$worksheetName}
+            $params = @{WorksheetName=$WorksheetName}
             if ($NoClobber) {Write-Warning -Message "-NoClobber parameter is no longer used" }
-            foreach ($p in @("ClearSheet", "MoveToStart", "MoveToEnd", "MoveBefore", "MoveAfter")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
+            foreach ($p in @("ClearSheet", "MoveToStart", "MoveToEnd", "MoveBefore", "MoveAfter", "Activate")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
             $ws = $pkg | Add-WorkSheet @params
-
+            if ($ws.Name -ne $WorksheetName) {
+                Write-Warning -Message "The Worksheet name has been changed from $WorksheetName to $($ws.Name), this may cause errors later."
+                $WorksheetName = $ws.Name
+            }
             foreach ($format in $ConditionalFormat ) {
                 switch ($format.formatter) {
                     "ThreeIconSet" {Add-ConditionalFormatting -WorkSheet $ws -ThreeIconsSet $format.IconType -range $format.range -reverse:$format.reverse  }
@@ -607,10 +614,10 @@
         Catch {
             if ($AlreadyExists) {
                 #Is this set anywhere ?
-                throw "Failed exporting worksheet '$WorkSheetname' to '$Path': The worksheet '$WorkSheetname' already exists."
+                throw "Failed exporting worksheet '$WorksheetName' to '$Path': The worksheet '$WorksheetName' already exists."
             }
             else {
-                throw "Failed preparing to export to worksheet '$WorkSheetname' to '$Path': $_"
+                throw "Failed preparing to export to worksheet '$WorksheetName' to '$Path': $_"
             }
         }
     }
@@ -669,7 +676,7 @@
                 }
             }
             Catch {
-                throw "Failed exporting data to worksheet '$WorkSheetname' to '$Path': $_"
+                throw "Failed exporting data to worksheet '$WorksheetName' to '$Path': $_"
             }
         }
     }
@@ -720,7 +727,7 @@
                     }
                 }
             }
-            Catch {Write-Warning -Message "Failed adding named ranges to worksheet '$WorkSheetname': $_"  }
+            Catch {Write-Warning -Message "Failed adding named ranges to worksheet '$WorksheetName': $_"  }
         }
 
         if ($RangeName) {
@@ -733,7 +740,7 @@
                 if ($ws.Names[$RangeName]) { $ws.Names[$rangename].Address = $ws.Cells[$dataRange].FullAddressAbsolute }
                 else {$ws.Names.Add($RangeName, $ws.Cells[$dataRange]) | Out-Null }
             }
-            Catch { Write-Warning -Message "Failed adding range '$RangeName' to worksheet '$WorkSheetname': $_"   }
+            Catch { Write-Warning -Message "Failed adding range '$RangeName' to worksheet '$WorksheetName': $_"   }
         }
 
         if ($TableName) {
@@ -753,7 +760,7 @@
                 }
                 Write-Verbose -Message "Defined table '$TableName' at $($targetRange.Address)"
             }
-            catch {Write-Warning -Message "Failed adding table '$TableName' to worksheet '$WorkSheetname': $_"}
+            catch {Write-Warning -Message "Failed adding table '$TableName' to worksheet '$WorksheetName': $_"}
         }
 
         if ($AutoFilter) {
@@ -761,14 +768,15 @@
                 $ws.Cells[$dataRange].AutoFilter = $true
                 Write-Verbose -Message "Enabeld autofilter. "
             }
-            catch {Write-Warning -Message "Failed adding autofilter to worksheet '$WorkSheetname': $_"}
+            catch {Write-Warning -Message "Failed adding autofilter to worksheet '$WorksheetName': $_"}
         }
 
         if ($PivotTableDefinition) {
             foreach ($item in $PivotTableDefinition.GetEnumerator()) {
                 $params = $item.value
+                if ($Activate) {$params.Activate = $true   }
                 if ($params.keys -notcontains "SourceRange" -and
-                   ($params.Keys -notcontains "SourceWorkSheet"   -or  $params.SourceWorkSheet -eq $WorkSheetname)) {$params.SourceRange = $dataRange}
+                   ($params.Keys -notcontains "SourceWorkSheet"   -or  $params.SourceWorkSheet -eq $WorksheetName)) {$params.SourceRange = $dataRange}
                 if ($params.Keys -notcontains "SourceWorkSheet")      {$params.SourceWorkSheet = $ws }
                 if ($params.Keys -notcontains "NoTotalsInPivot"   -and $NoTotalsInPivot  ) {$params.NoTotalsInPivot   = $true}
                 if ($params.Keys -notcontains "PivotDataToColumn" -and $PivotDataToColumn) {$params.PivotDataToColumn = $true}
@@ -781,7 +789,8 @@
                 "SourceRange" = $dataRange
             }
             if ($PivotTableName)    {$params.PivotTableName    = $PivotTableName}
-            else                    {$params.PivotTableName    = $WorkSheetname + 'PivotTable'}
+            else                    {$params.PivotTableName    = $WorksheetName + 'PivotTable'}
+            if ($Activate)          {$params.Activate          = $true   }
             if ($PivotFilter)       {$params.PivotFilter       = $PivotFilter}
             if ($PivotRows)         {$params.PivotRows         = $PivotRows}
             if ($PivotColumns)      {$Params.PivotColumns      = $PivotColumns}
@@ -825,7 +834,7 @@
                 }
             }
         }
-        catch {Write-Warning -Message "Failed adding Freezing the panes in worksheet '$WorkSheetname': $_"}
+        catch {Write-Warning -Message "Failed adding Freezing the panes in worksheet '$WorksheetName': $_"}
 
         if ($BoldTopRow) { #it sets bold as far as there are populated cells: for whole row could do $ws.row($x).style.font.bold = $true
             try {
@@ -838,14 +847,14 @@
                 $ws.Cells[$range].Style.Font.Bold = $true
                 Write-Verbose -Message "Set $range font style to bold."
             }
-            catch {Write-Warning -Message "Failed setting the top row to bold in worksheet '$WorkSheetname': $_"}
+            catch {Write-Warning -Message "Failed setting the top row to bold in worksheet '$WorksheetName': $_"}
         }
         if ($AutoSize) {
             try {
                 $ws.Cells.AutoFitColumns()
                 Write-Verbose -Message "Auto-sized columns"
             }
-            catch {  Write-Warning -Message "Failed autosizing columns of worksheet '$WorkSheetname': $_"}
+            catch {  Write-Warning -Message "Failed autosizing columns of worksheet '$WorksheetName': $_"}
         }
 
         foreach ($Sheet in $HideSheet) {
@@ -867,7 +876,7 @@
             catch {Write-Warning -Message  "Failed showing worksheet '$sheet': $_"}
         }
         if (-not $pkg.Workbook.Worksheets.Where({$_.Hidden -eq 'visible'})) {
-            Write-Verbose -Message "No Sheets were left visible, making $WorkSheetname visible"
+            Write-Verbose -Message "No Sheets were left visible, making $WorksheetName visible"
             $ws.Hidden = 'Visible'
         }
 
@@ -912,7 +921,7 @@
                 Add-ConditionalFormatting -WorkSheet $ws @cfParams
                 Write-Verbose -Message "Added conditional formatting to range $($ct.range)"
             }
-            catch {Write-Warning -Message "Failed adding conditional formatting to worksheet '$WorkSheetname': $_"}
+            catch {Write-Warning -Message "Failed adding conditional formatting to worksheet '$WorksheetName': $_"}
         }
 
         if ($CellStyleSB) {
@@ -921,7 +930,7 @@
                 $LastColumn = $ws.Dimension.Address -replace "^.*:(\w*)\d+$" , '$1'
                 & $CellStyleSB $ws $TotalRows $LastColumn
             }
-            catch {Write-Warning -Message "Failed processing CellStyleSB in worksheet '$WorkSheetname': $_"}
+            catch {Write-Warning -Message "Failed processing CellStyleSB in worksheet '$WorksheetName': $_"}
         }
 
         if ($Password) {
@@ -930,7 +939,7 @@
                 Write-Verbose -Message "Set password on workbook"
             }
 
-            catch {throw "Failed setting password for worksheet '$WorkSheetname': $_"}
+            catch {throw "Failed setting password for worksheet '$WorksheetName': $_"}
         }
 
         if ($PassThru) {       $pkg   }
@@ -978,7 +987,7 @@ function New-PivotTableDefinition {
         $pt  = New-PivotTableDefinition -PivotTableName "PT1" -SourceWorkSheet "Sheet1" -PivotRows "Status"  -PivotData @{Status='Count' } -PivotFilter 'StartType' -IncludePivotChart  -ChartType BarClustered3D
         $Pt += New-PivotTableDefinition -PivotTableName "PT2" -SourceWorkSheet "Sheet2" -PivotRows "Company" -PivotData @{Company='Count'} -IncludePivotChart  -ChartType PieExploded3D  -ShowPercent -ChartTitle "Breakdown of processes by company"
         Get-Service | Select-Object    -Property Status,Name,DisplayName,StartType | Export-Excel -Path .\test.xlsx -AutoSize
-        Get-Process | Select-Object    -Property Name,Company,Handles,CPU,VM       | Export-Excel -Path .\test.xlsx -AutoSize -WorkSheetname 'sheet2'
+        Get-Process | Select-Object    -Property Name,Company,Handles,CPU,VM       | Export-Excel -Path .\test.xlsx -AutoSize -WorksheetName 'sheet2'
         $excel = Export-Excel -Path .\test.xlsx -PivotTableDefinition $pt -Show
 
         This is a re-work of one of the examples in Export-Excel - instead of writing out the pivot definition hash table it is built by calling New-PivotTableDefinition.
@@ -1025,7 +1034,9 @@ function New-PivotTableDefinition {
         #if specified attaches the category to slices in a pie chart : not supported on all chart types, this may give errors if applied to an unsupported type.
         [Switch]$ShowCategory,
         #If specified attaches percentages to slices in a pie chart.
-        [Switch]$ShowPercent
+        [Switch]$ShowPercent,
+        #If there is already content in the workbook the sheet with the Pivot table will not be active UNLESS Activate is specified
+        [switch]$Activate
     )
     $validDataFuntions = [system.enum]::GetNames([OfficeOpenXml.Table.PivotTable.DataFieldFunctions])
 
@@ -1056,7 +1067,7 @@ function Add-WorkSheet  {
         [Parameter(Mandatory = $true, ParameterSetName = "WorkBook")]
         [OfficeOpenXml.ExcelWorkbook]$ExcelWorkbook,
         #The name of the worksheet 'Sheet1' by default.
-        [string]$WorkSheetname ,
+        [string]$WorksheetName ,
         #If the worksheet already exists, by default it will returned, unless -ClearSheet is specified in which case it will be deleted and re-created.
         [switch]$ClearSheet,
         #If specified, the worksheet will be moved to the start of the workbook.
@@ -1071,6 +1082,8 @@ function Add-WorkSheet  {
         # If specified, the worksheet will be moved after the nominated one (which can be a postion starting from 1, or a name or *).
         # If * is used, the worksheet names will be examined starting with the first one, and the sheet placed after the last sheet which comes before it alphabetically.
         $MoveAfter ,
+        #If there is already content in the workbook the new sheet will not be active UNLESS Activate is specified
+        [switch]$Activate,
         #If worksheet is provided as a copy source the new worksheet will be a copy of it. The source can be in the same workbook, or in a different file.
         [OfficeOpenXml.ExcelWorksheet]$CopySource,
         #Ignored but retained for backwards compatibility.
@@ -1079,43 +1092,43 @@ function Add-WorkSheet  {
     #if we were given a workbook use it, if we were given a package, use its workbook
     if      ($ExcelPackage -and -not $ExcelWorkbook) {$ExcelWorkbook = $ExcelPackage.Workbook}
 
-    # If worksheetName was given, try to use that worksheet. If it wasn't, and we are copying an existing sheet, try to use the sheet name
+    # If WorksheetName was given, try to use that worksheet. If it wasn't, and we are copying an existing sheet, try to use the sheet name
     # if we are not copying a sheet or the name is in use, use the name "SheetX" where X is the number of the new sheet
-    if      (-not $WorkSheetname -and $CopySource -and -not $ExcelWorkbook[$CopySource.Name]) {$WorkSheetname = $CopySource.Name}
-    elseif  (-not $WorkSheetname) {$WorkSheetname = "Sheet" + (1 + $ExcelWorkbook.Worksheets.Count)}
-    else    {$ws = $ExcelWorkbook.Worksheets[$WorkSheetname]}
+    if      (-not $WorksheetName -and $CopySource -and -not $ExcelWorkbook[$CopySource.Name]) {$WorksheetName = $CopySource.Name}
+    elseif  (-not $WorksheetName) {$WorksheetName = "Sheet" + (1 + $ExcelWorkbook.Worksheets.Count)}
+    else    {$ws = $ExcelWorkbook.Worksheets[$WorksheetName]}
 
     #If -clearsheet was specified and the named sheet exists, delete it
-    if      ($ws -and $ClearSheet) { $ExcelWorkbook.Worksheets.Delete($WorkSheetname) ; $ws = $null }
+    if      ($ws -and $ClearSheet) { $ExcelWorkbook.Worksheets.Delete($WorksheetName) ; $ws = $null }
 
     #copy or create new sheet as needed
     if (-not $ws -and $CopySource) {
-          Write-Verbose -Message "Copying into worksheet '$WorkSheetname'."
-          $ws = $ExcelWorkbook.Worksheets.Add($WorkSheetname, $CopySource)
+          Write-Verbose -Message "Copying into worksheet '$WorksheetName'."
+          $ws = $ExcelWorkbook.Worksheets.Add($WorksheetName, $CopySource)
     }
     elseif (-not $ws) {
-          $ws = $ExcelWorkbook.Worksheets.Add($WorkSheetname)
-          Write-Verbose -Message "Adding worksheet '$WorkSheetname'."
+          $ws = $ExcelWorkbook.Worksheets.Add($WorksheetName)
+          Write-Verbose -Message "Adding worksheet '$WorksheetName'."
     }
-    else {Write-Verbose -Message "Worksheet '$WorkSheetname' already existed."}
+    else {Write-Verbose -Message "Worksheet '$WorksheetName' already existed."}
     #region Move sheet if needed
-    if     ($MoveToStart) {$ExcelWorkbook.Worksheets.MoveToStart($worksheetName) }
-    elseif ($MoveToEnd  ) {$ExcelWorkbook.Worksheets.MoveToEnd($worksheetName)   }
+    if     ($MoveToStart) {$ExcelWorkbook.Worksheets.MoveToStart($WorksheetName) }
+    elseif ($MoveToEnd  ) {$ExcelWorkbook.Worksheets.MoveToEnd($WorksheetName)   }
     elseif ($MoveBefore ) {
         if ($ExcelWorkbook.Worksheets[$MoveBefore]) {
             if ($MoveBefore -is [int]) {
                 $ExcelWorkbook.Worksheets.MoveBefore($ws.Index, $MoveBefore)
             }
-            else {$ExcelWorkbook.Worksheets.MoveBefore($worksheetname, $MoveBefore)}
+            else {$ExcelWorkbook.Worksheets.MoveBefore($WorksheetName, $MoveBefore)}
         }
-        else {Write-Warning "Can't find worksheet '$MoveBefore'; worsheet '$WorkSheetname' will not be moved."}
+        else {Write-Warning "Can't find worksheet '$MoveBefore'; worsheet '$WorksheetName' will not be moved."}
     }
     elseif ($MoveAfter  ) {
         if ($MoveAfter -eq "*") {
-            if ($WorkSheetname -lt $ExcelWorkbook.Worksheets[1].Name) {$ExcelWorkbook.Worksheets.MoveToStart($worksheetName)}
+            if ($WorksheetName -lt $ExcelWorkbook.Worksheets[1].Name) {$ExcelWorkbook.Worksheets.MoveToStart($WorksheetName)}
             else {
                 $i = 1
-                While ($i -lt $ExcelWorkbook.Worksheets.Count -and ($ExcelWorkbook.Worksheets[$i + 1].Name -le $worksheetname) ) { $i++}
+                While ($i -lt $ExcelWorkbook.Worksheets.Count -and ($ExcelWorkbook.Worksheets[$i + 1].Name -le $WorksheetName) ) { $i++}
                 $ExcelWorkbook.Worksheets.MoveAfter($ws.Index, $i)
             }
         }
@@ -1124,12 +1137,13 @@ function Add-WorkSheet  {
                 $ExcelWorkbook.Worksheets.MoveAfter($ws.Index, $MoveAfter)
             }
             else {
-                $ExcelWorkbook.Worksheets.MoveAfter($worksheetname, $MoveAfter)
+                $ExcelWorkbook.Worksheets.MoveAfter($WorksheetName, $MoveAfter)
             }
         }
-        else {Write-Warning "Can't find worksheet '$MoveAfter'; worsheet '$WorkSheetname' will not be moved."}
+        else {Write-Warning "Can't find worksheet '$MoveAfter'; worsheet '$WorksheetName' will not be moved."}
     }
     #endregion
+    if ($Activate) {Select-Worksheet -ExcelWorkbook $ExcelWorkbook -WorksheetName $ws.Name  }
     return $ws
 }
 function Add-PivotTable {
@@ -1183,12 +1197,13 @@ function Add-PivotTable {
         #if specified attaches the category to slices in a pie chart : not supported on all chart types, this may give errors if applied to an unsupported type.
         [Switch]$ShowCategory,
         #If specified attaches percentages to slices in a pie chart.
-        [Switch]$ShowPercent
+        [Switch]$ShowPercent,
+        #If there is already content in the workbook the sheet with the Pivot table will not be active UNLESS Activate is specified
+        [switch]$Activate
     )
 
     $pivotTableDataName = $pivotTableName + 'PivotTableData'
-    [OfficeOpenXml.ExcelWorksheet]$wsPivot = Add-WorkSheet -ExcelPackage $ExcelPackage -WorkSheetname $pivotTableName
-   # $wsPivot.View.TabSelected = $true
+    [OfficeOpenXml.ExcelWorksheet]$wsPivot = Add-WorkSheet -ExcelPackage $ExcelPackage -WorksheetName $pivotTableName -Activate:$Activate
 
     #if the pivot doesn't exist, create it.
     if (-not $wsPivot.PivotTables[$pivotTableDataName] ) {
@@ -1374,4 +1389,25 @@ function Add-ExcelChart {
         }
     }
     catch {Write-Warning -Message "Failed adding Chart to worksheet '$($WorkSheet).name': $_"}
+}
+function Select-Worksheet {
+    param (
+        #An object representing an Excel Package.
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = "Package", Position = 0)]
+        [OfficeOpenXml.ExcelPackage]$ExcelPackage,
+        #An Excel workbook to which the Worksheet will be added - a package contains one workbook so you can use whichever fits at the time.
+        [Parameter(Mandatory = $true, ParameterSetName = "WorkBook")]
+        [OfficeOpenXml.ExcelWorkbook]$ExcelWorkbook,
+        #The name of the worksheet 'Sheet1' by default.
+        [string]$WorksheetName
+    )
+    #if we were given a workbook use it, if we were given a package, use its workbook
+    if      ($ExcelPackage -and -not $ExcelWorkbook) {$ExcelWorkbook = $ExcelPackage.Workbook}
+    if      (-not $ExcelWorkbook.Worksheets.Where({$_.name -eq $WorksheetName})) {
+        Write-Warning -Message "Workbook does not contain a worksheet named '$WorksheetName'" ; return
+    }
+    else {
+        foreach ($w in $ExcelWorkbook.Worksheets) {$w.View.TabSelected = $false}
+        $ExcelWorkbook.Worksheets[$WorksheetName].View.TabSelected = $true
+    }
 }
