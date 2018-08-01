@@ -34,7 +34,6 @@ Begin {
             'Export-Charts.ps1',
             'Export-Excel.ps1',
             'Export-ExcelSheet.ps1',
-            'formatting.ps1',
             'Get-ExcelColumnName.ps1',
             'Get-ExcelSheetInfo.ps1',
             'Get-ExcelWorkbookInfo.ps1',
