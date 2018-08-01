@@ -235,7 +235,7 @@ Describe "Merge Worksheet" {
         }
     }
     Context "Wider data set"    {
-        it "Copes with more columns beyond Z in the Output sheet                                   " {
+        it "Coped with columns beyond Z in the Output sheet                                        " {
             { Merge-Worksheet -Referencefile "$env:temp\server1.xlsx" -Differencefile  "$env:temp\Server2.xlsx" -OutputFile  "$env:temp\combined2.xlsx"  }           | Should not throw
         }
     }

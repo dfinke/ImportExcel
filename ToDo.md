@@ -1,11 +1,17 @@
-- [ ] Create an autocomplete for WorkSheetName param on ImportExcel and for number format ; where number format exists Translate "Date", "DateTime", "Currency" 
-
+- [x] Create an autocomplete for WorkSheetName param on ImportExcel and for number format ; where number format exists Translate "Date", "DateTime", "Currency" 
+- [x] Support "make worksheet active" 
+- [X] Add checks for valid worksheet names 
+- [ ] Improve checking of worksheet, pivot names, range names and table names
+- [ ] Investigate regional support for number conversion & possible date conversion. Also investigate feasablity of preserving number format when converting string to number
 - [ ] Add help text for parmaters which don't have it ( PivotDataToColumn , NoClobber and CellStyleSB ) in Export Excel, copy to Send-SQLDataToExcel
-- [ ] Support "make worksheet active" 
-- [ ] Add checks for valid worksheet names (also check pivot names, range names and table names are valid)
-- [ ] Investigate regional support for number conversion & possible date conversion
 - [ ] Add help in ConvertToExcelXLSx.ps1, Get-HTMLTable.ps1, GetRange.PS1,  GetExcelTable.Ps1, Import-HTML.PS1,  New-ConditionalFormattingIconSet.Ps1, NewConditionalText.PS1, New-Psitem.PS1, Remove-Worksheet.ps1 and  Add-ExcelChart - Copy parameter help from function Add-ExcelChart into New-ExcelChart.ps1
-- [ ] Examples and tests for new "Quick charts" in Export Excel  (replace examples) that use Charting.ps1, GetXYRange.ps1, InferData.PS1 (move these to deprecated). 
-- [ ] Test Add PivotTable selecting source sheet by position , UnhideSheet, and Wildcard support for hideSheet
-- [ ] Test return range support to Set-Row and Set-Column and add examples to examples for set-Row and Set-column set-format, add-Conditional format (e.g. from tests)
-- [ ] Increase code covereage for import-excel and Set-Format 
+- [ ] Add examples to add-ConditionalFormat, set-format,set-Row and Set-column (e.g. from tests)
+- [ ] Add Examples and tests for new "Quick charts" in Export Excel  (replace examples) that use Charting.ps1, GetXYRange.ps1, InferData.PS1 (move these to deprecated). 
+- [X] Test Add PivotTable selecting source sheet by position 
+ -[X] Test UnhideSheet, and Wildcard support for hideSheet
+- [X] Test return range support for Set-Row 
+- [X] Test return range support for Set-Column 
+- [X] Test Expand-NumberFormat. 
+- [X] Test Set-Row and Set-column setting values as dates and hyperlinks (only testing Column)
+- [X] Increase Test code covereage for Set-Format 
+- [ ] Increase Test code covereage for import-excel

@@ -37,7 +37,7 @@ Describe "Copy-Worksheet" {
             $excel = Open-ExcelPackage -Path $path2
             $ws = $excel.Workbook.Worksheets["Processes"]
         }
-        it "inserted a worksheet                                                                   " {
+        it "Inserted a worksheet                                                                   " {
             $Excel.Workbook.Worksheets.count                            | Should     be 2
             $ws                                                         | Should not benullorEmpty
             $ws.Dimension.Address                                       | should be $ProcRange
@@ -50,7 +50,7 @@ Describe "Copy-Worksheet" {
             $excel = Open-ExcelPackage -Path $path2
             $ws    = $Excel.Workbook.Worksheets[3]
         }
-        it "inserted a worksheet   with the expected name, number of rows and number of columns    " {
+        it "Inserted a worksheet   with the expected name, number of rows and number of columns    " {
             $Excel.Workbook.Worksheets.count                            | Should     be 3
             $ws                                                         | Should not benullorEmpty
             $ws.Name                                                    | Should     be "CopyOfMixedTypes"

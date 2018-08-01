@@ -122,7 +122,7 @@
         $rule.Formula2 = $ConditionValue2
     }
 
-    if ($NumberFormat)      {$rule.Style.NumberFormat.Format        = $NumberFormat      }
+    if ($NumberFormat)      {$rule.Style.NumberFormat.Format        = (Expand-NumberFormat  $NumberFormat)      }
     if ($Underline)         {$rule.Style.Font.Underline             = [OfficeOpenXml.Style.ExcelUnderLineType]::Single }
     if ($Bold)              {$rule.Style.Font.Bold                  = $true              }
     if ($Italic)            {$rule.Style.Font.Italic                = $true              }
