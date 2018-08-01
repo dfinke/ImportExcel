@@ -5,9 +5,9 @@ AddConditionalFormatting.ps1
 Charting.ps1
 ColorCompletion.ps1
 Compare-Worksheet.ps1
+ConvertExcelToImageFile.ps1
 ConvertFromExcelData.ps1
 ConvertFromExcelToSQLInsert.ps1
-ConvertExcelToImageFile.ps1
 ConvertToExcelXlsx.ps1
 Copy-ExcelWorkSheet.ps1
 Export-Charts.ps1
