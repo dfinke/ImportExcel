@@ -101,35 +101,48 @@
         #If specified pass the rule back to the caller to allow additional customization.
         [switch]$Passthru
     )
+     
     #Allow conditional formatting to work like Set-Format (with single ADDRESS parameter), split it to get worksheet and range of cells.
     If ($Address -and -not $WorkSheet -and -not $Range) {
         $WorkSheet = $Address.Worksheet[0]
         $Range     = $Address.Address
     }
-    If    ($ThreeIconsSet) {$rule =  $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)}
-    elseif ($FourIconsSet) {$rule =  $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet) }
-    elseif ($FiveIconsSet) {$rule =  $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Range , $IconType)     }
-    elseif ($DataBarColor) {$rule =  $WorkSheet.ConditionalFormatting.AddDatabar(     $Range , $DataBarColor) }
-    else                   {$rule = ($WorkSheet.ConditionalFormatting)."Add$RuleType"($Range)}
-    if ($reverse)          {$rule.reverse = $true}
-    if ($ConditionValue  -and $RuleType -match "Top|Botom")             {$rule.Rank    = $ConditionValue }
-    if ($ConditionValue  -and $RuleType -match "StdDev")                {$rule.StdDev  = $ConditionValue }
-    if ($ConditionValue  -and $RuleType -match "Than|Equal|Expression") {$rule.Formula = $ConditionValue }
-    if ($ConditionValue  -and $RuleType -match "Text|With")             {$rule.Text    = $ConditionValue }
-    if ($ConditionValue  -and
-        $ConditionValue2 -and $RuleType -match "Between") {
-        $rule.Formula  = $ConditionValue
-        $rule.Formula2 = $ConditionValue2
+    #region Create a rule of the right type
+    if     ($PSBoundParameters.ContainsKey("ThreeIconsSet" )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)}
+    elseif ($PSBoundParameters.ContainsKey("FourIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet) }
+    elseif ($PSBoundParameters.ContainsKey("FiveIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Range , $FiveIconsSet) }
+    elseif ($PSBoundParameters.ContainsKey("DataBarColor"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddDatabar(     $Range , $DataBarColor) }
+    else                                                            {$rule = ($WorkSheet.ConditionalFormatting)."Add$RuleType"($Range)}
+    if     ($PSBoundParameters.ContainsKey("Reverse"       )      ) {$rule.reverse = [boolean]$Reverse}
+    #endregion
+    #region set the rule conditions
+    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and 
+            $RuleType -match "Top|Botom"                          ) {$rule.Rank     = $ConditionValue }
+    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and 
+            $RuleType -match "StdDev"                             ) {$rule.StdDev   = $ConditionValue }
+    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and 
+            $RuleType -match "Than|Equal|Expression"              ) {$rule.Formula  = $ConditionValue }
+    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and 
+            $RuleType -match "Text|With"                          ) {$rule.Text     = $ConditionValue }
+    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and
+            $PSBoundParameters.ContainsKey("ConditionValue") -and 
+            $RuleType -match "Between"                            ) {
+                                                                     $rule.Formula  = $ConditionValue; 
+                                                                     $rule.Formula2 = $ConditionValue2
     }
-
-    if ($NumberFormat)      {$rule.Style.NumberFormat.Format        = (Expand-NumberFormat  $NumberFormat)      }
-    if ($Underline)         {$rule.Style.Font.Underline             = [OfficeOpenXml.Style.ExcelUnderLineType]::Single }
-    if ($Bold)              {$rule.Style.Font.Bold                  = $true              }
-    if ($Italic)            {$rule.Style.Font.Italic                = $true              }
-    if ($StrikeThru)        {$rule.Style.Font.Strike                = $true              }
-    if ($ForeGroundColor)   {$rule.Style.Font.Color.color           = $ForeGroundColor   }
-    if ($BackgroundColor)   {$rule.Style.Fill.BackgroundColor.color = $BackgroundColor   }
-    if ($BackgroundPattern) {$rule.Style.Fill.PatternType           = $BackgroundPattern }
-    if ($PatternColor)      {$rule.Style.Fill.PatternColor.color    = $PatternColor      }
-    if ($Passthru)          {$rule}
+    #endregion
+    #region set the rule format 
+    if     ($PSBoundParameters.ContainsKey("NumberFormat"  )      ) {$rule.Style.NumberFormat.Format        = (Expand-NumberFormat  $NumberFormat)             }
+    if     ($Underline                                            ) {$rule.Style.Font.Underline             = [OfficeOpenXml.Style.ExcelUnderLineType]::Single }
+    elseif ($PSBoundParameters.ContainsKey("Underline"     )      ) {$rule.Style.Font.Underline             = [OfficeOpenXml.Style.ExcelUnderLineType]::None   }
+    if     ($PSBoundParameters.ContainsKey("Bold"          )      ) {$rule.Style.Font.Bold                  = [boolean]$Bold       }
+    if     ($PSBoundParameters.ContainsKey("Italic"        )      ) {$rule.Style.Font.Italic                = [boolean]$Italic     }
+    if     ($PSBoundParameters.ContainsKey("StrikeThru")          ) {$rule.Style.Font.Strike                = [boolean]$StrikeThru }
+    if     ($PSBoundParameters.ContainsKey("ForeGroundColor"  )   ) {$rule.Style.Font.Color.color           = $ForeGroundColor     }
+    if     ($PSBoundParameters.ContainsKey("BackgroundColor"  )   ) {$rule.Style.Fill.BackgroundColor.color = $BackgroundColor     }
+    if     ($PSBoundParameters.ContainsKey("BackgroundPattern")   ) {$rule.Style.Fill.PatternType           = $BackgroundPattern   }
+    if     ($PSBoundParameters.ContainsKey("PatternColor"     )   ) {$rule.Style.Fill.PatternColor.color    = $PatternColor        }
+    #endregion 
+    #Allow further tweaking by returning the rule, if passthru specified 
+    if     ($Passthru)  {$rule}
 }
