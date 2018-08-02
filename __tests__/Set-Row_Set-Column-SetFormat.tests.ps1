@@ -264,6 +264,22 @@ Describe "Set-Column, Set-Row and Set Format" {
     }
 }
 
+Describe "Conditional Formatting"  {
+    BeforeAll {
+    Remove-Item $path 
+    $data = Get-Process | where company | select company,name,pm,handles,*mem* 
+    $cfmt = New-ConditionalFormattingIconSet -Range "c:c" -ConditionalFormat ThreeIconSet -IconType Arrows
+    $data | Export-Excel -path $Path  -AutoSize -ConditionalFormat $cfmt
+    $excel = Open-ExcelPackage -Path $path 
+    $ws = $excel.Workbook.Worksheets[1]
+    }
+    Context "Using a pre-prepared 3 Arrows rule" {
+        it "Set the right type, IconSet and range                                                  " {
+            $ws.ConditionalFormatting[0].IconSet                        | Should     be "Arrows" 
+            $ws.ConditionalFormatting[0].Address.Address                | Should     be "c:c" 
+            $ws.ConditionalFormatting[0].Type.ToString()                | Should     be "ThreeIconSet"
+        }  
+    }
 
-
+}
 
