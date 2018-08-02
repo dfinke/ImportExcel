@@ -54,12 +54,22 @@ Install-Module ImportExcel
 # What's new to Aug 2018
 - Set-Row and Set-Column will now create hyperlinks and insert dates correctly
 - Import-Excel now has an argument completer for Worksheet name - this can be slow on large files
+<<<<<<< HEAD
 - The NumberFormat parameter (in Export-Excel, Set-Row, Set-Column, Set-Format and Add-ConditionalFormat) and X&YAxisNumberFormat parameters (in New-ExcelChartDefinition and Add-ExcelChart) now have an argument completer and the names Currency, Number, Percentage, Scientific, Fraction, Short Date ,Short time,Long time, Date-Time and Text will be converted to the correct Excel formatting strings.
 - Added new function Select-Worksheet to make a named sheet active: Added -Activate switch to Add-Worksheet, to make current sheet active, Export-Excel and Add-PivotTable support -Activate and pass it to Add-Worksheet, and New-PivotTableDefinition allows it to be part of the Pivot TableDefinition.
 - Fixed a bug in Set-Format which caused -Hidden not to work
 - Additional tests.
+=======
+- The NumberFormat parameter (in Export-Excel, Set-Row, Set-Column, Set-Format and Add-ConditionalFormat) and X&YAxisNumberFormat paramaters (in New-ExcelChartDefinition and Add-ExcelChart) now have an argument completer and the names Currency, Number, Percentage, Scientific, Fraction, Short Date ,Short time,Long time, Date-Time and Text will be converted to the correct Excel formatting strings. 
+- Added new function Select-Worksheet to make a named sheet active: Added -Activate switch to Add-Worksheet, to make current sheet active, Export-Excel and Add-PivotTable support -Activate and pass it to Add-Worksheet, and New-PivotTableDefinition allows it to be part of the Pivot TableDefinition. 
+- Fixed a bug in Set-Format which caused -Hidden not to work 
+- Made the same changes to Add-Conditional format as set format so -switch:$false is processed, and 0 enums and values are processed correctly 
+- In Export-Excel, wraped calls to Add-CellValue in a try catch so a value which causes an issue doesn't crash the whole export but generates a warning instead (#410) . 
+- Additional tests. 
+>>>>>>> 42e2b11a88475dbdd3dbd6f3b1703b33b4d0ba4b
 
 # What's new to July 18
+- Changed parameter evaluation in Set-Format to support -bold:$false (and other switches so that if false is specified the attribute will be removed ), and to bug were enums with a value of zero, and other zero parameters were not set. 
 - Moved chart creation into its own function (Add-Excel chart) within Export-Excel.ps1. Renamed New-Excelchart to New-ExcelChartDefinition to make it clearer that it is not making anything in the workbook (but for compatibility put an alias of New-ExcelChart in so existing code does not break). Found that -Header does nothing, so it isn't Add-Excel chart and there is a message that does nothing in New-ExcelChartDefinition .
 - Added -BarChart -ColumnChart -LineChart -PieChart parameters to Export-Excel for quick charts without giving a full chart definition.
 - Added parameters for managing chart Axes and legend
