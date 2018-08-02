@@ -635,7 +635,8 @@
                 if ($isDataTypeValueType) {
                     $ColumnIndex = $StartColumn
                     $Row += 1
-                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData
+                    try    {Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData}
+                    catch  {Write-Warning "Could not insert value at Row $Row. "}
                 }
                 else {
                     #region Add headers
@@ -667,8 +668,8 @@
 
                     foreach ($Name in $script:Header) {
                         #region Add non header values
-                        Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData.$Name
-
+                        try   {Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData.$Name}
+                        catch {Write-Warning -Message "Could not insert the $Name property at Row $Row, Column $Column"}
                         $ColumnIndex += 1
                         #endregion
                     }
