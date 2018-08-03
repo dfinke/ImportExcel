@@ -126,7 +126,7 @@ Describe 'Export-Excel - Should deliver same results as Format-Table -Autosize' 
         $Type.ObjectTypeInsiderBaseName | Should -Be 'System.Object'
 
         $Path = '21.xlsx'
-        Export-Excel -Path $Path -AutoFilter -AutoSize -TargetData $myitems0 -Verbose
+        Export-Excel -Path $Path -AutoFilter -AutoSize -TargetData $myitems0 #-Verbose
         $pkg = Open-ExcelPackage -Path $Path -KillExcel:$KillExcel
         $Pkg.Workbook.Worksheets[1].Dimension.Rows | Should -Be 4
         $pkg.Workbook.Worksheets[1].Dimension.Columns | Should -Be 3
