@@ -1,6 +1,6 @@
 #Requires -Modules Pester
 Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-Clear-Host
+
 ### Preparing Data Start
 $myitems0 = @(
     [pscustomobject]@{name = "Joe"; age = 32; info = "Cat lover"},
@@ -93,7 +93,7 @@ $InvoiceDataOrdered1 += $InvoiceEntry7
 $InvoiceDataOrdered2 = @()
 $InvoiceDataOrdered2 += $InvoiceEntry7
 $InvoiceDataOrdered2 += $InvoiceEntry8
-
+<# Useful to display types
 $Array = @()
 $Array += Get-ObjectType -Object $myitems0  -ObjectName '$myitems0'
 $Array += Get-ObjectType -Object $myitems1  -ObjectName '$myitems1'
@@ -114,6 +114,7 @@ $Array += Get-ObjectType -Object $InvoiceEntry7 -ObjectName '$InvoiceEntry7'
 $Array += Get-ObjectType -Object $InvoiceDataOrdered1 -ObjectName '$InvoiceDataOrdered1'
 $Array += Get-ObjectType -Object $InvoiceDataOrdered2 -ObjectName '$InvoiceDataOrdered2'
 $Array | Format-Table -AutoSize
+#>
 
 Describe 'Export-Excel - Should deliver same results as Format-Table -Autosize' {
     It 'Given (MyItems0) without Pipeline should have 3 columns, 4 rows, 3rd row 3rd column should be Food lover' {
