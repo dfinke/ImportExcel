@@ -71,11 +71,11 @@ function Format-PSTableConvertType2 {
         $Object,
         [switch] $SkipTitles
     )
-    Write-Verbose 'Format-PSTableConvertType2 - Option 2'
+    #Write-Verbose 'Format-PSTableConvertType2 - Option 2'
     $Array = New-ArrayList
     ### Add Titles
     if (-not $SkipTitle) {
-
+        # Write-Verbose 'Format-PSTableConvertType2 - Option 2 - Titles Start'
         $Titles = New-ArrayList
         foreach ($O in $Object) {
             foreach ($Name in $O.PSObject.Properties.Name) {
@@ -85,16 +85,20 @@ function Format-PSTableConvertType2 {
             break
         }
         Add-ToArray -List ($Array) -Element $Titles
+        # Write-Verbose 'Format-PSTableConvertType2 - Option 2 - Titles End'
     }
     ### Add Data
+    #Write-Verbose 'Format-PSTableConvertType2 - Option 2 - Data Start'
     foreach ($O in $Object) {
         $ArrayValues = New-ArrayList
-        foreach ($Value in $O.PSObject.Properties.Value) {
+        foreach ($Name in $O.PSObject.Properties.Name) {
             #Write-Verbose "my name is $Value"
-            Add-ToArray -List $ArrayValues -Element $Value
+
+            Add-ToArray -List $ArrayValues -Element  $O.$Name
         }
         Add-ToArray -List $Array -Element $ArrayValues
     }
+    #Write-Verbose 'Format-PSTableConvertType2 - Option 2 - Data End'
     return , $Array
 }
 function Format-PSTableConvertType1 {
@@ -136,24 +140,29 @@ function Format-PSTable {
 
     $Type = Get-ObjectType -Object $Object
     Write-Verbose "Format-PSTable - Type: $($Type.ObjectTypeName)"
-
     if ($Type.ObjectTypeName -eq 'Object[]' -or
         $Type.ObjectTypeName -eq 'Object' -or $Type.ObjectTypeName -eq 'PSCustomObject' -or
         $Type.ObjectTypeName -eq 'Collection`1') {
-
+        #Write-Verbose 'Level 0-0'
         if ($Type.ObjectTypeInsiderName -eq 'string') {
+            #Write-Verbose 'Level 1-0'
             return Format-PSTableConvertType1 -Object $Object -SkipTitle:$SkipTitle
         } elseif ($Type.ObjectTypeInsiderName -eq 'Object' -or $Type.ObjectTypeInsiderName -eq 'PSCustomObject') {
+            # Write-Verbose 'Level 1-1'
             return Format-PSTableConvertType2 -Object $Object -SkipTitle:$SkipTitle
         } elseif ($Type.ObjectTypeInsiderName -eq 'HashTable' -or $Type.ObjectTypeInsiderName -eq 'OrderedDictionary' ) {
+            # Write-Verbose 'Level 1-2'
             return Format-PSTableConvertType3 -Object $Object -SkipTitle:$SkipTitle
         } else {
             # Covers ADDriveInfo and other types of objects
+            # Write-Verbose 'Level 1-3'
             return Format-PSTableConvertType2 -Object $Object -SkipTitle:$SkipTitle
         }
     } elseif ($Type.ObjectTypeName -eq 'HashTable' -or $Type.ObjectTypeName -eq 'OrderedDictionary' ) {
+        #Write-Verbose 'Level 0-1'
         return Format-PSTableConvertType3 -Object $Object -SkipTitle:$SkipTitle
     } else {
+        #Write-Verbose 'Level 0-2'
         # Covers ADDriveInfo and other types of objects
         return Format-PSTableConvertType2 -Object $Object -SkipTitle:$SkipTitle
     }
