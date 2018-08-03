@@ -1,32 +1,39 @@
-Function Format-PSPivotTableOld {
+function Format-PSPivotTable {
     [CmdletBinding()]
     param (
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)] $Object
+        [Parameter(
+            Position = 0,
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true
+        )] [object[]]$Object
     )
-    Begin {
-        $Value = @()
-    }
-    Process {
-        $Value += $Object.ForEach( {[PSCustomObject]$_})
-    }
-    End {
-        return $Value
-    }
-}
+    begin { $i = 0; }
 
-Function Format-PSPivotTable {
-    [CmdletBinding()]
-    param (
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)] $Object
-    )
-    Begin {
-        $Value = New-ArrayList
-    }
-    Process {
-        Add-ToArray -List $Value -Element $Object.ForEach( {[PSCustomObject]$_})
-    }
-    End {
-        return $Value
+    process {
+        foreach ($myObject in $Object) {
+            if ($myObject.GetType().Name -eq 'hashtable' -or $myObject.GetType().Name -eq 'OrderedDictionary') {
+                Write-Verbose 'Format-PSPivotTable - Converting HashTable/OrderedDictionary to PSCustomObject'
+                $output = New-Object -TypeName PsObject;
+                Add-Member -InputObject $output -MemberType ScriptMethod -Name AddNote -Value {
+                    Add-Member -InputObject $this -MemberType NoteProperty -Name $args[0] -Value $args[1];
+                };
+                $myObject.Keys | Sort-Object | % {
+                    $output.AddNote($_, $myObject.$_);
+                }
+                $output;
+            } else {
+                Write-Verbose 'Format-PSPivotTable - Converting PSCustomObject to HashTable/OrderedDictionary'
+                # Write-Warning "Index $i is not of type [hashtable]";
+                $output = [ordered] @{};
+                $myObject | Get-Member -MemberType *Property | % {
+                    $output.($_.name) = $myObject.($_.name);
+                }
+                $output
+
+            }
+            $i += 1;
+        }
     }
 }
 
