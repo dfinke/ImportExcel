@@ -623,62 +623,32 @@
     }
 
     Process {
-        if ($TargetData) {
-            Try {
-                if ($firstTimeThru) {
-                    $firstTimeThru = $false
-                    $isDataTypeValueType = $TargetData.GetType().name -match 'string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
-                    if ($isDataTypeValueType) {$row -= 1} #row incremented before adding values, so it is set to the number of rows inserted at the end
-                    Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'"
+        if ($firstTimeThru) {
+            $firstTimeThru = $false
+            $Data = Format-PSTable $TargetData
+            foreach ($RowData in $Data) {
+                $ColumnIndex = $StartColumn
+                foreach ($Value in $RowData) {
+                    Write-Verbose "Row: $Row Column: $ColumnIndex Data: $Value"
+                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $Value
+                    $ColumnIndex++
                 }
-
-                if ($isDataTypeValueType) {
-                    $ColumnIndex = $StartColumn
-                    $Row += 1
-                    try    {Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData}
-                    catch  {Write-Warning "Could not insert value at Row $Row. "}
-                }
-                else {
-                    #region Add headers
-                    if (-not $script:Header) {
-                        $ColumnIndex = $StartColumn
-                        if ($DisplayPropertySet -and $TargetData.psStandardmembers.DefaultDisplayPropertySet.ReferencedPropertyNames) {
-                            $script:Header = $TargetData.psStandardmembers.DefaultDisplayPropertySet.ReferencedPropertyNames.Where( {$_ -notin $ExcludeProperty})
-                        }
-                        else {
-                            if ($NoAliasOrScriptPropeties) {$propType = "Property"} else {$propType = "*"}
-                            $script:Header = $TargetData.PSObject.Properties.where( {$_.MemberType -like $propType -and $_.Name -notin $ExcludeProperty}).Name
-                        }
-                        if ($NoHeader) {
-                            # Don't push the headers to the spreadsheet
-                            $Row -= 1
-                        }
-                        else {
-                            foreach ($Name in $script:Header) {
-                                $ws.Cells[$Row, $ColumnIndex].Value = $Name
-                                Write-Verbose "Cell '$Row`:$ColumnIndex' add header '$Name'"
-                                $ColumnIndex += 1
-                            }
-                        }
-                    }
-                    #endregion
-
-                    $Row += 1
-                    $ColumnIndex = $StartColumn
-
-                    foreach ($Name in $script:Header) {
-                        #region Add non header values
-                        try   {Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData.$Name}
-                        catch {Write-Warning -Message "Could not insert the $Name property at Row $Row, Column $Column"}
-                        $ColumnIndex += 1
-                        #endregion
-                    }
-                    $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false
-                }
+                $Row++
             }
-            Catch {
-                throw "Failed exporting data to worksheet '$WorksheetName' to '$Path': $_"
+            Write-Verbose "Last Row: $Row Last Column: $ColumnIndex Data: $Value"
+        } else {
+            $Data = Format-PSTable $TargetData -SkipTitle
+            foreach ($RowData in $Data) {
+                $ColumnIndex = $StartColumn
+                foreach ($Value in $RowData) {
+                    Write-Verbose "Row: $Row Column: $ColumnIndex Data: $Value"
+                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $Value
+                    $ColumnIndex++
+
+                }
+                $Row++
             }
+            Write-Verbose "Last Row: $Row Last Column: $ColumnIndex Data: $Value"
         }
     }
 
@@ -689,8 +659,8 @@
               $endAddress   = $ws.Dimension.End.Address
         }
         else {
-              $LastRow      = $Row
-              $LastCol      = $ColumnIndex
+              $LastRow      = $Row - 1
+              $LastCol      = $ColumnIndex - 1
               $endAddress   = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$LastRow]C[$LastCol]", 0, 0)
         }
         $startAddress = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$StartRow]C[$StartColumn]", 0, 0)
