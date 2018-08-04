@@ -1,4 +1,4 @@
-function Format-PSPivotTable {
+function Format-TransposeTable {
     [CmdletBinding()]
     param (
         [Parameter(
@@ -13,7 +13,7 @@ function Format-PSPivotTable {
     process {
         foreach ($myObject in $Object) {
             if ($myObject.GetType().Name -eq 'hashtable' -or $myObject.GetType().Name -eq 'OrderedDictionary') {
-                Write-Verbose 'Format-PSPivotTable - Converting HashTable/OrderedDictionary to PSCustomObject'
+                Write-Verbose " Format-TransposeTable - Converting HashTable/OrderedDictionary to PSCustomObject - $($myObject.GetType().Name)"
                 $output = New-Object -TypeName PsObject;
                 Add-Member -InputObject $output -MemberType ScriptMethod -Name AddNote -Value {
                     Add-Member -InputObject $this -MemberType NoteProperty -Name $args[0] -Value $args[1];
@@ -23,7 +23,7 @@ function Format-PSPivotTable {
                 }
                 $output;
             } else {
-                Write-Verbose 'Format-PSPivotTable - Converting PSCustomObject to HashTable/OrderedDictionary'
+                Write-Verbose " Format-TransposeTable - Converting PSCustomObject to HashTable/OrderedDictionary - $($myObject.GetType().Name)"
                 # Write-Warning "Index $i is not of type [hashtable]";
                 $output = [ordered] @{};
                 $myObject | Get-Member -MemberType *Property | % {
@@ -129,8 +129,6 @@ function Format-PSTableConvertType1 {
 
     return , $Array
 }
-
-
 function Format-PSTable {
     [CmdletBinding()]
     param (
@@ -168,7 +166,6 @@ function Format-PSTable {
     }
     throw 'Not supported? Weird'
 }
-
 function Show-TableVisualization {
     [CmdletBinding()]
     param (

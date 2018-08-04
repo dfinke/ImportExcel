@@ -51,9 +51,9 @@ $InvoiceData4 = $InvoiceData3.ForEach( {[PSCustomObject]$_})
 ### Preparing Data End
 
 $Object1 = Get-Process | Select-Object ProcessName, Handle, StartTime -First 5
-$Object2 = Get-PSDrive
-$Object3 = Get-PSDrive | Select-Object * -First 2
-$Object4 = Get-PSDrive | Select-Object * -First 1
+$Object2 = Get-PSDrive | Where { $_.Provider -like '*Registry*' -or $_.Provider -like '*Environment*' -or $_.Provider -like '*FileSystem*' }
+$Object3 = Get-PSDrive | Where { $_.Provider -like '*Registry*' -or $_.Provider -like '*Environment*' -or $_.Provider -like '*FileSystem*'} | Select-Object * -First 2
+$Object4 = Get-PSDrive | Where { $_.Provider -like '*Registry*' -or $_.Provider -like '*Environment*' -or $_.Provider -like '*FileSystem*'} | Select-Object * -First 1
 
 $obj = New-Object System.Object
 $obj | Add-Member -type NoteProperty -name Name -Value "Ryan_PC"
@@ -316,7 +316,7 @@ Describe 'Export-Excel - Should deliver same results as Format-Table -Autosize' 
 
     }
 
-    It 'Given (Object2) should have 10 columns, Have more then 5 rows, data is in random order (unfortunately)' {
+    It 'Given (Object2) should have 10 columns, Have more then 4 rows, data is in random order (unfortunately)' {
 
         $Type = Get-ObjectType -Object $Object2
         $Type.ObjectTypeName | Should -Be 'Object[]'
@@ -327,7 +327,7 @@ Describe 'Export-Excel - Should deliver same results as Format-Table -Autosize' 
         $Path = '8.xlsx'
         $Object2 | Export-Excel -Path $Path #-Verbose
         $pkg = Open-ExcelPackage -Path $Path -KillExcel:$KillExcel
-        $Pkg.Workbook.Worksheets[1].Dimension.Rows | Should -BeGreaterThan 5
+        $Pkg.Workbook.Worksheets[1].Dimension.Rows | Should -BeGreaterThan 4
         $pkg.Workbook.Worksheets[1].Dimension.Columns | Should -Be 10
         # Not sure yet how to predict thje order. Seems order of FT -a is differnt then FL and script takes FL for now
         #$pkg.Workbook.Worksheets[1].Cells['A1'].Value | Should -Be 'ProcessName'
