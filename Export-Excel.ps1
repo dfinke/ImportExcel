@@ -473,8 +473,10 @@
 
             Param (
                 $TargetCell,
+                $Name,
                 $CellValue
             )
+            #Write-Verbose "No number conversion: $NoNumberConversion"
             #The write-verbose commands have been commented out below - even if verbose is silenced they cause a significiant performance impact and if it's on they will cause a flood of messages.
             Switch ($CellValue) {
                 { $_ -is [DateTime]} {
@@ -517,7 +519,7 @@
                   ($NoNumberConversion -contains $Name) -or ($NoNumberConversion -eq '*'))) } {
                     #Save text without it to converting to number
                     $TargetCell.Value = $_
-                    #Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' unconverted"
+                    Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' unconverted"
                     break
                 }
                 Default {
@@ -625,30 +627,45 @@
     Process {
         if ($firstTimeThru) {
             $firstTimeThru = $false
-            $Data = Format-PSTable $TargetData -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties -DisplayPropertySet:$DisplayPropertySet -SkipTitle:$NoHeader
+            # Get all the data in form of Array of Arrays.
+            $Data = Format-PSTable $TargetData -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties -DisplayPropertySet:$DisplayPropertySet # -SkipTitle:$NoHeader
+            $script:Header = $Data[0] # Saving Header information for later use
+            Write-Verbose "$($Script:Header -join ',')"
+            if ($NoHeader) {
+                $Data.RemoveAt(0);
+                Write-Verbose 'Removing header from ArrayList'
+            }
+            $ArrRowNr = 0
             foreach ($RowData in $Data) {
+                $ArrColumnNr = 0
                 $ColumnIndex = $StartColumn
                 foreach ($Value in $RowData) {
-                    Write-Verbose "Row: $Row Column: $ColumnIndex Data: $Value" #DataType: $($Value.GetType())"
-                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $Value
+                    Write-Verbose "Row: $Row / $ArrRowNr Column: $ColumnIndex / $ArrColumnNr Data: $Value Title: $($script:Header[$ArrColumnNr])"
+                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $Value -Name $script:Header[$ArrColumnNr]
                     $ColumnIndex++
+                    $ArrColumnNr++
                 }
+                $ArrRowNr++
                 $Row++
+
             }
-            Write-Verbose "Last Row: $Row Last Column: $ColumnIndex Data: $Value"
+            Write-Verbose "Last Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
         } else {
             $Data = Format-PSTable $TargetData -SkipTitle -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties -DisplayPropertySet:$DisplayPropertySet
+            $ArrRowNr = 0
             foreach ($RowData in $Data) {
+                $ArrColumnNr = 0
                 $ColumnIndex = $StartColumn
                 foreach ($Value in $RowData) {
-                    Write-Verbose "Row: $Row Column: $ColumnIndex Data: $Value" #DataType: $($Value.GetType())"
-                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $Value
+                    Write-Verbose "Row: $Row / $ArrRowNr Column: $ColumnIndex / $ArrColumnNr Data: $Value Title: $($script:Header[$ArrColumnNr])"
+                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $Value $script:Header[$ArrColumnNr]
                     $ColumnIndex++
-
+                    $ArrColumnNr++
                 }
+                $ArrRowNr++
                 $Row++
             }
-            Write-Verbose "Last Row: $Row Last Column: $ColumnIndex Data: $Value"
+            Write-Verbose "Last Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
         }
     }
 
