@@ -18,7 +18,7 @@
             Data to insert onto the worksheet - this is often provided from the pipeline.
         .PARAMETER DisplayPropertySet
             Many (but not all) objects have a hidden property named psStandardmembers with a child property DefaultDisplayPropertySet ; this parameter reduces the properties exported to those in this set.
-        .PARAMETER NoAliasOrScriptPropeties
+        .PARAMETER NoAliasOrScriptProperties
             Some objects duplicate existing properties by adding aliases, or have Script properties which take a long time to return a value and slow the export down, if specified this removes these properties
         .PARAMETER ExcludeProperty
             Specifies properties which may exist in the target data but should not be placed on the worksheet.
@@ -441,7 +441,7 @@
         [Switch]$PassThru,
         [String]$Numberformat = 'General',
         [string[]]$ExcludeProperty,
-        [Switch]$NoAliasOrScriptPropeties,
+        [Switch]$NoAliasOrScriptProperties,
         [Switch]$DisplayPropertySet,
         [String[]]$NoNumberConversion,
         [Object[]]$ConditionalFormat,
