@@ -67,7 +67,7 @@ Describe ExportExcel {
         $path = "$env:TEMP\Test.xlsx"
         Remove-item -Path $path  -ErrorAction SilentlyContinue
         $processes = Get-Process
-        $propertyNames = $Processes[0].psobject.properties.where( {$_.MemberType -eq 'Property'}).name
+        $propertyNames = $Processes[0].psobject.properties.where( {$_.MemberType -ne 'ScriptProperty' -and $_.MemberType -ne 'AliasProperty'}).name
         $rowcount = $Processes.Count
         #TestCreating a range with a name which needs illegal chars removing
         $warnVar = $null
