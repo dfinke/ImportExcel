@@ -629,7 +629,7 @@
             foreach ($RowData in $Data) {
                 $ColumnIndex = $StartColumn
                 foreach ($Value in $RowData) {
-                    Write-Verbose "Row: $Row Column: $ColumnIndex Data: $Value DataType: $($Value.GetType())"
+                    Write-Verbose "Row: $Row Column: $ColumnIndex Data: $Value" #DataType: $($Value.GetType())"
                     Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $Value
                     $ColumnIndex++
                 }
@@ -641,7 +641,7 @@
             foreach ($RowData in $Data) {
                 $ColumnIndex = $StartColumn
                 foreach ($Value in $RowData) {
-                    Write-Verbose "Row: $Row Column: $ColumnIndex Data: $Value DataType: $($Value.GetType())"
+                    Write-Verbose "Row: $Row Column: $ColumnIndex Data: $Value" #DataType: $($Value.GetType())"
                     Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $Value
                     $ColumnIndex++
 
