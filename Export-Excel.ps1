@@ -625,7 +625,7 @@
     Process {
         if ($firstTimeThru) {
             $firstTimeThru = $false
-            $Data = Format-PSTable $TargetData -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties
+            $Data = Format-PSTable $TargetData -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties -DisplayPropertySet:$DisplayPropertySet
             foreach ($RowData in $Data) {
                 $ColumnIndex = $StartColumn
                 foreach ($Value in $RowData) {
@@ -637,7 +637,7 @@
             }
             Write-Verbose "Last Row: $Row Last Column: $ColumnIndex Data: $Value"
         } else {
-            $Data = Format-PSTable $TargetData -SkipTitle -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties
+            $Data = Format-PSTable $TargetData -SkipTitle -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties -DisplayPropertySet:$DisplayPropertySet
             foreach ($RowData in $Data) {
                 $ColumnIndex = $StartColumn
                 foreach ($Value in $RowData) {
