@@ -42,7 +42,8 @@ function Format-PSTableConvertType3 {
     param (
         $Object,
         [switch] $SkipTitles,
-        [string[]] $ExcludeProperty
+        [string[]] $ExcludeProperty,
+        [switch] $NoAliasOrScriptProperties
 
     )
     Write-Verbose 'Format-PSTableConvertType3 - Option 3'
@@ -74,20 +75,24 @@ function Format-PSTableConvertType2 {
     param(
         $Object,
         [switch] $SkipTitles,
-        [string[]] $ExcludeProperty
+        [string[]] $ExcludeProperty,
+        [switch] $NoAliasOrScriptProperties
     )
-    Write-Verbose 'Format-PSTableConvertType2 - Option 2'
+    if ($NoAliasOrScriptProperties) {$PropertyType = 'AliasProperty', 'ScriptProperty'  } else {$PropertyType = ''}
+    Write-Verbose "Format-PSTableConvertType2 - Option 2 - NoAliasOrScriptProperties: $NoAliasOrScriptProperties"
     $Array = New-ArrayList
     ### Add Titles
     if (-not $SkipTitle) {
         # Write-Verbose 'Format-PSTableConvertType2 - Option 2 - Titles Start'
         $Titles = New-ArrayList
         foreach ($O in $Object) {
-            foreach ($Name in $O.PSObject.Properties.Name) {
+            foreach ($Name in $O.PSObject.Properties.Where( { $PropertyType -notcontains $_.MemberType -and $ExcludeProperty -notcontains $_.Name  } ).Name) {
+                #  if ($NoAliasOrScriptPropeties) {$propType = "Property"} else {$propType = "*" }
+                #$TargetData.PSObject.Properties.where( {$_.MemberType -like $propType -and $_.Name -notin $ExcludeProperty}).Name
                 #Write-Verbose "my title is $Name"
-                if ($ExcludeProperty -notcontains $Name) {
-                    Add-ToArray -List $Titles -Element $Name
-                }
+                #if ($ExcludeProperty -notcontains $Name) {
+                Add-ToArray -List $Titles -Element $Name
+                # }
             }
             break
         }
@@ -98,11 +103,12 @@ function Format-PSTableConvertType2 {
     #Write-Verbose 'Format-PSTableConvertType2 - Option 2 - Data Start'
     foreach ($O in $Object) {
         $ArrayValues = New-ArrayList
-        foreach ($Name in $O.PSObject.Properties.Name) {
+        foreach ($Name in $O.PSObject.Properties.Where( { $PropertyType -notcontains $_.MemberType -and $ExcludeProperty -notcontains $_.Name  } ).Name) {
+            #foreach ($Name in $O.PSObject.Properties.Where( {$_.MemberType -like $PropertyType -and $_.Name -notin $ExcludeProperty})) {
             #Write-Verbose "my name is $Value"
-            if ($ExcludeProperty -notcontains $Name) {
-                Add-ToArray -List $ArrayValues -Element  $O.$Name
-            }
+            #if ($ExcludeProperty -notcontains $Name) {
+            Add-ToArray -List $ArrayValues -Element  $O.$Name
+            #}
         }
         Add-ToArray -List $Array -Element $ArrayValues
     }
@@ -114,7 +120,8 @@ function Format-PSTableConvertType1 {
     param (
         $Object,
         [switch] $SkipTitles,
-        [string[]] $ExcludeProperty
+        [string[]] $ExcludeProperty,
+        [switch] $NoAliasOrScriptProperties
     )
     Write-Verbose 'Format-PSTableConvertType1 - Option 1'
     $Array = New-ArrayList
@@ -144,36 +151,37 @@ function Format-PSTable {
     param (
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)] $Object,
         [switch] $SkipTitle,
-        [string[]] $ExcludeProperty
+        [string[]] $ExcludeProperty,
+        [switch] $NoAliasOrScriptProperties
     )
 
     $Type = Get-ObjectType -Object $Object
-    Write-Verbose "Format-PSTable - Type: $($Type.ObjectTypeName)"
+    Write-Verbose "Format-PSTable - Type: $($Type.ObjectTypeName) NoAliasOrScriptProperties: $NoAliasOrScriptProperties"
     if ($Type.ObjectTypeName -eq 'Object[]' -or
         $Type.ObjectTypeName -eq 'Object' -or $Type.ObjectTypeName -eq 'PSCustomObject' -or
         $Type.ObjectTypeName -eq 'Collection`1') {
         #Write-Verbose 'Level 0-0'
         if ($Type.ObjectTypeInsiderName -eq 'string') {
             #Write-Verbose 'Level 1-0'
-            return Format-PSTableConvertType1 -Object $Object -SkipTitle:$SkipTitle -ExcludeProperty $ExcludeProperty
+            return Format-PSTableConvertType1 -Object $Object -SkipTitle:$SkipTitle -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties
         } elseif ($Type.ObjectTypeInsiderName -eq 'Object' -or $Type.ObjectTypeInsiderName -eq 'PSCustomObject') {
             # Write-Verbose 'Level 1-1'
-            return Format-PSTableConvertType2 -Object $Object -SkipTitle:$SkipTitle -ExcludeProperty $ExcludeProperty
+            return Format-PSTableConvertType2 -Object $Object -SkipTitle:$SkipTitle -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties
         } elseif ($Type.ObjectTypeInsiderName -eq 'HashTable' -or $Type.ObjectTypeInsiderName -eq 'OrderedDictionary' ) {
             # Write-Verbose 'Level 1-2'
-            return Format-PSTableConvertType3 -Object $Object -SkipTitle:$SkipTitle -ExcludeProperty $ExcludeProperty
+            return Format-PSTableConvertType3 -Object $Object -SkipTitle:$SkipTitle -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties
         } else {
             # Covers ADDriveInfo and other types of objects
             # Write-Verbose 'Level 1-3'
-            return Format-PSTableConvertType2 -Object $Object -SkipTitle:$SkipTitle -ExcludeProperty $ExcludeProperty
+            return Format-PSTableConvertType2 -Object $Object -SkipTitle:$SkipTitle -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties
         }
     } elseif ($Type.ObjectTypeName -eq 'HashTable' -or $Type.ObjectTypeName -eq 'OrderedDictionary' ) {
         #Write-Verbose 'Level 0-1'
-        return Format-PSTableConvertType3 -Object $Object -SkipTitle:$SkipTitle -ExcludeProperty $ExcludeProperty
+        return Format-PSTableConvertType3 -Object $Object -SkipTitle:$SkipTitle -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties
     } else {
         #Write-Verbose 'Level 0-2'
         # Covers ADDriveInfo and other types of objects
-        return Format-PSTableConvertType2 -Object $Object -SkipTitle:$SkipTitle -ExcludeProperty $ExcludeProperty
+        return Format-PSTableConvertType2 -Object $Object -SkipTitle:$SkipTitle -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties
     }
     throw 'Not supported? Weird'
 }

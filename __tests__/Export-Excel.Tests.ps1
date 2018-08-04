@@ -63,7 +63,7 @@ Describe ExportExcel {
         }
     }
 
-    Context "                # NoAliasOrScriptPropeties -ExcludeProperty and -DisplayPropertySet work" {
+    Context "                # NoAliasOrScriptProperties -ExcludeProperty and -DisplayPropertySet work" {
         $path = "$env:TEMP\Test.xlsx"
         Remove-item -Path $path  -ErrorAction SilentlyContinue
         $processes = Get-Process
@@ -71,7 +71,7 @@ Describe ExportExcel {
         $rowcount = $Processes.Count
         #TestCreating a range with a name which needs illegal chars removing
         $warnVar = $null
-        $Processes | Export-Excel $path -NoAliasOrScriptPropeties  -RangeName "No Spaces" -WarningVariable warnvar -WarningAction SilentlyContinue
+        $Processes | Export-Excel $path -NoAliasOrScriptProperties  -RangeName "No Spaces" -WarningVariable warnvar -WarningAction SilentlyContinue
 
         $Excel = Open-ExcelPackage -Path $path
         $ws = $Excel.Workbook.Worksheets[1]
@@ -87,7 +87,7 @@ Describe ExportExcel {
             $warnVar.Count                                              | Should     be  1
         }
         #This time use clearsheet instead of deleting the file
-        $Processes | Export-Excel $path -NoAliasOrScriptPropeties -ExcludeProperty SafeHandle, modules, MainModule, StartTime, Threads -ClearSheet
+        $Processes | Export-Excel $path -NoAliasOrScriptProperties -ExcludeProperty SafeHandle, modules, MainModule, StartTime, Threads -ClearSheet
 
         $Excel = Open-ExcelPackage -Path $path
         $ws = $Excel.Workbook.Worksheets[1]
