@@ -244,7 +244,7 @@ Describe 'Export-Excel - Should deliver same results as Format-Table -Autosize' 
         $Type.ObjectTypeInsiderBaseName | Should -Be 'System.Object'
 
         $Path = '4.xlsx'
-        $InvoiceData2 | Export-Excel -Path $Path #-Show
+        $InvoiceData2 | Export-Excel -Path $Path -NoNumberConversion 'Amount'
         $pkg = Open-ExcelPackage -Path $Path -KillExcel:$KillExcel
         $Pkg.Workbook.Worksheets[1].Dimension.Rows | Should -Be 6
         $pkg.Workbook.Worksheets[1].Dimension.Columns | Should -Be 2
@@ -284,7 +284,7 @@ Describe 'Export-Excel - Should deliver same results as Format-Table -Autosize' 
         $Type.ObjectTypeInsiderBaseName | Should -Be 'System.Object'
 
         $Path = '6.xlsx'
-        $InvoiceData4 | Export-Excel -Path $Path #-Show
+        $InvoiceData4 | Export-Excel -Path $Path -NoNumberConversion 'Amount'
         $pkg = Open-ExcelPackage -Path $Path -KillExcel:$KillExcel
         $Pkg.Workbook.Worksheets[1].Dimension.Rows | Should -Be 2
         $pkg.Workbook.Worksheets[1].Dimension.Columns | Should -Be 2

@@ -630,10 +630,10 @@
             # Get all the data in form of Array of Arrays.
             $Data = Format-PSTable $TargetData -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties -DisplayPropertySet:$DisplayPropertySet # -SkipTitle:$NoHeader
             $script:Header = $Data[0] # Saving Header information for later use
-            Write-Verbose "$($Script:Header -join ',')"
+            Write-Verbose "$($Script:Header -join ',') - Data Count: $($Data.Count)"
             if ($NoHeader) {
                 $Data.RemoveAt(0);
-                Write-Verbose 'Removing header from ArrayList'
+                Write-Verbose "Removed header from ArrayList - Data Count: $($Data.Count)"
             }
             $ArrRowNr = 0
             foreach ($RowData in $Data) {

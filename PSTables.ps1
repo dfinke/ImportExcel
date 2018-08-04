@@ -94,7 +94,7 @@ function Format-PSTableConvertType2 {
         }
         foreach ($Name in $ObjectProperties) {
             if ($Run -eq 0 -and -not $SkipTitle) { Add-ToArray -List $Titles -Element $Name }
-            Add-ToArray -List $ArrayValues -Element  $O.$Name
+            Add-ToArray -List $ArrayValues -Element $O.$Name
         }
         if ($Run -eq 0 -and -not $SkipTitle) {Add-ToArray -List ($Array) -Element $Titles }
         Add-ToArray -List $Array -Element $ArrayValues
