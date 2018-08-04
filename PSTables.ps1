@@ -1,4 +1,4 @@
-function Format-TransposeTable {
+﻿function Format-TransposeTable {
     [CmdletBinding()]
     param (
         [Parameter(

@@ -1,4 +1,4 @@
-#Requires -Modules Pester
+﻿#Requires -Modules Pester
 Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
 
 ### Preparing Data Start

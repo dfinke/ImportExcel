@@ -1,4 +1,4 @@
-function New-ArrayList {
+﻿function New-ArrayList {
     [CmdletBinding()]
     param()
     $List = New-Object System.Collections.ArrayList
