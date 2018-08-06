@@ -164,7 +164,11 @@
         .PARAMETER PassThru
             If specified, Export-Excel returns an object representing the Excel package without saving the package first. To save it you need to call the save or Saveas method or send it back to Export-Excel.
         .PARAMETER Transpose
-            Transposes rows with columns and vice versa. Possible aliases to use 'Rotate', 'RotateData', 'TransposeColumnsRows', 'TransposeData'
+            Transposes rows with columns and vice versa. Possible aliases to use 'Rotate', 'RotateData', 'TransposeColumnsRows', 'TransposeData'.
+        .PARAMETER TransposeSorting
+            Possible values: "ASC", "DESC", "NONE"
+            Default value: 'NONE'
+            While for HashTable/OrderedDictionary title is always Names/Values for PSCustomObjects titles can be left as is (NONE), sorted ascending (ASC) or descending (DESC)
 
         .EXAMPLE
             Get-Process | Export-Excel .\Test.xlsx -show
@@ -456,7 +460,8 @@
         [Switch]$ReturnRange,
         [Switch]$NoTotalsInPivot,
         [Switch]$ReZip,
-        [alias('Rotate', 'RotateData', 'TransposeColumnsRows', 'TransposeData')][switch] $Transpose
+        [alias('Rotate', 'RotateData', 'TransposeColumnsRows', 'TransposeData')][switch] $Transpose,
+        [ValidateSet("ASC", "DESC", "NONE")][string] $TransposeSort = 'NONE'
     )
 
     Begin {
@@ -635,7 +640,7 @@
                 # Get all the data in form of Array of Arrays.
              #   Write-Verbose "Time: 1 TargetData: $($TargetData.Count)"
             #    Write-Verbose "Time: 1 First Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
-                if ($Transpose) { $TargetData = Format-TransposeTable -Object $TargetData }
+                if ($Transpose) { $TargetData = Format-TransposeTable -Object $TargetData -Sort $TransposeSort }
                 $Data = Format-PSTable $TargetData -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties -DisplayPropertySet:$DisplayPropertySet # -SkipTitle:$NoHeader
                 $script:Header = $Data[0] # Saving Header information for later use
             #    Write-Verbose "$($Script:Header -join ',') - Data Count: $($Data.Count)"
@@ -662,7 +667,7 @@
             } else {
                 #Write-Verbose "Time: 2++ TargetData: $($TargetData.Count)"
                 #Write-Verbose "Time: 2++ First Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
-                if ($Transpose) { $TargetData = Format-TransposeTable -Object $TargetData }
+                if ($Transpose) { $TargetData = Format-TransposeTable -Object $TargetData -Sort $TransposeSort }
                 $Data = Format-PSTable $TargetData -SkipTitle -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties -DisplayPropertySet:$DisplayPropertySet
                 $ArrRowNr = 0
                 foreach ($RowData in $Data) {
