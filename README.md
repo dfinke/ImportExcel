@@ -55,6 +55,7 @@ Install-Module ImportExcel
 - Fixed bug where Export-Excel would not recognise it had to set  $TitleFillPattern - made the default 'Solid'
 - Gave Expand-NumberFormat a better grasp of currency layouts. 
 - Added DateTime to the list of types which can be exported as single column. 
+- Addded Password support to Open- and Close-ExcelPackage (password was not doing anything in Export-Excel)
 
 # What's new to 2nd Aug 2018
 - Set-Row and Set-Column will now create hyperlinks and insert dates correctly

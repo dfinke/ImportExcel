@@ -555,7 +555,7 @@
                 $pkg = $ExcelPackage
                 $Path = $pkg.File
             }
-            Else { $pkg = Open-ExcelPackage -Path $Path -Create -KillExcel:$KillExcel}
+            Else { $pkg = Open-ExcelPackage -Path $Path -Create -KillExcel:$KillExcel -Password:$Password}
 
             $params = @{WorksheetName=$WorksheetName}
             if ($NoClobber) {Write-Warning -Message "-NoClobber parameter is no longer used" }
@@ -944,7 +944,8 @@
         else {
             if ($ReturnRange) {$dataRange }
 
-            $pkg.Save()
+            if ($Password) { $pkg.Save($Password) }
+            else           { $pkg.Save() }
             Write-Verbose -Message "Saved workbook $($pkg.File)"
             if ($ReZip) {
                 Write-Verbose -Message "Re-Zipping $($pkg.file) using .NET ZIP library"

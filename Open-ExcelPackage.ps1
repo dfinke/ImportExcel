@@ -10,12 +10,15 @@
 
    This will open the file at $xlPath, select sheet1 apply formatting to two blocks of the sheet and save the package, and launch it in Excel.
 #>
+    [CmdLetBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword","")]
     [OutputType([OfficeOpenXml.ExcelPackage])]
     Param (
         #The Path to the file to open
         [Parameter(Mandatory=$true)]$Path,
         #If specified, any running instances of Excel will be terminated before opening the file.
         [switch]$KillExcel,
+        [String]$Password,
         #By  default open only opens an existing file; -Create instructs it to create a new file if required.
         [switch]$Create
     )
@@ -27,7 +30,7 @@
 
     $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
     #If -Create was not specified only open the file if it exists already (send a warning if it doesn't exist).
-    if ($Create) {
+    if ($Create -and -not (Test-Path -Path $path)) {
         #Create the directory if required.
         $targetPath = Split-Path -Parent -Path $Path
         if (!(Test-Path -Path $targetPath)) {
@@ -36,7 +39,10 @@
         }
         New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
     }
-    elseif (Test-Path -Path $path) {New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path }
+    elseif (Test-Path -Path $path) {
+        if ($Password) {New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path , $Password }
+        else           {New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path }
+    }
     else   {Write-Warning "Could not find $path" }
  }
 
@@ -45,6 +51,8 @@ Function Close-ExcelPackage {
 .Synopsis
     Closes an Excel Package, saving, saving under a new name or abandoning changes and opening the file in Excel as required.
 #>
+    [CmdLetBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword","")]
     Param (
     #File to close.
     [parameter(Mandatory=$true, ValueFromPipeline=$true)]
@@ -54,14 +62,24 @@ Function Close-ExcelPackage {
     #Abandon the file without saving.
     [Switch]$NoSave,
     #Save file with a new name (ignored if -NoSave Specified).
-    $SaveAs
+    $SaveAs,
+    [ValidateNotNullOrEmpty()]
+    [String]$Password
     )
     if ( $NoSave)      {$ExcelPackage.Dispose()}
     else {
-          if ($SaveAs) {$ExcelPackage.SaveAs( $SaveAs ) }
-          Else         {$ExcelPackage.Save(); $SaveAs = $ExcelPackage.File.FullName }
+          if ($SaveAs) {
+              $SaveAs = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($SaveAs)
+              if ($Password) {$ExcelPackage.SaveAs( $SaveAs, $Password ) }
+              else           {$ExcelPackage.SaveAs( $SaveAs)}
+          }
+          Else         {
+              if ($Password) {$ExcelPackage.Save($Password) }
+              else           {$ExcelPackage.Save()          }
+              $SaveAs = $ExcelPackage.File.FullName
+          }
           $ExcelPackage.Dispose()
-          if ($show)   {Start-Process -FilePath $SaveAs }
+          if ($Show)   {Start-Process -FilePath $SaveAs }
     }
 }
 
