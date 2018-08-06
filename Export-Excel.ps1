@@ -378,7 +378,7 @@
         [switch]$ClearSheet,
         [switch]$Append,
         [String]$Title,
-        [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern = 'None',
+        [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern = 'Solid',
         [Switch]$TitleBold,
         [Int]$TitleSize = 22,
         [System.Drawing.Color]$TitleBackgroundColor,
@@ -592,10 +592,7 @@
                     #Otherwise the default will be unbolded.
                     $ws.Cells[$Row, $StartColumn].Style.Font.Bold = $True
                 }
-                #Can only set TitleBackgroundColor if TitleFillPattern is something other than None.
-                if ($TitleBackgroundColor -and ($TitleFillPattern -ne 'None')) {
-                    $TitleFillPattern = [OfficeOpenXml.Style.ExcelFillStyle]::Solid
-                }
+
                 $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
 
                 if ($TitleBackgroundColor ) {
@@ -627,7 +624,7 @@
             Try {
                 if ($firstTimeThru) {
                     $firstTimeThru = $false
-                    $isDataTypeValueType = $TargetData.GetType().name -match 'string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
+                    $isDataTypeValueType = $TargetData.GetType().name -match 'string|datetime|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
                     if ($isDataTypeValueType) {$row -= 1} #row incremented before adding values, so it is set to the number of rows inserted at the end
                     Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'"
                 }

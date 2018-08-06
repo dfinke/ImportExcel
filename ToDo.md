@@ -2,6 +2,7 @@
 - [x] Support "make worksheet active" 
 - [X] Add checks for valid worksheet names 
 - [ ] Improve checking of worksheet, pivot names, range names and table names
+- [ ] Allow Exclude property to take wildcards
 - [ ] Investigate regional support for number conversion & possible date conversion. Also investigate feasablity of preserving number format when converting string to number
 - [ ] Add help text for parmaters which don't have it ( PivotDataToColumn , NoClobber and CellStyleSB ) in Export Excel, copy to Send-SQLDataToExcel
 - [ ] Add help in ConvertToExcelXLSx.ps1, Get-HTMLTable.ps1, GetRange.PS1,  GetExcelTable.Ps1, Import-HTML.PS1,  New-ConditionalFormattingIconSet.Ps1, NewConditionalText.PS1, New-Psitem.PS1, Remove-Worksheet.ps1 and  Add-ExcelChart - Copy parameter help from function Add-ExcelChart into New-ExcelChart.ps1
