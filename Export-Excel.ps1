@@ -554,6 +554,7 @@
             }
 
             if ($ExcelPackage) {
+                Write-Verbose 'Export-Excel - Processing Excel Package'
                 $pkg = $ExcelPackage
                 $Path = $pkg.File
             }
@@ -625,63 +626,79 @@
     }
 
     Process {
-        if ($firstTimeThru) {
-            $firstTimeThru = $false
-            # Get all the data in form of Array of Arrays.
-            $Data = Format-PSTable $TargetData -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties -DisplayPropertySet:$DisplayPropertySet # -SkipTitle:$NoHeader
-            $script:Header = $Data[0] # Saving Header information for later use
-            Write-Verbose "$($Script:Header -join ',') - Data Count: $($Data.Count)"
-            if ($NoHeader) {
-                $Data.RemoveAt(0);
-                Write-Verbose "Removed header from ArrayList - Data Count: $($Data.Count)"
-            }
-            $ArrRowNr = 0
-            foreach ($RowData in $Data) {
-                $ArrColumnNr = 0
-                $ColumnIndex = $StartColumn
-                foreach ($Value in $RowData) {
-                    Write-Verbose "Row: $Row / $ArrRowNr Column: $ColumnIndex / $ArrColumnNr Data: $Value Title: $($script:Header[$ArrColumnNr])"
-                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $Value -Name $script:Header[$ArrColumnNr]
-                    $ColumnIndex++
-                    $ArrColumnNr++
-                }
-                $ArrRowNr++
-                $Row++
+        if ((Get-ObjectCount -Object $TargetData) -ne 0) {
+            if ($firstTimeThru) {
+                $firstTimeThru = $false
+                # Get all the data in form of Array of Arrays.
+                Write-Verbose "Time: 1 TargetData: $($TargetData.Count)"
+                Write-Verbose "Time: 1 First Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
 
-            }
-            Write-Verbose "Last Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
-        } else {
-            $Data = Format-PSTable $TargetData -SkipTitle -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties -DisplayPropertySet:$DisplayPropertySet
-            $ArrRowNr = 0
-            foreach ($RowData in $Data) {
-                $ArrColumnNr = 0
-                $ColumnIndex = $StartColumn
-                foreach ($Value in $RowData) {
-                    Write-Verbose "Row: $Row / $ArrRowNr Column: $ColumnIndex / $ArrColumnNr Data: $Value Title: $($script:Header[$ArrColumnNr])"
-                    Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $Value $script:Header[$ArrColumnNr]
-                    $ColumnIndex++
-                    $ArrColumnNr++
+                $Data = Format-PSTable $TargetData -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties -DisplayPropertySet:$DisplayPropertySet # -SkipTitle:$NoHeader
+                $script:Header = $Data[0] # Saving Header information for later use
+                Write-Verbose "$($Script:Header -join ',') - Data Count: $($Data.Count)"
+                if ($NoHeader) {
+                    $Data.RemoveAt(0);
+                    Write-Verbose "Removed header from ArrayList - Data Count: $($Data.Count)"
                 }
-                $ArrRowNr++
-                $Row++
+                $ArrRowNr = 0
+                foreach ($RowData in $Data) {
+                    $ArrColumnNr = 0
+                    $ColumnIndex = $StartColumn
+                    foreach ($Value in $RowData) {
+                        Write-Verbose "Row: $Row / $ArrRowNr Column: $ColumnIndex / $ArrColumnNr Data: $Value Title: $($script:Header[$ArrColumnNr])"
+                        Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $Value -Name $script:Header[$ArrColumnNr]
+                        $ColumnIndex++
+                        $ArrColumnNr++
+                    }
+                    $ArrRowNr++
+                    $Row++
+
+                }
+
+                Write-Verbose "Time: 1 Last Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
+            } else {
+                Write-Verbose "Time: 2++ TargetData: $($TargetData.Count)"
+                Write-Verbose "Time: 2++ First Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
+                $Data = Format-PSTable $TargetData -SkipTitle -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties -DisplayPropertySet:$DisplayPropertySet
+                $ArrRowNr = 0
+                foreach ($RowData in $Data) {
+                    $ArrColumnNr = 0
+                    $ColumnIndex = $StartColumn
+                    foreach ($Value in $RowData) {
+                        Write-Verbose "Row: $Row / $ArrRowNr Column: $ColumnIndex / $ArrColumnNr Data: $Value Title: $($script:Header[$ArrColumnNr])"
+                        Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $Value $script:Header[$ArrColumnNr]
+                        $ColumnIndex++
+                        $ArrColumnNr++
+                    }
+                    $ArrRowNr++
+                    $Row++
+                }
+                Write-Verbose "Time: 2++ Last Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
             }
-            Write-Verbose "Last Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
         }
     }
 
     End {
+        Write-Verbose "Address Range First - StartRow $StartRow / StartColumn $StartColumn Last Row: $LastRow / Last Column: $LastCol"
+        Write-Verbose "Time: 2++ Last Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
+        if ((Get-ObjectCount -Object $TargetData) -ne 0) {
+            $Row -= 1
+            $ColumnIndex -= 1
+            Write-Verbose "Time: 3++ Last Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
+        }
         if ($firstTimeThru) {
               $LastRow      = $ws.Dimension.End.Row
               $LastCol      = $ws.Dimension.End.Column
               $endAddress   = $ws.Dimension.End.Address
         }
         else {
-              $LastRow      = $Row - 1
-              $LastCol      = $ColumnIndex - 1
+              $LastRow      = $Row #- 1
+              $LastCol      = $ColumnIndex #- 1
               $endAddress   = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$LastRow]C[$LastCol]", 0, 0)
         }
         $startAddress = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$StartRow]C[$StartColumn]", 0, 0)
         $dataRange = "{0}:{1}" -f $startAddress, $endAddress
+        Write-Verbose "Address Range First - StartRow $StartRow / StartColumn $StartColumn Last Row: $LastRow / Last Column: $LastCol StartAddress: $startAddress EndAddress: $EndAddress  DataRange: $dataRange"
 
         Write-Debug "Data Range '$dataRange'"
         if ($AutoNameRange) {
@@ -743,6 +760,7 @@
                     $ws.Tables[$TableName].TableStyle         = $TableStyle
                 }
                 else {
+                    Write-Verbose "TableName: $TableName DateRange: $dataRange TableStyle: $TableStyle"
                     $tbl = $ws.Tables.Add($ws.Cells[$dataRange], $TableName)
                     $tbl.TableStyle = $TableStyle
                 }
