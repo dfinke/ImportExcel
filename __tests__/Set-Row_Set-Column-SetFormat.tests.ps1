@@ -36,16 +36,18 @@ Describe "Number format expansion and setting" {
     }
     Context "Expand-NumberFormat function"  {
         It "Expanded named number formats as expected                                              " {
-            Expand-NumberFormat 'Number'     | Should be "0.00"
-            Expand-NumberFormat 'Percentage' | Should be "0.00%"
-            Expand-NumberFormat 'Scientific' | Should be "0.00E+00"
-            Expand-NumberFormat 'Currency'   | Should be ([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol + "#,##0.00")
-            Expand-NumberFormat 'Fraction'   | Should be "# ?/?"
-            Expand-NumberFormat 'Short Date' | Should be "mm-dd-yy"
-            Expand-NumberFormat 'Short Time' | Should be "h:mm"
-            Expand-NumberFormat 'Long Time'  | Should be "h:mm:ss"
-            Expand-NumberFormat 'Date-Time'  | Should be "m/d/yy h:mm"
-            Expand-NumberFormat 'Text'       | Should be "@"
+            $r = [regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol)
+              
+            Expand-NumberFormat 'Currency'                              | Should  match "^[$r\(\)\[\]RED0#\?\-;,.]+$" 
+            Expand-NumberFormat 'Number'                                | Should     be "0.00"
+            Expand-NumberFormat 'Percentage'                            | Should     be "0.00%"
+            Expand-NumberFormat 'Scientific'                            | Should     be "0.00E+00"
+            Expand-NumberFormat 'Fraction'                              | Should     be "# ?/?"
+            Expand-NumberFormat 'Short Date'                            | Should     be "mm-dd-yy"
+            Expand-NumberFormat 'Short Time'                            | Should     be "h:mm"
+            Expand-NumberFormat 'Long Time'                             | Should     be "h:mm:ss"
+            Expand-NumberFormat 'Date-Time'                             | Should     be "m/d/yy h:mm"
+            Expand-NumberFormat 'Text'                                  | Should     be "@"
         }
     }
     Context "Apply-NumberFormat" {
@@ -94,8 +96,6 @@ Describe "Number format expansion and setting" {
         }
 
         It "Set formats which translate to the correct format ID                                   " {
-            $ws.Cells[10,1].Style.Numberformat.format    |                       # Set as "Currency"
-                                                                          Should  match ("^" + ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol)))
             $ws.Cells[ 1,1].Style.Numberformat.NumFmtID                 | Should     be 0       # Set as General
             $ws.Cells[20,1].Style.Numberformat.NumFmtID                 | Should     be 1       # Set as 0
             $ws.Cells[ 2,1].Style.Numberformat.NumFmtID                 | Should     be 2       # Set as "Number"
