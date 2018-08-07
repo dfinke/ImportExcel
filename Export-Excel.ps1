@@ -636,7 +636,7 @@
                     catch  {Write-Warning "Could not insert value at Row $Row. "}
                 }
                 else {
-                    #region Add headers
+                    #region Add headers - if we are appending, or we have been through here once already we will have the headers
                     if (-not $script:Header) {
                         $ColumnIndex = $StartColumn
                         if ($DisplayPropertySet -and $TargetData.psStandardmembers.DefaultDisplayPropertySet.ReferencedPropertyNames) {
@@ -644,8 +644,9 @@
                         }
                         else {
                             if ($NoAliasOrScriptPropeties) {$propType = "Property"} else {$propType = "*"}
-                            $script:Header = $TargetData.PSObject.Properties.where( {$_.MemberType -like $propType -and $_.Name -notin $ExcludeProperty}).Name
+                            $script:Header = $TargetData.PSObject.Properties.where( {$_.MemberType -like $propType}).Name
                         }
+                        foreach ($exclusion in $ExcludeProperty) {$script:Header = $script:Header -notlike $exclusion}
                         if ($NoHeader) {
                             # Don't push the headers to the spreadsheet
                             $Row -= 1
@@ -659,18 +660,17 @@
                         }
                     }
                     #endregion
-
+                    #region Add non header values
                     $Row += 1
                     $ColumnIndex = $StartColumn
 
                     foreach ($Name in $script:Header) {
-                        #region Add non header values
                         try   {Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData.$Name}
                         catch {Write-Warning -Message "Could not insert the $Name property at Row $Row, Column $Column"}
                         $ColumnIndex += 1
-                        #endregion
                     }
                     $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false
+                    #endregion
                 }
             }
             Catch {

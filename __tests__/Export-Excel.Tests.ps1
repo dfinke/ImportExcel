@@ -50,7 +50,7 @@ Describe ExportExcel {
             }
         }
 
-        it "Formatted the process StartTime field as 'localized Date-Time'                          " {
+        it "Formatted the process StartTime field as 'localized Date-Time'                         " {
             $STHeader = $ws.cells["1:1"].where( {$_.Value -eq "StartTime"})[0]
             $STCell = $STHeader.Address -replace '1$', '2'
             $ws.cells[$stcell].Style.Numberformat.NumFmtID              | Should     be 22
@@ -75,7 +75,7 @@ Describe ExportExcel {
 
         $Excel = Open-ExcelPackage -Path $path
         $ws = $Excel.Workbook.Worksheets[1]
-        it "Created a new file with alias & Script Properties removed.                             " {
+        it "Created a new file with Alias & Script Properties removed.                             " {
             $ws.Name                                                    | Should     be "sheet1"
             $ws.Dimension.Columns                                       | Should     be  $propertyNames.Count
             $ws.Dimension.Rows                                          | Should     be  ($rowcount + 1 ) # +1 for the header.
@@ -87,13 +87,13 @@ Describe ExportExcel {
             $warnVar.Count                                              | Should     be  1
         }
         #This time use clearsheet instead of deleting the file
-        $Processes | Export-Excel $path -NoAliasOrScriptPropeties -ExcludeProperty SafeHandle, modules, MainModule, StartTime, Threads -ClearSheet
+        $Processes | Export-Excel $path -ClearSheet  -NoAliasOrScriptPropeties  -ExcludeProperty SafeHandle, threads, modules, MainModule, StartInfo, MachineName, MainWindow*, M*workingSet
 
         $Excel = Open-ExcelPackage -Path $path
         $ws = $Excel.Workbook.Worksheets[1]
         it "Created a new file with a further 5 properties excluded and cleared the old sheet      " {
             $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be ($propertyNames.Count - 5)
+            $ws.Dimension.Columns                                       | Should     be ($propertyNames.Count - 10)
             $ws.Dimension.Rows                                          | Should     be ($rowcount + 1)  # +1 for the header
         }
 

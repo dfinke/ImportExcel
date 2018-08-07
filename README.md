@@ -53,11 +53,12 @@ Install-Module ImportExcel
 ```
 # New Aug 3rd - 
 - Fixed bug where Export-Excel would not recognise it had to set  $TitleFillPattern - made the default 'Solid'
-- Gave Expand-NumberFormat a better grasp of currency layouts. 
+- ExcludeProperty in Export-Excel now supports wildcards. 
 - Added DateTime to the list of types which can be exported as single column. 
 - Addded Password support to Open- and Close-ExcelPackage (password was not doing anything in Export-Excel)
+- Gave Expand-NumberFormat a better grasp of currency layouts - it follows .NET which is not always the same as Excel would set:-(
 
-# What's new to 2nd Aug 2018
+# What's new in Release 5.1.1 
 - Set-Row and Set-Column will now create hyperlinks and insert dates correctly
 - Import-Excel now has an argument completer for Worksheet name - this can be slow on large files
 - The NumberFormat parameter (in Export-Excel, Set-Row, Set-Column, Set-Format and Add-ConditionalFormat) and X&YAxisNumberFormat paramaters (in New-ExcelChartDefinition and Add-ExcelChart) now have an argument completer and the names Currency, Number, Percentage, Scientific, Fraction, Short Date ,Short time,Long time, Date-Time and Text will be converted to the correct Excel formatting strings. 
