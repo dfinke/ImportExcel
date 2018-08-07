@@ -321,28 +321,25 @@ function Import-Excel {
     }
 
     Process {
-        Try {
-            #region Open file
+        #region Open file
+        try {
             $Path = (Resolve-Path $Path).ProviderPath
             Write-Verbose "Import Excel workbook '$Path' with worksheet '$Worksheetname'"
-
             $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
+        } 
+        Catch {throw "Could not open $Path ; $_ "} 
 
-            if ($Password) {
-                $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage
-
-                Try {
-                    $Excel.Load($Stream,$Password)
-                }
-                Catch {
-                    throw "Password '$Password' is not correct."
-                }
-            }
-            else {
-                $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
-            }
-            #endregion
-
+        if ($Password) {
+            Try   {$Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage 
+                   $excel.Load( $Stream,$Password)}
+            Catch { throw "Could not read $Path with the provided password." }
+        }
+        else {
+            try   {$Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream}
+            Catch {throw "Failed to read $Path"}
+        }
+        #endregion
+        Try {
             #region Select worksheet
             if ($WorksheetName) {
                 if (-not ($Worksheet = $Excel.Workbook.Worksheets[$WorkSheetName])) {
