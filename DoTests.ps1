@@ -8,7 +8,7 @@ $dest = "ImportExcel-{0}-{1}.zip" -f $ModuleVersion, (Get-Date).ToString("yyyyMM
 Compress-Archive -Path . -DestinationPath .\$dest
 
 if ((Get-Module -ListAvailable pester) -eq $null) {
-    Install-Module -Name Pester -Repository PSGallery -Force
+    Install-Module -Name Pester -Repository PSGallery -Force -Scope CurrentUser
 }
 
 $result = Invoke-Pester -Script $PSScriptRoot\__tests__ -Verbose -PassThru
