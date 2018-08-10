@@ -507,8 +507,10 @@ Describe ExportExcel {
             $dataWs.names[0].name                                       | Should     be 'Name'
             $dataWs.names.Count                                         | Should     be 6
             $dataWs.cells[$dataws.Dimension].AutoFilter                 | Should     be true
+            }
+        it "Extended the pivot table                                                               " {
             $pt.CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.ref |
-                Should     be "C3:G23"
+                                                                          Should     be "C3:G23"
         }
         it "Generated a message on extending the Pivot table                                       " {
             $warnVar                                                    | Should not beNullOrEmpty
@@ -518,7 +520,7 @@ Describe ExportExcel {
     Context "#Example 11     # Create and append with title, inc ranges and Pivot table" {
         $path = "$env:TEMP\Test.xlsx"
         $ptDef = [ordered]@{}
-        $ptDef += New-PivotTableDefinition -PivotTableName "PT1" -SourceWorkSheet 'Sheet1' -PivotRows "Status"  -PivotData @{'Status'  = 'Count'} -PivotFilter "StartType" -IncludePivotChart -ChartType BarClustered3D  -ChartTitle "Services by status" -ChartHeight 512 -ChartWidth 768 -ChartRow 10 -ChartColumn 0 -NoLegend
+        $ptDef += New-PivotTableDefinition -PivotTableName "PT1" -SourceWorkSheet 'Sheet1' -PivotRows "Status"  -PivotData @{'Status'  = 'Count'} -PivotFilter "StartType" -IncludePivotChart -ChartType BarClustered3D  -ChartTitle "Services by status" -ChartHeight 512 -ChartWidth 768 -ChartRow 10 -ChartColumn 0 -NoLegend -PivotColumns CanPauseAndContinue
         $ptDef += New-PivotTableDefinition -PivotTableName "PT2" -SourceWorkSheet 'Sheet2' -PivotRows "Company" -PivotData @{'Company' = 'Count'}                          -IncludePivotChart -ChartType PieExploded3D -ShowPercent -WarningAction SilentlyContinue
 
         it "Built a pivot definition using New-PivotTableDefinition                                " {
@@ -532,8 +534,8 @@ Describe ExportExcel {
         Remove-Item -Path $path
         #Catch warning
         $warnvar = $null
-        Get-Service | Select-Object    -Property Status, Name, DisplayName, StartType | Export-Excel -Path $path  -AutoSize                         -TableName "All Services"  -TableStyle Medium1 -WarningAction SilentlyContinue -WarningVariable warnvar
-        Get-Process | Select-Object    -Property Name, Company, Handles, CPU, VM      | Export-Excel -Path $path  -AutoSize -WorkSheetname 'sheet2' -TableName "Processes"     -TableStyle Light1 -Title "Processes" -TitleFillPattern Solid -TitleBackgroundColor AliceBlue -TitleBold -TitleSize 22 -PivotTableDefinition $ptDef
+        Get-Service | Select-Object    -Property Status, Name, DisplayName, StartType, CanPauseAndContinue | Export-Excel -Path $path  -AutoSize                         -TableName "All Services"  -TableStyle Medium1 -WarningAction SilentlyContinue -WarningVariable warnvar
+        Get-Process | Select-Object    -Property Name, Company, Handles, CPU, VM      | Export-Excel -Path $path  -AutoSize -WorkSheetname 'sheet2' -TableName "Processes"     -TableStyle Light1 -Title "Processes" -TitleFillPattern Solid -TitleBackgroundColor AliceBlue -TitleBold -TitleSize 22 -PivotTableDefinition $ptDef -show
         $Excel = Open-ExcelPackage   $path
         $ws1 = $Excel.Workbook.Worksheets["Sheet1"]
         $ws2 = $Excel.Workbook.Worksheets["Sheet2"]
@@ -567,13 +569,13 @@ Describe ExportExcel {
         $PT2 = $ptsheet2.PivotTables[0]
         $PC1 = $ptsheet1.Drawings[0]
         $PC2 = $ptsheet2.Drawings[0]
-        it "Created the correct pivot tables and charts from the definitions.                      " {
-
+        it "Created the pivot tables linked to the right data.                                     " {
             $PT1.CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.ref |
                 Should     be ("A1:" + $ws1.Dimension.End.Address)
             $PT2.CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.ref |
                 Should     be ("A2:" + $ws2.Dimension.End.Address) #Title in row 1
-
+        }
+        it "Set the other pivot tables and chart options from the definitions.                     " {
             $pt1.PageFields[0].Name                                     | Should     be 'StartType'
             $pt1.RowFields[0].Name                                      | Should     be 'Status'
             $pt1.DataFields[0].Field.name                               | Should     be 'Status'

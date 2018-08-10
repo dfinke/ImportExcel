@@ -452,6 +452,10 @@
         [Parameter(ParameterSetName = 'Now')]
         [Switch]$Now,
         [Switch]$ReturnRange,
+        #By default Pivot tables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
+        [ValidateSet("Both","Columns","Rows","None")]
+        [String]$PivotTotals = "Both",
+        #Included for compatibility - equivalent to -PivotTotals "None"
         [Switch]$NoTotalsInPivot,
         [Switch]$ReZip
     )
@@ -789,7 +793,8 @@
                 if ($params.keys -notcontains "SourceRange" -and
                    ($params.Keys -notcontains "SourceWorkSheet"   -or  $params.SourceWorkSheet -eq $WorksheetName)) {$params.SourceRange = $dataRange}
                 if ($params.Keys -notcontains "SourceWorkSheet")      {$params.SourceWorkSheet = $ws }
-                if ($params.Keys -notcontains "NoTotalsInPivot"   -and $NoTotalsInPivot  ) {$params.NoTotalsInPivot   = $true}
+                if ($params.Keys -notcontains "NoTotalsInPivot"   -and $NoTotalsInPivot  ) {$params.PivotTotals       = "None"}
+                if ($params.Keys -notcontains "PivotTotals"       -and $PivotTotals      ) {$params.PivotTotals       = $PivotTotals}
                 if ($params.Keys -notcontains "PivotDataToColumn" -and $PivotDataToColumn) {$params.PivotDataToColumn = $true}
 
                 Add-PivotTable -ExcelPackage $pkg -PivotTableName $item.key @Params
@@ -806,7 +811,8 @@
             if ($PivotRows)         {$params.PivotRows         = $PivotRows}
             if ($PivotColumns)      {$Params.PivotColumns      = $PivotColumns}
             if ($PivotData)         {$Params.PivotData         = $PivotData}
-            if ($NoTotalsInPivot)   {$params.NoTotalsInPivot   = $true}
+            if ($NoTotalsInPivot)   {$params.PivotTotals       = "None"    }
+            if ($PivotTotals)       {$params.PivotTotals       = $PivotTotals}
             if ($PivotDataToColumn) {$params.PivotDataToColumn = $true}
             if ($IncludePivotChart) {
                                      $params.IncludePivotChart = $true
@@ -992,7 +998,7 @@ function New-PivotTableDefinition {
         Creates Pivot table definitons for Export-Excel
       .Description
         Export-Excel allows a single Pivot table to be defined using the parameters -IncludePivotTable, -PivotColumns -PivotRows,
-        =PivotData, -PivotFilter, -NoTotalsInPivot, -PivotDataToColumn, -IncludePivotChart and -ChartType.
+        =PivotData, -PivotFilter, -PivotTotals, -PivotDataToColumn, -IncludePivotChart and -ChartType.
         Its -PivotTableDefintion paramater allows multiple pivot tables to be defined, with additional parameters.
         New-PivotTableDefinition is a convenient way to build these definitions.
       .Example
@@ -1022,6 +1028,10 @@ function New-PivotTableDefinition {
         #Fields to use to filter in the Pivot table
         $PivotFilter,
         [Switch]$PivotDataToColumn,
+        #By default Pivot tables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
+        [ValidateSet("Both","Columns","Rows","None")]
+        [String]$PivotTotals = "Both",
+        #Included for compatibility - equivalent to -PivotTotals "None"
         [Switch]$NoTotalsInPivot,
         #If specified a chart Will be included.
         [Switch]$IncludePivotChart,
@@ -1057,6 +1067,10 @@ function New-PivotTableDefinition {
     }
 
     $parameters = @{} + $PSBoundParameters
+    if ($NoTotalsInPivot) {
+        $parameters.Remove('NoTotalsInPivot')
+        $parameters["PivotTotals"] = "None"
+    }
     $parameters.Remove('PivotTableName')
 
     @{$PivotTableName = $parameters}
@@ -1185,6 +1199,10 @@ function Add-PivotTable {
         #Fields to use to filter in the Pivot table
         $PivotFilter,
         [Switch]$PivotDataToColumn,
+        #By default Pivot tables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
+        [ValidateSet("Both","Columns","Rows","None")]
+        [String]$PivotTotals = "Both",
+        #Included for compatibility - equivalent to -PivotTotals "None"
         [Switch]$NoTotalsInPivot,
         #If specified a chart Will be included.
         [Switch]$IncludePivotChart,
@@ -1263,8 +1281,12 @@ function Add-PivotTable {
                 try { $null = $pivotTable.PageFields.Add($pivotTable.Fields[$pFilter])}
                 catch {Write-Warning -message "Could not add '$pFilter' to Filter/Page fields in PivotTable $pivotTableName." }
             }
-            if ($NoTotalsInPivot) { $pivotTable.RowGrandTotals = $false }
-            if ($PivotDataToColumn ) { $pivotTable.DataOnRows = $false }
+            if     ($NoTotalsInPivot) {$PivotTotals = "None" }
+            if     ($PivotTotals -eq "None" -or $PivotTotals -eq "Columns") { $pivotTable.RowGrandTotals   = $false }
+            elseif ($PivotTotals -eq "Both" -or $PivotTotals -eq "Rows")    { $pivotTable.RowGrandTotals   = $true  }
+            if     ($PivotTotals -eq "None" -or $PivotTotals -eq "Rows")    { $pivotTable.ColumGrandTotals = $false }   # Epplus spelling mistake, not mine!
+            elseif ($PivotTotals -eq "Both" -or $PivotTotals -eq "Columns") { $pivotTable.ColumGrandTotals = $true  }
+            if     ($PivotDataToColumn ) { $pivotTable.DataOnRows = $false }
         }
         catch {Write-Warning -Message "Failed adding PivotTable '$pivotTableName': $_"}
     }
