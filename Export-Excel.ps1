@@ -578,6 +578,19 @@
                 $headerRange = $ws.Dimension.Address -replace "\d+$", $StartRow
                 #using a slightly odd syntax otherwise header ends up as a 2D array
                 $ws.Cells[$headerRange].Value | ForEach-Object -Begin {$Script:header = @()} -Process {$Script:header += $_ }
+                #if we did not get AutoNameRange, but headers have ranges of the same name make autoNameRange True, otherwise make it false
+                if (-not $AutoNameRange) {
+                    $AutoNameRange  = $true ; foreach ($h in $header) {if ($ws.names.name -notcontains $h) {$AutoNameRange = $false} }
+                }
+                #if we did not get a Rangename but there is a Range which covers the active part of the sheet, set Rangename to that.
+                if (-not $RangeName -and $ws.names.where({($_.name[0] -match '[a-z]') -and  ($_.fulladdress -replace "\$","" )  -eq  [OfficeOpenXml.ExcelAddress]::GetFullAddress($worksheetName, $ws.dimension) })) {
+                    $rangeName = $ws.names.where({($_.fulladdress -replace "\$","" )  -eq  [OfficeOpenXml.ExcelAddress]::GetFullAddress($worksheetName, $ws.dimension) } , 'First', 1).name
+                }
+
+                #if we did not get a table name but there is a table which covers the active part of the sheet, set table name to that.
+                if (-not $TableName -and $ws.Tables.Where({$_.address.address -eq $ws.dimension.address})) {
+                    $TableName = $ws.Tables.Where({$_.address.address -eq $ws.dimension.address},'First', 1).Name
+                }
                 $row = $ws.Dimension.End.Row
                 Write-Debug -Message ("Appending: headers are " + ($script:Header -join ", ") + " Start row is $row")
             }
@@ -607,8 +620,8 @@
 
             $firstTimeThru = $true
             $isDataTypeValueType = $false
-        }
-        Catch {
+      }
+      Catch {
             if ($AlreadyExists) {
                 #Is this set anywhere ?
                 throw "Failed exporting worksheet '$WorksheetName' to '$Path': The worksheet '$WorksheetName' already exists."
@@ -616,7 +629,7 @@
             else {
                 throw "Failed preparing to export to worksheet '$WorksheetName' to '$Path': $_"
             }
-        }
+      }
     }
 
     Process {
@@ -688,10 +701,10 @@
         else {
               $LastRow      = $Row
               $LastCol      = $ColumnIndex
-              $endAddress   = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$LastRow]C[$LastCol]", 0, 0)
+              $endAddress   = [OfficeOpenXml.ExcelAddress]::GetAddress($LastRow , $LastCol)
         }
-        $startAddress = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$StartRow]C[$StartColumn]", 0, 0)
-        $dataRange = "{0}:{1}" -f $startAddress, $endAddress
+        $startAddress       = [OfficeOpenXml.ExcelAddress]::GetAddress($StartRow, $StartColumn)
+        $dataRange          = "{0}:{1}" -f $startAddress, $endAddress
 
         Write-Debug "Data Range '$dataRange'"
         if ($AutoNameRange) {
@@ -887,13 +900,13 @@
         if ($Barchart -or $PieChart -or $LineChart -or $ColumnChart) {
             if ($NoHeader) {$FirstDataRow = $startRow}
             else           {$FirstDataRow = $startRow + 1 }
-            $range = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$startColumn]:R[$FirstDataRow]C[$lastCol]",0,0)
+            $range = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, $startColumn, $FirstDataRow, $lastCol )
             $xCol  = $ws.cells[$range] | Where-Object {$_.value -is [string]    } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1
             $yCol  = $ws.cells[$range] | Where-Object {$_.value -is [valueType] } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1
             $params = @{
-               xrange = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$xcol]:R[$($lastrow)]C[$xcol]",0,0) ;
-               yrange = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$ycol]:R[$($lastrow)]C[$ycol]",0,0) ;
-               title  =  "";
+               XRange = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, $xcol , $lastrow, $xcol)
+               YRange = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, $ycol , $lastrow, $ycol)
+               Title  =  "";
                Column = ($lastCol +1)  ;
                Width  = 800
             }
@@ -1208,13 +1221,13 @@ function Add-PivotTable {
     if (-not $wsPivot.PivotTables[$pivotTableDataName] ) {
         try {
             #Accept a string or a worksheet object as $Source Worksheet.
-            if ($SourceWorkSheet -is [string]) {
-                $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets.where( {$_.name -match $SourceWorkSheet})[0]
+            if     ($SourceWorkSheet -is [string]) {
+                    $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets.where( {$_.name -Like $SourceWorkSheet})[0]
             }
-            elseif ($SourceWorkSheet -is [int]) {
+            elseif ($SourceWorkSheet -is [int])    {
                 $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets[$SourceWorkSheet]
             }
-            if (-not ($SourceWorkSheet -is  [OfficeOpenXml.ExcelWorksheet])) {Write-Warning -Message "Could not find source Worksheet for pivot-table '$pivotTableName'." }
+            if     ($SourceWorkSheet -isnot  [OfficeOpenXml.ExcelWorksheet]) {Write-Warning -Message "Could not find source Worksheet for pivot-table '$pivotTableName'." ; return }
             else {
                 if ($PivotFilter) {$PivotTableStartCell = "A3"} else { $PivotTableStartCell = "A1"}
                 if (-not $SourceRange) { $SourceRange = $SourceWorkSheet.Dimension.Address}
