@@ -445,9 +445,9 @@ Describe ExportExcel {
         $pt = $Excel.Workbook.Worksheets["ProcessesPivotTable"].PivotTables[0]
         it "Appended to the Worksheet and Extended the Pivot table                                 " {
             $Excel.Workbook.Worksheets.Count                            | Should     be $wCount
-            # $excel.Workbook.Worksheets["Processes"].Dimension.rows      | Should     be 101     #appended 50 rows to the previous total
-            # $pt.CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.ref |
-            #     Should     be "A1:E101"
+            $excel.Workbook.Worksheets["Processes"].Dimension.rows      | Should     be 101     #appended 50 rows to the previous total
+            $pt.CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.ref |
+                 Should     be "A1:E101"
         }
         it "Generated a message on extending the Pivot table                                       " {
             $warnVar                                                    | Should not beNullOrEmpty
@@ -488,12 +488,13 @@ Describe ExportExcel {
     }
 
     Context "                # Create and append with Start row and Start Column, inc ranges and Pivot table. " {
-        $path = "$env:TEMP\Test.xlsx"
+        $path = "$env:TEMP\Test.xlsx" 
+        remove-item -Path $path -ErrorAction SilentlyContinue
         #Catch warning
         $warnVar = $null
-        #Test Append with no existing sheet. Test adding a named pivot table from a command line parameter
-        Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company  | Export-Excel -StartRow 3 -StartColumn 3 -AutoFilter -AutoNameRange -BoldTopRow -IncludePivotTable  -PivotRows Company -PivotData PM -PivotTableName 'PTOffset' -Path $path -WorkSheetname withOffset -Append -PivotFilter Name -NoTotalsInPivot
-        Get-Process | Select-Object -last  10 -Property Name, cpu, pm, handles, company  | Export-Excel -StartRow 3 -StartColumn 3 -AutoFilter -AutoNameRange -BoldTopRow -IncludePivotTable  -PivotRows Company -PivotData PM -PivotTableName 'PTOffset' -Path $path -WorkSheetname withOffset -Append -WarningAction SilentlyContinue -WarningVariable warnvar
+        #Test Append with no existing sheet. Test adding a named pivot table from command line parametesr and extending ranges when they're not specified explictly 
+        Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company  | Export-Excel -StartRow 3 -StartColumn 3 -BoldTopRow -IncludePivotTable  -PivotRows Company -PivotData PM -PivotTableName 'PTOffset' -Path $path -WorkSheetname withOffset -Append -PivotFilter Name -NoTotalsInPivot  -RangeName procs  -AutoFilter -AutoNameRange
+        Get-Process | Select-Object -last  10 -Property Name, cpu, pm, handles, company  | Export-Excel -StartRow 3 -StartColumn 3 -BoldTopRow -IncludePivotTable  -PivotRows Company -PivotData PM -PivotTableName 'PTOffset' -Path $path -WorkSheetname withOffset -Append -WarningAction SilentlyContinue -WarningVariable warnvar
         $Excel = Open-ExcelPackage   $path
         $dataWs = $Excel.Workbook.Worksheets["withOffset"]
         $pt = $Excel.Workbook.Worksheets["PTOffset"].PivotTables[0]
@@ -505,23 +506,68 @@ Describe ExportExcel {
             $dataWs.Dimension.End.Row                                   | Should     be 23
             $dataWs.names[0].end.row                                    | Should     be 23
             $dataWs.names[0].name                                       | Should     be 'Name'
-            $dataWs.names.Count                                         | Should     be 6
+            $dataWs.names.Count                                         | Should     be 7    #  Name, cpu, pm, handles & company + Named Range "Procs" + xl one for autofilter 
             $dataWs.cells[$dataws.Dimension].AutoFilter                 | Should     be true
             }
-        it "Extended the pivot table                                                               " {
+        it "Applied and auto-extended an autofilter                                                " {
+            $dataWs.Names["_xlnm._FilterDatabase"].Start.Row            | should     be 3  #offset
+            $dataWs.Names["_xlnm._FilterDatabase"].Start.Column         | should     be 3
+            $dataWs.Names["_xlnm._FilterDatabase"].Rows                 | should     be 21 #2 x 10 data + 1 header
+            $dataWs.Names["_xlnm._FilterDatabase"].Columns              | should     be 5  #Name, cpu, pm, handles & company
+            $dataWs.Names["_xlnm._FilterDatabase"].AutoFilter           | should     be $true
+        }
+        it "Created and auto-extended the named ranges                                             " {
+            $dataWs.names["procs"].rows                                 | should     be 21
+            $dataWs.names["procs"].Columns                              | should     be 5
+            $dataWs.Names["CPU"].Rows                                   | should     be 20
+            $dataWs.Names["CPU"].Columns                                | should     be 1
+        }
+        it "Created and extended the pivot table                                                   " {
             $pt.CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.ref |
                                                                           Should     be "C3:G23"
+            $pt.ColumGrandTotals                                        | should     be $false
+            $pt.RowGrandTotals                                          | should     be $false
+            $pt.Fields["Company"].IsRowField                            | should     be $true
+            $pt.Fields["PM"].IsDataField                                | should     be $true
+            $pt.Fields["Name"].IsPageField                              | should     be $true
         }
         it "Generated a message on extending the Pivot table                                       " {
             $warnVar                                                    | Should not beNullOrEmpty
         }
     }
 
+    Context "                # Create and append explicit and auto table and range extension" {
+        $path = "$env:TEMP\Test.xlsx" 
+        Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company           | Export-Excel -Path $path  -TableName ProcTab -AutoNameRange   -WorkSheetname NoOffset -ClearSheet 
+        Get-Process          | Select-Object -last  10 -Property Name, cpu, pm, handles, company  | Export-Excel -Path $path                     -AutoNameRange   -WorkSheetname NoOffset -Append
+        $Excel = Open-ExcelPackage   $path
+        $dataWs = $Excel.Workbook.Worksheets["NoOffset"]
+        
+        it "Created a new sheet and auto-extended a table and explicitly extended named ranges     " {
+            $dataWs.Tables["ProcTab"].Address.Address                   | should be "A1:E21"
+            $dataWs.Names["CPU"].Rows                                   | should     be 20
+            $dataWs.Names["CPU"].Columns                                | should     be 1
+        } 
+ 
+        $excel = Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company  | Export-Excel -ExcelPackage $excel  -RangeName procs -AutoFilter   -WorkSheetname NoOffset -ClearSheet -PassThru
+        Get-Process          | Select-Object -last  10 -Property Name, cpu, pm, handles, company  | Export-Excel -ExcelPackage $excel  -RangeName procs -AutoFilter   -WorkSheetname NoOffset -Append
+        $Excel = Open-ExcelPackage   $path
+        $dataWs = $Excel.Workbook.Worksheets["NoOffset"]
+        
+        it "Created a new sheet and explicitly extended named range and autofilter                 " {
+            $dataWs.names["procs"].rows                                 | should     be 21
+            $dataWs.names["procs"].Columns                              | should     be 5
+            $dataWs.Names["_xlnm._FilterDatabase"].Rows                 | should     be 21 #2 x 10 data + 1 header
+            $dataWs.Names["_xlnm._FilterDatabase"].Columns              | should     be 5  #Name, cpu, pm, handles & company
+            $dataWs.Names["_xlnm._FilterDatabase"].AutoFilter           | should     be $true
+        }      
+    }
+
     Context "#Example 11     # Create and append with title, inc ranges and Pivot table" {
         $path = "$env:TEMP\Test.xlsx"
         $ptDef = [ordered]@{}
-        $ptDef += New-PivotTableDefinition -PivotTableName "PT1" -SourceWorkSheet 'Sheet1' -PivotRows "Status"  -PivotData @{'Status'  = 'Count'} -PivotFilter "StartType" -IncludePivotChart -ChartType BarClustered3D  -ChartTitle "Services by status" -ChartHeight 512 -ChartWidth 768 -ChartRow 10 -ChartColumn 0 -NoLegend -PivotColumns CanPauseAndContinue
-        $ptDef += New-PivotTableDefinition -PivotTableName "PT2" -SourceWorkSheet 'Sheet2' -PivotRows "Company" -PivotData @{'Company' = 'Count'}                          -IncludePivotChart -ChartType PieExploded3D -ShowPercent -WarningAction SilentlyContinue
+        $ptDef += New-PivotTableDefinition -PivotTableName "PT1" -SourceWorkSheet 'Sheet1' -PivotRows "Status"  -PivotData @{'Status'  = 'Count'} -PivotTotals Columns -PivotFilter "StartType" -IncludePivotChart -ChartType BarClustered3D  -ChartTitle "Services by status" -ChartHeight 512 -ChartWidth 768 -ChartRow 10 -ChartColumn 0 -NoLegend -PivotColumns CanPauseAndContinue
+        $ptDef += New-PivotTableDefinition -PivotTableName "PT2" -SourceWorkSheet 'Sheet2' -PivotRows "Company" -PivotData @{'Company' = 'Count'} -PivotTotalS Rows                             -IncludePivotChart -ChartType PieExploded3D -ShowPercent -WarningAction SilentlyContinue
 
         it "Built a pivot definition using New-PivotTableDefinition                                " {
             $ptDef.PT1.SourceWorkSheet                                  | Should be 'Sheet1'
@@ -530,12 +576,13 @@ Describe ExportExcel {
             $ptDef.PT1.PivotFilter                                      | Should be 'StartType'
             $ptDef.PT1.IncludePivotChart                                | Should be  $true
             $ptDef.PT1.ChartType.tostring()                             | Should be 'BarClustered3D'
+            $ptDef.PT1.PivotTotals                                      | Should be 'Columns'
         }
         Remove-Item -Path $path
         #Catch warning
         $warnvar = $null
         Get-Service | Select-Object    -Property Status, Name, DisplayName, StartType, CanPauseAndContinue | Export-Excel -Path $path  -AutoSize                         -TableName "All Services"  -TableStyle Medium1 -WarningAction SilentlyContinue -WarningVariable warnvar
-        Get-Process | Select-Object    -Property Name, Company, Handles, CPU, VM      | Export-Excel -Path $path  -AutoSize -WorkSheetname 'sheet2' -TableName "Processes"     -TableStyle Light1 -Title "Processes" -TitleFillPattern Solid -TitleBackgroundColor AliceBlue -TitleBold -TitleSize 22 -PivotTableDefinition $ptDef -show
+        Get-Process | Select-Object    -Property Name, Company, Handles, CPU, VM      | Export-Excel -Path $path  -AutoSize -WorkSheetname 'sheet2' -TableName "Processes"     -TableStyle Light1 -Title "Processes" -TitleFillPattern Solid -TitleBackgroundColor AliceBlue -TitleBold -TitleSize 22 -PivotTableDefinition $ptDef
         $Excel = Open-ExcelPackage   $path
         $ws1 = $Excel.Workbook.Worksheets["Sheet1"]
         $ws2 = $Excel.Workbook.Worksheets["Sheet2"]
@@ -580,6 +627,10 @@ Describe ExportExcel {
             $pt1.RowFields[0].Name                                      | Should     be 'Status'
             $pt1.DataFields[0].Field.name                               | Should     be 'Status'
             $pt1.DataFields[0].Function                                 | Should     be 'Count'
+            $pt1.ColumGrandTotals                                       | should     be $true
+            $pt1.RowGrandTotals                                         | should     be $false
+            $pt2.ColumGrandTotals                                       | should     be $false
+            $pt2.RowGrandTotals                                         | should     be $true
             $pc1.ChartType                                              | Should     be 'BarClustered3D'
             $pc1.From.Column                                            | Should     be 0                    #chart 1 at 0,10 chart 2 at 4,0 (default)
             $pc2.From.Column                                            | Should     be 4
@@ -665,10 +716,10 @@ Describe ExportExcel {
         it "used Invoke-Sum to create a data set                                                   " {
             $data                                                       | Should not beNullOrEmpty
             $data.count                                                 | Should     beGreaterThan 1
-            $data[1].Name                                               | Should  not beNullOrEmpty
-            $data[1].Handles                                            | Should  not beNullOrEmpty
-            $data[1].PM                                                 | Should  not beNullOrEmpty
-            $data[1].VirtualMemorySize                                  | Should  not beNullOrEmpty
+            $data[1].Name                                               | Should not beNullOrEmpty
+            $data[1].Handles                                            | Should not beNullOrEmpty
+            $data[1].PM                                                 | Should not beNullOrEmpty
+            $data[1].VirtualMemorySize                                  | Should not beNullOrEmpty
         }
         $c = New-ExcelChartDefinition -Title Stats -ChartType LineMarkersStacked   -XRange "Processes[Name]" -YRange "Processes[PM]", "Processes[VirtualMemorySize]" -SeriesHeader 'PM', 'VMSize'
 
@@ -706,8 +757,9 @@ Describe ExportExcel {
         $path = "$env:TEMP\Test.xlsx"
         $excel = 0..360 | ForEach-Object {[pscustomobject][ordered]@{x = $_; Sinx = "=Sin(Radians(x)) "}} | Export-Excel -AutoNameRange -Path $path -WorkSheetname SinX -ClearSheet -FreezeFirstColumn -PassThru
         Add-ExcelChart -Worksheet $excel.Workbook.Worksheets["Sinx"] -ChartType line -XRange "X" -YRange "Sinx" -SeriesHeader "Sin(x)" -Title "Graph of Sine X" -TitleBold -TitleSize 14 `
-                      -Column 2 -ColumnOffSetPixels 35 -Width 800 -XAxisTitleText "Degrees" -XAxisTitleBold -XAxisTitleSize 12 -XMajorUnit 30 -XMinorUnit 10 -XMinValue 0 -XMaxValue 361  -XAxisNumberformat "000" -XAxisPosition Bottom `
-                      -YMinValue -1.25 -YMaxValue 1.25 -YMajorUnit 0.25 -YAxisNumberformat "0.00" -YAxisTitleText "Sine" -YAxisTitleBold -YAxisTitleSize 12 -YAxisPosition Left -LegendPostion Bottom -LegendSize 8 -legendBold
+                      -Column 2 -ColumnOffSetPixels 35 -Width 800 -XAxisTitleText "Degrees" -XAxisTitleBold -XAxisTitleSize 12 -XMajorUnit 30 -XMinorUnit 10 -XMinValue 0 -XMaxValue 361  -XAxisNumberformat "000"`  -XAxisPosition Bottom `
+                      -YMinValue -1.25 -YMaxValue 1.25 -YMajorUnit 0.25 -YAxisNumberformat "0.00" -YAxisTitleText "Sine" -YAxisTitleBold -YAxisTitleSize 12 -YAxisPosition Left `
+                      -LegendSize 8 -legendBold  -LegendPostion Bottom
         $d = $excel.Workbook.Worksheets["Sinx"].Drawings[0]
         It "Controled the axes and title and legend of the chart                                   " {
             $d.XAxis.MaxValue                                           | Should     be 361

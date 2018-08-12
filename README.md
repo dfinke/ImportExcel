@@ -51,7 +51,10 @@ Install-Module ImportExcel -scope CurrentUser
 ```PowerShell
 Install-Module ImportExcel
 ```
-# New Aug 3rd - 
+# New to Aug 12th  
+- Added -PivotTotals parameter where there was already -NoTotalsInPivot new one allows None, Both, Rows, Columns. (#415)
+- When appending Export-Excel only extended tables and ranges if they were explicitly specified. It now does it automatically. 
+- Compare and Merge worksheet originally had a problem with > 26 columns, I fixed merge turns out I hadn't fixed compare ... I have now 
 - Fixed bug where Export-Excel would not recognise it had to set  $TitleFillPattern - made the default 'Solid'
 - ExcludeProperty in Export-Excel now supports wildcards. 
 - Added DateTime to the list of types which can be exported as single column. 

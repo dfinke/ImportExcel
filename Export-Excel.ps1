@@ -587,14 +587,29 @@
                     $AutoNameRange  = $true ; foreach ($h in $header) {if ($ws.names.name -notcontains $h) {$AutoNameRange = $false} }
                 }
                 #if we did not get a Rangename but there is a Range which covers the active part of the sheet, set Rangename to that.
-                if (-not $RangeName -and $ws.names.where({($_.name[0] -match '[a-z]') -and  ($_.fulladdress -replace "\$","" )  -eq  [OfficeOpenXml.ExcelAddress]::GetFullAddress($worksheetName, $ws.dimension) })) {
-                    $rangeName = $ws.names.where({($_.fulladdress -replace "\$","" )  -eq  [OfficeOpenXml.ExcelAddress]::GetFullAddress($worksheetName, $ws.dimension) } , 'First', 1).name
+                if (-not $RangeName -and $ws.names.where({$_.name[0] -match '[a-z]'})) {
+                    $theRange = $ws.names.where({
+                         ($_.Name[0]   -match '[a-z]' )              -and
+                         ($_.Start.Row    -eq $StartRow)             -and
+                         ($_.Start.Column -eq $StartColumn)          -and
+                         ($_.End.Row      -eq $ws.Dimension.End.Row) -and
+                         ($_.End.Column   -eq $ws.Dimension.End.column) } , 'First', 1)
+                    if ($theRange) {$rangename = $theRange.name}
                 }
 
-                #if we did not get a table name but there is a table which covers the active part of the sheet, set table name to that.
+                #if we did not get a table name but there is a table which covers the active part of the sheet, set table name to that, and don't do anything with autofilter
                 if (-not $TableName -and $ws.Tables.Where({$_.address.address -eq $ws.dimension.address})) {
-                    $TableName = $ws.Tables.Where({$_.address.address -eq $ws.dimension.address},'First', 1).Name
+                    $TableName  = $ws.Tables.Where({$_.address.address -eq $ws.dimension.address},'First', 1).Name
+                    $AutoFilter = $false
                 }
+                #if we did not get $autofilter but a filter range is set and it covers the right area, set autofilter to true
+                elseif (-not $AutoFilter -and $ws.Names["_xlnm._FilterDatabase"]) {
+                    if ( ($ws.Names["_xlnm._FilterDatabase"].Start.Row    -eq $StartRow)    -and
+                         ($ws.Names["_xlnm._FilterDatabase"].Start.Column -eq $StartColumn) -and
+                         ($ws.Names["_xlnm._FilterDatabase"].End.Row      -eq $ws.Dimension.End.Row) -and
+                         ($ws.Names["_xlnm._FilterDatabase"].End.Column   -eq $ws.Dimension.End.Column) ) {$AutoFilter = $true}
+                }
+
                 $row = $ws.Dimension.End.Row
                 Write-Debug -Message ("Appending: headers are " + ($script:Header -join ", ") + " Start row is $row")
             }
@@ -804,15 +819,15 @@
             $params = @{
                 "SourceRange" = $dataRange
             }
-            if ($PivotTableName)    {$params.PivotTableName    = $PivotTableName}
+            if   ($PivotTableName)  {$params.PivotTableName    = $PivotTableName}
             else                    {$params.PivotTableName    = $WorksheetName + 'PivotTable'}
-            if ($Activate)          {$params.Activate          = $true   }
-            if ($PivotFilter)       {$params.PivotFilter       = $PivotFilter}
-            if ($PivotRows)         {$params.PivotRows         = $PivotRows}
-            if ($PivotColumns)      {$Params.PivotColumns      = $PivotColumns}
-            if ($PivotData)         {$Params.PivotData         = $PivotData}
-            if ($NoTotalsInPivot)   {$params.PivotTotals       = "None"    }
-            if ($PivotTotals)       {$params.PivotTotals       = $PivotTotals}
+            if          ($Activate) {$params.Activate          = $true   }
+            if       ($PivotFilter) {$params.PivotFilter       = $PivotFilter}
+            if         ($PivotRows) {$params.PivotRows         = $PivotRows}
+            if      ($PivotColumns) {$Params.PivotColumns      = $PivotColumns}
+            if         ($PivotData) {$Params.PivotData         = $PivotData}
+            if   ($NoTotalsInPivot) {$params.PivotTotals       = "None"    }
+            Elseif   ($PivotTotals) {$params.PivotTotals       = $PivotTotals}
             if ($PivotDataToColumn) {$params.PivotDataToColumn = $true}
             if ($IncludePivotChart) {
                                      $params.IncludePivotChart = $true
