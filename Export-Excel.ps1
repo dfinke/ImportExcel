@@ -18,7 +18,7 @@
             Data to insert onto the worksheet - this is often provided from the pipeline.
         .PARAMETER DisplayPropertySet
             Many (but not all) objects have a hidden property named psStandardmembers with a child property DefaultDisplayPropertySet ; this parameter reduces the properties exported to those in this set.
-        .PARAMETER NoAliasOrScriptPropeties
+        .PARAMETER NoAliasOrScriptProperties
             Some objects duplicate existing properties by adding aliases, or have Script properties which take a long time to return a value and slow the export down, if specified this removes these properties
         .PARAMETER ExcludeProperty
             Specifies properties which may exist in the target data but should not be placed on the worksheet.
@@ -163,6 +163,12 @@
             If specified, Export-Excel returns the range of added cells in the format "A1:Z100"
         .PARAMETER PassThru
             If specified, Export-Excel returns an object representing the Excel package without saving the package first. To save it you need to call the save or Saveas method or send it back to Export-Excel.
+        .PARAMETER Transpose
+            Transposes rows with columns and vice versa. Possible aliases to use 'Rotate', 'RotateData', 'TransposeColumnsRows', 'TransposeData'.
+        .PARAMETER TransposeSorting
+            Possible values: "ASC", "DESC", "NONE"
+            Default value: 'NONE'
+            While for HashTable/OrderedDictionary title is always Names/Values for PSCustomObjects titles can be left as is (NONE), sorted ascending (ASC) or descending (DESC)
 
         .EXAMPLE
             Get-Process | Export-Excel .\Test.xlsx -show
@@ -441,7 +447,7 @@
         [Switch]$PassThru,
         [String]$Numberformat = 'General',
         [string[]]$ExcludeProperty,
-        [Switch]$NoAliasOrScriptPropeties,
+        [Switch]$NoAliasOrScriptProperties,
         [Switch]$DisplayPropertySet,
         [String[]]$NoNumberConversion,
         [Object[]]$ConditionalFormat,
@@ -453,7 +459,9 @@
         [Switch]$Now,
         [Switch]$ReturnRange,
         [Switch]$NoTotalsInPivot,
-        [Switch]$ReZip
+        [Switch]$ReZip,
+        [alias('Rotate', 'RotateData', 'TransposeColumnsRows', 'TransposeData')][switch] $Transpose,
+        [ValidateSet("ASC", "DESC", "NONE")][string] $TransposeSort = 'NONE'
     )
 
     Begin {
@@ -473,8 +481,10 @@
 
             Param (
                 $TargetCell,
+                $Name,
                 $CellValue
             )
+            #Write-Verbose "No number conversion: $NoNumberConversion"
             #The write-verbose commands have been commented out below - even if verbose is silenced they cause a significiant performance impact and if it's on they will cause a flood of messages.
             Switch ($CellValue) {
                 { $_ -is [DateTime]} {
@@ -517,7 +527,7 @@
                   ($NoNumberConversion -contains $Name) -or ($NoNumberConversion -eq '*'))) } {
                     #Save text without it to converting to number
                     $TargetCell.Value = $_
-                    #Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' unconverted"
+                    Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' unconverted"
                     break
                 }
                 Default {
@@ -552,6 +562,7 @@
             }
 
             if ($ExcelPackage) {
+                Write-Verbose 'Export-Excel - Processing Excel Package'
                 $pkg = $ExcelPackage
                 $Path = $pkg.File
             }
@@ -623,78 +634,80 @@
     }
 
     Process {
-        if ($TargetData) {
-            Try {
-                if ($firstTimeThru) {
-                    $firstTimeThru = $false
-                    $isDataTypeValueType = $TargetData.GetType().name -match 'string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
-                    if ($isDataTypeValueType) {$row -= 1} #row incremented before adding values, so it is set to the number of rows inserted at the end
-                    Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'"
+        if ((Get-ObjectCount -Object $TargetData) -ne 0) {
+            if ($firstTimeThru) {
+                $firstTimeThru = $false
+                # Get all the data in form of Array of Arrays.
+             #   Write-Verbose "Time: 1 TargetData: $($TargetData.Count)"
+            #    Write-Verbose "Time: 1 First Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
+                if ($Transpose) { $TargetData = Format-TransposeTable -Object $TargetData -Sort $TransposeSort }
+                $Data = Format-PSTable $TargetData -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties -DisplayPropertySet:$DisplayPropertySet # -SkipTitle:$NoHeader
+                $script:Header = $Data[0] # Saving Header information for later use
+            #    Write-Verbose "$($Script:Header -join ',') - Data Count: $($Data.Count)"
+                if ($NoHeader) {
+                    $Data.RemoveAt(0);
+                #    Write-Verbose "Removed header from ArrayList - Data Count: $($Data.Count)"
                 }
-
-                if ($isDataTypeValueType) {
+                $ArrRowNr = 0
+                foreach ($RowData in $Data) {
+                    $ArrColumnNr = 0
                     $ColumnIndex = $StartColumn
-                    $Row += 1
-                    try    {Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData}
-                    catch  {Write-Warning "Could not insert value at Row $Row. "}
-                }
-                else {
-                    #region Add headers
-                    if (-not $script:Header) {
-                        $ColumnIndex = $StartColumn
-                        if ($DisplayPropertySet -and $TargetData.psStandardmembers.DefaultDisplayPropertySet.ReferencedPropertyNames) {
-                            $script:Header = $TargetData.psStandardmembers.DefaultDisplayPropertySet.ReferencedPropertyNames.Where( {$_ -notin $ExcludeProperty})
-                        }
-                        else {
-                            if ($NoAliasOrScriptPropeties) {$propType = "Property"} else {$propType = "*"}
-                            $script:Header = $TargetData.PSObject.Properties.where( {$_.MemberType -like $propType -and $_.Name -notin $ExcludeProperty}).Name
-                        }
-                        if ($NoHeader) {
-                            # Don't push the headers to the spreadsheet
-                            $Row -= 1
-                        }
-                        else {
-                            foreach ($Name in $script:Header) {
-                                $ws.Cells[$Row, $ColumnIndex].Value = $Name
-                                Write-Verbose "Cell '$Row`:$ColumnIndex' add header '$Name'"
-                                $ColumnIndex += 1
-                            }
-                        }
+                    foreach ($Value in $RowData) {
+                       # Write-Verbose "Row: $Row / $ArrRowNr Column: $ColumnIndex / $ArrColumnNr Data: $Value Title: $($script:Header[$ArrColumnNr])"
+                        Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $Value -Name $script:Header[$ArrColumnNr]
+                        $ColumnIndex++
+                        $ArrColumnNr++
                     }
-                    #endregion
+                    $ArrRowNr++
+                    $Row++
 
-                    $Row += 1
+                }
+
+                #Write-Verbose "Time: 1 Last Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
+            } else {
+                #Write-Verbose "Time: 2++ TargetData: $($TargetData.Count)"
+                #Write-Verbose "Time: 2++ First Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
+                if ($Transpose) { $TargetData = Format-TransposeTable -Object $TargetData -Sort $TransposeSort }
+                $Data = Format-PSTable $TargetData -SkipTitle -ExcludeProperty $ExcludeProperty -NoAliasOrScriptProperties:$NoAliasOrScriptProperties -DisplayPropertySet:$DisplayPropertySet
+                $ArrRowNr = 0
+                foreach ($RowData in $Data) {
+                    $ArrColumnNr = 0
                     $ColumnIndex = $StartColumn
-
-                    foreach ($Name in $script:Header) {
-                        #region Add non header values
-                        try   {Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData.$Name}
-                        catch {Write-Warning -Message "Could not insert the $Name property at Row $Row, Column $Column"}
-                        $ColumnIndex += 1
-                        #endregion
+                    foreach ($Value in $RowData) {
+                        #Write-Verbose "Row: $Row / $ArrRowNr Column: $ColumnIndex / $ArrColumnNr Data: $Value Title: $($script:Header[$ArrColumnNr])"
+                        Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $Value $script:Header[$ArrColumnNr]
+                        $ColumnIndex++
+                        $ArrColumnNr++
                     }
-                    $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false
+                    $ArrRowNr++
+                    $Row++
                 }
-            }
-            Catch {
-                throw "Failed exporting data to worksheet '$WorksheetName' to '$Path': $_"
+                #Write-Verbose "Time: 2++ Last Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
             }
         }
     }
 
     End {
+       # Write-Verbose "Address Range First - StartRow $StartRow / StartColumn $StartColumn Last Row: $LastRow / Last Column: $LastCol"
+      #  Write-Verbose "Time: 2++ Last Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
+        if ((Get-ObjectCount -Object $TargetData) -ne 0) {
+            $Row -= 1
+            $ColumnIndex -= 1
+           # Write-Verbose "Time: 3++ Last Row: $Row / $ArrRowNr Last Column: $ColumnIndex / $ArrColumnNr Data: $Value"
+        }
         if ($firstTimeThru) {
               $LastRow      = $ws.Dimension.End.Row
               $LastCol      = $ws.Dimension.End.Column
               $endAddress   = $ws.Dimension.End.Address
         }
         else {
-              $LastRow      = $Row
-              $LastCol      = $ColumnIndex
+              $LastRow      = $Row #- 1
+              $LastCol      = $ColumnIndex #- 1
               $endAddress   = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$LastRow]C[$LastCol]", 0, 0)
         }
         $startAddress = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$StartRow]C[$StartColumn]", 0, 0)
         $dataRange = "{0}:{1}" -f $startAddress, $endAddress
+        #Write-Verbose "Address Range First - StartRow $StartRow / StartColumn $StartColumn Last Row: $LastRow / Last Column: $LastCol StartAddress: $startAddress EndAddress: $EndAddress  DataRange: $dataRange"
 
         Write-Debug "Data Range '$dataRange'"
         if ($AutoNameRange) {
@@ -756,6 +769,7 @@
                     $ws.Tables[$TableName].TableStyle         = $TableStyle
                 }
                 else {
+                    Write-Verbose "TableName: $TableName DateRange: $dataRange TableStyle: $TableStyle"
                     $tbl = $ws.Tables.Add($ws.Cells[$dataRange], $TableName)
                     $tbl.TableStyle = $TableStyle
                 }
