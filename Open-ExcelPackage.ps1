@@ -64,10 +64,16 @@ Function Close-ExcelPackage {
     #Save file with a new name (ignored if -NoSave Specified).
     $SaveAs,
     [ValidateNotNullOrEmpty()]
-    [String]$Password
+    [String]$Password,
+    #Attempt to recalculation the workbook before saving
+    [switch]$Calculate
     )
     if ( $NoSave)      {$ExcelPackage.Dispose()}
     else {
+          if ($Calculate) {
+            try   { [OfficeOpenXml.CalculationExtension]::Calculate($ExcelPackage.Workbook) }
+            Catch { Write-Warning "One or more errors occured while calculating, save will continue, but there may be errors in the workbook."}
+          }
           if ($SaveAs) {
               $SaveAs = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($SaveAs)
               if ($Password) {$ExcelPackage.SaveAs( $SaveAs, $Password ) }

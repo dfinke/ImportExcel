@@ -133,7 +133,7 @@
                 $Address.Style.VerticalAlignment   = $VerticalAlignment
             }
             if ($PSBoundParameters.ContainsKey('Value')) {
-                if ($Value -like '=*')      {$Address.Formula = $Value}
+                if ($Value -like '=*')      {$Address.Formula = ($Value -replace'^=','')}  #EPPlus likes formulas with no = sign; Excel doesn't care
                 else {
                     $Address.Value = $Value
                     if ($Value -is  [DateTime])  {
@@ -143,7 +143,7 @@
             }
 
             if ($PSBoundParameters.ContainsKey('Formula')) {
-                $Address.Formula = $Formula
+                $Address.Formula = ( $Formula -replace '^=','')
             }
             if ($PSBoundParameters.ContainsKey('NumberFormat')) {
                 $Address.Style.Numberformat.Format = (Expand-NumberFormat $NumberFormat)
@@ -206,7 +206,6 @@
                     $Address -is [OfficeOpenXml.ExcelColumn]  ) {$Address.Hidden = [boolean]$Hidden}
                 else {Write-Warning -Message ("Can hide a row or a column but not a {0} object" -f ($Address.GetType().name)) }
             }
-
         }
     }
 }
@@ -268,7 +267,7 @@ Function Expand-NumberFormat {
     switch ($NumberFormat) {
         "Currency"      {
             #https://msdn.microsoft.com/en-us/library/system.globalization.numberformatinfo.currencynegativepattern(v=vs.110).aspx
-            $sign = [cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol 
+            $sign = [cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol
             switch ([cultureinfo]::CurrentCulture.NumberFormat.CurrencyPositivePattern) {
                 0  {$pos = "$Sign#,##0.00"  ; break }
                 1  {$pos = "#,##0.00$Sign"  ; break }
@@ -284,7 +283,7 @@ Function Expand-NumberFormat {
                 5  {return "$pos;-#,##0.00$Sign"   }
                 6  {return "$pos;#,##0.00-$Sign"   }
                 7  {return "$pos;#,##0.00$Sign-"   }
-                8  {return "$pos;-#,##0.00 $Sign"  } 
+                8  {return "$pos;-#,##0.00 $Sign"  }
                 9  {return "$pos;-$Sign #,##0.00"  }
                10  {return "$pos;#,##0.00 $Sign-"  }
                11  {return "$pos;$Sign #,##0.00-"  }

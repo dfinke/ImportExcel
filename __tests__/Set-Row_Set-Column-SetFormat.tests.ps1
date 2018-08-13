@@ -137,7 +137,7 @@ Describe "Set-Column, Set-Row and Set Format" {
         $ws = $excel.Workbook.Worksheets["Sheet1"]
 
         $c = Set-Column -PassThru -Worksheet $ws -Heading "Total" -Value "=Quantity*Price" -NumberFormat "£#,###.00" -FontColor Blue -Bold -HorizontalAlignment Right -VerticalAlignment Top
-        $r = Set-Row    -PassThru   -Worksheet $ws -StartColumn 3 -BorderAround Thin -Italic -Underline -FontSize 14 -Value {"=sum($columnName`2:$columnName$endrow)" } -VerticalAlignment Bottom
+        $r = Set-Row    -PassThru -Worksheet $ws -StartColumn 3 -BorderAround Thin -Italic -Underline -FontSize 14 -Value {"=sum($columnName`2:$columnName$endrow)" } -VerticalAlignment Bottom
         Set-Format -Address   $excel.Workbook.Worksheets["Sheet1"].cells["b3"] -HorizontalAlignment Right -VerticalAlignment Center -BorderAround Thick -BorderColor Red -StrikeThru
         Set-Format -Address   $excel.Workbook.Worksheets["Sheet1"].cells["c3"] -BorderColor Red -BorderTop DashDot -BorderLeft DashDotDot -BorderBottom Dashed -BorderRight Dotted
         Set-Format -WorkSheet $ws -Range "E3"  -Bold:$false -FontShift Superscript -HorizontalAlignment Left
@@ -153,7 +153,7 @@ Describe "Set-Column, Set-Row and Set Format" {
         Set-Format -WorkSheet $ws -Range "D$rr" -Formula "=E$rr/C$rr" -Hidden -WarningVariable "BadHideWarnvar" -WarningAction SilentlyContinue
         $rr ++
         Set-Format -WorkSheet $ws -Range "B$rr" -Value ([datetime]::Now)
-        Close-ExcelPackage $excel
+        Close-ExcelPackage $excel -Calculate
 
 
         $excel = Open-ExcelPackage $path
@@ -167,7 +167,8 @@ Describe "Set-Column, Set-Row and Set Format" {
             $ws.Row(5).height                                           | Should be  0
         }
         it "Set a column formula, with numberformat, color, bold face and alignment                " {
-            $ws.cells["e2"].Formula                                     | Should     be "=Quantity*Price"
+            $ws.cells["e2"].Formula                                     | Should     be "Quantity*Price"
+            $ws.cells["e2"].Value                                       | Should     be 147.63
             $ws.cells["e2"].Style.Font.Color.rgb                        | Should     be "FF0000FF"
             $ws.cells["e2"].Style.Font.Bold                             | Should     be $true
             $ws.cells["e2"].Style.Font.VerticalAlign                    | Should     be "None"
@@ -189,7 +190,8 @@ Describe "Set-Column, Set-Row and Set Format" {
             $ws.cells["E7"].style.Border.Left.Style                     | Should     be "None"
             $ws.cells["E7"].style.Border.Right.Style                    | Should     be "Thin"
             $ws.cells["C7"].style.Font.size                             | Should     be 14
-            $ws.cells["C7"].Formula                                     | Should     be "=sum(C2:C6)"
+            $ws.cells["C7"].Formula                                     | Should     be "sum(C2:C6)"
+            $ws.cells["C7"].value                                       | Should     be 81
             $ws.cells["C7"].style.Font.UnderLine                        | Should     be $true
             $ws.cells["C6"].style.Font.UnderLine                        | Should     be $false
         }
@@ -214,7 +216,7 @@ Describe "Set-Column, Set-Row and Set Format" {
 
     Context "Set-Format value setting " {
         it "Inserted a formula                                                                     " {
-            $ws.Cells["D7"].Formula                                     | Should     be "=E7/C7"
+            $ws.Cells["D7"].Formula                                     | Should     be "E7/C7"
         }
         it "Inserted a value                                                                       " {
             $ws.Cells["B7"].Value                                       | Should     be "Total"
@@ -243,7 +245,7 @@ Describe "Set-Column, Set-Row and Set Format" {
             Set-Column -Worksheet $ws -Heading "Age" -Value "=INT((NOW()-DateOfBirth)/365)"
             Set-Format -Address $c,$ws.column(3) -NumberFormat 'Short Date' -AutoSize
 
-            Close-ExcelPackage -ExcelPackage $excel
+            Close-ExcelPackage -ExcelPackage $excel -Calculate
             $excel = Open-ExcelPackage $path
             $ws = $excel.Workbook.Worksheets["Sheet1"]
           }

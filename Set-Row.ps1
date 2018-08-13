@@ -77,9 +77,9 @@
         [int]$TextRotation ,
         #Set cells to a fixed hieght
         [float]$Height,
-        #If Sepecified returns the range of cells which affected
+        #If Sepecified returns the range of cells which were affected
         [switch]$ReturnRange,
-         #If Specified, return a row object to allow further work to be done
+        #If Specified, return a row object to allow further work to be done
         [switch]$PassThru
     )
 
@@ -102,14 +102,14 @@
     #Fill in the data
     if      ($PSBoundParameters.ContainsKey('Value')) {foreach ($column in ($StartColumn..$EndColumn)) {
         #We might want the column name in a script block
-        $ColumnName = [OfficeOpenXml.ExcelCellAddress]::new(1,$column).Address -replace "1",""
+        $columnName = [OfficeOpenXml.ExcelCellAddress]::new(1,$column).Address -replace "1",""
         if  ($Value -is [scriptblock] ) {
              #re-create the script block otherwise variables from this function are out of scope.
              $cellData = & ([scriptblock]::create( $Value ))
              Write-Verbose -Message $cellData
         }
         else{$cellData = $Value}
-        if  ($cellData -match "^=")      { $Worksheet.Cells[$Row, $column].Formula                    = $cellData           }
+        if  ($cellData -match "^=")      { $Worksheet.Cells[$Row, $column].Formula                    = ($cellData -replace '^=','') } #EPPlus likes formulas with no = sign; Excel doesn't care
         elseif ( [System.Uri]::IsWellFormedUriString($cellData , [System.UriKind]::Absolute)) {
             # Save a hyperlink : internal links can be in the form xl://sheet!E419 (use A1 as goto sheet), or xl://RangeName
             if ($cellData -match "^xl://internal/") {
@@ -122,8 +122,8 @@
             $Worksheet.Cells[$Row, $Column].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
             $Worksheet.Cells[$Row, $Column].Style.Font.UnderLine = $true
         }
-        else                             { $Worksheet.Cells[$Row, $column].Value                      = $cellData           }
-        if  ($cellData -is [datetime])   { $Worksheet.Cells[$Row, $column].Style.Numberformat.Format  = 'm/d/yy h:mm'       } # This is not a custom format, but a preset recognized as date and localized.
+        else                             { $Worksheet.Cells[$Row, $column].Value                      = $cellData                    }
+        if  ($cellData -is [datetime])   { $Worksheet.Cells[$Row, $column].Style.Numberformat.Format  = 'm/d/yy h:mm'                } #This is not a custom format, but a preset recognized as date and localized.
     }}
     #region Apply formatting
     $params = @{}
@@ -132,7 +132,7 @@
                      'BorderAround', 'BackgroundColor', 'BackgroundPattern', 'PatternColor')) {
         if ($PSBoundParameters.ContainsKey($p)) {$params[$p] = $PSBoundParameters[$p]}
     }
-    $theRange                            = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$Row]C[$StartColumn]:R[$Row]C[$EndColumn]",0,0)
+    $theRange                            = [OfficeOpenXml.ExcelAddress]::New($Row, $StartColumn, $Row, $EndColumn)
     if ($params.Count) {
         Set-Format -WorkSheet $Worksheet -Range $theRange @params
     }

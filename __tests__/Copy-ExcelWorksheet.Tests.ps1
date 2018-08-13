@@ -4,8 +4,8 @@ Remove-item -Path $path1, $path2  -ErrorAction SilentlyContinue
 
 $ProcRange =  Get-Process | Export-Excel $path1 -DisplayPropertySet -WorkSheetname Processes -ReturnRange
 
-if ((Get-Culture).NumberFormat.CurrencySymbol -eq "Â£") {$OtherCurrencySymbol = "$"}
-else                                                   {$OtherCurrencySymbol = "Â£"}
+if ((Get-Culture).NumberFormat.CurrencySymbol -eq "£") {$OtherCurrencySymbol = "$"}
+else                                                   {$OtherCurrencySymbol = "£"}
 [PSCustOmobject][Ordered]@{
     Date             = Get-Date
     Formula1         = '=SUM(F2:G2)'
@@ -25,8 +25,8 @@ else                                                   {$OtherCurrencySymbol = "
     StrE164Phone     = '+32 (444) 444 4444'
     StrAltPhone1     = '+32 4 4444 444'
     StrAltPhone2     = '+3244444444'
-    StrLeadSpace    = '  123'
-    StrTrailSpace   = '123   '
+    StrLeadSpace     = '  123'
+    StrTrailSpace    = '123   '
     Link1            = [uri]"https://github.com/dfinke/ImportExcel"
     Link2            = "https://github.com/dfinke/ImportExcel"     # Links are not copied correctly, hopefully this will be fixed at some future date
 } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2 -WorkSheetname MixedTypes -Path $path2
@@ -50,14 +50,16 @@ Describe "Copy-Worksheet" {
             $excel = Open-ExcelPackage -Path $path2
             $ws    = $Excel.Workbook.Worksheets[3]
         }
-        it "Inserted a worksheet   with the expected name, number of rows and number of columns    " {
+        it "Copied a worksheet, giving the expected name, number of rows and number of columns     " {
             $Excel.Workbook.Worksheets.count                            | Should     be 3
             $ws                                                         | Should not benullorEmpty
             $ws.Name                                                    | Should     be "CopyOfMixedTypes"
             $ws.Dimension.Columns                                       | Should     be  22
             $ws.Dimension.Rows                                          | Should     be  2
+        }
+        it "Copied the expected data into the worksheet                                            " {
             $ws.Cells[2, 1].Value.Gettype().name                        | Should     be  'DateTime'
-            $ws.Cells[2, 2].Formula                                     | Should     be  '=SUM(F2:G2)'
+            $ws.Cells[2, 2].Formula                                     | Should     be  'SUM(F2:G2)'
             $ws.Cells[2,  5].Value.GetType().name                       | Should     be  'String'
             $ws.Cells[2,  6].Value.GetType().name                       | Should     be  'String'
             $ws.Cells[2, 18].Value.GetType().name                       | Should     be  'String'

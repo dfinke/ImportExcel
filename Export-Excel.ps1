@@ -22,6 +22,8 @@
             Some objects duplicate existing properties by adding aliases, or have Script properties which take a long time to return a value and slow the export down, if specified this removes these properties
         .PARAMETER ExcludeProperty
             Specifies properties which may exist in the target data but should not be placed on the worksheet.
+        .PARAMETER Calculate
+            If specified a recalculation of the worksheet will be requested before saving.
         .PARAMETER Title
             Text of a title to be placed in the top left cell.
         .PARAMETER TitleBold
@@ -372,6 +374,7 @@
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [Parameter(ValueFromPipeline = $true)]
         $TargetData,
+        [Switch]$Calculate,
         [Switch]$Show,
         [String]$WorksheetName = 'Sheet1',
         [String]$Password,
@@ -497,8 +500,8 @@
                     break
                 }
                 {($_ -is [String]) -and ($_[0] -eq '=')} {
-                    #region Save an Excel formula
-                    $TargetCell.Formula = $_
+                    #region Save an Excel formula - we need = to spot the formula but the EPPLUS won't like it if we include it (Excel doesn't care if is there or not)
+                    $TargetCell.Formula = ($_ -replace '^=','')
                     if ($setNumformat) {$targetCell.Style.Numberformat.Format = $Numberformat }
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as formula"
                     break
@@ -560,15 +563,20 @@
                 $Path = $pkg.File
             }
             Else { $pkg = Open-ExcelPackage -Path $Path -Create -KillExcel:$KillExcel -Password:$Password}
-
+        }
+        Catch {throw "Could not open Excel Package $path"}
+        if ($NoClobber) {Write-Warning -Message "-NoClobber parameter is no longer used" }
+        Try {
             $params = @{WorksheetName=$WorksheetName}
-            if ($NoClobber) {Write-Warning -Message "-NoClobber parameter is no longer used" }
             foreach ($p in @("ClearSheet", "MoveToStart", "MoveToEnd", "MoveBefore", "MoveAfter", "Activate")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
             $ws = $pkg | Add-WorkSheet @params
             if ($ws.Name -ne $WorksheetName) {
                 Write-Warning -Message "The Worksheet name has been changed from $WorksheetName to $($ws.Name), this may cause errors later."
                 $WorksheetName = $ws.Name
             }
+        }
+        Catch {throw "Could not get worksheet $worksheetname"}
+        try   {
             foreach ($format in $ConditionalFormat ) {
                 switch ($format.formatter) {
                     "ThreeIconSet" {Add-ConditionalFormatting -WorkSheet $ws -ThreeIconsSet $format.IconType -range $format.range -reverse:$format.reverse  }
@@ -576,7 +584,9 @@
                     "FiveIconSet"  {Add-ConditionalFormatting -WorkSheet $ws  -FiveIconsSet $format.IconType -range $format.range -reverse:$format.reverse  }
                 }
             }
-
+        }
+        catch {throw "Error applying confitional formatting to worksheet"}
+        try {
             if ($Append -and $ws.Dimension) {
                 #if there is a title or anything else above the header row, append needs to be combined wih a suitable startrow parameter
                 $headerRange = $ws.Dimension.Address -replace "\d+$", $StartRow
@@ -963,6 +973,11 @@
                 & $CellStyleSB $ws $TotalRows $LastColumn
             }
             catch {Write-Warning -Message "Failed processing CellStyleSB in worksheet '$WorksheetName': $_"}
+        }
+
+        if ($Calculate) {
+            try   { [OfficeOpenXml.CalculationExtension]::Calculate($ws) }
+            Catch { Write-Warning "One or more errors occured while calculating, save will continue, but there may be errors in the workbook."}
         }
 
         if ($Password) {

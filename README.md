@@ -51,7 +51,8 @@ Install-Module ImportExcel -scope CurrentUser
 ```PowerShell
 Install-Module ImportExcel
 ```
-# New to Aug 12th  
+# New to Aug 13th
+- Added -Calculate switch to Export-Excel and Close-Excel Package; EPPlus needs formulas to OMIT the leading = sign so where formula is set it now strips a leading =  
 - Added -PivotTotals parameter where there was already -NoTotalsInPivot new one allows None, Both, Rows, Columns. (#415)
 - When appending Export-Excel only extended tables and ranges if they were explicitly specified. It now does it automatically. 
 - Compare and Merge worksheet originally had a problem with > 26 columns, I fixed merge turns out I hadn't fixed compare ... I have now 

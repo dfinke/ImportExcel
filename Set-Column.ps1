@@ -79,7 +79,7 @@
         [float]$Width,
         #Set the inserted data to be a named range (ignored if header is not specified)
         [Switch]$AutoNameRange,
-        #If Sepecified returns the range of cells which affected
+        #If Sepecified returns the range of cells which were affected
         [switch]$ReturnRange,
         #If Specified, return an ExcelPackage object to allow further work to be done on the file.
         [switch]$PassThru
@@ -90,7 +90,7 @@
     #In a script block to build a formula, we may want any of corners or the columnname,
     #if column and startrow aren't specified, assume first unused column, and first row
     if (-not $StartRow)   {$startRow   = $Worksheet.Dimension.Start.Row    }
-    $StartColumn                       = $Worksheet.Dimension.Start.Column
+    $startColumn                       = $Worksheet.Dimension.Start.Column
     $endColumn                         = $Worksheet.Dimension.End.Column
     $endRow                            = $Worksheet.Dimension.End.Row
     if ($Column  -lt 2 )  {$Column     = $endColumn    + 1 }
@@ -110,7 +110,7 @@
              Write-Verbose  -Message     $cellData
         }
         else                           { $cellData = $Value}
-        if  ($cellData -match "^=")    { $Worksheet.Cells[$Row, $Column].Formula                           = $cellData           }
+        if  ($cellData -match "^=")    { $Worksheet.Cells[$Row, $Column].Formula                           = ($cellData -replace '^=','') } #EPPlus likes formulas with no = sign; Excel doesn't care
         elseif ( [System.Uri]::IsWellFormedUriString($cellData , [System.UriKind]::Absolute)) {
             # Save a hyperlink : internal links can be in the form xl://sheet!E419 (use A1 as goto sheet), or xl://RangeName
             if ($cellData -match "^xl://internal/") {
@@ -123,8 +123,8 @@
             $Worksheet.Cells[$Row, $Column].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
             $Worksheet.Cells[$Row, $Column].Style.Font.UnderLine = $true
         }
-        else                           { $Worksheet.Cells[$Row, $Column].Value                             = $cellData           }
-        if  ($cellData -is [datetime]) { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format         = 'm/d/yy h:mm'       } # This is not a custom format, but a preset recognized as date and localized.
+        else                           { $Worksheet.Cells[$Row, $Column].Value                             = $cellData                   }
+        if  ($cellData -is [datetime]) { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format         = 'm/d/yy h:mm'               } # This is not a custom format, but a preset recognized as date and localized.
     }}
     #region Apply formatting
     $params = @{}

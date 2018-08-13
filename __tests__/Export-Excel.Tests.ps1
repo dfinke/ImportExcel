@@ -9,8 +9,8 @@ Describe ExportExcel {
 
     Context "#Example 1      # Creates and opens a file with the right number of rows and columns" {
         $path = "$env:TEMP\Test.xlsx"
-        Remove-item -Path $path -ErrorAction SilentlyContinue
-        $processes = Get-Process
+        Remove-item -Path $path -ErrorAction SilentlyContinue 
+        $processes = Get-Process | select-object -first 100
         $propertyNames = $Processes[0].psobject.properties.name
         $rowcount = $Processes.Count
         $Processes | Export-Excel $path  #-show
@@ -66,7 +66,7 @@ Describe ExportExcel {
     Context "                # NoAliasOrScriptPropeties -ExcludeProperty and -DisplayPropertySet work" {
         $path = "$env:TEMP\Test.xlsx"
         Remove-item -Path $path  -ErrorAction SilentlyContinue
-        $processes = Get-Process
+        $processes = Get-Process | Select-Object -First 100
         $propertyNames = $Processes[0].psobject.properties.where( {$_.MemberType -eq 'Property'}).name
         $rowcount = $Processes.Count
         #TestCreating a range with a name which needs illegal chars removing
@@ -151,7 +151,7 @@ Describe ExportExcel {
         Remove-item -Path $path -ErrorAction SilentlyContinue
         [PSCustOmobject][Ordered]@{
             Date             = Get-Date
-            Formula1         = '=SUM(F2:G2)'
+            Formula1         = '=SUM(S2:T2)'
             String1          = 'My String'
             Float            = [math]::pi
             IPAddress        = '10.10.25.5'
@@ -174,7 +174,7 @@ Describe ExportExcel {
             Link2            = "https://github.com/dfinke/ImportExcel"
             Link3            = "xl://internal/sheet1!A1"
             Link4            = "xl://internal/sheet1!C5"
-        } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2  -Path $path
+        } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2  -Path $path -Calculate
         it "Created a new file                                                                     " {
             Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
         }
@@ -192,12 +192,15 @@ Describe ExportExcel {
             $ws.Cells[2, 1].Value.Gettype().name                        | Should     be  'DateTime'
         }
         it "Set a formula  in Cell B2                                                              " {
-            $ws.Cells[2, 2].Formula                                     | Should     be  '=SUM(F2:G2)'
+            $ws.Cells[2, 2].Formula                                     | Should     be  'SUM(S2:T2)'
+        }
+        it "Forced a successful calculation of the Value in Cell B2                                " {
+            $ws.Cells[2, 2].Value                                       | Should     be  246
         }
         it "Set strings    in Cells E2, F2 and R2  (no number conversion)                          " {
-            $ws.Cells[2,  5].Value.GetType().name                        | Should     be  'String'
-            $ws.Cells[2,  6].Value.GetType().name                        | Should     be  'String'
-            $ws.Cells[2, 18].Value.GetType().name                        | Should     be  'String'
+            $ws.Cells[2,  5].Value.GetType().name                       | Should     be  'String'
+            $ws.Cells[2,  6].Value.GetType().name                       | Should     be  'String'
+            $ws.Cells[2, 18].Value.GetType().name                       | Should     be  'String'
         }
         it "Set numbers    in Cells K2,L2,M2   (diferent Negative integer formats)                 " {
             ($ws.Cells[2, 11].Value -is [valuetype] )                   | Should     be  $true
@@ -280,11 +283,11 @@ Describe ExportExcel {
         }
 
         it "Set a date      in Cell A1                                                             " {
-            $ws.Cells[1, 1].Value.Gettype().name                         | Should     be  'DateTime'
+            $ws.Cells[1, 1].Value.Gettype().name                        | Should     be  'DateTime'
         }
 
         it "Set a formula   in Cell B1                                                             " {
-            $ws.Cells[1, 2].Formula                                      | Should     be  '=SUM(F1:G1)'
+            $ws.Cells[1, 2].Formula                                     | Should     be  'SUM(F1:G1)'
         }
 
         it "Set strings     in Cells E1 and F1                                                     " {
@@ -488,11 +491,11 @@ Describe ExportExcel {
     }
 
     Context "                # Create and append with Start row and Start Column, inc ranges and Pivot table. " {
-        $path = "$env:TEMP\Test.xlsx" 
+        $path = "$env:TEMP\Test.xlsx"
         remove-item -Path $path -ErrorAction SilentlyContinue
         #Catch warning
         $warnVar = $null
-        #Test Append with no existing sheet. Test adding a named pivot table from command line parametesr and extending ranges when they're not specified explictly 
+        #Test Append with no existing sheet. Test adding a named pivot table from command line parametesr and extending ranges when they're not specified explictly
         Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company  | Export-Excel -StartRow 3 -StartColumn 3 -BoldTopRow -IncludePivotTable  -PivotRows Company -PivotData PM -PivotTableName 'PTOffset' -Path $path -WorkSheetname withOffset -Append -PivotFilter Name -NoTotalsInPivot  -RangeName procs  -AutoFilter -AutoNameRange
         Get-Process | Select-Object -last  10 -Property Name, cpu, pm, handles, company  | Export-Excel -StartRow 3 -StartColumn 3 -BoldTopRow -IncludePivotTable  -PivotRows Company -PivotData PM -PivotTableName 'PTOffset' -Path $path -WorkSheetname withOffset -Append -WarningAction SilentlyContinue -WarningVariable warnvar
         $Excel = Open-ExcelPackage   $path
@@ -506,7 +509,7 @@ Describe ExportExcel {
             $dataWs.Dimension.End.Row                                   | Should     be 23
             $dataWs.names[0].end.row                                    | Should     be 23
             $dataWs.names[0].name                                       | Should     be 'Name'
-            $dataWs.names.Count                                         | Should     be 7    #  Name, cpu, pm, handles & company + Named Range "Procs" + xl one for autofilter 
+            $dataWs.names.Count                                         | Should     be 7    #  Name, cpu, pm, handles & company + Named Range "Procs" + xl one for autofilter
             $dataWs.cells[$dataws.Dimension].AutoFilter                 | Should     be true
             }
         it "Applied and auto-extended an autofilter                                                " {
@@ -537,30 +540,30 @@ Describe ExportExcel {
     }
 
     Context "                # Create and append explicit and auto table and range extension" {
-        $path = "$env:TEMP\Test.xlsx" 
-        Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company           | Export-Excel -Path $path  -TableName ProcTab -AutoNameRange   -WorkSheetname NoOffset -ClearSheet 
+        $path = "$env:TEMP\Test.xlsx"
+        Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company           | Export-Excel -Path $path  -TableName ProcTab -AutoNameRange   -WorkSheetname NoOffset -ClearSheet
         Get-Process          | Select-Object -last  10 -Property Name, cpu, pm, handles, company  | Export-Excel -Path $path                     -AutoNameRange   -WorkSheetname NoOffset -Append
         $Excel = Open-ExcelPackage   $path
         $dataWs = $Excel.Workbook.Worksheets["NoOffset"]
-        
+
         it "Created a new sheet and auto-extended a table and explicitly extended named ranges     " {
             $dataWs.Tables["ProcTab"].Address.Address                   | should be "A1:E21"
             $dataWs.Names["CPU"].Rows                                   | should     be 20
             $dataWs.Names["CPU"].Columns                                | should     be 1
-        } 
- 
+        }
+
         $excel = Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company  | Export-Excel -ExcelPackage $excel  -RangeName procs -AutoFilter   -WorkSheetname NoOffset -ClearSheet -PassThru
         Get-Process          | Select-Object -last  10 -Property Name, cpu, pm, handles, company  | Export-Excel -ExcelPackage $excel  -RangeName procs -AutoFilter   -WorkSheetname NoOffset -Append
         $Excel = Open-ExcelPackage   $path
         $dataWs = $Excel.Workbook.Worksheets["NoOffset"]
-        
+
         it "Created a new sheet and explicitly extended named range and autofilter                 " {
             $dataWs.names["procs"].rows                                 | should     be 21
             $dataWs.names["procs"].Columns                              | should     be 5
             $dataWs.Names["_xlnm._FilterDatabase"].Rows                 | should     be 21 #2 x 10 data + 1 header
             $dataWs.Names["_xlnm._FilterDatabase"].Columns              | should     be 5  #Name, cpu, pm, handles & company
             $dataWs.Names["_xlnm._FilterDatabase"].AutoFilter           | should     be $true
-        }      
+        }
     }
 
     Context "#Example 11     # Create and append with title, inc ranges and Pivot table" {
