@@ -7,7 +7,7 @@ Describe ExportExcel {
 
     Context "#Example 1      # Creates and opens a file with the right number of rows and columns" {
         $path = "$env:TEMP\Test.xlsx"
-        Remove-item -Path $path -ErrorAction SilentlyContinue 
+        Remove-item -Path $path -ErrorAction SilentlyContinue
         #Test with a maximum of 100 processes for speed; export all properties, then export smaller subsets.
         $processes = Get-Process | select-object -first 100
         $propertyNames = $Processes[0].psobject.properties.name
@@ -142,14 +142,14 @@ Describe ExportExcel {
             $ws.cells[1, 1].Value                                       | Should     be  -1
         }
     }
-     
+
     Context "#Examples 3 & 4 # Setting cells for different data types Also added test for URI type" {
 
         if ((Get-Culture).NumberFormat.CurrencySymbol -eq "£") {$OtherCurrencySymbol = "$"}
         else {$OtherCurrencySymbol = "£"}
         $path = "$env:TEMP\Test.xlsx"
         $warnVar = $null
-        #Test correct export of different data types and number formats; test hyperlinks, test -NoNumberConversion test object is converted to a string with no warnings, test calcuation of formula 
+        #Test correct export of different data types and number formats; test hyperlinks, test -NoNumberConversion test object is converted to a string with no warnings, test calcuation of formula
         Remove-item -Path $path -ErrorAction SilentlyContinue
         [PSCustOmobject][Ordered]@{
             Date             = Get-Date
@@ -165,8 +165,8 @@ Describe ExportExcel {
             StrNegInt        = '-31'
             StrTrailingNeg   = '31-'
             StrParens        = '(123)'
-            strLocalCurrency = ('{0}123.45' -f (Get-Culture).NumberFormat.CurrencySymbol )
-            strOtherCurrency = ('{0}123.45' -f $OtherCurrencySymbol )
+            strLocalCurrency = ('{0}123{1}45' -f (Get-Culture).NumberFormat.CurrencySymbol,(Get-Culture).NumberFormat.CurrencyDecimalSeparator)
+            strOtherCurrency = ('{0}123{1}45' -f $OtherCurrencySymbol ,(Get-Culture).NumberFormat.CurrencyDecimalSeparator)
             StrE164Phone     = '+32 (444) 444 4444'
             StrAltPhone1     = '+32 4 4444 444'
             StrAltPhone2     = '+3244444444'
@@ -176,9 +176,9 @@ Describe ExportExcel {
             Link2            = "https://github.com/dfinke/ImportExcel"
             Link3            = "xl://internal/sheet1!A1"
             Link4            = "xl://internal/sheet1!C5"
-            Process          = (Get-Process -Id $PID) 
+            Process          = (Get-Process -Id $PID)
             TimeSpan         = [datetime]::Now.Subtract([datetime]::Today)
-        } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2  -Path $path -Calculate -WarningVariable $warnVar  
+        } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2  -Path $path -Calculate -WarningVariable $warnVar
         it "Created a new file                                                                     " {
             Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
         }
@@ -258,7 +258,7 @@ Describe ExportExcel {
              $ws.cells[2, 26].Style.Numberformat.Format                 | should     be  '[h]:mm:ss'
         }
     }
- 
+
     Context "#               # Setting cells for different data types with -noHeader" {
 
         $path = "$env:TEMP\Test.xlsx"
@@ -330,7 +330,7 @@ Describe ExportExcel {
 
         $path = "$env:TEMP\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
-        #Test -ConditionalText with a single conditional spec. 
+        #Test -ConditionalText with a single conditional spec.
         Write-Output 489 668 299 777 860 151 119 497 234 788 | Export-Excel -Path $path -ConditionalText $ct
 
         it "Created a new file                                                                     " {
@@ -356,7 +356,7 @@ Describe ExportExcel {
     }
 
     Context "#Example 6      # Adding multiple conditional formats using short form syntax. " {
-        #Test adding mutliple conditional blocks and using the minimal syntax for new-ConditionalText 
+        #Test adding mutliple conditional blocks and using the minimal syntax for new-ConditionalText
         $path = "$env:TEMP\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
 
@@ -457,7 +457,7 @@ Describe ExportExcel {
         it "Generated a message on re-processing the Pivot table                                   " {
             $warnVar                                                    | Should not beNullOrEmpty
         }
-        #Test appending data extends pivot chart (with a warning) . 
+        #Test appending data extends pivot chart (with a warning) .
         $warnVar = $null
         Get-Process |  Select-Object -Last 20 -Property Name, cpu, pm, handles, company |   Export-Excel  $path -WorkSheetname Processes -Append -IncludePivotTable -PivotRows Company -PivotData PM -IncludePivotChart -ChartType PieExploded3D -WarningAction SilentlyContinue -WarningVariable warnvar
         $Excel = Open-ExcelPackage   $path
@@ -568,7 +568,7 @@ Describe ExportExcel {
             $dataWs.Names["CPU"].Rows                                   | should     be 20
             $dataWs.Names["CPU"].Columns                                | should     be 1
         }
-        
+
         #Test extneding autofilter and range when explicitly specified in the append
         $excel = Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company  | Export-Excel -ExcelPackage $excel  -RangeName procs -AutoFilter   -WorkSheetname NoOffset -ClearSheet -PassThru
         Get-Process          | Select-Object -last  10 -Property Name, cpu, pm, handles, company  | Export-Excel -ExcelPackage $excel  -RangeName procs -AutoFilter   -WorkSheetname NoOffset -Append
@@ -788,7 +788,7 @@ Describe ExportExcel {
                        -Column 2 -ColumnOffSetPixels 35 -Width 800 -XAxisTitleText "Degrees" -XAxisTitleBold -XAxisTitleSize 12 -XMajorUnit 30 -XMinorUnit 10 -XMinValue 0 -XMaxValue 361  -XAxisNumberformat "000" `
                        -YMinValue -1.25 -YMaxValue 1.25 -YMajorUnit 0.25 -YAxisNumberformat "0.00" -YAxisTitleText "Sine" -YAxisTitleBold -YAxisTitleSize 12 `
                        -LegendSize 8 -legendBold  -LegendPostion Bottom
-        Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets["Sinx"] -Range "B2:B362" -RuleType LessThan -ConditionValue "=B1" -ForeGroundColor Red 
+        Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets["Sinx"] -Range "B2:B362" -RuleType LessThan -ConditionValue "=B1" -ForeGroundColor Red
         $ws = $Excel.Workbook.Worksheets["Sinx"]
         $d  = $ws.Drawings[0]
         It "Controled the axes and title and legend of the chart                                   " {
@@ -817,7 +817,7 @@ Describe ExportExcel {
         }
         It "Appplied conditional formatting to the data                                            " {
             $ws.ConditionalFormatting[0].Formula                        | Should     be "B1"
-        } 
+        }
         Close-ExcelPackage -ExcelPackage $excel -nosave
     }
 
@@ -861,7 +861,7 @@ Describe ExportExcel {
 
     Context "                # Awkward multiple tables" {
         $path = "$Env:TEMP\test.xlsx"
-        #Test creating 3 on overlapping tables on the same page. Create rightmost the left most then middle. 
+        #Test creating 3 on overlapping tables on the same page. Create rightmost the left most then middle.
         remove-item -Path $path -ErrorAction SilentlyContinue
         $r = Get-ChildItem -path C:\WINDOWS\system32 -File
 
