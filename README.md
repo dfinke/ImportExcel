@@ -51,7 +51,8 @@ Install-Module ImportExcel -scope CurrentUser
 ```PowerShell
 Install-Module ImportExcel
 ```
-# New to Aug 13th
+# New to Aug 14th
+- In Export-Excel improved the catch-all handler for insering values to cope better with nested objects and reduce the number of parse operations 
 - Added -Calculate switch to Export-Excel and Close-Excel Package; EPPlus needs formulas to OMIT the leading = sign so where formula is set it now strips a leading =  
 - Added -PivotTotals parameter where there was already -NoTotalsInPivot new one allows None, Both, Rows, Columns. (#415)
 - When appending Export-Excel only extended tables and ranges if they were explicitly specified. It now does it automatically. 

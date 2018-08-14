@@ -464,6 +464,7 @@
     )
 
     Begin {
+        $numberRegex = [Regex]'\d'
         function Add-CellValue {
             <#
               .SYNOPSIS
@@ -530,7 +531,7 @@
                 Default {
                     #Save a value as a number if possible
                     $number = $null
-                    if (($_ -match '[0-9]')-and [Double]::TryParse($_, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)) {
+                    if ($numberRegex.IsMatch($_) -and [Double]::TryParse($_, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)) {
                         # as simpler version using [Double]::TryParse( $_ , [ref]$number)) was found to cause problems reverted back to the longer version
                         $TargetCell.Value = $number
                         if ($setNumformat) {$targetCell.Style.Numberformat.Format = $Numberformat }
