@@ -52,8 +52,9 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 # New to Aug 14th
-- In Export-Excel improved the catch-all handler for insering values to cope better with nested objects and reduce the number of parse operations 
-- Added -Calculate switch to Export-Excel and Close-Excel Package; EPPlus needs formulas to OMIT the leading = sign so where formula is set it now strips a leading =  
+- Added support for timespans in Export excel ; set as elapsed hours, mins, secs [h]:mm:sss
+- In Export-Excel improved the catch-all handler for insering values to cope better with nested objects (#419) and reduce the number of parse operations 
+- Added -Calculate switch to Export-Excel and Close-Excel Package; EPPlus needs formulas to OMIT the leading = sign so where formula is set it now strips a leading = sign
 - Added -PivotTotals parameter where there was already -NoTotalsInPivot new one allows None, Both, Rows, Columns. (#415)
 - When appending Export-Excel only extended tables and ranges if they were explicitly specified. It now does it automatically. 
 - Compare and Merge worksheet originally had a problem with > 26 columns, I fixed merge turns out I hadn't fixed compare ... I have now 

@@ -142,7 +142,7 @@ Describe ExportExcel {
             $ws.cells[1, 1].Value                                       | Should     be  -1
         }
     }
-
+     
     Context "#Examples 3 & 4 # Setting cells for different data types Also added test for URI type" {
 
         if ((Get-Culture).NumberFormat.CurrencySymbol -eq "£") {$OtherCurrencySymbol = "$"}
@@ -177,6 +177,7 @@ Describe ExportExcel {
             Link3            = "xl://internal/sheet1!A1"
             Link4            = "xl://internal/sheet1!C5"
             Process          = (Get-Process -Id $PID) 
+            TimeSpan         = [datetime]::Now.Subtract([datetime]::Today)
         } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2  -Path $path -Calculate -WarningVariable $warnVar  
         it "Created a new file                                                                     " {
             Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
@@ -189,7 +190,7 @@ Describe ExportExcel {
         $ws = $Excel.Workbook.Worksheets[1]
         it "Created the worksheet with the expected name, number of rows and number of columns     " {
             $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be  25
+            $ws.Dimension.Columns                                       | Should     be  26
             $ws.Dimension.Rows                                          | Should     be  2
         }
         it "Set a date     in Cell A2                                                              " {
@@ -251,8 +252,13 @@ Describe ExportExcel {
         it "Converted a nested object to a string (Y2)                                             " {
              $ws.Cells[2, 25].Value                                     | should     match '^System\.Diagnostics\.Process\s+\(.*\)$'
         }
+        it "Processed a timespan object (Z2)                                                       " {
+             $ws.cells[2, 26].Value.ToOADate()                          | should     beGreaterThan 0
+             $ws.cells[2, 26].Value.ToOADate()                          | should     beLessThan    1
+             $ws.cells[2, 26].Style.Numberformat.Format                 | should     be  '[h]:mm:ss'
+        }
     }
-
+ 
     Context "#               # Setting cells for different data types with -noHeader" {
 
         $path = "$env:TEMP\Test.xlsx"

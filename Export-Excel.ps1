@@ -486,13 +486,19 @@
             #The write-verbose commands have been commented out below - even if verbose is silenced they cause a significiant performance impact and if it's on they will cause a flood of messages.
             Switch ($CellValue) {
                 { $_ -is [DateTime]} {
-                    # Save a date with an international valid format
+                    # Save a date with one of Excel's built in formats format
                     $TargetCell.Value = $_
                     $TargetCell.Style.Numberformat.Format = 'm/d/yy h:mm' # This is not a custom format, but a preset recognized as date and localized.
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as date"
                     break
 
                 }
+                { $_ -is [TimeSpan]} {
+                    #Save a timespans with a built in format for elapsed hours, minutes and seconds
+                    $TargetCell.Value = $_
+                    $TargetCell.Style.Numberformat.Format = '[h]:mm:ss'
+                    break
+                } 
                 { $_ -is [System.ValueType]} {
                     # Save numerics, setting format if need be.
                     $TargetCell.Value = $_
