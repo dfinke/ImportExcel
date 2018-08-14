@@ -635,10 +635,8 @@
                     #Otherwise the default will be unbolded.
                     $ws.Cells[$Row, $StartColumn].Style.Font.Bold = $True
                 }
-
-                $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
-
-                if ($TitleBackgroundColor ) {
+                if ($TitleBackgroundColor ) {  
+                    $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
                     $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
                 }
                 $Row ++ ; $startRow ++
@@ -1413,7 +1411,8 @@ function Add-ExcelChart {
             if ($XAxisTitleBold)  {$chart.XAxis.Title.Font.Bold = $true}
             if ($XAxisTitleSize)  {$chart.XAxis.Title.Font.Size = $XAxisTitleSize}
         }
-        if ($XAxisPosition)       {$chart.ChartXml.chartSpace.chart.plotArea.catAx.axPos.val = $XAxisPosition.ToString().substring(0,1)}
+        if ($XAxisPosition)       {Write-Warning "X Axis position is not being set propertly at the moment, parameter ignored" }
+                                   #$chart.ChartXml.chartSpace.chart.plotArea.catAx.axPos.val = $XAxisPosition.ToString().substring(0,1)}
         if ($XMajorUnit)          {$chart.XAxis.MajorUnit       = $XMajorUnit}
         if ($XMinorUnit)          {$chart.XAxis.MinorUnit       = $XMinorUnit}
         if ($null -ne $XMinValue) {$chart.XAxis.MinValue        = $XMinValue}
@@ -1425,7 +1424,8 @@ function Add-ExcelChart {
             if ($YAxisTitleBold) {$chart.YAxis.Title.Font.Bold = $true}
             if ($YAxisTitleSize) {$chart.YAxis.Title.Font.Size = $YAxisTitleSize}
         }
-        if ($YAxisPosition)      {$chart.ChartXml.chartSpace.chart.plotArea.valAx.axPos.val= $YAxisPosition.ToString().substring(0,1)}
+        if ($YAxisPosition)      {Write-Warning "Y Axis position is not being set propertly at the moment, parameter ignored" }
+                                  #$chart.ChartXml.chartSpace.chart.plotArea.valAx.axPos.val= $YAxisPosition.ToString().substring(0,1)}
         if ($YMajorUnit)         {$chart.YAxis.MajorUnit       = $YMajorUnit}
         if ($YMinorUnit)         {$chart.YAxis.MinorUnit       = $YMinorUnit}
         if ($null -ne $YMinValue){$chart.YAxis.MinValue        = $YMinValue}
