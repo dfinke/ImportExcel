@@ -1,8 +1,6 @@
 ﻿#Requires -Modules Pester
 
-# $here = Split-Path -Parent $MyInvocation.MyCommand.Path
-# Import-Module $here -Force -Verbose
-Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
+#Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
 
 if (Get-process -Name Excel,xlim -ErrorAction SilentlyContinue) {    Write-Warning -Message "You need to close Excel before running the tests." ; return}
 Describe ExportExcel {
@@ -10,6 +8,7 @@ Describe ExportExcel {
     Context "#Example 1      # Creates and opens a file with the right number of rows and columns" {
         $path = "$env:TEMP\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue 
+        #Export maximum of 100 processes for speed; export all properties. 
         $processes = Get-Process | select-object -first 100
         $propertyNames = $Processes[0].psobject.properties.name
         $rowcount = $Processes.Count
@@ -69,7 +68,7 @@ Describe ExportExcel {
         $processes = Get-Process | Select-Object -First 100
         $propertyNames = $Processes[0].psobject.properties.where( {$_.MemberType -eq 'Property'}).name
         $rowcount = $Processes.Count
-        #TestCreating a range with a name which needs illegal chars removing
+        #Test -NoAliasOrScriptPropeties option and Creating a range with a name which needs illegal chars removing - check this sends back a warning
         $warnVar = $null
         $Processes | Export-Excel $path -NoAliasOrScriptPropeties  -RangeName "No Spaces" -WarningVariable warnvar -WarningAction SilentlyContinue
 
@@ -114,7 +113,7 @@ Describe ExportExcel {
 
         $path = "$env:TEMP\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
-        #testing -ReturnRange switch
+        #testing -ReturnRange switch and applying number format to Formulas as well as values.
         $returnedRange = Write-Output -1 668 34 777 860 -0.5 119 -0.1 234 788,"=A9+A10" | Export-Excel -NumberFormat '[Blue]$#,##0.00;[Red]-$#,##0.00' -Path $path -ReturnRange
         it "Created a new file and returned the expected range                                     " {
             Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
@@ -148,6 +147,8 @@ Describe ExportExcel {
         if ((Get-Culture).NumberFormat.CurrencySymbol -eq "£") {$OtherCurrencySymbol = "$"}
         else {$OtherCurrencySymbol = "£"}
         $path = "$env:TEMP\Test.xlsx"
+        $warnVar = $null
+        #Check various types and number formats, and confirm that a property which is an object gets converted to a string with no warnings. 
         Remove-item -Path $path -ErrorAction SilentlyContinue
         [PSCustOmobject][Ordered]@{
             Date             = Get-Date
@@ -174,18 +175,20 @@ Describe ExportExcel {
             Link2            = "https://github.com/dfinke/ImportExcel"
             Link3            = "xl://internal/sheet1!A1"
             Link4            = "xl://internal/sheet1!C5"
-        } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2  -Path $path -Calculate
+            Process          = (Get-Process -Id $PID) 
+        } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2  -Path $path -Calculate -WarningVariable $warnVar  
         it "Created a new file                                                                     " {
             Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
         }
         $Excel = Open-ExcelPackage -Path $path
-        it "Created 1 worksheet                                                                    " {
+        it "Created 1 worksheet with no warnings                                                   " {
             $Excel.Workbook.Worksheets.count                            | Should     be 1
+            $warnVar                                                    | Should     beNullorEmpty
         }
         $ws = $Excel.Workbook.Worksheets[1]
         it "Created the worksheet with the expected name, number of rows and number of columns     " {
             $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be  24
+            $ws.Dimension.Columns                                       | Should     be  25
             $ws.Dimension.Rows                                          | Should     be  2
         }
         it "Set a date     in Cell A2                                                              " {
@@ -243,6 +246,9 @@ Describe ExportExcel {
         it "Processed numbers leading or trailing speaces as Numbers (S2 & T2)                     " {
             ($ws.Cells[2, 19].Value -is [valuetype] )                   | Should     be  $true
             ($ws.Cells[2, 20].Value -is [valuetype] )                   | Should     be  $true
+        }
+        it "Converted a nested object to a string (Y2)                                             " {
+             $ws.Cells[2, 25].Value                                     | should     match '^System\.Diagnostics\.Process\s+\(.*\)$'
         }
     }
 

@@ -1,6 +1,8 @@
 ﻿#Requires -Modules Pester
 Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
 
+Add-Type -AssemblyName System.Windows.Forms
+
 Describe "Compare Worksheet" {
     Context "Simple comparison output" {
         BeforeAll {
