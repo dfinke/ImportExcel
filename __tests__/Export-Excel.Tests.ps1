@@ -149,17 +149,17 @@ Describe ExportExcel {
             Remove-Item -Path  $path -ErrorAction SilentlyContinue
             1..10  | Export-Excel -Path $path -Numberformat 'Number'                                                                                                                                     
             1..10  | Export-Excel -Path $path -Numberformat 'Percentage' -Append                                                                                                                          
-            21..30 | Export-Excel -Path $path -Numberformat 'Currency' -StartColumn 3
+            21..30 | Export-Excel -Path $path -Numberformat 'Currency'   -StartColumn 3 
             $excel = Open-ExcelPackage -Path   $path   
             $ws = $excel.Workbook.Worksheets[1] 
         }
         it "Set the worksheet default number format correctly                                      " { 
             $ws.Cells.Style.Numberformat.Format                         | Should     be "0.00"
         }
-        it "Set number formats on specific blocks of cells w                                       " {
+        it "Set number formats on specific blocks of cells                                         " {
             $ws.Cells["A2" ].Style.Numberformat.Format                  | Should     be "0.00"
             $ws.Cells["c19"].Style.Numberformat.Format                  | Should     be "0.00"
-            $ws.Cells["A19"].Style.Numberformat.Format                  | Should     be "0.00%"
+            $ws.Cells["A20"].Style.Numberformat.Format                  | Should     be "0.00%"
             $ws.Cells["C6" ].Style.Numberformat.Format                  | Should     be (Expand-NumberFormat "currency")
         }
     }

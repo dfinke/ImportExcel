@@ -676,7 +676,7 @@
                 if ($firstTimeThru) {
                     $firstTimeThru = $false
                     $isDataTypeValueType = $TargetData.GetType().name -match 'string|timespan|datetime|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
-                    if ($isDataTypeValueType) {$row -= 1} #row incremented before adding values, so it is set to the number of rows inserted at the end
+                    if ($isDataTypeValueType -and -not $Append) {$row -= 1} #row incremented before adding values, so it is set to the number of rows inserted at the end
                     Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'"
                 }
 

@@ -52,6 +52,7 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 # New to Aug 15h
+- Fixed a bug with -Append in Export-Excel which caused it to overwrite the last row if the new data was a simple type. 
 - NumberFormat in Export-Excel now sets the default for on a new / blank sheet; but [still] sets individual cells when adding to a sheet
 - Added support for timespans in Export excel ; set as elapsed hours, mins, secs [h]:mm:sss
 - In Export-Excel improved the catch-all handler for insering values to cope better with nested objects (#419) and reduce the number of parse operations 
