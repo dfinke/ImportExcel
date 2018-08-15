@@ -498,7 +498,7 @@
                     $TargetCell.Value = $_
                     $TargetCell.Style.Numberformat.Format = '[h]:mm:ss'
                     break
-                } 
+                }
                 { $_ -is [System.ValueType]} {
                     # Save numerics, setting format if need be.
                     $TargetCell.Value = $_
@@ -641,7 +641,7 @@
                     #Otherwise the default will be unbolded.
                     $ws.Cells[$Row, $StartColumn].Style.Font.Bold = $True
                 }
-                if ($TitleBackgroundColor ) {  
+                if ($TitleBackgroundColor ) {
                     $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
                     $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
                 }
@@ -650,7 +650,11 @@
             else {  $Row = $StartRow }
             $ColumnIndex = $StartColumn
             $Numberformat = Expand-NumberFormat -NumberFormat $Numberformat
-            $setNumformat = ($Numberformat -ne $ws.Cells.Style.Numberformat.Format)
+            if ($row -le 2 -and $ColumnIndex -eq 1 -and $Numberformat -ne $ws.Cells.Style.Numberformat.Format) {
+                    $ws.Cells.Style.Numberformat.Format = $Numberformat
+                    $setNumformat = $false
+            }
+            else {  $setNumformat = ($Numberformat -ne $ws.Cells.Style.Numberformat.Format) }
 
             $firstTimeThru = $true
             $isDataTypeValueType = $false
@@ -671,7 +675,7 @@
             Try {
                 if ($firstTimeThru) {
                     $firstTimeThru = $false
-                    $isDataTypeValueType = $TargetData.GetType().name -match 'string|datetime|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
+                    $isDataTypeValueType = $TargetData.GetType().name -match 'string|timespan|datetime|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
                     if ($isDataTypeValueType) {$row -= 1} #row incremented before adding values, so it is set to the number of rows inserted at the end
                     Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'"
                 }
