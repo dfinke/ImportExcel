@@ -20,16 +20,16 @@
         #The sheet to update can be a given as a name or an Excel Worksheet object - this sets it by name
         [Parameter(ParameterSetName="Package")]
         #The sheet to update can be a given as a name or an Excel Worksheet object - $workSheet contains the object
-        $Worksheetname = "Sheet1",
+        [String]$Worksheetname = "Sheet1",
         [Parameter(ParameterSetName="sheet",Mandatory=$true)]
-        [OfficeOpenXml.ExcelWorksheet]
-        $Worksheet,
+        [OfficeOpenXml.ExcelWorksheet]$Worksheet,
         #Column to fill down - first column is 1. 0 will be interpreted as first unused column
+        [ValidateRange(0,16384)]
         $Column = 0 ,
         #First row to fill data in
+        [ValidateRange(1,1048576)]
         [Int]$StartRow ,
-        #value, formula or script block for to fill in. Script block can use $row, $column [number], $ColumnName [letter(s)], $startRow, $startColumn, $endRow, $endColumn
-        [parameter(Mandatory=$true)]
+        #value, formula or script block to fill in. Script block can use $row, $column [number], $columnName [letter(s)], $startRow, $startColumn, $endRow, $endColumn
         $Value ,
         #Optional column heading
         $Heading ,
@@ -41,15 +41,15 @@
         #Colour for the text - if none specified it will be left as it it is
         [System.Drawing.Color]$FontColor,
         #Make text bold; use -Bold:$false to remove bold
-        [switch]$Bold,
+        [Switch]$Bold,
         #Make text italic;  use -Italic:$false to remove italic
-        [switch]$Italic,
+        [Switch]$Italic,
         #Underline the text using the underline style in -underline type;  use -Underline:$false to remove underlining
-        [switch]$Underline,
+        [Switch]$Underline,
         #Should Underline use single or double, normal or accounting mode : default is single normal
         [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
         #Strike through text; use -Strikethru:$false to remove Strike through
-        [switch]$StrikeThru,
+        [Switch]$StrikeThru,
         #Subscript or superscript (or none)
         [OfficeOpenXml.Style.ExcelVerticalAlignmentFont]$FontShift,
         #Font to use - Excel defaults to Calibri
@@ -64,7 +64,7 @@
         [Alias("PatternColour")]
         [System.Drawing.Color]$PatternColor,
         #Turn on text wrapping; use -WrapText:$false to turn off word wrapping
-        [switch]$WrapText,
+        [Switch]$WrapText,
         #Position cell contents to left, right, center etc. default is 'General'
         [OfficeOpenXml.Style.ExcelHorizontalAlignment]$HorizontalAlignment,
         #Position cell contents to top bottom or centre
@@ -80,31 +80,31 @@
         #Set the inserted data to be a named range (ignored if header is not specified)
         [Switch]$AutoNameRange,
         #If Sepecified returns the range of cells which were affected
-        [switch]$ReturnRange,
+        [Switch]$ReturnRange,
         #If Specified, return an ExcelPackage object to allow further work to be done on the file.
-        [switch]$PassThru
+        [Switch]$PassThru
     )
     #if we were passed a package object and a worksheet name , get the worksheet.
     if ($ExcelPackage)   {$Worksheet   = $ExcelPackage.Workbook.Worksheets[$Worksheetname] }
 
-    #In a script block to build a formula, we may want any of corners or the columnname,
-    #if column and startrow aren't specified, assume first unused column, and first row
+    #In a script block to build a formula, we may want any of corners or the column name,
+    #if Column and Startrow aren't specified, assume first unused column, and first row
     if (-not $StartRow)   {$startRow   = $Worksheet.Dimension.Start.Row    }
     $startColumn                       = $Worksheet.Dimension.Start.Column
     $endColumn                         = $Worksheet.Dimension.End.Column
     $endRow                            = $Worksheet.Dimension.End.Row
-    if ($Column  -lt 2 )  {$Column     = $endColumn    + 1 }
-    $ColumnName = [OfficeOpenXml.ExcelCellAddress]::new(1,$column).Address -replace "1",""
+    if ($Column  -eq 0 )  {$Column     = $endColumn    + 1 }
+    $columnName = [OfficeOpenXml.ExcelCellAddress]::new(1,$column).Address -replace "1",""
 
-    Write-Verbose -Message "Updating Column $ColumnName"
+    Write-Verbose -Message "Updating Column $columnName"
     #If there is a heading, insert it and use it as the name for a range (if we're creating one)
     if      ($Heading)                 {
-                                         $Worksheet.Cells[$StartRow, $Column].Value = $heading
-                                         $startRow ++
-      if    ($AutoNameRange)           { $Worksheet.Names.Add(  $heading, ($Worksheet.Cells[$startrow, $Column, $endRow, $Column]) ) | Out-Null }
+                                         $Worksheet.Cells[$StartRow, $Column].Value = $Heading
+                                         $StartRow ++
+      if    ($AutoNameRange)           { $Worksheet.Names.Add(  $Heading, ($Worksheet.Cells[$StartRow, $Column, $endRow, $Column]) ) | Out-Null }
     }
     #Fill in the data
-    if      ($PSBoundParameters.ContainsKey('value')) { foreach ($row in ($StartRow.. $endRow)) {
+    if      ($PSBoundParameters.ContainsKey('Value')) { foreach ($row in ($StartRow..$endRow)) {
         if  ($Value -is [scriptblock]) { #re-create the script block otherwise variables from this function are out of scope.
              $cellData = & ([scriptblock]::create( $Value ))
              Write-Verbose  -Message     $cellData
@@ -125,6 +125,7 @@
         }
         else                           { $Worksheet.Cells[$Row, $Column].Value                             = $cellData                   }
         if  ($cellData -is [datetime]) { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format         = 'm/d/yy h:mm'               } # This is not a custom format, but a preset recognized as date and localized.
+        if  ($cellData -is [timespan]) { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format         = '[h]:mm:ss'                 }
     }}
     #region Apply formatting
     $params = @{}
@@ -133,7 +134,7 @@
                      'BorderAround', 'BackgroundColor', 'BackgroundPattern', 'PatternColor')) {
         if ($PSBoundParameters.ContainsKey($p)) {$params[$p] = $PSBoundParameters[$p]}
     }
-    $theRange = "$ColumnName$startRow`:$ColumnName$endRow"
+    $theRange =   "$columnName$StartRow`:$columnName$endRow"
     if ($params.Count) {
         Set-Format -WorkSheet $Worksheet -Range $theRange @params
     }

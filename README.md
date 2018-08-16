@@ -51,7 +51,9 @@ Install-Module ImportExcel -scope CurrentUser
 ```PowerShell
 Install-Module ImportExcel
 ```
-# New to Aug 15h
+# New to Aug 16th
+- Value does not need to be mandatory in Set-Row or Set-Column, also tidied their paramters a little. 
+- Added support for array formulas in Set-Format (it really should be set range now that it sets values, formulas and hyperlinks - that can go on the to-do list )
 - Fixed a bug with -Append in Export-Excel which caused it to overwrite the last row if the new data was a simple type. 
 - NumberFormat in Export-Excel now sets the default for on a new / blank sheet; but [still] sets individual cells when adding to a sheet
 - Added support for timespans in Export excel ; set as elapsed hours, mins, secs [h]:mm:sss

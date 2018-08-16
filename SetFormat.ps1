@@ -20,7 +20,7 @@
         #The area of the worksheet where the format is to be applied
         [Parameter(ParameterSetName="SheetAndRange",Mandatory=$True)]
         [OfficeOpenXml.ExcelAddress]$Range,
-        #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "Â£#,##0.00;[Red]-Â£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc
+        #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "£#,##0.00;[Red]-£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc
         [Alias("NFormat")]
         $NumberFormat,
         #Style of border to draw around the range
@@ -36,18 +36,20 @@
         $Value,
         #Formula for the cell
         $Formula,
+        #Specifies formula should be an array formula (a.k.a CSE [ctrl-shift-enter] formula )
+        [Switch]$ArrayFormula,
         #Clear Bold, Italic, StrikeThrough and Underline and set colour to black
-        [switch]$ResetFont,
+        [Switch]$ResetFont,
         #Make text bold; use -Bold:$false to remove bold
-        [switch]$Bold,
+        [Switch]$Bold,
         #Make text italic;  use -Italic:$false to remove italic
-        [switch]$Italic,
+        [Switch]$Italic,
         #Underline the text using the underline style in -underline type;  use -Underline:$false to remove underlining
-        [switch]$Underline,
+        [Switch]$Underline,
         #Should Underline use single or double, normal or accounting mode : default is single normal
         [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
         #Strike through text; use -Strikethru:$false to remove Strike through
-        [switch]$StrikeThru,
+        [Switch]$StrikeThru,
         #Subscript or superscript (or none)
         [OfficeOpenXml.Style.ExcelVerticalAlignmentFont]$FontShift,
         #Font to use - Excel defaults to Calibri
@@ -62,7 +64,7 @@
         [Alias("PatternColour")]
         [System.Drawing.Color]$PatternColor,
         #Turn on text wrapping; use -WrapText:$false to turn off word wrapping
-        [switch]$WrapText,
+        [Switch]$WrapText,
         #Position cell contents to left, right, center etc. default is 'General'
         [OfficeOpenXml.Style.ExcelHorizontalAlignment]$HorizontalAlignment,
         #Position cell contents to top bottom or center
@@ -78,7 +80,7 @@
         #Set cells to a fixed hieght  (rows or ranges only)
         [float]$Height,
         #Hide a row or column  (not a range); use -Hidden:$false to unhide
-        [switch]$Hidden
+        [Switch]$Hidden
     )
     begin {
         #Allow Set-Format to take Worksheet and range parameters (like Add Contitional formatting) -  convert them to an address
@@ -133,17 +135,16 @@
                 $Address.Style.VerticalAlignment   = $VerticalAlignment
             }
             if ($PSBoundParameters.ContainsKey('Value')) {
-                if ($Value -like '=*')      {$Address.Formula = ($Value -replace'^=','')}  #EPPlus likes formulas with no = sign; Excel doesn't care
+                if ($Value -like '=*')      {$PSBoundParameters["Formula"] = $Value }
                 else {
                     $Address.Value = $Value
-                    if ($Value -is  [DateTime])  {
-                        $Address.Style.Numberformat.Format = 'm/d/yy h:mm' # This is not a custom format, but a preset recognized as date and localized. It might be overwritten in a moment
-                    }
+                    if ($Value -is  [datetime])  { $Address.Style.Numberformat.Format = 'm/d/yy h:mm' }# This is not a custom format, but a preset recognized as date and localized. It might be overwritten in a moment
+                    if  ($Value -is [timespan])  { $Address.Style.Numberformat.Format = '[h]:mm:ss'   }
                 }
             }
-
             if ($PSBoundParameters.ContainsKey('Formula')) {
-                $Address.Formula = ( $Formula -replace '^=','')
+                if ($ArrayFormula) {$Address.CreateArrayFormula(($Formula -replace '^=','')) }
+                else               {$Address.Formula         =  ($Formula -replace '^=','')  }
             }
             if ($PSBoundParameters.ContainsKey('NumberFormat')) {
                 $Address.Style.Numberformat.Format = (Expand-NumberFormat $NumberFormat)
