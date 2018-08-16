@@ -93,29 +93,29 @@ Function Compare-WorkSheet {
     try    { $oneFile = ((Resolve-Path -Path $Referencefile -ErrorAction Stop).path -eq (Resolve-Path -Path $Differencefile  -ErrorAction Stop).path)}
     Catch  { Write-Warning -Message "Could not Resolve the filenames." ; return }
 
-    #If we have one file , we mush have two different worksheet names. If we have two files we can a single string or two strings.
+    #If we have one file , we must have two different worksheet names. If we have two files we can have a single string or two strings.
     if     ($onefile -and ( ($WorkSheetName.count -ne 2) -or $WorkSheetName[0] -eq $WorkSheetName[1] ) ) {
         Write-Warning -Message "If both the Reference and difference file are the same then worksheet name must provide 2 different names"
         return
     }
-    if     ($WorkSheetName.count -eq 2)       {$worksheet1 = $WorkSheetName[0] ;   $WorkSheet2 = $WorkSheetName[1]}
-    elseif ($WorkSheetName -is [string])      {$worksheet1 = $WorkSheet2 = $WorkSheetName}
+    if     ($WorkSheetName.count -eq 2)       {$worksheet1 = $WorkSheetName[0] ;   $workSheet2 = $WorkSheetName[1]}
+    elseif ($WorkSheetName -is [string])      {$worksheet1 = $workSheet2 = $WorkSheetName}
     else   {Write-Warning -Message "You must provide either a single worksheet name or two names." ; return }
 
     $params= @{ ErrorAction = [System.Management.Automation.ActionPreference]::Stop }
     foreach ($p in @("HeaderName","NoHeader","StartRow")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
     try    {
-        $Sheet1 = Import-Excel -Path $Referencefile  -WorksheetName $WorkSheet1 @params
-        $Sheet2 = Import-Excel -Path $Differencefile -WorksheetName $WorkSheet2 @Params
+        $sheet1 = Import-Excel -Path $Referencefile  -WorksheetName $WorkSheet1 @params
+        $sheet2 = Import-Excel -Path $Differencefile -WorksheetName $WorkSheet2 @Params
     }
     Catch  {Write-Warning -Message "Could not read the worksheet from $Referencefile and/or $Differencefile." ; return }
 
     #Get Column headings and create a hash table of Name to column letter.
     $headings = $Sheet1[-1].psobject.Properties.name # This preserves the sequence - using get-member would sort them alphabetically!
-    $headings | ForEach-Object -Begin {$columns  = @{}  ; $i=65 } -Process  {$Columns[$_] = [char]($i ++) }
+    $headings | ForEach-Object -Begin {$columns  = @{}  ; $i= 1 } -Process  {$Columns[$_] = [OfficeOpenXml.ExcelAddress]::GetAddress(1,($i ++)) -replace "\d","" }
 
     #Make a list of property headings using the Property (default "*") and ExcludeProperty parameters
-    if ($Key -eq "Name" -and $NoHeader) {$key  = "p1"}
+    if ($Key -eq "Name" -and $NoHeader) {$Key  = "p1"}
     $propList = @()
     foreach ($p in $Property)           {$propList += ($headings.where({$_ -like    $p}) )}
     foreach ($p in $ExcludeProperty)    {$propList  =  $propList.where({$_ -notlike $p})  }
@@ -124,12 +124,12 @@ Function Compare-WorkSheet {
     if ($propList.Count -eq 0)  {Write-Warning -Message "No Columns are selected with -Property = '$Property' and -excludeProperty = '$ExcludeProperty'." ; return}
 
     #Add RowNumber, Sheetname and file name to every row
-    $FirstDataRow = $startRow + 1
-    if ($Headername -or $NoHeader) {$FirstDataRow -- }
-    $i = $FirstDataRow ; foreach ($row in $Sheet1) {Add-Member -InputObject $row -MemberType NoteProperty -Name "_Row"   -Value ($i ++)
+    $firstDataRow = $startRow + 1
+    if ($Headername -or $NoHeader) {$firstDataRow -- }
+    $i = $firstDataRow ; foreach ($row in $Sheet1) {Add-Member -InputObject $row -MemberType NoteProperty -Name "_Row"   -Value ($i ++)
                                                     Add-Member -InputObject $row -MemberType NoteProperty -Name "_Sheet" -Value  $worksheet1
                                                     Add-Member -InputObject $row -MemberType NoteProperty -Name "_File"  -Value  $Referencefile}
-    $i = $FirstDataRow ; foreach ($row in $Sheet2) {Add-Member -InputObject $row -MemberType NoteProperty -Name "_Row"   -Value ($i ++)
+    $i = $firstDataRow ; foreach ($row in $Sheet2) {Add-Member -InputObject $row -MemberType NoteProperty -Name "_Row"   -Value ($i ++)
                                                     Add-Member -InputObject $row -MemberType NoteProperty -Name "_Sheet" -Value  $worksheet2
                                                     Add-Member -InputObject $row -MemberType NoteProperty -Name "_File"  -Value  $Differencefile}
 
@@ -198,7 +198,7 @@ Function Compare-WorkSheet {
     #if nothing was found write a message which wont be redirected
     if (-not $diff) {Write-Host "Comparison of $Referencefile::$worksheet1 and $Differencefile::$WorkSheet2 returned no results."  }
 
-    if      ($show)               {
+    if      ($Show)               {
         Start-Process -FilePath $Referencefile
         if  (-not $oneFile)  { Start-Process -FilePath $Differencefile }
         if  ($GridView)      { Write-Warning -Message "-GridView is ignored when -Show is specified" }

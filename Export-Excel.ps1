@@ -22,6 +22,8 @@
             Some objects duplicate existing properties by adding aliases, or have Script properties which take a long time to return a value and slow the export down, if specified this removes these properties
         .PARAMETER ExcludeProperty
             Specifies properties which may exist in the target data but should not be placed on the worksheet.
+        .PARAMETER Calculate
+            If specified a recalculation of the worksheet will be requested before saving.
         .PARAMETER Title
             Text of a title to be placed in the top left cell.
         .PARAMETER TitleBold
@@ -372,13 +374,14 @@
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [Parameter(ValueFromPipeline = $true)]
         $TargetData,
+        [Switch]$Calculate,
         [Switch]$Show,
         [String]$WorksheetName = 'Sheet1',
         [String]$Password,
         [switch]$ClearSheet,
         [switch]$Append,
         [String]$Title,
-        [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern = 'None',
+        [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern = 'Solid',
         [Switch]$TitleBold,
         [Int]$TitleSize = 22,
         [System.Drawing.Color]$TitleBackgroundColor,
@@ -452,11 +455,16 @@
         [Parameter(ParameterSetName = 'Now')]
         [Switch]$Now,
         [Switch]$ReturnRange,
+        #By default Pivot tables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
+        [ValidateSet("Both","Columns","Rows","None")]
+        [String]$PivotTotals = "Both",
+        #Included for compatibility - equivalent to -PivotTotals "None"
         [Switch]$NoTotalsInPivot,
         [Switch]$ReZip
     )
 
     Begin {
+        $numberRegex = [Regex]'\d'
         function Add-CellValue {
             <#
               .SYNOPSIS
@@ -478,12 +486,18 @@
             #The write-verbose commands have been commented out below - even if verbose is silenced they cause a significiant performance impact and if it's on they will cause a flood of messages.
             Switch ($CellValue) {
                 { $_ -is [DateTime]} {
-                    # Save a date with an international valid format
+                    # Save a date with one of Excel's built in formats format
                     $TargetCell.Value = $_
                     $TargetCell.Style.Numberformat.Format = 'm/d/yy h:mm' # This is not a custom format, but a preset recognized as date and localized.
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as date"
                     break
 
+                }
+                { $_ -is [TimeSpan]} {
+                    #Save a timespans with a built in format for elapsed hours, minutes and seconds
+                    $TargetCell.Value = $_
+                    $TargetCell.Style.Numberformat.Format = '[h]:mm:ss'
+                    break
                 }
                 { $_ -is [System.ValueType]} {
                     # Save numerics, setting format if need be.
@@ -493,8 +507,8 @@
                     break
                 }
                 {($_ -is [String]) -and ($_[0] -eq '=')} {
-                    #region Save an Excel formula
-                    $TargetCell.Formula = $_
+                    #region Save an Excel formula - we need = to spot the formula but the EPPLUS won't like it if we include it (Excel doesn't care if is there or not)
+                    $TargetCell.Formula = ($_ -replace '^=','')
                     if ($setNumformat) {$targetCell.Style.Numberformat.Format = $Numberformat }
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as formula"
                     break
@@ -523,7 +537,7 @@
                 Default {
                     #Save a value as a number if possible
                     $number = $null
-                    if ([Double]::TryParse($_, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)) {
+                    if ($numberRegex.IsMatch($_) -and [Double]::TryParse($_, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)) {
                         # as simpler version using [Double]::TryParse( $_ , [ref]$number)) was found to cause problems reverted back to the longer version
                         $TargetCell.Value = $number
                         if ($setNumformat) {$targetCell.Style.Numberformat.Format = $Numberformat }
@@ -555,16 +569,21 @@
                 $pkg = $ExcelPackage
                 $Path = $pkg.File
             }
-            Else { $pkg = Open-ExcelPackage -Path $Path -Create -KillExcel:$KillExcel}
-
+            Else { $pkg = Open-ExcelPackage -Path $Path -Create -KillExcel:$KillExcel -Password:$Password}
+        }
+        Catch {throw "Could not open Excel Package $path"}
+        if ($NoClobber) {Write-Warning -Message "-NoClobber parameter is no longer used" }
+        Try {
             $params = @{WorksheetName=$WorksheetName}
-            if ($NoClobber) {Write-Warning -Message "-NoClobber parameter is no longer used" }
             foreach ($p in @("ClearSheet", "MoveToStart", "MoveToEnd", "MoveBefore", "MoveAfter", "Activate")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
             $ws = $pkg | Add-WorkSheet @params
             if ($ws.Name -ne $WorksheetName) {
                 Write-Warning -Message "The Worksheet name has been changed from $WorksheetName to $($ws.Name), this may cause errors later."
                 $WorksheetName = $ws.Name
             }
+        }
+        Catch {throw "Could not get worksheet $worksheetname"}
+        try   {
             foreach ($format in $ConditionalFormat ) {
                 switch ($format.formatter) {
                     "ThreeIconSet" {Add-ConditionalFormatting -WorkSheet $ws -ThreeIconsSet $format.IconType -range $format.range -reverse:$format.reverse  }
@@ -572,12 +591,42 @@
                     "FiveIconSet"  {Add-ConditionalFormatting -WorkSheet $ws  -FiveIconsSet $format.IconType -range $format.range -reverse:$format.reverse  }
                 }
             }
-
+        }
+        catch {throw "Error applying confitional formatting to worksheet"}
+        try {
             if ($Append -and $ws.Dimension) {
                 #if there is a title or anything else above the header row, append needs to be combined wih a suitable startrow parameter
                 $headerRange = $ws.Dimension.Address -replace "\d+$", $StartRow
                 #using a slightly odd syntax otherwise header ends up as a 2D array
                 $ws.Cells[$headerRange].Value | ForEach-Object -Begin {$Script:header = @()} -Process {$Script:header += $_ }
+                #if we did not get AutoNameRange, but headers have ranges of the same name make autoNameRange True, otherwise make it false
+                if (-not $AutoNameRange) {
+                    $AutoNameRange  = $true ; foreach ($h in $header) {if ($ws.names.name -notcontains $h) {$AutoNameRange = $false} }
+                }
+                #if we did not get a Rangename but there is a Range which covers the active part of the sheet, set Rangename to that.
+                if (-not $RangeName -and $ws.names.where({$_.name[0] -match '[a-z]'})) {
+                    $theRange = $ws.names.where({
+                         ($_.Name[0]   -match '[a-z]' )              -and
+                         ($_.Start.Row    -eq $StartRow)             -and
+                         ($_.Start.Column -eq $StartColumn)          -and
+                         ($_.End.Row      -eq $ws.Dimension.End.Row) -and
+                         ($_.End.Column   -eq $ws.Dimension.End.column) } , 'First', 1)
+                    if ($theRange) {$rangename = $theRange.name}
+                }
+
+                #if we did not get a table name but there is a table which covers the active part of the sheet, set table name to that, and don't do anything with autofilter
+                if (-not $TableName -and $ws.Tables.Where({$_.address.address -eq $ws.dimension.address})) {
+                    $TableName  = $ws.Tables.Where({$_.address.address -eq $ws.dimension.address},'First', 1).Name
+                    $AutoFilter = $false
+                }
+                #if we did not get $autofilter but a filter range is set and it covers the right area, set autofilter to true
+                elseif (-not $AutoFilter -and $ws.Names["_xlnm._FilterDatabase"]) {
+                    if ( ($ws.Names["_xlnm._FilterDatabase"].Start.Row    -eq $StartRow)    -and
+                         ($ws.Names["_xlnm._FilterDatabase"].Start.Column -eq $StartColumn) -and
+                         ($ws.Names["_xlnm._FilterDatabase"].End.Row      -eq $ws.Dimension.End.Row) -and
+                         ($ws.Names["_xlnm._FilterDatabase"].End.Column   -eq $ws.Dimension.End.Column) ) {$AutoFilter = $true}
+                }
+
                 $row = $ws.Dimension.End.Row
                 Write-Debug -Message ("Appending: headers are " + ($script:Header -join ", ") + " Start row is $row")
             }
@@ -592,13 +641,8 @@
                     #Otherwise the default will be unbolded.
                     $ws.Cells[$Row, $StartColumn].Style.Font.Bold = $True
                 }
-                #Can only set TitleBackgroundColor if TitleFillPattern is something other than None.
-                if ($TitleBackgroundColor -and ($TitleFillPattern -ne 'None')) {
-                    $TitleFillPattern = [OfficeOpenXml.Style.ExcelFillStyle]::Solid
-                }
-                $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
-
                 if ($TitleBackgroundColor ) {
+                    $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
                     $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
                 }
                 $Row ++ ; $startRow ++
@@ -606,12 +650,16 @@
             else {  $Row = $StartRow }
             $ColumnIndex = $StartColumn
             $Numberformat = Expand-NumberFormat -NumberFormat $Numberformat
-            $setNumformat = ($Numberformat -ne $ws.Cells.Style.Numberformat.Format)
+            if ($row -le 2 -and $ColumnIndex -eq 1 -and $Numberformat -ne $ws.Cells.Style.Numberformat.Format) {
+                    $ws.Cells.Style.Numberformat.Format = $Numberformat
+                    $setNumformat = $false
+            }
+            else {  $setNumformat = ($Numberformat -ne $ws.Cells.Style.Numberformat.Format) }
 
             $firstTimeThru = $true
             $isDataTypeValueType = $false
-        }
-        Catch {
+      }
+      Catch {
             if ($AlreadyExists) {
                 #Is this set anywhere ?
                 throw "Failed exporting worksheet '$WorksheetName' to '$Path': The worksheet '$WorksheetName' already exists."
@@ -619,7 +667,7 @@
             else {
                 throw "Failed preparing to export to worksheet '$WorksheetName' to '$Path': $_"
             }
-        }
+      }
     }
 
     Process {
@@ -627,8 +675,8 @@
             Try {
                 if ($firstTimeThru) {
                     $firstTimeThru = $false
-                    $isDataTypeValueType = $TargetData.GetType().name -match 'string|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
-                    if ($isDataTypeValueType) {$row -= 1} #row incremented before adding values, so it is set to the number of rows inserted at the end
+                    $isDataTypeValueType = $TargetData.GetType().name -match 'string|timespan|datetime|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
+                    if ($isDataTypeValueType -and -not $Append) {$row -= 1} #row incremented before adding values, so it is set to the number of rows inserted at the end
                     Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'"
                 }
 
@@ -639,7 +687,7 @@
                     catch  {Write-Warning "Could not insert value at Row $Row. "}
                 }
                 else {
-                    #region Add headers
+                    #region Add headers - if we are appending, or we have been through here once already we will have the headers
                     if (-not $script:Header) {
                         $ColumnIndex = $StartColumn
                         if ($DisplayPropertySet -and $TargetData.psStandardmembers.DefaultDisplayPropertySet.ReferencedPropertyNames) {
@@ -647,8 +695,9 @@
                         }
                         else {
                             if ($NoAliasOrScriptPropeties) {$propType = "Property"} else {$propType = "*"}
-                            $script:Header = $TargetData.PSObject.Properties.where( {$_.MemberType -like $propType -and $_.Name -notin $ExcludeProperty}).Name
+                            $script:Header = $TargetData.PSObject.Properties.where( {$_.MemberType -like $propType}).Name
                         }
+                        foreach ($exclusion in $ExcludeProperty) {$script:Header = $script:Header -notlike $exclusion}
                         if ($NoHeader) {
                             # Don't push the headers to the spreadsheet
                             $Row -= 1
@@ -662,18 +711,17 @@
                         }
                     }
                     #endregion
-
+                    #region Add non header values
                     $Row += 1
                     $ColumnIndex = $StartColumn
 
                     foreach ($Name in $script:Header) {
-                        #region Add non header values
                         try   {Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData.$Name}
                         catch {Write-Warning -Message "Could not insert the $Name property at Row $Row, Column $Column"}
                         $ColumnIndex += 1
-                        #endregion
                     }
                     $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false
+                    #endregion
                 }
             }
             Catch {
@@ -691,10 +739,10 @@
         else {
               $LastRow      = $Row
               $LastCol      = $ColumnIndex
-              $endAddress   = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$LastRow]C[$LastCol]", 0, 0)
+              $endAddress   = [OfficeOpenXml.ExcelAddress]::GetAddress($LastRow , $LastCol)
         }
-        $startAddress = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$StartRow]C[$StartColumn]", 0, 0)
-        $dataRange = "{0}:{1}" -f $startAddress, $endAddress
+        $startAddress       = [OfficeOpenXml.ExcelAddress]::GetAddress($StartRow, $StartColumn)
+        $dataRange          = "{0}:{1}" -f $startAddress, $endAddress
 
         Write-Debug "Data Range '$dataRange'"
         if ($AutoNameRange) {
@@ -779,7 +827,8 @@
                 if ($params.keys -notcontains "SourceRange" -and
                    ($params.Keys -notcontains "SourceWorkSheet"   -or  $params.SourceWorkSheet -eq $WorksheetName)) {$params.SourceRange = $dataRange}
                 if ($params.Keys -notcontains "SourceWorkSheet")      {$params.SourceWorkSheet = $ws }
-                if ($params.Keys -notcontains "NoTotalsInPivot"   -and $NoTotalsInPivot  ) {$params.NoTotalsInPivot   = $true}
+                if ($params.Keys -notcontains "NoTotalsInPivot"   -and $NoTotalsInPivot  ) {$params.PivotTotals       = "None"}
+                if ($params.Keys -notcontains "PivotTotals"       -and $PivotTotals      ) {$params.PivotTotals       = $PivotTotals}
                 if ($params.Keys -notcontains "PivotDataToColumn" -and $PivotDataToColumn) {$params.PivotDataToColumn = $true}
 
                 Add-PivotTable -ExcelPackage $pkg -PivotTableName $item.key @Params
@@ -789,14 +838,15 @@
             $params = @{
                 "SourceRange" = $dataRange
             }
-            if ($PivotTableName)    {$params.PivotTableName    = $PivotTableName}
+            if   ($PivotTableName)  {$params.PivotTableName    = $PivotTableName}
             else                    {$params.PivotTableName    = $WorksheetName + 'PivotTable'}
-            if ($Activate)          {$params.Activate          = $true   }
-            if ($PivotFilter)       {$params.PivotFilter       = $PivotFilter}
-            if ($PivotRows)         {$params.PivotRows         = $PivotRows}
-            if ($PivotColumns)      {$Params.PivotColumns      = $PivotColumns}
-            if ($PivotData)         {$Params.PivotData         = $PivotData}
-            if ($NoTotalsInPivot)   {$params.NoTotalsInPivot   = $true}
+            if          ($Activate) {$params.Activate          = $true   }
+            if       ($PivotFilter) {$params.PivotFilter       = $PivotFilter}
+            if         ($PivotRows) {$params.PivotRows         = $PivotRows}
+            if      ($PivotColumns) {$Params.PivotColumns      = $PivotColumns}
+            if         ($PivotData) {$Params.PivotData         = $PivotData}
+            if   ($NoTotalsInPivot) {$params.PivotTotals       = "None"    }
+            Elseif   ($PivotTotals) {$params.PivotTotals       = $PivotTotals}
             if ($PivotDataToColumn) {$params.PivotDataToColumn = $true}
             if ($IncludePivotChart) {
                                      $params.IncludePivotChart = $true
@@ -890,13 +940,13 @@
         if ($Barchart -or $PieChart -or $LineChart -or $ColumnChart) {
             if ($NoHeader) {$FirstDataRow = $startRow}
             else           {$FirstDataRow = $startRow + 1 }
-            $range = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$startColumn]:R[$FirstDataRow]C[$lastCol]",0,0)
+            $range = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, $startColumn, $FirstDataRow, $lastCol )
             $xCol  = $ws.cells[$range] | Where-Object {$_.value -is [string]    } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1
             $yCol  = $ws.cells[$range] | Where-Object {$_.value -is [valueType] } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1
             $params = @{
-               xrange = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$xcol]:R[$($lastrow)]C[$xcol]",0,0) ;
-               yrange = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$FirstDataRow]C[$ycol]:R[$($lastrow)]C[$ycol]",0,0) ;
-               title  =  "";
+               XRange = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, $xcol , $lastrow, $xcol)
+               YRange = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, $ycol , $lastrow, $ycol)
+               Title  =  "";
                Column = ($lastCol +1)  ;
                Width  = 800
             }
@@ -934,6 +984,11 @@
             catch {Write-Warning -Message "Failed processing CellStyleSB in worksheet '$WorksheetName': $_"}
         }
 
+        if ($Calculate) {
+            try   { [OfficeOpenXml.CalculationExtension]::Calculate($ws) }
+            Catch { Write-Warning "One or more errors occured while calculating, save will continue, but there may be errors in the workbook."}
+        }
+
         if ($Password) {
             try {
                 $ws.Protection.SetPassword($Password)
@@ -947,7 +1002,8 @@
         else {
             if ($ReturnRange) {$dataRange }
 
-            $pkg.Save()
+            if ($Password) { $pkg.Save($Password) }
+            else           { $pkg.Save() }
             Write-Verbose -Message "Saved workbook $($pkg.File)"
             if ($ReZip) {
                 Write-Verbose -Message "Re-Zipping $($pkg.file) using .NET ZIP library"
@@ -981,7 +1037,7 @@ function New-PivotTableDefinition {
         Creates Pivot table definitons for Export-Excel
       .Description
         Export-Excel allows a single Pivot table to be defined using the parameters -IncludePivotTable, -PivotColumns -PivotRows,
-        =PivotData, -PivotFilter, -NoTotalsInPivot, -PivotDataToColumn, -IncludePivotChart and -ChartType.
+        =PivotData, -PivotFilter, -PivotTotals, -PivotDataToColumn, -IncludePivotChart and -ChartType.
         Its -PivotTableDefintion paramater allows multiple pivot tables to be defined, with additional parameters.
         New-PivotTableDefinition is a convenient way to build these definitions.
       .Example
@@ -1011,6 +1067,10 @@ function New-PivotTableDefinition {
         #Fields to use to filter in the Pivot table
         $PivotFilter,
         [Switch]$PivotDataToColumn,
+        #By default Pivot tables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
+        [ValidateSet("Both","Columns","Rows","None")]
+        [String]$PivotTotals = "Both",
+        #Included for compatibility - equivalent to -PivotTotals "None"
         [Switch]$NoTotalsInPivot,
         #If specified a chart Will be included.
         [Switch]$IncludePivotChart,
@@ -1046,6 +1106,10 @@ function New-PivotTableDefinition {
     }
 
     $parameters = @{} + $PSBoundParameters
+    if ($NoTotalsInPivot) {
+        $parameters.Remove('NoTotalsInPivot')
+        $parameters["PivotTotals"] = "None"
+    }
     $parameters.Remove('PivotTableName')
 
     @{$PivotTableName = $parameters}
@@ -1174,6 +1238,10 @@ function Add-PivotTable {
         #Fields to use to filter in the Pivot table
         $PivotFilter,
         [Switch]$PivotDataToColumn,
+        #By default Pivot tables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
+        [ValidateSet("Both","Columns","Rows","None")]
+        [String]$PivotTotals = "Both",
+        #Included for compatibility - equivalent to -PivotTotals "None"
         [Switch]$NoTotalsInPivot,
         #If specified a chart Will be included.
         [Switch]$IncludePivotChart,
@@ -1210,13 +1278,13 @@ function Add-PivotTable {
     if (-not $wsPivot.PivotTables[$pivotTableDataName] ) {
         try {
             #Accept a string or a worksheet object as $Source Worksheet.
-            if ($SourceWorkSheet -is [string]) {
-                $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets.where( {$_.name -match $SourceWorkSheet})[0]
+            if     ($SourceWorkSheet -is [string]) {
+                    $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets.where( {$_.name -Like $SourceWorkSheet})[0]
             }
-            elseif ($SourceWorkSheet -is [int]) {
+            elseif ($SourceWorkSheet -is [int])    {
                 $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets[$SourceWorkSheet]
             }
-            if (-not ($SourceWorkSheet -is  [OfficeOpenXml.ExcelWorksheet])) {Write-Warning -Message "Could not find source Worksheet for pivot-table '$pivotTableName'." }
+            if     ($SourceWorkSheet -isnot  [OfficeOpenXml.ExcelWorksheet]) {Write-Warning -Message "Could not find source Worksheet for pivot-table '$pivotTableName'." ; return }
             else {
                 if ($PivotFilter) {$PivotTableStartCell = "A3"} else { $PivotTableStartCell = "A1"}
                 if (-not $SourceRange) { $SourceRange = $SourceWorkSheet.Dimension.Address}
@@ -1252,8 +1320,12 @@ function Add-PivotTable {
                 try { $null = $pivotTable.PageFields.Add($pivotTable.Fields[$pFilter])}
                 catch {Write-Warning -message "Could not add '$pFilter' to Filter/Page fields in PivotTable $pivotTableName." }
             }
-            if ($NoTotalsInPivot) { $pivotTable.RowGrandTotals = $false }
-            if ($PivotDataToColumn ) { $pivotTable.DataOnRows = $false }
+            if     ($NoTotalsInPivot) {$PivotTotals = "None" }
+            if     ($PivotTotals -eq "None" -or $PivotTotals -eq "Columns") { $pivotTable.RowGrandTotals   = $false }
+            elseif ($PivotTotals -eq "Both" -or $PivotTotals -eq "Rows")    { $pivotTable.RowGrandTotals   = $true  }
+            if     ($PivotTotals -eq "None" -or $PivotTotals -eq "Rows")    { $pivotTable.ColumGrandTotals = $false }   # Epplus spelling mistake, not mine!
+            elseif ($PivotTotals -eq "Both" -or $PivotTotals -eq "Columns") { $pivotTable.ColumGrandTotals = $true  }
+            if     ($PivotDataToColumn ) { $pivotTable.DataOnRows = $false }
         }
         catch {Write-Warning -Message "Failed adding PivotTable '$pivotTableName': $_"}
     }
@@ -1349,7 +1421,8 @@ function Add-ExcelChart {
             if ($XAxisTitleBold)  {$chart.XAxis.Title.Font.Bold = $true}
             if ($XAxisTitleSize)  {$chart.XAxis.Title.Font.Size = $XAxisTitleSize}
         }
-        if ($XAxisPosition)       {$chart.ChartXml.chartSpace.chart.plotArea.catAx.axPos.val = $XAxisPosition.ToString().substring(0,1)}
+        if ($XAxisPosition)       {Write-Warning "X Axis position is not being set propertly at the moment, parameter ignored" }
+                                   #$chart.ChartXml.chartSpace.chart.plotArea.catAx.axPos.val = $XAxisPosition.ToString().substring(0,1)}
         if ($XMajorUnit)          {$chart.XAxis.MajorUnit       = $XMajorUnit}
         if ($XMinorUnit)          {$chart.XAxis.MinorUnit       = $XMinorUnit}
         if ($null -ne $XMinValue) {$chart.XAxis.MinValue        = $XMinValue}
@@ -1361,7 +1434,8 @@ function Add-ExcelChart {
             if ($YAxisTitleBold) {$chart.YAxis.Title.Font.Bold = $true}
             if ($YAxisTitleSize) {$chart.YAxis.Title.Font.Size = $YAxisTitleSize}
         }
-        if ($YAxisPosition)      {$chart.ChartXml.chartSpace.chart.plotArea.valAx.axPos.val= $YAxisPosition.ToString().substring(0,1)}
+        if ($YAxisPosition)      {Write-Warning "Y Axis position is not being set propertly at the moment, parameter ignored" }
+                                  #$chart.ChartXml.chartSpace.chart.plotArea.valAx.axPos.val= $YAxisPosition.ToString().substring(0,1)}
         if ($YMajorUnit)         {$chart.YAxis.MajorUnit       = $YMajorUnit}
         if ($YMinorUnit)         {$chart.YAxis.MinorUnit       = $YMinorUnit}
         if ($null -ne $YMinValue){$chart.YAxis.MinValue        = $YMinValue}

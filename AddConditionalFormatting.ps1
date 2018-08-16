@@ -121,14 +121,14 @@
     if     ($PSBoundParameters.ContainsKey("ConditionValue") -and 
             $RuleType -match "StdDev"                             ) {$rule.StdDev   = $ConditionValue }
     if     ($PSBoundParameters.ContainsKey("ConditionValue") -and 
-            $RuleType -match "Than|Equal|Expression"              ) {$rule.Formula  = $ConditionValue }
+            $RuleType -match "Than|Equal|Expression"              ) {$rule.Formula  = ($ConditionValue  -replace '^=','') }
     if     ($PSBoundParameters.ContainsKey("ConditionValue") -and 
-            $RuleType -match "Text|With"                          ) {$rule.Text     = $ConditionValue }
+            $RuleType -match "Text|With"                          ) {$rule.Text     = ($ConditionValue  -replace '^=','') }
     if     ($PSBoundParameters.ContainsKey("ConditionValue") -and
             $PSBoundParameters.ContainsKey("ConditionValue") -and 
             $RuleType -match "Between"                            ) {
-                                                                     $rule.Formula  = $ConditionValue; 
-                                                                     $rule.Formula2 = $ConditionValue2
+                                                                     $rule.Formula  = ($ConditionValue  -replace '^=',''); 
+                                                                     $rule.Formula2 = ($ConditionValue2 -replace '^=','')
     }
     #endregion
     #region set the rule format 

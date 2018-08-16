@@ -36,16 +36,18 @@ Describe "Number format expansion and setting" {
     }
     Context "Expand-NumberFormat function"  {
         It "Expanded named number formats as expected                                              " {
-            Expand-NumberFormat 'Number'     | Should be "0.00"
-            Expand-NumberFormat 'Percentage' | Should be "0.00%"
-            Expand-NumberFormat 'Scientific' | Should be "0.00E+00"
-            Expand-NumberFormat 'Currency'   | Should be ([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol + "#,##0.00")
-            Expand-NumberFormat 'Fraction'   | Should be "# ?/?"
-            Expand-NumberFormat 'Short Date' | Should be "mm-dd-yy"
-            Expand-NumberFormat 'Short Time' | Should be "h:mm"
-            Expand-NumberFormat 'Long Time'  | Should be "h:mm:ss"
-            Expand-NumberFormat 'Date-Time'  | Should be "m/d/yy h:mm"
-            Expand-NumberFormat 'Text'       | Should be "@"
+            $r = [regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol)
+              
+            Expand-NumberFormat 'Currency'                              | Should  match "^[$r\(\)\[\]RED0#\?\-;,.]+$" 
+            Expand-NumberFormat 'Number'                                | Should     be "0.00"
+            Expand-NumberFormat 'Percentage'                            | Should     be "0.00%"
+            Expand-NumberFormat 'Scientific'                            | Should     be "0.00E+00"
+            Expand-NumberFormat 'Fraction'                              | Should     be "# ?/?"
+            Expand-NumberFormat 'Short Date'                            | Should     be "mm-dd-yy"
+            Expand-NumberFormat 'Short Time'                            | Should     be "h:mm"
+            Expand-NumberFormat 'Long Time'                             | Should     be "h:mm:ss"
+            Expand-NumberFormat 'Date-Time'                             | Should     be "m/d/yy h:mm"
+            Expand-NumberFormat 'Text'                                  | Should     be "@"
         }
     }
     Context "Apply-NumberFormat" {
@@ -53,7 +55,7 @@ Describe "Number format expansion and setting" {
             Remove-Item -Path $path -ErrorAction SilentlyContinue
             $n = [datetime]::Now.ToOADate()
 
-            $excel = 1..32 | ForEach-Object {$n} | Export-Excel -Path $path -PassThru
+            $excel = 1..32 | ForEach-Object {$n} | Export-Excel -Path $path -show -WorksheetName s2 -PassThru
             $ws    = $excel.Workbook.Worksheets[1]
             Set-Format -WorkSheet $ws -Range "A1"   -numberFormat 'General'
             Set-Format -WorkSheet $ws -Range "A2"   -numberFormat 'Number'
@@ -94,8 +96,6 @@ Describe "Number format expansion and setting" {
         }
 
         It "Set formats which translate to the correct format ID                                   " {
-            $ws.Cells[10,1].Style.Numberformat.format    |                       # Set as "Currency"
-                                                                          Should  match ("^" + ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol)))
             $ws.Cells[ 1,1].Style.Numberformat.NumFmtID                 | Should     be 0       # Set as General
             $ws.Cells[20,1].Style.Numberformat.NumFmtID                 | Should     be 1       # Set as 0
             $ws.Cells[ 2,1].Style.Numberformat.NumFmtID                 | Should     be 2       # Set as "Number"
@@ -137,7 +137,7 @@ Describe "Set-Column, Set-Row and Set Format" {
         $ws = $excel.Workbook.Worksheets["Sheet1"]
 
         $c = Set-Column -PassThru -Worksheet $ws -Heading "Total" -Value "=Quantity*Price" -NumberFormat "£#,###.00" -FontColor Blue -Bold -HorizontalAlignment Right -VerticalAlignment Top
-        $r = Set-Row    -PassThru   -Worksheet $ws -StartColumn 3 -BorderAround Thin -Italic -Underline -FontSize 14 -Value {"=sum($columnName`2:$columnName$endrow)" } -VerticalAlignment Bottom
+        $r = Set-Row    -PassThru -Worksheet $ws -StartColumn 3 -BorderAround Thin -Italic -Underline -FontSize 14 -Value {"=sum($columnName`2:$columnName$endrow)" } -VerticalAlignment Bottom
         Set-Format -Address   $excel.Workbook.Worksheets["Sheet1"].cells["b3"] -HorizontalAlignment Right -VerticalAlignment Center -BorderAround Thick -BorderColor Red -StrikeThru
         Set-Format -Address   $excel.Workbook.Worksheets["Sheet1"].cells["c3"] -BorderColor Red -BorderTop DashDot -BorderLeft DashDotDot -BorderBottom Dashed -BorderRight Dotted
         Set-Format -WorkSheet $ws -Range "E3"  -Bold:$false -FontShift Superscript -HorizontalAlignment Left
@@ -153,7 +153,7 @@ Describe "Set-Column, Set-Row and Set Format" {
         Set-Format -WorkSheet $ws -Range "D$rr" -Formula "=E$rr/C$rr" -Hidden -WarningVariable "BadHideWarnvar" -WarningAction SilentlyContinue
         $rr ++
         Set-Format -WorkSheet $ws -Range "B$rr" -Value ([datetime]::Now)
-        Close-ExcelPackage $excel
+        Close-ExcelPackage $excel -Calculate
 
 
         $excel = Open-ExcelPackage $path
@@ -167,7 +167,8 @@ Describe "Set-Column, Set-Row and Set Format" {
             $ws.Row(5).height                                           | Should be  0
         }
         it "Set a column formula, with numberformat, color, bold face and alignment                " {
-            $ws.cells["e2"].Formula                                     | Should     be "=Quantity*Price"
+            $ws.cells["e2"].Formula                                     | Should     be "Quantity*Price"
+            $ws.cells["e2"].Value                                       | Should     be 147.63
             $ws.cells["e2"].Style.Font.Color.rgb                        | Should     be "FF0000FF"
             $ws.cells["e2"].Style.Font.Bold                             | Should     be $true
             $ws.cells["e2"].Style.Font.VerticalAlign                    | Should     be "None"
@@ -189,7 +190,8 @@ Describe "Set-Column, Set-Row and Set Format" {
             $ws.cells["E7"].style.Border.Left.Style                     | Should     be "None"
             $ws.cells["E7"].style.Border.Right.Style                    | Should     be "Thin"
             $ws.cells["C7"].style.Font.size                             | Should     be 14
-            $ws.cells["C7"].Formula                                     | Should     be "=sum(C2:C6)"
+            $ws.cells["C7"].Formula                                     | Should     be "sum(C2:C6)"
+            $ws.cells["C7"].value                                       | Should     be 81
             $ws.cells["C7"].style.Font.UnderLine                        | Should     be $true
             $ws.cells["C6"].style.Font.UnderLine                        | Should     be $false
         }
@@ -214,7 +216,7 @@ Describe "Set-Column, Set-Row and Set Format" {
 
     Context "Set-Format value setting " {
         it "Inserted a formula                                                                     " {
-            $ws.Cells["D7"].Formula                                     | Should     be "=E7/C7"
+            $ws.Cells["D7"].Formula                                     | Should     be "E7/C7"
         }
         it "Inserted a value                                                                       " {
             $ws.Cells["B7"].Value                                       | Should     be "Total"
@@ -243,7 +245,7 @@ Describe "Set-Column, Set-Row and Set Format" {
             Set-Column -Worksheet $ws -Heading "Age" -Value "=INT((NOW()-DateOfBirth)/365)"
             Set-Format -Address $c,$ws.column(3) -NumberFormat 'Short Date' -AutoSize
 
-            Close-ExcelPackage -ExcelPackage $excel
+            Close-ExcelPackage -ExcelPackage $excel -Calculate
             $excel = Open-ExcelPackage $path
             $ws = $excel.Workbook.Worksheets["Sheet1"]
           }
