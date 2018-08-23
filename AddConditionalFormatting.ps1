@@ -78,30 +78,50 @@
         [Parameter(ParameterSetName = "FiveIconSet")]
         [Parameter(ParameterSetName = "FiveIconSetAddress")]
         [switch]$Reverse,
-        #A value for the condition (e.g. "2000" if the test is 'lessthan 2000')
+        #A value for the condition (e.g. 2000 if the test is 'lessthan 2000' ; Formulas should begin with "=" )
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
         [string]$ConditionValue,
         #A second value for the conditions like "between x and Y"
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
         [string]$ConditionValue2,
         #Background colour for matching items
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
         [System.Drawing.Color]$BackgroundColor,
         #Background pattern for matching items
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
         [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern = [OfficeOpenXml.Style.ExcelFillStyle]::None ,
         #Secondary colour when a background pattern requires it
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
         [System.Drawing.Color]$PatternColor,
         #Sets the numeric format for matching items
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
         $NumberFormat,
         #Put matching items in bold face
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
         [switch]$Bold,
         #Put matching items in italic
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
         [switch]$Italic,
         #Underline matching items
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
         [switch]$Underline,
         #Strikethrough text of matching items
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
         [switch]$StrikeThru,
         #If specified pass the rule back to the caller to allow additional customization.
         [switch]$Passthru
     )
-     
+
     #Allow conditional formatting to work like Set-Format (with single ADDRESS parameter), split it to get worksheet and range of cells.
     If ($Address -and -not $WorkSheet -and -not $Range) {
         $WorkSheet = $Address.Worksheet[0]
@@ -116,22 +136,47 @@
     if     ($PSBoundParameters.ContainsKey("Reverse"       )      ) {$rule.reverse = [boolean]$Reverse}
     #endregion
     #region set the rule conditions
-    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and 
+    #for lessThan/GreaterThan/Equal/Between conditions make sure that strings are wrapped in quotes. Formulas should be passed with = which will be stripped.
+    if     ($RuleType -match "Than|Equal|Between" ) {
+        if ($ConditionValue) {
+                $number = $Null
+                if ([Double]::TryParse($ConditionValue, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number) ) {
+                         $ConditionValue  = $number
+                }
+                elseif (($ConditionValue  -notmatch '^=') -and ($ConditionValue  -notmatch '^".*"$') ) {
+                         $ConditionValue  = '"' + $ConditionValue +'"'
+                }
+        }
+        if ($ConditionValue2) {
+                $number = $Null
+                if ([Double]::TryParse($ConditionValue2, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number) ) {
+                         $ConditionValue2 = $number
+                }
+                elseif (($ConditionValue2 -notmatch '^=') -and ($ConditionValue2 -notmatch '^".*"$') ) {
+                         $ConditionValue2  = '"' + $ConditionValue2 + '"'
+                }
+        }
+    }
+    #But we don't usually want quotes round containstext | beginswith type rules. Can't be Certain they need to be removed, so warn the user their condition might be wrong
+    if     ($RuleType -match "Text|With" -and $ConditionValue -match '^".*"$'  ) {
+            Write-Warning -Message "The condition will look for the quotes at the start and end."
+    }
+    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and
             $RuleType -match "Top|Botom"                          ) {$rule.Rank     = $ConditionValue }
-    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and 
+    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and
             $RuleType -match "StdDev"                             ) {$rule.StdDev   = $ConditionValue }
-    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and 
+    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and
             $RuleType -match "Than|Equal|Expression"              ) {$rule.Formula  = ($ConditionValue  -replace '^=','') }
-    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and 
+    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and
             $RuleType -match "Text|With"                          ) {$rule.Text     = ($ConditionValue  -replace '^=','') }
     if     ($PSBoundParameters.ContainsKey("ConditionValue") -and
-            $PSBoundParameters.ContainsKey("ConditionValue") -and 
+            $PSBoundParameters.ContainsKey("ConditionValue") -and
             $RuleType -match "Between"                            ) {
-                                                                     $rule.Formula  = ($ConditionValue  -replace '^=',''); 
+                                                                     $rule.Formula  = ($ConditionValue  -replace '^=','');
                                                                      $rule.Formula2 = ($ConditionValue2 -replace '^=','')
     }
     #endregion
-    #region set the rule format 
+    #region set the rule format
     if     ($PSBoundParameters.ContainsKey("NumberFormat"  )      ) {$rule.Style.NumberFormat.Format        = (Expand-NumberFormat  $NumberFormat)             }
     if     ($Underline                                            ) {$rule.Style.Font.Underline             = [OfficeOpenXml.Style.ExcelUnderLineType]::Single }
     elseif ($PSBoundParameters.ContainsKey("Underline"     )      ) {$rule.Style.Font.Underline             = [OfficeOpenXml.Style.ExcelUnderLineType]::None   }
@@ -142,7 +187,7 @@
     if     ($PSBoundParameters.ContainsKey("BackgroundColor"  )   ) {$rule.Style.Fill.BackgroundColor.color = $BackgroundColor     }
     if     ($PSBoundParameters.ContainsKey("BackgroundPattern")   ) {$rule.Style.Fill.PatternType           = $BackgroundPattern   }
     if     ($PSBoundParameters.ContainsKey("PatternColor"     )   ) {$rule.Style.Fill.PatternColor.color    = $PatternColor        }
-    #endregion 
-    #Allow further tweaking by returning the rule, if passthru specified 
+    #endregion
+    #Allow further tweaking by returning the rule, if passthru specified
     if     ($Passthru)  {$rule}
 }

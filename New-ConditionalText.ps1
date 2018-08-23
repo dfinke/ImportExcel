@@ -7,15 +7,16 @@ function New-ConditionalText {
         [String]$Range,
         [OfficeOpenXml.Style.ExcelFillStyle]$PatternType=[OfficeOpenXml.Style.ExcelFillStyle]::Solid,
         [ValidateSet(
-       	    "LessThan","LessThanOrEqual","GreaterThan","GreaterThanOrEqual",
-            "NotEqual","Equal","ContainsText","NotContainsText","BeginsWith","EndsWith",
-            "Last7Days","LastMonth","LastWeek",
-            "NextMonth","NextWeek",
-            "ThisMonth","ThisWeek",
-            "Today","Tomorrow","Yesterday",
-            "DuplicateValues",
-            "AboveOrEqualAverage","BelowAverage","AboveAverage",
-            "Top", "TopPercent", "ContainsBlanks"
+            "LessThan",        "LessThanOrEqual",      "GreaterThan",    "GreaterThanOrEqual",
+            "Equal",           "NotEqual",
+            "Top",             "TopPercent",           "Bottom",         "BottomPercent",
+            "ContainsText",    "NotContainsText",      "BeginsWith",     "EndsWith",
+            "ContainsBlanks",  "NotContainsBlanks",    "ContainsErrors", "NotContainsErrors",
+            "DuplicateValues", "UniqueValues",
+            "Tomorrow",        "Today",                "Yesterday",      "Last7Days",
+            "NextWeek",        "ThisWeek",             "LastWeek",
+            "NextMonth",       "ThisMonth",            "LastMonth",
+            "AboveAverage",    "AboveOrEqualAverage",  "BelowAverage",  "BelowOrEqualAverage"
         )]
         $ConditionalType="ContainsText"
     )
@@ -23,13 +24,13 @@ function New-ConditionalText {
     $obj = [PSCustomObject]@{
         Text                 = $Text
         ConditionalTextColor = $ConditionalTextColor
-        ConditionalType      = $ConditionalType 
-        PatternType          = $PatternType 
+        ConditionalType      = $ConditionalType
+        PatternType          = $PatternType
         Range                = $Range
-        BackgroundColor      = $BackgroundColor 
+        BackgroundColor      = $BackgroundColor
     }
 
     $obj.pstypenames.Clear()
     $obj.pstypenames.Add("ConditionalText")
-    $obj       
+    $obj
 }
