@@ -147,13 +147,13 @@ Describe ExportExcel {
         BeforeAll {
             $path = "$env:temp\test.xlsx"
             Remove-Item -Path  $path -ErrorAction SilentlyContinue
-            1..10  | Export-Excel -Path $path -Numberformat 'Number'                                                                                                                                     
-            1..10  | Export-Excel -Path $path -Numberformat 'Percentage' -Append                                                                                                                          
-            21..30 | Export-Excel -Path $path -Numberformat 'Currency'   -StartColumn 3 
-            $excel = Open-ExcelPackage -Path   $path   
-            $ws = $excel.Workbook.Worksheets[1] 
+            1..10  | Export-Excel -Path $path -Numberformat 'Number'
+            1..10  | Export-Excel -Path $path -Numberformat 'Percentage' -Append
+            21..30 | Export-Excel -Path $path -Numberformat 'Currency'   -StartColumn 3
+            $excel = Open-ExcelPackage -Path   $path
+            $ws = $excel.Workbook.Worksheets[1]
         }
-        it "Set the worksheet default number format correctly                                      " { 
+        it "Set the worksheet default number format correctly                                      " {
             $ws.Cells.Style.Numberformat.Format                         | Should     be "0.00"
         }
         it "Set number formats on specific blocks of cells                                         " {
@@ -757,9 +757,21 @@ Describe ExportExcel {
     Context "                # Chart from MultiSeries.ps1 in the Examples\charts Directory" {
         $path = "$env:TEMP\Test.xlsx"
         Remove-Item -Path   $path -ErrorAction SilentlyContinue
+        #Test we haven't missed any parameters on New-ChartDefinition which are on add chart or vice versa.
+
+        $ParamChk1 =  (get-command Add-ExcelChart          ).Parameters.Keys.where({-not (get-command New-ExcelChartDefinition).Parameters.ContainsKey($_) }) | sort
+        $ParamChk2 =  (get-command New-ExcelChartDefinition).Parameters.Keys.where({-not (get-command Add-ExcelChart          ).Parameters.ContainsKey($_) })
+        it "Found the same parameters for Add-ExcelChart and New-ExcelChartDefinintion             " {
+            $ParamChk1.count                                            | Should     be 3
+            $ParamChk1[0]                                               | Should     be "PassThru"
+            $ParamChk1[1]                                               | Should     be "PivotTable"
+            $ParamChk1[2]                                               | Should     be "Worksheet"
+            $ParamChk2.count                                            | Should     be 1
+            $ParamChk2[0]                                               | Should     be "Header"
+        }       
         #Test Invoke-Sum
         $data = Invoke-Sum (Get-Process) Company Handles, PM, VirtualMemorySize
-        it "used Invoke-Sum to create a data set                                                   " {
+        it "Used Invoke-Sum to create a data set                                                   " {
             $data                                                       | Should not beNullOrEmpty
             $data.count                                                 | Should     beGreaterThan 1
             $data[1].Name                                               | Should not beNullOrEmpty

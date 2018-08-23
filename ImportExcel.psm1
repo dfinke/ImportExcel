@@ -28,6 +28,7 @@
     . $PSScriptRoot\New-PSItem.ps1
     . $PSScriptRoot\Open-ExcelPackage.ps1
     . $PSScriptRoot\Pivot.ps1
+    . $PSScriptRoot\PivotTable.ps1
     . $PSScriptRoot\Send-SQLDataToExcel.ps1
     . $PSScriptRoot\Set-CellStyle.ps1
     . $PSScriptRoot\Set-Column.ps1

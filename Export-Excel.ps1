@@ -47,7 +47,7 @@
         .PARAMETER PivotFilter
             Name(s) columns from the spreadhseet which will provide the Filter name(s) in a pivot table created from command line parameters.
         .PARAMETER PivotData
-            In a pivot table created from command line parameters, the fields to use in the table body is given as a Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP .
+            In a pivot table created from command line parameters, the fields to use in the table body are given as a Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP .
         .PARAMETER NoTotalsInPivot
             In a pivot table created from command line parameters, prevents the addition of totals to rows and columns.
         .PARAMETER PivotTableDefinition
@@ -798,16 +798,20 @@
                     Write-Warning -Message "At least one character in $TableName is illegal in a table name and will be replaced with '_' . "
                     $TableName = $TableName -replace '\W', '_'
                 }
-                #if the table exists, update it.
+                #if the table exists in this worksheet, update it.
                 if ($ws.Tables[$TableName]) {
                     $ws.Tables[$TableName].TableXml.table.ref = $dataRange
                     $ws.Tables[$TableName].TableStyle         = $TableStyle
+                    Write-Verbose -Message "Re-defined table '$TableName', now at $($targetRange.Address)"
+                }
+                elseif ($pkg.Workbook.Worksheets.Tables.Name -contains $TableName) {
+                    Write-Warning -Message "The Table name '$TableName' is already used on a different worksheet."
                 }
                 else {
                     $tbl = $ws.Tables.Add($ws.Cells[$dataRange], $TableName)
                     $tbl.TableStyle = $TableStyle
+                    Write-Verbose -Message "Defined table '$TableName' at $($targetRange.Address)"
                 }
-                Write-Verbose -Message "Defined table '$TableName' at $($targetRange.Address)"
             }
             catch {Write-Warning -Message "Failed adding table '$TableName' to worksheet '$WorksheetName': $_"}
         }
@@ -838,6 +842,11 @@
             $params = @{
                 "SourceRange" = $dataRange
             }
+            if ($PivotTableName -and ($pkg.workbook.worksheets.tables.name -contains $PivotTableName)) {
+                Write-Warning -Message "The selected Pivot table name '$PivotTableName' is already used as a table name. Adding a suffix of 'Pivot'."
+                $PivotTableName += 'Pivot'
+            }
+
             if   ($PivotTableName)  {$params.PivotTableName    = $PivotTableName}
             else                    {$params.PivotTableName    = $WorksheetName + 'PivotTable'}
             if          ($Activate) {$params.Activate          = $true   }
@@ -943,23 +952,26 @@
             $range = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, $startColumn, $FirstDataRow, $lastCol )
             $xCol  = $ws.cells[$range] | Where-Object {$_.value -is [string]    } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1
             $yCol  = $ws.cells[$range] | Where-Object {$_.value -is [valueType] } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1
-            $params = @{
-               XRange = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, $xcol , $lastrow, $xcol)
-               YRange = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, $ycol , $lastrow, $ycol)
-               Title  =  "";
-               Column = ($lastCol +1)  ;
-               Width  = 800
-            }
-            if   ($ShowPercent) {$params["ShowPercent"]  = $true}
-            if  ($ShowCategory) {$params["ShowCategory"] = $true}
-            if      ($NoLegend) {$params["NoLegend"]     = $true}
-            if (-not $NoHeader) {$params["SeriesHeader"] = $ws.Cells[$startRow, $YCol].Value}
-            if   ($ColumnChart) {$Params["chartType"]    = "ColumnStacked" }
-            elseif  ($Barchart) {$Params["chartType"]    = "BarStacked"    }
-            elseif  ($PieChart) {$Params["chartType"]    = "PieExploded3D" }
-            elseif ($LineChart) {$Params["chartType"]    = "Line"          }
+            if (-not ($xCol -and $ycol)) { Write-Warning -Message "Can't identify a string column and a number column to use as chart labels and data. "}
+            else {
+                $params = @{
+                XRange = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, $xcol , $lastrow, $xcol)
+                YRange = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, $ycol , $lastrow, $ycol)
+                Title  =  "";
+                Column = ($lastCol +1)  ;
+                Width  = 800
+                }
+                if   ($ShowPercent) {$params["ShowPercent"]  = $true}
+                if  ($ShowCategory) {$params["ShowCategory"] = $true}
+                if      ($NoLegend) {$params["NoLegend"]     = $true}
+                if (-not $NoHeader) {$params["SeriesHeader"] = $ws.Cells[$startRow, $YCol].Value}
+                if   ($ColumnChart) {$Params["chartType"]    = "ColumnStacked" }
+                elseif  ($Barchart) {$Params["chartType"]    = "BarStacked"    }
+                elseif  ($PieChart) {$Params["chartType"]    = "PieExploded3D" }
+                elseif ($LineChart) {$Params["chartType"]    = "Line"          }
 
-            Add-ExcelChart -Worksheet $ws @params
+                Add-ExcelChart -Worksheet $ws @params
+            }
         }
 
         foreach ($ct in $ConditionalText) {
@@ -1031,89 +1043,6 @@
     }
 }
 
-function New-PivotTableDefinition {
-    <#
-      .Synopsis
-        Creates Pivot table definitons for Export-Excel
-      .Description
-        Export-Excel allows a single Pivot table to be defined using the parameters -IncludePivotTable, -PivotColumns -PivotRows,
-        =PivotData, -PivotFilter, -PivotTotals, -PivotDataToColumn, -IncludePivotChart and -ChartType.
-        Its -PivotTableDefintion paramater allows multiple pivot tables to be defined, with additional parameters.
-        New-PivotTableDefinition is a convenient way to build these definitions.
-      .Example
-        $pt  = New-PivotTableDefinition -PivotTableName "PT1" -SourceWorkSheet "Sheet1" -PivotRows "Status"  -PivotData @{Status='Count' } -PivotFilter 'StartType' -IncludePivotChart  -ChartType BarClustered3D
-        $Pt += New-PivotTableDefinition -PivotTableName "PT2" -SourceWorkSheet "Sheet2" -PivotRows "Company" -PivotData @{Company='Count'} -IncludePivotChart  -ChartType PieExploded3D  -ShowPercent -ChartTitle "Breakdown of processes by company"
-        Get-Service | Select-Object    -Property Status,Name,DisplayName,StartType | Export-Excel -Path .\test.xlsx -AutoSize
-        Get-Process | Select-Object    -Property Name,Company,Handles,CPU,VM       | Export-Excel -Path .\test.xlsx -AutoSize -WorksheetName 'sheet2'
-        $excel = Export-Excel -Path .\test.xlsx -PivotTableDefinition $pt -Show
-
-        This is a re-work of one of the examples in Export-Excel - instead of writing out the pivot definition hash table it is built by calling New-PivotTableDefinition.
-    #>
-    param(
-        [Parameter(Mandatory)]
-        [Alias("PivtoTableName")]#Previous typo - use alias to avoid breaking scripts
-        $PivotTableName,
-        #Worksheet where the data is found
-        $SourceWorkSheet,
-        #Address range in the worksheet e.g "A10:F20" - the first row must be column names: if not specified the whole sheet will be used/
-        $SourceRange,
-        #Fields to set as rows in the Pivot table
-        $PivotRows,
-        #A hash table in form "FieldName"="Function", where function is one of
-        #Average, Count, CountNums, Max, Min, Product, None, StdDev, StdDevP, Sum, Var, VarP
-        [hashtable]$PivotData,
-        #Fields to set as columns in the Pivot table
-        $PivotColumns,
-        #Fields to use to filter in the Pivot table
-        $PivotFilter,
-        [Switch]$PivotDataToColumn,
-        #By default Pivot tables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
-        [ValidateSet("Both","Columns","Rows","None")]
-        [String]$PivotTotals = "Both",
-        #Included for compatibility - equivalent to -PivotTotals "None"
-        [Switch]$NoTotalsInPivot,
-        #If specified a chart Will be included.
-        [Switch]$IncludePivotChart,
-        #Optional title for the pivot chart, by default the title omitted.
-        [String]$ChartTitle,
-        #Height of the chart in Pixels (400 by default)
-        [int]$ChartHeight = 400 ,
-        #Width of the chart in Pixels (600 by default)
-        [int]$ChartWidth = 600,
-        #Cell position of the top left corner of the chart, there will be this number of rows above the top edge of the chart (default is 0, chart starts at top edge of row 1).
-        [Int]$ChartRow = 0 ,
-        #Cell position of the top left corner of the chart, there will be this number of cells to the left of the chart (default is 4, chart starts at left edge of column E)
-        [Int]$ChartColumn = 4,
-        #Vertical offset of the chart from the cell corner.
-        [Int]$ChartRowOffSetPixels = 0 ,
-        #Horizontal offset of the chart from the cell corner.
-        [Int]$ChartColumnOffSetPixels = 0,
-        #Type of chart
-        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = 'Pie',
-        #If specified hides the chart legend
-        [Switch]$NoLegend,
-        #if specified attaches the category to slices in a pie chart : not supported on all chart types, this may give errors if applied to an unsupported type.
-        [Switch]$ShowCategory,
-        #If specified attaches percentages to slices in a pie chart.
-        [Switch]$ShowPercent,
-        #If there is already content in the workbook the sheet with the Pivot table will not be active UNLESS Activate is specified
-        [switch]$Activate
-    )
-    $validDataFuntions = [system.enum]::GetNames([OfficeOpenXml.Table.PivotTable.DataFieldFunctions])
-
-    if ($PivotData.values.Where({$_ -notin $validDataFuntions}) ) {
-        Write-Warning -Message ("Pivot data functions might not be valid, they should be one of " + ($validDataFuntions -join ", ") + ".")
-    }
-
-    $parameters = @{} + $PSBoundParameters
-    if ($NoTotalsInPivot) {
-        $parameters.Remove('NoTotalsInPivot')
-        $parameters["PivotTotals"] = "None"
-    }
-    $parameters.Remove('PivotTableName')
-
-    @{$PivotTableName = $parameters}
-}
 function Add-WorkSheet  {
     <#
       .Synopsis
@@ -1211,260 +1140,7 @@ function Add-WorkSheet  {
     if ($Activate) {Select-Worksheet -ExcelWorkbook $ExcelWorkbook -WorksheetName $ws.Name  }
     return $ws
 }
-function Add-PivotTable {
-<#
-  .Synopsis
-    Adds a Pivot table (and optional pivot chart) to a workbook
-  .Description
-    If the pivot table already exists, the source data will be updated.
-#>
-    param (
-        #Name for the new Pivot table - this will be the name of a sheet in the workbook
-        [Parameter(Mandatory = $true)]
-        $PivotTableName,
-        #An excel package object for the workbook.
-        $ExcelPackage,
-        #Worksheet where the data is found
-        $SourceWorkSheet,
-        #Address range in the worksheet e.g "A10:F20" - the first row must be column names: if not specified the whole sheet will be used.
-        $SourceRange,
-        #Fields to set as rows in the Pivot table
-        $PivotRows,
-        #A hash table in form "FieldName"="Function", where function is one of
-        #Average, Count, CountNums, Max, Min, Product, None, StdDev, StdDevP, Sum, Var, VarP
-        $PivotData,
-        #Fields to set as columns in the Pivot table
-        $PivotColumns,
-        #Fields to use to filter in the Pivot table
-        $PivotFilter,
-        [Switch]$PivotDataToColumn,
-        #By default Pivot tables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
-        [ValidateSet("Both","Columns","Rows","None")]
-        [String]$PivotTotals = "Both",
-        #Included for compatibility - equivalent to -PivotTotals "None"
-        [Switch]$NoTotalsInPivot,
-        #If specified a chart Will be included.
-        [Switch]$IncludePivotChart,
-        #Optional title for the pivot chart, by default the title omitted.
-        [String]$ChartTitle,
-        #Height of the chart in Pixels (400 by default)
-        [int]$ChartHeight = 400 ,
-        #Width of the chart in Pixels (600 by default)
-        [int]$ChartWidth = 600,
-        #Cell position of the top left corner of the chart, there will be this number of rows above the top edge of the chart (default is 0, chart starts at top edge of row 1).
-        [Int]$ChartRow = 0 ,
-        #Cell position of the top left corner of the chart, there will be this number of cells to the left of the chart (default is 4, chart starts at left edge of column E)
-        [Int]$ChartColumn = 4,
-        #Vertical offset of the chart from the cell corner.
-        [Int]$ChartRowOffSetPixels = 0 ,
-        #Horizontal offset of the chart from the cell corner.
-        [Int]$ChartColumnOffSetPixels = 0,
-        #Type of chart
-        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = 'Pie',
-        #If specified hides the chart legend
-        [Switch]$NoLegend,
-        #if specified attaches the category to slices in a pie chart : not supported on all chart types, this may give errors if applied to an unsupported type.
-        [Switch]$ShowCategory,
-        #If specified attaches percentages to slices in a pie chart.
-        [Switch]$ShowPercent,
-        #If there is already content in the workbook the sheet with the Pivot table will not be active UNLESS Activate is specified
-        [switch]$Activate
-    )
 
-    $pivotTableDataName = $pivotTableName + 'PivotTableData'
-    [OfficeOpenXml.ExcelWorksheet]$wsPivot = Add-WorkSheet -ExcelPackage $ExcelPackage -WorksheetName $pivotTableName -Activate:$Activate
-
-    #if the pivot doesn't exist, create it.
-    if (-not $wsPivot.PivotTables[$pivotTableDataName] ) {
-        try {
-            #Accept a string or a worksheet object as $Source Worksheet.
-            if     ($SourceWorkSheet -is [string]) {
-                    $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets.where( {$_.name -Like $SourceWorkSheet})[0]
-            }
-            elseif ($SourceWorkSheet -is [int])    {
-                $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets[$SourceWorkSheet]
-            }
-            if     ($SourceWorkSheet -isnot  [OfficeOpenXml.ExcelWorksheet]) {Write-Warning -Message "Could not find source Worksheet for pivot-table '$pivotTableName'." ; return }
-            else {
-                if ($PivotFilter) {$PivotTableStartCell = "A3"} else { $PivotTableStartCell = "A1"}
-                if (-not $SourceRange) { $SourceRange = $SourceWorkSheet.Dimension.Address}
-                $pivotTable = $wsPivot.PivotTables.Add($wsPivot.Cells[$PivotTableStartCell], $SourceWorkSheet.Cells[ $SourceRange], $pivotTableDataName)
-            }
-            foreach ($Row in $PivotRows) {
-                try {$null = $pivotTable.RowFields.Add($pivotTable.Fields[$Row]) }
-                catch {Write-Warning -message "Could not add '$row' to Rows in PivotTable $pivotTableName." }
-            }
-            foreach ($Column in $PivotColumns) {
-                try {$null = $pivotTable.ColumnFields.Add($pivotTable.Fields[$Column])}
-                catch {Write-Warning -message "Could not add '$Column' to Columns in PivotTable $pivotTableName." }
-            }
-            if ($PivotData -is [HashTable] -or $PivotData -is [System.Collections.Specialized.OrderedDictionary]) {
-                $PivotData.Keys | ForEach-Object {
-                    try {
-                        $df = $pivotTable.DataFields.Add($pivotTable.Fields[$_])
-                        $df.Function = $PivotData.$_
-                    }
-                    catch {Write-Warning -message "Problem adding data fields to PivotTable $pivotTableName." }
-                }
-            }
-            else {
-                foreach ($field in $PivotData) {
-                    try {
-                        $df = $pivotTable.DataFields.Add($pivotTable.Fields[$field])
-                        $df.Function = 'Count'
-                    }
-                    catch {Write-Warning -message "Problem adding data field '$field' to PivotTable $pivotTableName." }
-                }
-            }
-            foreach ( $pFilter in $PivotFilter) {
-                try { $null = $pivotTable.PageFields.Add($pivotTable.Fields[$pFilter])}
-                catch {Write-Warning -message "Could not add '$pFilter' to Filter/Page fields in PivotTable $pivotTableName." }
-            }
-            if     ($NoTotalsInPivot) {$PivotTotals = "None" }
-            if     ($PivotTotals -eq "None" -or $PivotTotals -eq "Columns") { $pivotTable.RowGrandTotals   = $false }
-            elseif ($PivotTotals -eq "Both" -or $PivotTotals -eq "Rows")    { $pivotTable.RowGrandTotals   = $true  }
-            if     ($PivotTotals -eq "None" -or $PivotTotals -eq "Rows")    { $pivotTable.ColumGrandTotals = $false }   # Epplus spelling mistake, not mine!
-            elseif ($PivotTotals -eq "Both" -or $PivotTotals -eq "Columns") { $pivotTable.ColumGrandTotals = $true  }
-            if     ($PivotDataToColumn ) { $pivotTable.DataOnRows = $false }
-        }
-        catch {Write-Warning -Message "Failed adding PivotTable '$pivotTableName': $_"}
-    }
-    else {
-        Write-Warning -Message "Pivot table defined in $($pivotTableName) already exists, only the data range will be changed."
-        $pivotTable = $wsPivot.PivotTables[$pivotTableDataName]
-        $pivotTable.CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.ref = $SourceRange
-    }
-
-        #Create the chart if it doesn't exist, leave alone if it does.
-    if ($IncludePivotChart -and -not $wsPivot.Drawings['PivotChart'] ) {
-        try {
-            [OfficeOpenXml.Drawing.Chart.ExcelChart] $chart = $wsPivot.Drawings.AddChart('PivotChart', $ChartType, $pivotTable)
-            $chart.SetPosition($ChartRow  , $ChartRowOffSetPixels , $ChartColumn, $ChartColumnOffSetPixels)
-            $chart.SetSize(    $ChartWidth, $ChartHeight)
-            if ($chart.DataLabel) {
-                $chart.DataLabel.ShowCategory = [boolean]$ShowCategory
-                $chart.DataLabel.ShowPercent  = [boolean]$ShowPercent
-            }
-            if ($NoLegend) {  $chart.Legend.Remove()}
-            if ($ChartTitle) {$chart.Title.Text = $ChartTitle}
-        }
-        catch {  catch {Write-Warning -Message "Failed adding chart for pivotable '$pivotTableName': $_"}
-        }
-
-    }
-}
-function Add-ExcelChart {
-    <#
-      .Synopsis
-        Creates a chart in an Existing excel worksheet
-    #>
-    [cmdletbinding()]
-    param(
-        #An object representing the worksheet where the chart should be added.
-        [OfficeOpenXml.ExcelWorksheet]$Worksheet,
-        [String]$Title = "Chart Title",
-        #$Header,   Not used but referenced previously
-        #The Type of chart (Area, Line, Pie etc)
-        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = "ColumnStacked",
-        $XRange,
-        $YRange,
-        [int]$Width              = 500,
-        [int]$Height             = 350,
-        [int]$Row                =   0,
-        [int]$RowOffSetPixels    =  10,
-        [int]$Column             =   6,
-        [int]$ColumnOffSetPixels =   5,
-        [OfficeOpenXml.Drawing.Chart.eLegendPosition]$LegendPostion,
-        $LegendSize,
-        [Switch]$legendBold,
-        [Switch]$NoLegend,
-        [Switch]$ShowCategory,
-        [Switch]$ShowPercent,
-        $SeriesHeader,
-        [Switch]$TitleBold,
-        [Int]$TitleSize ,
-        [String]$XAxisTitleText,
-        [Switch]$XAxisTitleBold,
-        $XAxisTitleSize ,
-        [string]$XAxisNumberformat,
-        $XMajorUnit,
-        $XMinorUnit,
-        $XMaxValue,
-        $XMinValue,
-        [OfficeOpenXml.Drawing.Chart.eAxisPosition]$XAxisPosition        ,
-        [String]$YAxisTitleText,
-        [Switch]$YAxisTitleBold,
-        $YAxisTitleSize,
-        [string]$YAxisNumberformat,
-        $YMajorUnit,
-        $YMinorUnit,
-        $YMaxValue,
-        $YMinValue,
-        [OfficeOpenXml.Drawing.Chart.eAxisPosition]$YAxisPosition   )
-    try {
-        $ChartName = 'Chart' + (Split-Path -Leaf ([System.IO.path]::GetTempFileName())) -replace 'tmp|\.', ''
-        $chart = $Worksheet.Drawings.AddChart($ChartName, $ChartType)
-        if ($Title) {
-            $chart.Title.Text = $Title
-            if ($TitleBold) {$chart.Title.Font.Bold = $true}
-            if ($TitleSize) {$chart.Title.Font.Size = $TitleSize}
-        }
-        if ($NoLegend) { $chart.Legend.Remove() }
-        else {
-            if ($LegendPostion) {$Chart.Legend.Position    = $LegendPostion}
-            if ($LegendSize)    {$chart.Legend.Font.Size   = $LegendSize}
-            if ($legendBold)    {$chart.Legend.Font.Bold   = $true}
-        }
-
-        if ($XAxisTitleText)      {
-            $chart.XAxis.Title.Text = $XAxisTitleText
-            if ($XAxisTitleBold)  {$chart.XAxis.Title.Font.Bold = $true}
-            if ($XAxisTitleSize)  {$chart.XAxis.Title.Font.Size = $XAxisTitleSize}
-        }
-        if ($XAxisPosition)       {Write-Warning "X Axis position is not being set propertly at the moment, parameter ignored" }
-                                   #$chart.ChartXml.chartSpace.chart.plotArea.catAx.axPos.val = $XAxisPosition.ToString().substring(0,1)}
-        if ($XMajorUnit)          {$chart.XAxis.MajorUnit       = $XMajorUnit}
-        if ($XMinorUnit)          {$chart.XAxis.MinorUnit       = $XMinorUnit}
-        if ($null -ne $XMinValue) {$chart.XAxis.MinValue        = $XMinValue}
-        if ($null -ne $XMaxValue) {$chart.XAxis.MaxValue        = $XMaxValue}
-        if ($XAxisNumberformat)   {$chart.XAxis.Format          = (Expand-NumberFormat $XAxisNumberformat)}
-
-       if ($YAxisTitleText)     {
-            $chart.YAxis.Title.Text = $YAxisTitleText
-            if ($YAxisTitleBold) {$chart.YAxis.Title.Font.Bold = $true}
-            if ($YAxisTitleSize) {$chart.YAxis.Title.Font.Size = $YAxisTitleSize}
-        }
-        if ($YAxisPosition)      {Write-Warning "Y Axis position is not being set propertly at the moment, parameter ignored" }
-                                  #$chart.ChartXml.chartSpace.chart.plotArea.valAx.axPos.val= $YAxisPosition.ToString().substring(0,1)}
-        if ($YMajorUnit)         {$chart.YAxis.MajorUnit       = $YMajorUnit}
-        if ($YMinorUnit)         {$chart.YAxis.MinorUnit       = $YMinorUnit}
-        if ($null -ne $YMinValue){$chart.YAxis.MinValue        = $YMinValue}
-        if ($null -ne $YMaxValue){$chart.YAxis.MaxValue        = $YMaxValue}
-        if ($YAxisNumberformat)  {$chart.YAxis.Format          = (Expand-NumberFormat $YAxisNumberformat)}
-        if ($null -ne $chart.Datalabel) {
-                                  $chart.Datalabel.ShowCategory = [boolean]$ShowCategory
-                                  $chart.Datalabel.ShowPercent  = [boolean]$ShowPercent
-        }
-
-        $chart.SetPosition($Row, $RowOffsetPixels, $Column, $ColumnOffsetPixels)
-        $chart.SetSize($Width, $Height)
-
-        $chartDefCount = @($YRange).Count
-        if ($chartDefCount -eq 1) {
-            $Series = $chart.Series.Add($YRange, $XRange)
-            if ($SeriesHeader) { $Series.Header = $SeriesHeader}
-            else { $Series.Header = 'Series 1'}
-        }
-        else {
-            for ($idx = 0; $idx -lt $chartDefCount; $idx += 1) {
-                $Series = $chart.Series.Add($YRange[$idx], $XRange)
-                if ($SeriesHeader.Count -gt 0) { $Series.Header = $SeriesHeader[$idx] }
-                else { $Series.Header = "Series $($idx)"}
-            }
-        }
-    }
-    catch {Write-Warning -Message "Failed adding Chart to worksheet '$($WorkSheet).name': $_"}
-}
 function Select-Worksheet {
     param (
         #An object representing an Excel Package.

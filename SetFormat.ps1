@@ -95,10 +95,11 @@
         else {
             if ($ResetFont) {
                 $Address.Style.Font.Color.SetColor("Black")
-                $Address.Style.Font.Bold      = $false
-                $Address.Style.Font.Italic    = $false
-                $Address.Style.Font.UnderLine = $false
-                $Address.Style.Font.Strike    = $false
+                $Address.Style.Font.Bold          = $false
+                $Address.Style.Font.Italic        = $false
+                $Address.Style.Font.UnderLine     = $false
+                $Address.Style.Font.Strike        = $false
+                $Address.Style.Font.VerticalAlign = [OfficeOpenXml.Style.ExcelVerticalAlignmentFont]::None
             }
             if ($PSBoundParameters.ContainsKey('Underline')) {
                 $Address.Style.Font.UnderLine      = [boolean]$Underline
@@ -135,11 +136,11 @@
                 $Address.Style.VerticalAlignment   = $VerticalAlignment
             }
             if ($PSBoundParameters.ContainsKey('Value')) {
-                if ($Value -like '=*')      {$PSBoundParameters["Formula"] = $Value }
+                if ($Value -match '^=')      {$PSBoundParameters["Formula"] = $Value -replace '^=','' }
                 else {
                     $Address.Value = $Value
-                    if ($Value -is  [datetime])  { $Address.Style.Numberformat.Format = 'm/d/yy h:mm' }# This is not a custom format, but a preset recognized as date and localized. It might be overwritten in a moment
-                    if  ($Value -is [timespan])  { $Address.Style.Numberformat.Format = '[h]:mm:ss'   }
+                    if ($Value -is [datetime])  { $Address.Style.Numberformat.Format = 'm/d/yy h:mm' }# This is not a custom format, but a preset recognized as date and localized. It might be overwritten in a moment
+                    if ($Value -is [timespan])  { $Address.Style.Numberformat.Format = '[h]:mm:ss'   }
                 }
             }
             if ($PSBoundParameters.ContainsKey('Formula')) {
