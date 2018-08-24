@@ -357,9 +357,10 @@ function Import-Excel {
             if (-not $EndColumn) {$EndColumn = $Worksheet.Dimension.End.Column }
             $endAddress = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$EndRow]C[$EndColumn]",0,0)
             if ($DataOnly) {
-                #If we are using headers startrow will be the headerrow so examine data from startRow + 1,
-                if ($NoHeader) {$range = "A" + ($StartRow     ) + ":" + $endAddress }
-                else           {$range = "A" + ($StartRow + 1 ) + ":" + $endAddress }
+                # If we are supplying headers or letting the module generate them, start at StartRow
+                # Else we are using headers from the data so startrow will be the headerrow so examine data from startRow + 1,
+                if ($NoHeader -or $HeaderName) {$range = "A" + ($StartRow     ) + ":" + $endAddress }
+                else                           {$range = "A" + ($StartRow + 1 ) + ":" + $endAddress }
                 #We're going to look at every cell and build 2 hash tables holding rows & columns which contain data.
                 #Want to Avoid 'select unique' operations & large Sorts, becuse time time taken increases with square
                 #of number of items (PS uses heapsort at large size). Instead keep a list of what we have seen,
@@ -374,8 +375,8 @@ function Import-Excel {
             }
             else {
                 $Columns = $StartColumn..$EndColumn  ;              if ($StartColumn -gt $EndColumn) {Write-Warning -Message "Selecting columns $StartColumn to $EndColumn might give odd results."}
-                if ($NoHeader)  {$Rows = (    $StartRow)..$EndRow ; if ($StartRow    -gt $EndRow)    {Write-Warning -Message "Selecting rows $StartRow to $EndRow might give odd results."} }
-                else            {$Rows = (1 + $StartRow)..$EndRow ; if ($StartRow    -ge $EndRow)    {Write-Warning -Message "Selecting $StartRow as the header with data in $(1+$StartRow) to $EndRow might give odd results."}}
+                if ($NoHeader -or $HeaderName)  {$Rows = (    $StartRow)..$EndRow ; if ($StartRow    -gt $EndRow)    {Write-Warning -Message "Selecting rows $StartRow to $EndRow might give odd results."} }
+                else                            {$Rows = (1 + $StartRow)..$EndRow ; if ($StartRow    -ge $EndRow)    {Write-Warning -Message "Selecting $StartRow as the header with data in $(1+$StartRow) to $EndRow might give odd results."}}
             }
             #endregion
             #region Create property names
