@@ -197,6 +197,7 @@ Describe ExportExcel {
             Link2            = "https://github.com/dfinke/ImportExcel"
             Link3            = "xl://internal/sheet1!A1"
             Link4            = "xl://internal/sheet1!C5"
+            Link5            = (New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList "Sheet1!E2" , "Display Text")
             Process          = (Get-Process -Id $PID)
             TimeSpan         = [datetime]::Now.Subtract([datetime]::Today)
         } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2  -Path $path -Calculate -WarningVariable $warnVar
@@ -211,7 +212,7 @@ Describe ExportExcel {
         $ws = $Excel.Workbook.Worksheets[1]
         it "Created the worksheet with the expected name, number of rows and number of columns     " {
             $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be  26
+            $ws.Dimension.Columns                                       | Should     be  27
             $ws.Dimension.Rows                                          | Should     be  2
         }
         it "Set a date     in Cell A2                                                              " {
@@ -247,6 +248,8 @@ Describe ExportExcel {
             $ws.Cells[2, 24].Hyperlink.Scheme                          | Should     be  "xl"
             $ws.Cells[2, 24].Hyperlink.ReferenceAddress                | Should     be  "sheet1!c5"
             $ws.Cells[2, 24].Hyperlink.Display                         | Should     be  "sheet1!c5"
+            $ws.Cells[2, 25].Hyperlink.ReferenceAddress                | Should     be  "sheet1!E2"
+            $ws.Cells[2, 25].Hyperlink.Display                         | Should     be  "Display Text"
         }
         it "Processed thousands according to local settings   (Cells H2 and I2)                    " {
             if ((Get-Culture).NumberFormat.NumberGroupSeparator -EQ ",") {
@@ -271,12 +274,12 @@ Describe ExportExcel {
             ($ws.Cells[2, 20].Value -is [valuetype] )                   | Should     be  $true
         }
         it "Converted a nested object to a string (Y2)                                             " {
-             $ws.Cells[2, 25].Value                                     | should     match '^System\.Diagnostics\.Process\s+\(.*\)$'
+             $ws.Cells[2, 26].Value                                     | should     match '^System\.Diagnostics\.Process\s+\(.*\)$'
         }
         it "Processed a timespan object (Z2)                                                       " {
-             $ws.cells[2, 26].Value.ToOADate()                          | should     beGreaterThan 0
-             $ws.cells[2, 26].Value.ToOADate()                          | should     beLessThan    1
-             $ws.cells[2, 26].Style.Numberformat.Format                 | should     be  '[h]:mm:ss'
+             $ws.cells[2, 27].Value.ToOADate()                          | should     beGreaterThan 0
+             $ws.cells[2, 27].Value.ToOADate()                          | should     beLessThan    1
+             $ws.cells[2, 27].Style.Numberformat.Format                 | should     be  '[h]:mm:ss'
         }
     }
 
@@ -759,7 +762,7 @@ Describe ExportExcel {
         Remove-Item -Path   $path -ErrorAction SilentlyContinue
         #Test we haven't missed any parameters on New-ChartDefinition which are on add chart or vice versa.
 
-        $ParamChk1 =  (get-command Add-ExcelChart          ).Parameters.Keys.where({-not (get-command New-ExcelChartDefinition).Parameters.ContainsKey($_) }) | sort
+        $ParamChk1 =  (get-command Add-ExcelChart          ).Parameters.Keys.where({-not (get-command New-ExcelChartDefinition).Parameters.ContainsKey($_) }) | Sort-Object
         $ParamChk2 =  (get-command New-ExcelChartDefinition).Parameters.Keys.where({-not (get-command Add-ExcelChart          ).Parameters.ContainsKey($_) })
         it "Found the same parameters for Add-ExcelChart and New-ExcelChartDefinintion             " {
             $ParamChk1.count                                            | Should     be 3
@@ -768,7 +771,7 @@ Describe ExportExcel {
             $ParamChk1[2]                                               | Should     be "Worksheet"
             $ParamChk2.count                                            | Should     be 1
             $ParamChk2[0]                                               | Should     be "Header"
-        }       
+        }
         #Test Invoke-Sum
         $data = Invoke-Sum (Get-Process) Company Handles, PM, VirtualMemorySize
         it "Used Invoke-Sum to create a data set                                                   " {

@@ -79,6 +79,8 @@
         [float]$Width,
         #Set the inserted data to be a named range (ignored if header is not specified)
         [Switch]$AutoNameRange,
+        #Hide the column
+        [Switch]$Hide,
         #If Sepecified returns the range of cells which were affected
         [Switch]$ReturnRange,
         #If Specified, return an ExcelPackage object to allow further work to be done on the file.
@@ -139,6 +141,7 @@
         Set-Format -WorkSheet $Worksheet -Range $theRange @params
     }
     #endregion
+    if ($PSBoundParameters["Hide"]) {$workSheet.Column($Column).Hidden = [bool]$Hide}
     #return the new data if -passthru was specified.
     if     ($passThru)                 { $Worksheet.Column(     $Column)}
     elseif ($ReturnRange)              { $theRange}

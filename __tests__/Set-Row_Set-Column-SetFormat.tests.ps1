@@ -37,8 +37,8 @@ Describe "Number format expansion and setting" {
     Context "Expand-NumberFormat function"  {
         It "Expanded named number formats as expected                                              " {
             $r = [regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol)
-              
-            Expand-NumberFormat 'Currency'                              | Should  match "^[$r\(\)\[\]RED0#\?\-;,.]+$" 
+
+            Expand-NumberFormat 'Currency'                              | Should  match "^[$r\(\)\[\]RED0#\?\-;,.]+$"
             Expand-NumberFormat 'Number'                                | Should     be "0.00"
             Expand-NumberFormat 'Percentage'                            | Should     be "0.00%"
             Expand-NumberFormat 'Scientific'                            | Should     be "0.00E+00"
@@ -268,20 +268,72 @@ Describe "Set-Column, Set-Row and Set Format" {
 
 Describe "Conditional Formatting"  {
     BeforeAll {
-    Remove-Item $path 
-    $data = Get-Process | where company | select company,name,pm,handles,*mem* 
+    Remove-Item $path
+    $data = Get-Process | Where-Object company | Select-Object company,name,pm,handles,*mem*
     $cfmt = New-ConditionalFormattingIconSet -Range "c:c" -ConditionalFormat ThreeIconSet -IconType Arrows
     $data | Export-Excel -path $Path  -AutoSize -ConditionalFormat $cfmt
-    $excel = Open-ExcelPackage -Path $path 
+    $excel = Open-ExcelPackage -Path $path
     $ws = $excel.Workbook.Worksheets[1]
     }
     Context "Using a pre-prepared 3 Arrows rule" {
         it "Set the right type, IconSet and range                                                  " {
-            $ws.ConditionalFormatting[0].IconSet                        | Should     be "Arrows" 
-            $ws.ConditionalFormatting[0].Address.Address                | Should     be "c:c" 
+            $ws.ConditionalFormatting[0].IconSet                        | Should     be "Arrows"
+            $ws.ConditionalFormatting[0].Address.Address                | Should     be "c:c"
             $ws.ConditionalFormatting[0].Type.ToString()                | Should     be "ThreeIconSet"
-        }  
+        }
     }
 
 }
+$path = "$Env:TEMP\test.xlsx"
+$data2 = ConvertFrom-Csv -InputObject @"
+ID,Product,Quantity,Price,Total
+12001,Nails,37,3.99,147.63
+12002,Hammer,5,12.10,60.5
+12003,Saw,12,15.37,184.44
+12010,Drill,20,8,160
+12011,Crowbar,7,23.48,164.36
+12001,Nails,53,3.99,211.47
+12002,Hammer,6,12.10,72.60
+12003,Saw,10,15.37,153.70
+12010,Drill,10,8,80
+12012,Pliers,2,14.99,29.98
+12001,Nails,20,3.99,79.80
+12002,Hammer,2,12.10,24.20
+12010,Drill,11,8,88
+12012,Pliers,3,14.99,44.97
+"@
 
+Describe "Table Formatting"  {
+    BeforeAll {
+        Remove-Item $path
+        $excel = $data2 | Export-excel -path $path -WorksheetName Hardware -AutoNameRange -AutoSize -BoldTopRow -FreezeTopRow -PassThru
+        $ws = $excel.Workbook.Worksheets[1]
+        Set-Column -Worksheet $ws -Column 4 -NumberFormat 'Currency'
+        Set-Column -Worksheet $ws -Column 5 -NumberFormat 'Currency'
+        Add-ExcelTable -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -ShowTotal -ShowFirstColumn
+
+        $PtDef =New-PivotTableDefinition -PivotTableName Totals -PivotRows Product -PivotData @{"Total"="Sum"} -PivotNumberFormat Currency -PivotTotals None -PivotTableSyle Dark2
+        Export-excel -ExcelPackage $excel -WorksheetName Hardware -PivotTableDefinition $PtDef
+        $excel= Open-ExcelPackage -Path $path
+        $ws1   = $excel.Workbook.Worksheets["Hardware"]
+        $ws2   = $excel.Workbook.Worksheets["Totals"]
+    }
+    Context "Setting and not clearing when Export-Excel touches the file again."{
+        it "Set the Table Options                                                                  " {
+            $ws1.Tables[0].Address.Address                              | should     be "A1:E16"
+            $ws1.Tables[0].Name                                         | should     be "HardwareTable"
+            $ws1.Tables[0].ShowFirstColumn                              | should     be $true
+            $ws1.Tables[0].ShowLastColumn                               | should not be $true
+            $ws1.Tables[0].ShowTotal                                    | should     be $true
+            $ws1.Tables[0].StyleName                                    | should     be "TableStyleLight1"
+            $ws1.Cells["D4"].Style.Numberformat.Format                  | Should     match ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol))
+            $ws1.Cells["E5"].Style.Numberformat.Format                  | Should     match ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol))
+            $ws1.Cells["E5"].Style.Numberformat.Format                  | Should     match ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol))
+        }
+        it "Set the Pivot Options                                                                  " {
+            $ws2.PivotTables[0].DataFields[0].Format                    | Should     match ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol))
+            $ws2.PivotTables[0].ColumGrandTotals                        | Should     be $false
+            $ws2.PivotTables[0].StyleName                               | Should     be "PivotStyleDark2"
+        }
+    }
+}

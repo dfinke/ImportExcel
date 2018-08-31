@@ -75,6 +75,8 @@
         [int]$TextRotation ,
         #Set cells to a fixed hieght
         [float]$Height,
+        #Hide the Row
+        [Switch]$Hide,
         #If Sepecified returns the range of cells which were affected
         [Switch]$ReturnRange,
         #If Specified, return a row object to allow further work to be done
@@ -136,6 +138,7 @@
         Set-Format -WorkSheet $Worksheet -Range $theRange @params
     }
     #endregion
+    if ($PSBoundParameters["Hide"]) {$workSheet.Row($Row).Hidden = [bool]$Hide}
     #return the new data if -passthru was specified.
     if     ($passThru)    {$Worksheet.Row($Row)}
     elseif ($ReturnRange) {$theRange}

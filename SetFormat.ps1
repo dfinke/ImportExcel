@@ -258,6 +258,8 @@ if (Get-Command -ErrorAction SilentlyContinue -name Register-ArgumentCompleter) 
     Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName Set-Column                 -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName Set-Row                    -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName Add-PivotTable             -ParameterName PivotNumberFormat   -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName New-PivotTableDefinition   -ParameterName PivotNumberFormat   -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName New-ExcelChartDefinition   -ParameterName XAxisNumberformat   -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName New-ExcelChartDefinition   -ParameterName YAxisNumberformat   -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName Add-ExcelChart             -ParameterName XAxisNumberformat   -ScriptBlock $Function:NumberFormatCompletion

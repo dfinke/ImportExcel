@@ -39,7 +39,7 @@
         [Parameter(Mandatory = $true, ParameterSetName = "FourIconSet")]
         [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSet")]
         [OfficeOpenXml.ExcelAddress]$Range ,
-        #One or more row(s), column(s) and/or block(s) of cells to format
+        #A block of cells to format - you can use a named range with -Address $ws.names[1] or  $ws.cells["RangeName"]
         [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
         [Parameter(Mandatory = $true, ParameterSetName = "DataBarAddress")]
         [Parameter(Mandatory = $true, ParameterSetName = "ThreeIconSetAddress")]
@@ -79,45 +79,51 @@
         [Parameter(ParameterSetName = "FiveIconSetAddress")]
         [switch]$Reverse,
         #A value for the condition (e.g. 2000 if the test is 'lessthan 2000' ; Formulas should begin with "=" )
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
+        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [string]$ConditionValue,
         #A second value for the conditions like "between x and Y"
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
+        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [string]$ConditionValue2,
         #Background colour for matching items
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
+        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [System.Drawing.Color]$BackgroundColor,
         #Background pattern for matching items
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
+        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern = [OfficeOpenXml.Style.ExcelFillStyle]::None ,
         #Secondary colour when a background pattern requires it
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
+        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [System.Drawing.Color]$PatternColor,
         #Sets the numeric format for matching items
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
+        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRuleAddress")]
         $NumberFormat,
         #Put matching items in bold face
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
+        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [switch]$Bold,
         #Put matching items in italic
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
+        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [switch]$Italic,
         #Underline matching items
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
+        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [switch]$Underline,
         #Strikethrough text of matching items
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
+        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [switch]$StrikeThru,
+        #Prevent the processing of subsequent rules
+        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRuleAddress")]
+        [switch]$StopIfTrue,
+        #Set the sequence for rule processong
+        [int]$Priority,
         #If specified pass the rule back to the caller to allow additional customization.
         [switch]$Passthru
     )
@@ -161,20 +167,22 @@
     if     ($RuleType -match "Text|With" -and $ConditionValue -match '^".*"$'  ) {
             Write-Warning -Message "The condition will look for the quotes at the start and end."
     }
-    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and
-            $RuleType -match "Top|Botom"                          ) {$rule.Rank     = $ConditionValue }
-    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and
-            $RuleType -match "StdDev"                             ) {$rule.StdDev   = $ConditionValue }
-    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and
-            $RuleType -match "Than|Equal|Expression"              ) {$rule.Formula  = ($ConditionValue  -replace '^=','') }
-    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and
-            $RuleType -match "Text|With"                          ) {$rule.Text     = ($ConditionValue  -replace '^=','') }
-    if     ($PSBoundParameters.ContainsKey("ConditionValue") -and
-            $PSBoundParameters.ContainsKey("ConditionValue") -and
+    if     ($PSBoundParameters.ContainsKey("ConditionValue")  -and
+            $RuleType -match "Top|Botom"                          ) {$rule.Rank      = $ConditionValue }
+    if     ($PSBoundParameters.ContainsKey("ConditionValue")  -and
+            $RuleType -match "StdDev"                             ) {$rule.StdDev    = $ConditionValue }
+    if     ($PSBoundParameters.ContainsKey("ConditionValue")  -and
+            $RuleType -match "Than|Equal|Expression"              ) {$rule.Formula   = ($ConditionValue  -replace '^=','') }
+    if     ($PSBoundParameters.ContainsKey("ConditionValue")  -and
+            $RuleType -match "Text|With"                          ) {$rule.Text      = ($ConditionValue  -replace '^=','') }
+    if     ($PSBoundParameters.ContainsKey("ConditionValue")  -and
+            $PSBoundParameters.ContainsKey("ConditionValue2") -and
             $RuleType -match "Between"                            ) {
-                                                                     $rule.Formula  = ($ConditionValue  -replace '^=','');
-                                                                     $rule.Formula2 = ($ConditionValue2 -replace '^=','')
+                                                                     $rule.Formula   = ($ConditionValue  -replace '^=','');
+                                                                     $rule.Formula2  = ($ConditionValue2 -replace '^=','')
     }
+    if     ($PSBoundParameters.ContainsKey("StopIfTrue")          ) {$rule.StopIfTrue = $StopIfTrue }
+    if     ($PSBoundParameters.ContainsKey("Priority")            ) {$rule.Priority   = $Priority }
     #endregion
     #region set the rule format
     if     ($PSBoundParameters.ContainsKey("NumberFormat"  )      ) {$rule.Style.NumberFormat.Format        = (Expand-NumberFormat  $NumberFormat)             }

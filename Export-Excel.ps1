@@ -515,7 +515,8 @@
                 }
                 { [System.Uri]::IsWellFormedUriString($_ , [System.UriKind]::Absolute) } {
                     # Save a hyperlink : internal links can be in the form xl://sheet!E419 (use A1 as goto sheet), or xl://RangeName
-                    if ($_ -match "^xl://internal/") {
+                    if ($_ -is [uri]) {$targetCell.HyperLink = $_ }
+                    elseif ($_ -match "^xl://internal/") {
                           $referenceAddress = $_ -replace "^xl://internal/" , ""
                           $display          = $referenceAddress -replace "!A1$"   , ""
                           $h = New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList $referenceAddress , $display
@@ -552,7 +553,7 @@
             }
         }
 
-        Try {
+        try {
             $script:Header = $null
             if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
 
@@ -571,9 +572,9 @@
             }
             Else { $pkg = Open-ExcelPackage -Path $Path -Create -KillExcel:$KillExcel -Password:$Password}
         }
-        Catch {throw "Could not open Excel Package $path"}
+        catch {throw "Could not open Excel Package $path"}
         if ($NoClobber) {Write-Warning -Message "-NoClobber parameter is no longer used" }
-        Try {
+        try {
             $params = @{WorksheetName=$WorksheetName}
             foreach ($p in @("ClearSheet", "MoveToStart", "MoveToEnd", "MoveBefore", "MoveAfter", "Activate")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
             $ws = $pkg | Add-WorkSheet @params
@@ -582,7 +583,7 @@
                 $WorksheetName = $ws.Name
             }
         }
-        Catch {throw "Could not get worksheet $worksheetname"}
+        catch {throw "Could not get worksheet $worksheetname"}
         try   {
             foreach ($format in $ConditionalFormat ) {
                 switch ($format.formatter) {
@@ -620,11 +621,11 @@
                     $AutoFilter = $false
                 }
                 #if we did not get $autofilter but a filter range is set and it covers the right area, set autofilter to true
-                elseif (-not $AutoFilter -and $ws.Names["_xlnm._FilterDatabase"]) {
-                    if ( ($ws.Names["_xlnm._FilterDatabase"].Start.Row    -eq $StartRow)    -and
-                         ($ws.Names["_xlnm._FilterDatabase"].Start.Column -eq $StartColumn) -and
-                         ($ws.Names["_xlnm._FilterDatabase"].End.Row      -eq $ws.Dimension.End.Row) -and
-                         ($ws.Names["_xlnm._FilterDatabase"].End.Column   -eq $ws.Dimension.End.Column) ) {$AutoFilter = $true}
+                elseif (-not $AutoFilter -and $ws.Names['_xlnm._FilterDatabase']) {
+                    if ( ($ws.Names['_xlnm._FilterDatabase'].Start.Row    -eq $StartRow)    -and
+                         ($ws.Names['_xlnm._FilterDatabase'].Start.Column -eq $StartColumn) -and
+                         ($ws.Names['_xlnm._FilterDatabase'].End.Row      -eq $ws.Dimension.End.Row) -and
+                         ($ws.Names['_xlnm._FilterDatabase'].End.Column   -eq $ws.Dimension.End.Column) ) {$AutoFilter = $true}
                 }
 
                 $row = $ws.Dimension.End.Row
@@ -650,7 +651,7 @@
             else {  $Row = $StartRow }
             $ColumnIndex = $StartColumn
             $Numberformat = Expand-NumberFormat -NumberFormat $Numberformat
-            if ($row -le 2 -and $ColumnIndex -eq 1 -and $Numberformat -ne $ws.Cells.Style.Numberformat.Format) {
+            if ((-not $ws.Dimension) -and ($Numberformat -ne $ws.Cells.Style.Numberformat.Format)) {
                     $ws.Cells.Style.Numberformat.Format = $Numberformat
                     $setNumformat = $false
             }
@@ -659,7 +660,7 @@
             $firstTimeThru = $true
             $isDataTypeValueType = $false
       }
-      Catch {
+        catch {
             if ($AlreadyExists) {
                 #Is this set anywhere ?
                 throw "Failed exporting worksheet '$WorksheetName' to '$Path': The worksheet '$WorksheetName' already exists."
@@ -672,10 +673,10 @@
 
     Process {
         if ($TargetData) {
-            Try {
+            try {
                 if ($firstTimeThru) {
                     $firstTimeThru = $false
-                    $isDataTypeValueType = $TargetData.GetType().name -match 'string|timespan|datetime|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort'
+                    $isDataTypeValueType = $TargetData.GetType().name -match 'string|timespan|datetime|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort|URI|ExcelHyperLink'
                     if ($isDataTypeValueType -and -not $Append) {$row -= 1} #row incremented before adding values, so it is set to the number of rows inserted at the end
                     Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'"
                 }
@@ -724,7 +725,7 @@
                     #endregion
                 }
             }
-            Catch {
+            catch {
                 throw "Failed exporting data to worksheet '$WorksheetName' to '$Path': $_"
             }
         }
@@ -746,7 +747,7 @@
 
         Write-Debug "Data Range '$dataRange'"
         if ($AutoNameRange) {
-            Try {
+            try {
                 if (-not $script:header) {
                     # if there aren't any headers, use the the first row of data to name the ranges: this is the last point that headers will be used.
                     $headerRange = $ws.Dimension.Address -replace "\d+$", $StartRow
@@ -766,60 +767,28 @@
                 # but we have to add the start column on when referencing positions
                 foreach ($c in 0..($LastCol - $StartColumn)) {
                     $targetRangeName = $script:Header[$c] -replace '\W' , '_'
-                    $targetColumn = $c + $StartColumn
-                    $theRange = $ws.Cells[$targetRow, $targetColumn, $LastRow , $targetColumn ]
-                    if ($ws.names[$targetRangeName]) { $ws.names[$targetRangeName].Address = $theRange.FullAddressAbsolute }
-                    else {$ws.Names.Add($targetRangeName, $theRange) | Out-Null }
-
+                    Add-ExcelName  -RangeName $targetRangeName -Range $ws.Cells[$targetRow, ($StartColumn + $c ), $LastRow, ($StartColumn + $c )]
                     if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress($targetRangeName)) {
                         Write-Warning "AutoNameRange: Property name '$targetRangeName' is also a valid Excel address and may cause issues. Consider renaming the property name."
                     }
                 }
             }
-            Catch {Write-Warning -Message "Failed adding named ranges to worksheet '$WorksheetName': $_"  }
+            catch {Write-Warning -Message "Failed adding named ranges to worksheet '$WorksheetName': $_"  }
         }
 
-        if ($RangeName) {
-            try {
-                if ($RangeName -match "\W") {
-                    Write-Warning -Message "At least one character in $RangeName is illegal in a range name and will be replaced with '_' . "
-                    $RangeName = $RangeName -replace '\W', '_'
-                }
-                #If named range exists, update it, else create it
-                if ($ws.Names[$RangeName]) { $ws.Names[$rangename].Address = $ws.Cells[$dataRange].FullAddressAbsolute }
-                else {$ws.Names.Add($RangeName, $ws.Cells[$dataRange]) | Out-Null }
-            }
-            Catch { Write-Warning -Message "Failed adding range '$RangeName' to worksheet '$WorksheetName': $_"   }
-        }
+        if ($RangeName) { Add-ExcelName  -Range $ws.Cells[$dataRange] -RangeName $RangeName}
 
         if ($TableName) {
-            try {
-                if ($TableName -match "\W") {
-                    Write-Warning -Message "At least one character in $TableName is illegal in a table name and will be replaced with '_' . "
-                    $TableName = $TableName -replace '\W', '_'
-                }
-                #if the table exists in this worksheet, update it.
-                if ($ws.Tables[$TableName]) {
-                    $ws.Tables[$TableName].TableXml.table.ref = $dataRange
-                    $ws.Tables[$TableName].TableStyle         = $TableStyle
-                    Write-Verbose -Message "Re-defined table '$TableName', now at $($targetRange.Address)"
-                }
-                elseif ($pkg.Workbook.Worksheets.Tables.Name -contains $TableName) {
-                    Write-Warning -Message "The Table name '$TableName' is already used on a different worksheet."
-                }
-                else {
-                    $tbl = $ws.Tables.Add($ws.Cells[$dataRange], $TableName)
-                    $tbl.TableStyle = $TableStyle
-                    Write-Verbose -Message "Defined table '$TableName' at $($targetRange.Address)"
-                }
+            if ($PSBoundParameters.ContainsKey('TableStyle')) {
+                  Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
             }
-            catch {Write-Warning -Message "Failed adding table '$TableName' to worksheet '$WorksheetName': $_"}
+            else {Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName}
         }
 
         if ($AutoFilter) {
             try {
                 $ws.Cells[$dataRange].AutoFilter = $true
-                Write-Verbose -Message "Enabeld autofilter. "
+                Write-Verbose -Message "Enabled autofilter. "
             }
             catch {Write-Warning -Message "Failed adding autofilter to worksheet '$WorksheetName': $_"}
         }
@@ -828,19 +797,19 @@
             foreach ($item in $PivotTableDefinition.GetEnumerator()) {
                 $params = $item.value
                 if ($Activate) {$params.Activate = $true   }
-                if ($params.keys -notcontains "SourceRange" -and
-                   ($params.Keys -notcontains "SourceWorkSheet"   -or  $params.SourceWorkSheet -eq $WorksheetName)) {$params.SourceRange = $dataRange}
-                if ($params.Keys -notcontains "SourceWorkSheet")      {$params.SourceWorkSheet = $ws }
-                if ($params.Keys -notcontains "NoTotalsInPivot"   -and $NoTotalsInPivot  ) {$params.PivotTotals       = "None"}
-                if ($params.Keys -notcontains "PivotTotals"       -and $PivotTotals      ) {$params.PivotTotals       = $PivotTotals}
-                if ($params.Keys -notcontains "PivotDataToColumn" -and $PivotDataToColumn) {$params.PivotDataToColumn = $true}
+                if ($params.keys -notcontains 'SourceRange' -and
+                   ($params.Keys -notcontains 'SourceWorkSheet'   -or  $params.SourceWorkSheet -eq $WorksheetName)) {$params.SourceRange = $dataRange}
+                if ($params.Keys -notcontains 'SourceWorkSheet')      {$params.SourceWorkSheet = $ws }
+                if ($params.Keys -notcontains 'NoTotalsInPivot'   -and $NoTotalsInPivot  ) {$params.PivotTotals       = 'None'}
+                if ($params.Keys -notcontains 'PivotTotals'       -and $PivotTotals      ) {$params.PivotTotals       = $PivotTotals}
+                if ($params.Keys -notcontains 'PivotDataToColumn' -and $PivotDataToColumn) {$params.PivotDataToColumn = $true}
 
                 Add-PivotTable -ExcelPackage $pkg -PivotTableName $item.key @Params
             }
         }
         if ($IncludePivotTable -or $IncludePivotChart) {
             $params = @{
-                "SourceRange" = $dataRange
+                'SourceRange' = $dataRange
             }
             if ($PivotTableName -and ($pkg.workbook.worksheets.tables.name -contains $PivotTableName)) {
                 Write-Warning -Message "The selected Pivot table name '$PivotTableName' is already used as a table name. Adding a suffix of 'Pivot'."
@@ -957,8 +926,8 @@
                 $params = @{
                 XRange = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, $xcol , $lastrow, $xcol)
                 YRange = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, $ycol , $lastrow, $ycol)
-                Title  =  "";
-                Column = ($lastCol +1)  ;
+                Title  =  ''
+                Column = ($lastCol +1)
                 Width  = 800
                 }
                 if   ($ShowPercent) {$params["ShowPercent"]  = $true}
@@ -998,13 +967,13 @@
 
         if ($Calculate) {
             try   { [OfficeOpenXml.CalculationExtension]::Calculate($ws) }
-            Catch { Write-Warning "One or more errors occured while calculating, save will continue, but there may be errors in the workbook."}
+            catch { Write-Warning "One or more errors occured while calculating, save will continue, but there may be errors in the workbook."}
         }
 
         if ($Password) {
             try {
                 $ws.Protection.SetPassword($Password)
-                Write-Verbose -Message "Set password on workbook"
+                Write-Verbose -Message 'Set password on workbook'
             }
 
             catch {throw "Failed setting password for worksheet '$WorksheetName': $_"}
@@ -1020,7 +989,7 @@
             if ($ReZip) {
                 Write-Verbose -Message "Re-Zipping $($pkg.file) using .NET ZIP library"
                 try {
-                    Add-Type -AssemblyName "System.IO.Compression.Filesystem" -ErrorAction stop
+                    Add-Type -AssemblyName 'System.IO.Compression.Filesystem' -ErrorAction stop
                 }
                 catch {
                     Write-Error "The -ReZip parameter requires .NET Framework 4.5 or later to be installed. Recommend to install Powershell v4+"
@@ -1048,8 +1017,22 @@ function Add-WorkSheet  {
       .Synopsis
         Adds a workshet to an existing workbook.
       .Description
-        If the named worksheet already exists, the -clearsheet parameter decides whether it should be deleted and a new one returned,
-        or if not specified the existing sheet will be returned.
+        If the named worksheet already exists, the -Clearsheet parameter decides whether it should be deleted and a new one returned,
+        or if not specified the existing sheet will be returned. By default the sheet is created at the end of the work book, the
+        -MoveXXXX switches allow the sheet to be [re]positioned at the start or before or after another sheet. A new sheet will only be
+        made the default sheet when excel opens if -Activate is specified.
+      .Example
+        $WorksheetActors = $ExcelPackage | Add-WorkSheet -WorkSheetname Actors
+        $ExcelPackage holds an Excel package object (returned by Open-ExcelPackage, or Export-Excel -passthru).
+        This command will add a sheet named actors, or return the sheet if it exists, and stores the result in $WorkSheetActors
+      .Example
+        $WorksheetActors = Add-WorkSheet -ExcelPackage $ExcelPackage -WorkSheetname "Actors" -ClearSheet -MoveToStart
+        This time the Excel package object is passed as a parameter instead of piped. If the Actors sheet already exists it is deleted
+        and  re-created. The new sheet will be created last in the workbook, and -MoveToStart Moves it to the start
+      .Example
+        $null = Add-WorkSheet -ExcelWorkbook $wb -WorkSheetname $DestinationName -CopySource  $sourceWs -Activate
+        This time the workbook is used instead of the package, and a worksheet is copied - $SourceWs is a worksheet object, it can come
+        from the same workbook or a different one. Here the new copy of the data is made the active sheet when the workbook is opened.
     #>
     [cmdletBinding()]
     [OutputType([OfficeOpenXml.ExcelWorksheet])]
@@ -1087,7 +1070,7 @@ function Add-WorkSheet  {
     if      ($ExcelPackage -and -not $ExcelWorkbook) {$ExcelWorkbook = $ExcelPackage.Workbook}
 
     # If WorksheetName was given, try to use that worksheet. If it wasn't, and we are copying an existing sheet, try to use the sheet name
-    # if we are not copying a sheet or the name is in use, use the name "SheetX" where X is the number of the new sheet
+    # If we are not copying a sheet, and have no name, use the name "SheetX" where X is the number of the new sheet
     if      (-not $WorksheetName -and $CopySource -and -not $ExcelWorkbook[$CopySource.Name]) {$WorksheetName = $CopySource.Name}
     elseif  (-not $WorksheetName) {$WorksheetName = "Sheet" + (1 + $ExcelWorkbook.Worksheets.Count)}
     else    {$ws = $ExcelWorkbook.Worksheets[$WorksheetName]}
@@ -1095,7 +1078,7 @@ function Add-WorkSheet  {
     #If -clearsheet was specified and the named sheet exists, delete it
     if      ($ws -and $ClearSheet) { $ExcelWorkbook.Worksheets.Delete($WorksheetName) ; $ws = $null }
 
-    #copy or create new sheet as needed
+    #Copy or create new sheet as needed
     if (-not $ws -and $CopySource) {
           Write-Verbose -Message "Copying into worksheet '$WorksheetName'."
           $ws = $ExcelWorkbook.Worksheets.Add($WorksheetName, $CopySource)
@@ -1137,28 +1120,166 @@ function Add-WorkSheet  {
         else {Write-Warning "Can't find worksheet '$MoveAfter'; worsheet '$WorksheetName' will not be moved."}
     }
     #endregion
-    if ($Activate) {Select-Worksheet -ExcelWorkbook $ExcelWorkbook -WorksheetName $ws.Name  }
+    if ($Activate) {Select-Worksheet -ExcelWorksheet $ws  }
     return $ws
 }
 
 function Select-Worksheet {
+   <#
+      .SYNOPSIS
+        Sets the selected tab in an Excel workbook to be a Particular sheet, and unselects all the others.
+      .EXAMPLE
+        Select-Worksheet -ExcelWorkbook $ExcelWorkbook -WorksheetName "NewSheet"
+        $ExcelWorkbook holds the a workbook object containing a sheet named "NewSheet";
+        This sheet will become the [only] active sheet in the workbook
+      .EXAMPLE
+        Select-Worksheet -ExcelPackage $Pkg -WorksheetName "NewSheet2"
+        $pkg holds an Excel Package, whose workbook contains a sheet named "NewSheet2"
+        This sheet will become the [only] active sheet in the workbook
+      .EXAMPLE
+        Select-Worksheet -ExcelWorksheet $ws
+        $ws holds an Excel worksheet which will become the [only] active sheet in the workbook
+    #>
     param (
         #An object representing an Excel Package.
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = "Package", Position = 0)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Package', Position = 0)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
-        #An Excel workbook to which the Worksheet will be added - a package contains one workbook so you can use whichever fits at the time.
-        [Parameter(Mandatory = $true, ParameterSetName = "WorkBook")]
+        #An Excel workbook to which the Worksheet will be added - a package contains one workbook so you can use workbook or package as it suits
+        [Parameter(Mandatory = $true, ParameterSetName = 'WorkBook')]
         [OfficeOpenXml.ExcelWorkbook]$ExcelWorkbook,
+        [Parameter(ParameterSetName='Package')]
+        [Parameter(ParameterSetName='Workbook')]
         #The name of the worksheet 'Sheet1' by default.
-        [string]$WorksheetName
+        [string]$WorksheetName,
+        #An object representing an Excel worksheet
+        [Parameter(ParameterSetName='Sheet',Mandatory=$true)]
+        [OfficeOpenXml.ExcelWorksheet]$ExcelWorksheet
     )
-    #if we were given a workbook use it, if we were given a package, use its workbook
-    if      ($ExcelPackage -and -not $ExcelWorkbook) {$ExcelWorkbook = $ExcelPackage.Workbook}
-    if      (-not $ExcelWorkbook.Worksheets.Where({$_.name -eq $WorksheetName})) {
-        Write-Warning -Message "Workbook does not contain a worksheet named '$WorksheetName'" ; return
-    }
+    #if we were given a package, use its workbook
+    if      ($ExcelPackage   -and -not $ExcelWorkbook) {$ExcelWorkbook  = $ExcelPackage.Workbook}
+    #if we now have workbook, get the worksheet; if we were given a sheet get the workbook
+    if      ($ExcelWorkbook  -and $WorksheetName)      {$ExcelWorksheet = $ExcelWorkbook.Worksheets[$WorksheetName]}
+    elseif  ($ExcelWorksheet -and -not $ExcelWorkbook) {$ExcelWorkbook  = $ExcelWorksheet.Workbook ; }
+    #if we didn't get to a worksheet give up. If we did set all works sheets to not selected and then the one we want to selected.
+    if (-not $ExcelWorksheet) {Write-Warning -Message "The worksheet $WorksheetName was not found." ; return }
     else {
         foreach ($w in $ExcelWorkbook.Worksheets) {$w.View.TabSelected = $false}
-        $ExcelWorkbook.Worksheets[$WorksheetName].View.TabSelected = $true
+        $ExcelWorksheet.View.TabSelected = $true
     }
+}
+
+Function Add-ExcelName {
+    [CmdletBinding()]
+    <#
+      .SYNOPSIS
+        Adds named ranges to Excel worksheets
+      .EXAMPLE
+          Add-ExcelName -Range $ws.Cells[$dataRange] -RangeName $rangeName
+          $WS is a worksheet, and $dataRange holds a range of cells - e.g. "A1:Z10"
+          which will become a named range, using the name in $rangeName.
+    #>
+    param(
+        #The range of cells to assign as a name.
+        [Parameter(Mandatory=$true)]
+        [OfficeOpenXml.ExcelRange]$Range,
+        #The name to assign to the range. If the name exists it will be updated to the new range. If no name is specified the first cell in the range will be used as the name
+        [String]$RangeName
+    )
+    try {
+        $ws = $Range.Worksheet
+        if (-not $RangeName) {
+            $RangeName = $ws.Cells[$Range.Start.Address].Value
+            $Range  = ($Range.Worksheet.cells[($range.start.row +1), $range.start.Column ,  $range.end.row, $range.end.column])
+        }
+        if ($RangeName -match '\W') {
+            Write-Warning -Message "Range name '$RangeName' contains illegal characters, they will be replaced with '_'."
+            $RangeName = $RangeName -replace '\W','_'
+        }
+        if ($ws.names[$RangeName]) {
+            Write-verbose -Message "Updating Named range '$RangeName' to $($Range.FullAddressAbsolute)."
+            $ws.Names[$RangeName].Address = $Range.FullAddressAbsolute
+        }
+        else  {
+            Write-verbose -Message "Creating Named range '$RangeName' as $($Range.FullAddressAbsolute)."
+            $ws.Names.Add($RangeName, $Range) | Out-Null
+        }
+    }
+    catch {Write-Warning -Message "Failed adding named range '$RangeName' to worksheet '$($ws.Name)': $_"  }
+}
+
+function Add-ExcelTable {
+    [CmdletBinding()]
+        <#
+      .SYNOPSIS
+        Adds Tables to Excel workbooks.
+      .DESCRIPTION
+        Unlike named ranges, where the name only needs to be unique within a sheet, Table names must be unique in the workbook
+        Tables carry formatting by default have a filter. The filter, header, Totals, first and last column highlights
+      .EXAMPLE
+        Add-ExcelName -Range $ws.Cells[$dataRange] -RangeName $rangeName
+        $WS is a worksheet, and $dataRange holds a range of cells - e.g. "A1:Z10"
+        which will become a named range, using the name in $rangeName.
+      .EXAMPLE
+        Add-ExcelTable -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName Musictable -ShowFilter:$false -ShowTotal -ShowFirstColumn
+        Again $ws is a worksheet, range here is the whole of the active part of the worksheet. The table style and name are set,
+        the filter is turned off, a totals row added and first column set in bold.
+    #>
+    param (
+        #The range of cells to assign to a table
+        [Parameter(Mandatory=$true)]
+        [OfficeOpenXml.ExcelRange]$Range,
+        #The name for the table
+        [Parameter(Mandatory=$true)]
+        [String]$TableName,
+        #The Style for the table, by default Medium 6
+        [OfficeOpenXml.Table.TableStyles]$TableStyle = 'Medium6',
+        #By default the header row is shown - it can be turned off with -ShowHeader:$false
+        [Switch]$ShowHeader ,
+        #By default the filter is enabled - it can be turned off with -ShowFilter:$false
+        [Switch]$ShowFilter,
+        #Show total adds a totals row. This does not automatically sum the columns but provides a drop-down in each to select sum, average etc
+        [Switch]$ShowTotal,
+        #Highlights the first column in bold
+        [Switch]$ShowFirstColumn,
+        #Highlights the last column in bold
+        [Switch]$ShowLastColumn,
+        #By default the table formats show striped rows, the can be turned off with -ShowRowStripes:$false
+        [Switch]$ShowRowStripes,
+        #Turns on column stripes.
+        [Switch]$ShowColumnStripes,
+        #If -PassThru is specified the table object will be returned to allow additional
+        [Switch]$PassThru
+    )
+    try {
+        if ($TableName -match "\W") {
+            Write-Warning -Message "At least one character in $TableName is illegal in a table name and will be replaced with '_' . "
+            $TableName = $TableName -replace '\W', '_'
+        }
+        $ws = $Range.Worksheet
+        #if the table exists in this worksheet, update it.
+        if ($ws.Tables[$TableName]) {
+            $tbl =$ws.Tables[$TableName]
+            $tbl.TableXml.table.ref = $Range.Address
+            Write-Verbose -Message "Re-defined table '$TableName', now at $($Range.Address)."
+        }
+        elseif ($ws.Workbook.Worksheets.Tables.Name -contains $TableName) {
+            Write-Warning -Message "The Table name '$TableName' is already used on a different worksheet."
+            return
+        }
+        else {
+            $tbl = $ws.Tables.Add($Range, $TableName)
+            Write-Verbose -Message "Defined table '$TableName' at $($Range.Address)"
+        }
+        #it seems that show total changes some of the others, so the sequence matters.
+        if ($PSBoundParameters.ContainsKey('TableStyle'))         {$tbl.TableStyle         = $TableStyle}
+        if ($PSBoundParameters.ContainsKey('ShowHeader'))         {$tbl.ShowHeader         = [bool]$ShowHeader}
+        if ($PSBoundParameters.ContainsKey('ShowTotal'))          {$tbl.ShowTotal          = [bool]$ShowTotal}
+        if ($PSBoundParameters.ContainsKey('ShowFilter'))         {$tbl.ShowFilter         = [bool]$ShowFilter}
+        if ($PSBoundParameters.ContainsKey('ShowFirstColumn'))    {$tbl.ShowFirstColumn    = [bool]$ShowFirstColumn}
+        if ($PSBoundParameters.ContainsKey('ShowLastColumn'))     {$tbl.ShowLastColumn     = [bool]$ShowLastColumn}
+        if ($PSBoundParameters.ContainsKey('ShowRowStripes'))     {$tbl.ShowRowStripes     = [bool]$ShowRowStripes}
+        if ($PSBoundParameters.ContainsKey('ShowColumnStripes'))  {$tbl.ShowColumnStripes  = [bool]$ShowColumnStripes}
+        if ($PassThru) {return $tbl}
+    }
+    catch {Write-Warning -Message "Failed adding table '$TableName' to worksheet '$WorksheetName': $_"}
 }

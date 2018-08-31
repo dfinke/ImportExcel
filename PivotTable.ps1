@@ -123,7 +123,7 @@
                         try {
                             $df = $pivotTable.DataFields.Add($pivotTable.Fields[$_])
                             $df.Function = $PivotData.$_
-                            if ($PivotNumberFormat) {$df.Format = $PivotNumberFormat}
+                            if ($PivotNumberFormat) {$df.Format = (Expand-NumberFormat -NumberFormat $PivotNumberFormat)}
                         }
                         catch {Write-Warning -message "Problem adding data fields to PivotTable $pivotTableName." }
                     }
