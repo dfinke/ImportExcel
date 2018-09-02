@@ -362,8 +362,8 @@
         .LINK
             https://github.com/dfinke/ImportExcel
     #>
-
     [CmdletBinding(DefaultParameterSetName = 'Default')]
+    [OutputType([OfficeOpenXml.ExcelPackage])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
     Param(
         [Parameter(ParameterSetName = "Default", Position = 0)]
@@ -1209,7 +1209,8 @@ Function Add-ExcelName {
 
 function Add-ExcelTable {
     [CmdletBinding()]
-        <#
+    [OutputType([OfficeOpenXml.Table.ExcelTable])]
+    <#
       .SYNOPSIS
         Adds Tables to Excel workbooks.
       .DESCRIPTION
@@ -1271,7 +1272,6 @@ function Add-ExcelTable {
             Write-Verbose -Message "Defined table '$TableName' at $($Range.Address)"
         }
         #it seems that show total changes some of the others, so the sequence matters.
-        if ($PSBoundParameters.ContainsKey('TableStyle'))         {$tbl.TableStyle         = $TableStyle}
         if ($PSBoundParameters.ContainsKey('ShowHeader'))         {$tbl.ShowHeader         = [bool]$ShowHeader}
         if ($PSBoundParameters.ContainsKey('ShowTotal'))          {$tbl.ShowTotal          = [bool]$ShowTotal}
         if ($PSBoundParameters.ContainsKey('ShowFilter'))         {$tbl.ShowFilter         = [bool]$ShowFilter}
@@ -1279,6 +1279,7 @@ function Add-ExcelTable {
         if ($PSBoundParameters.ContainsKey('ShowLastColumn'))     {$tbl.ShowLastColumn     = [bool]$ShowLastColumn}
         if ($PSBoundParameters.ContainsKey('ShowRowStripes'))     {$tbl.ShowRowStripes     = [bool]$ShowRowStripes}
         if ($PSBoundParameters.ContainsKey('ShowColumnStripes'))  {$tbl.ShowColumnStripes  = [bool]$ShowColumnStripes}
+        if ($PSBoundParameters.ContainsKey('TableStyle'))         {$tbl.TableStyle         = $TableStyle}
         if ($PassThru) {return $tbl}
     }
     catch {Write-Warning -Message "Failed adding table '$TableName' to worksheet '$WorksheetName': $_"}

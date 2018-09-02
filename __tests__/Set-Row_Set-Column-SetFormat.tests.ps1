@@ -310,7 +310,7 @@ Describe "Table Formatting"  {
         $ws = $excel.Workbook.Worksheets[1]
         Set-Column -Worksheet $ws -Column 4 -NumberFormat 'Currency'
         Set-Column -Worksheet $ws -Column 5 -NumberFormat 'Currency'
-        Add-ExcelTable -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -ShowTotal -ShowFirstColumn
+        Add-ExcelTable -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -ShowTotal -ShowFirstColumn -ShowFilter:$false
 
         $PtDef =New-PivotTableDefinition -PivotTableName Totals -PivotRows Product -PivotData @{"Total"="Sum"} -PivotNumberFormat Currency -PivotTotals None -PivotTableSyle Dark2
         Export-excel -ExcelPackage $excel -WorksheetName Hardware -PivotTableDefinition $PtDef

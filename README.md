@@ -51,13 +51,13 @@ Install-Module ImportExcel -scope CurrentUser
 ```PowerShell
 Install-Module ImportExcel
 ```
-- Improved handling of hyperlinks. [To do write example]
+- Improved handling of hyperlinks. 
 - Moved logic for adding a named range out of Export-Excel  and into new function named Add-ExcelName, and  for adding a table into a function named Add-Excel table; this is to make it easier to do these things independently of Export-Excel but minimize duplication. Add-Table command can now toggle the options from table tools toolbar (show totals etc)  
 - Fixed issues where formatting could be reset when using Export-Excel to manipulate an existing sheet without appending data; this applied to number formats and tables.
 - Moved PivotTable Functions out of Export-Excel.PS1 into their own file and moved Add-ExcelChart out of Export-Excel.ps1 into New-ExcelChart.ps1
 - in Export-Excel there is better checking of Table and PivotTable names (for uniqueness) and a new test in quick charts that there is suitable data for charting. 
 - in New-ConditionalText, more types of conditional format are supported, and conditionalTextColor now has an argument completer 
-- in Add-ConditionalFormatting: improved parameter intellisense and now wrap those strings which need it in quotes (for = <= >= string needs to be in double quotes), added StopIfTrue and Priority Parameters [to do tests for these]
+- in Add-ConditionalFormatting: improved parameter intellisense and now wrap those strings which need it in quotes (for = <= >= string needs to be in double quotes), added StopIfTrue and Priority Parameters
 - in New-ExcelChartDefinition: Legend parameters (for size, bold & position ) are now supported
 - Add-ExcelChart now supports -PassThru to return the chart for tweaking after creation; there is now a -PivotTable parameter to allow Add-PivotTable to call the code in Add-ExcelChart 
 - in Add-PivotTable: chart creation has been moved out to Add-ExcelChart. -PassThru returns the pivot table (e.g. to allow names /sort orders of data series to be tweaked )  -Address parameter allows Pivot to be placed on an existing sheet; -PivotTableStyle allows a change from "Medium6", -PivotNumberFormat sets data cells and -PivotChartDefinition allows a defintion created with New-ExcelChartDefinition to be used. This opens up all the things that Add-Excel chart can do without duplicating the parameters on Add-Pivot table and Export-Excel.  Definition, TableStyle, Numberformat and ChartDefiniton can be used in New-PivotTableDefinition . 
