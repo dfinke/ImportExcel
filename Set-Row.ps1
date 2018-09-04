@@ -54,6 +54,7 @@
         [Switch]$StrikeThru,
         #Subscript or superscript (or none)
         [OfficeOpenXml.Style.ExcelVerticalAlignmentFont]$FontShift,
+        #Font to use - Excel defaults to Calibri
         [String]$FontName,
         #Point size for the text
         [float]$FontSize,

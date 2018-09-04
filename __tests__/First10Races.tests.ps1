@@ -18,7 +18,8 @@
 
         1..$columns | foreach {Add-ExcelName -Range $worksheet.cells[$topRow,$_,$lastDataRow,$_]}
 
-        Set-Column -Worksheet $worksheet -StartRow $topRow -Heading "PlacesGained/Lost" -Value "=GridPostion-FinishPosition" -AutoNameRange
+        $scwarnVar = $null 
+        Set-Column -Worksheet $worksheet -StartRow $topRow -Heading "PlacesGained/Lost" -Value "=GridPostion-FinishPosition" -AutoNameRange -WarningVariable scWarnVar -WarningAction SilentlyContinue
         $columns ++
 
         #create a table which covers all the data. And define a pivot table which uses the same address range. 
@@ -30,11 +31,12 @@
         $cf.Icon2.Value = 0
         $cf.Icon3.Value = 1
         Add-ConditionalFormatting -Address $worksheet.cells["FinishPosition"] -RuleType Equal    -ConditionValue 1 -ForeGroundColor Purple -Bold -Priority 1 -StopIfTrue
-        Add-ConditionalFormatting -Address $worksheet.cells["FinishPosition"] -RuleType LessThanOrEqual -ConditionValue 3 -Bold -Priority 2 -StopIfTrue
-
+      
+        $ct = New-ConditionalText -Text "Ferrari"
+        $ct2 =  New-ConditionalText -Range $worksheet.Names["FinishPosition"].Address -ConditionalType LessThanOrEqual -Text 3 -ConditionalTextColor Red -BackgroundColor White 
         #Create links for each group name (race) and Export them so they start at Cell A1; create a pivot table with definition just created, save the file and open in Excel
         $results | foreach {(New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList "Sheet1!$($_.Name)" , "$($_.name) GP")} | 
-            Export-Excel -ExcelPackage $excel -AutoSize -PivotTableDefinition $pt -Calculate
+            Export-Excel -ExcelPackage $excel -AutoSize -PivotTableDefinition $pt -Calculate   -Conditionaltext $ct,$ct2
 
         $excel = Open-ExcelPackage $path 
         $sheet = $excel.Workbook.Worksheets[1]
@@ -59,11 +61,11 @@
             $sheet.Cells[(  $results.Count),$columns]                   | Should     benullorEmpty
             $sheet.Cells[(1+$results.Count),$columns].Value             | Should     be "PlacesGained/Lost"
             $sheet.Cells[(2+$results.Count),$columns].Formula           | should     be "GridPostion-FinishPosition"
-            $sheet.Names["PlacesGained/Lost"]                           | should not benullorEmpty
+            $sheet.Names["PlacesGained_Lost"]                           | should not benullorEmpty
         }
         It "Performed the calculation                                                              " {
             $placesMade = $Sheet.Cells[(2+$results.Count),5].value - $Sheet.Cells[(2+$results.Count),3].value
-            $sheet.Cells[(2+$results.Count),$columns].value   | Should be $placesmade
+            $sheet.Cells[(2+$results.Count),$columns].value             | Should be $placesmade
         } 
         It "Applied ConditionalFormatting, including stopifTrue and Priority                       " {
             $sheet.ConditionalFormatting[0].Address.Start.Column        | should     be $columns
@@ -72,9 +74,7 @@
             $sheet.ConditionalFormatting[0].Address.Start.Row           | should     be ($results.Count + 1)
             $sheet.ConditionalFormatting[0].Icon3.Type.ToString()       | Should     be "Num"
             $sheet.ConditionalFormatting[0].Icon3.Value                 | Should     be 1
-            $sheet.ConditionalFormatting[0].Priority                    | Should     be 3
             $sheet.ConditionalFormatting[1].Priority                    | Should     be 1
-            $sheet.ConditionalFormatting[2].Priority                    | Should     be 2
             $sheet.ConditionalFormatting[1].StopIfTrue                  | Should     be $true
         }
     }

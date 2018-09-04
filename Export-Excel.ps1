@@ -48,6 +48,8 @@
             Name(s) columns from the spreadhseet which will provide the Filter name(s) in a pivot table created from command line parameters.
         .PARAMETER PivotData
             In a pivot table created from command line parameters, the fields to use in the table body are given as a Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP .
+        .PARAMETER PivotDataToColumn
+            If there are multiple datasets in a PivotTable, by default they are shown seperatate rows under the given row heading; this switch makes them seperate columns.
         .PARAMETER NoTotalsInPivot
             In a pivot table created from command line parameters, prevents the addition of totals to rows and columns.
         .PARAMETER PivotTableDefinition
@@ -66,7 +68,7 @@
         .PARAMETER ConditionalFormat
             One or more conditional formatting rules defined with New-ConditionalFormattingIconSet.
         .PARAMETER ConditionalText
-            Applies a 'Conditional formatting rule' in Excel on all the cells. When specific conditions are met a rule is triggered.
+            Applies a Conditional formatting rule defined with New-ConditionalText. When specific conditions are met the format is applied.
         .PARAMETER NoNumberConversion
             By default we convert all values to numbers if possible, but this isn't always desirable. NoNumberConversion allows you to add exceptions for the conversion. Wildcards (like '*') are allowed.
         .PARAMETER BoldTopRow
@@ -159,6 +161,11 @@
 
         .PARAMETER ReZip
             If specified, Export-Excel will expand the contents of the .XLSX file (which is multiple files in a zip archive) and rebuilt it.
+        .PARAMETER NoClobber
+            Not used. Left in to avoid problems with older scripts, it may be removed in future versions.
+        .PARAMETER CellStyleSB
+            A script block which is run at the end of the export to apply styles to cells (although it can be used for other purposes).
+            The script block is given three paramaters; an object containing the current worksheet, the Total number of Rows and the number of the last column.
         .PARAMETER Show
             Opens the Excel file immediately after creation. Convenient for viewing the results instantly without having to search for the file first.
         .PARAMETER ReturnRange
@@ -358,7 +365,10 @@
 
             This a more sophisticated version of the previous example showing different ways of using Set-Format, and also adding conditional formatting.
             In the final command a Pivot chart is added and the workbook is opened in Excel.
+        .EXAMPLE
+             0..360 | ForEach-Object {[pscustomobject][ordered]@{X=$_; Sinx="=Sin(Radians(x)) "} } | Export-Excel -now -LineChart -AutoNameRange
 
+             Creates a line chart showing the value of Sine(x) for values of X between 0 and 360 degrees.
         .LINK
             https://github.com/dfinke/ImportExcel
     #>
@@ -915,12 +925,21 @@
             Add-ExcelChart -Worksheet $ws @params
         }
 
+        if ($Calculate) {
+            try   { [OfficeOpenXml.CalculationExtension]::Calculate($ws) }
+            catch { Write-Warning "One or more errors occured while calculating, save will continue, but there may be errors in the workbook. $_"}
+        }
+
         if ($Barchart -or $PieChart -or $LineChart -or $ColumnChart) {
             if ($NoHeader) {$FirstDataRow = $startRow}
             else           {$FirstDataRow = $startRow + 1 }
             $range = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, $startColumn, $FirstDataRow, $lastCol )
             $xCol  = $ws.cells[$range] | Where-Object {$_.value -is [string]    } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1
-            $yCol  = $ws.cells[$range] | Where-Object {$_.value -is [valueType] } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1
+            if (-not $xcol) {
+                $xcol  = $StartColumn
+                $range = [OfficeOpenXml.ExcelAddress]::GetAddress($FirstDataRow, ($startColumn +1), $FirstDataRow, $lastCol )
+            }
+            $yCol  = $ws.cells[$range] | Where-Object {$_.value -is [valueType] -or $_.Formula } | ForEach-Object {$_.start.column} | Sort-Object | Select-Object -first 1
             if (-not ($xCol -and $ycol)) { Write-Warning -Message "Can't identify a string column and a number column to use as chart labels and data. "}
             else {
                 $params = @{
@@ -965,10 +984,6 @@
             catch {Write-Warning -Message "Failed processing CellStyleSB in worksheet '$WorksheetName': $_"}
         }
 
-        if ($Calculate) {
-            try   { [OfficeOpenXml.CalculationExtension]::Calculate($ws) }
-            catch { Write-Warning "One or more errors occured while calculating, save will continue, but there may be errors in the workbook."}
-        }
 
         if ($Password) {
             try {
@@ -1169,15 +1184,17 @@ function Select-Worksheet {
 }
 
 Function Add-ExcelName {
-    [CmdletBinding()]
     <#
       .SYNOPSIS
-        Adds named ranges to Excel worksheets
+        Adds a named range to an existing Excel worksheet
+      .DESCRIPTION
+        It is often helpful to be able to refer to sets of cells with a name rather than using their co-ordinates; Add-ExcelName sets up these names.
       .EXAMPLE
           Add-ExcelName -Range $ws.Cells[$dataRange] -RangeName $rangeName
           $WS is a worksheet, and $dataRange holds a range of cells - e.g. "A1:Z10"
           which will become a named range, using the name in $rangeName.
     #>
+    [CmdletBinding()]
     param(
         #The range of cells to assign as a name.
         [Parameter(Mandatory=$true)]
@@ -1208,8 +1225,6 @@ Function Add-ExcelName {
 }
 
 function Add-ExcelTable {
-    [CmdletBinding()]
-    [OutputType([OfficeOpenXml.Table.ExcelTable])]
     <#
       .SYNOPSIS
         Adds Tables to Excel workbooks.
@@ -1225,6 +1240,8 @@ function Add-ExcelTable {
         Again $ws is a worksheet, range here is the whole of the active part of the worksheet. The table style and name are set,
         the filter is turned off, a totals row added and first column set in bold.
     #>
+    [CmdletBinding()]
+    [OutputType([OfficeOpenXml.Table.ExcelTable])]
     param (
         #The range of cells to assign to a table
         [Parameter(Mandatory=$true)]

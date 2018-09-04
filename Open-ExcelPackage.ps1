@@ -47,22 +47,33 @@
  }
 
 Function Close-ExcelPackage {
-<#
-.Synopsis
-    Closes an Excel Package, saving, saving under a new name or abandoning changes and opening the file in Excel as required.
-#>
+    <#
+      .Synopsis
+        Closes an Excel Package, saving, saving under a new name or abandoning changes and opening the file in Excel as required.
+      .Description
+        When working with an Excel packaage object the workbook is held in memory and not saved until the Save() method of the package is called.
+        Close package saves and disposes of the package object. It can be called with -NoSave to abandon the file without saving, with a new "SaveAs" filename
+        with a password to protect the file. And with Show to open it in Excel. -Calculate will try to update the workbook, although not everything can be recalculated
+      .Example
+        Close-ExcelPackage -show $excel
+        $excel holds a package object, this saves the workbook and loads it into Excel.
+      .Example
+        Close-ExcelPackage -NoSave $excel
+        $excel holds a package object, this disposes of it without writing it to disk.
+    #>
     [CmdLetBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword","")]
     Param (
-    #File to close.
+    #Package to close.
     [parameter(Mandatory=$true, ValueFromPipeline=$true)]
     [OfficeOpenXml.ExcelPackage]$ExcelPackage,
-    #Open the file.
+    #Open the file in Excel.
     [switch]$Show,
     #Abandon the file without saving.
     [Switch]$NoSave,
     #Save file with a new name (ignored if -NoSave Specified).
     $SaveAs,
+    #Password to protect the file.
     [ValidateNotNullOrEmpty()]
     [String]$Password,
     #Attempt to recalculation the workbook before saving

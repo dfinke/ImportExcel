@@ -1,11 +1,4 @@
-- [X] Add -PivotTableSource parameter to Add-ExcelChart. 
-- [X] Refactor Add-PivotTable to use Add-ExcelChart rather duplicating code. Add support for -ExcelChartDefinition support for all chart params ?? 
-- [X] Add -Passthru to Add-ExcelChart and Add-PivotTable 
-- [X] Add support for PivotTable number format, data field name and possibly sort. - 
-- [x] Improve checking of worksheet, pivot names, range names and table names 
-- [ ] Investigate regional support for number conversion & possible date conversion. Also investigate feasablity of preserving number format when converting string to number
-- [ ] Add help text for parmaters which don't have it ( PivotDataToColumn , NoClobber and CellStyleSB ) in Export Excel, copy to Send-SQLDataToExcel
-- [ ] Add help in ConvertToExcelXLSx.ps1, Get-HTMLTable.ps1, GetRange.PS1,  GetExcelTable.Ps1, Import-HTML.PS1,  New-ConditionalFormattingIconSet.Ps1, NewConditionalText.PS1, New-Psitem.PS1, Remove-Worksheet.ps1 and  Add-ExcelChart - Copy parameter help from function Add-ExcelChart into New-ExcelChart.ps1
-- [ ] Add examples to add-ConditionalFormat, set-format,set-Row and Set-column (e.g. from tests)
 - [ ] Add Examples and tests for new "Quick charts" in Export Excel  (replace examples) that use Charting.ps1, GetXYRange.ps1, InferData.PS1 (move these to deprecated). 
-- [ ] Increase Test code covereage for import-excel
+- [ ] Investigate regional support for number conversion & possible date conversion. Also investigate feasablity of preserving number format when converting string to number
+- [ ] Add help to ConvertToExcelXLSx.ps1, Get-HTMLTable.ps1, GetRange.PS1,  GetExcelTable.Ps1, Import-HTML.PS1,   New-Psitem.PS1 and Remove-Worksheet.ps1 
+- [ ] Increase Test code-covereage for import-excel

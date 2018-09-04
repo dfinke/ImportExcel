@@ -72,6 +72,7 @@
          $DifferenceObject ,
          [parameter(ParameterSetName='D',Position=2)]
          [parameter(ParameterSetName='E',Position=3)]
+         #If there isn't a filename to use to label data from the "Difference" side, DiffPrefix is used, it defaults to "=>"
          $DiffPrefix = "=>" ,
          #File to hold merged data.
          [parameter(Position=3)]
@@ -281,8 +282,6 @@
 }
 
 Function Merge-MultipleSheets {
-[cmdletbinding()]
-[Alias("Merge-MulipleSheets")]
   <#
     .Synopsis
         Merges worksheets into a single worksheet with differences marked up.
@@ -321,8 +320,10 @@ Function Merge-MultipleSheets {
         (the information was obtained by running Get-Hotfix | Sort-Object -Property description,hotfixid  | Select-Object -Property Description,HotfixID)
         This ignores any sheets which are not named "Serv*", and uses the HotfixID as the key ; in this version the row numbers are hidden.
   #>
-
+  [cmdletbinding()]
+  [Alias("Merge-MulipleSheets")]
    param   (
+        #Paths to the files to be merged.
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [string[]]$Path  ,
         #The row from where we start to import data, all rows above the StartRow are disregarded. By default this is the first row.

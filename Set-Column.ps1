@@ -7,20 +7,31 @@
         which evaluates to a string, and optionally a column number and fills that value down the column.
         A column name can be specified and the new column can be made a named range.
         The column can be formatted.
-      .Example
-        C:> Set-Column -Worksheet $ws -Heading "WinsToFastLaps"  -Value {"=E$row/C$row"} -Column 7 -AutoSize -AutoNameRange
+      .EXAMPLE
+        C:\>Set-Column -Worksheet $ws -Column 5 -NumberFormat 'Currency'
+        $ws contains a worksheet object - and column E is set to use the local currecy format.
+        Intelisense will complete predefined number formats. Expand-NumberFormat currency will show you how currency is interpreted on the local computer.
+      .EXAMPLE
+        C:\> Set-Column -Worksheet $ws -Heading "WinsToFastLaps"  -Value {"=E$row/C$row"} -Column 7 -AutoSize -AutoNameRange
         Here $WS already contains a worksheet which contains counts of races won and fastest laps recorded by racing drivers (in columns C and E)
         Set-Column specifies that Column 7 should have a heading of "WinsToFastLaps" and the data cells should contain =E2/C2 , =E3/C3
         the data cells should become a named range, which will also be "WinsToFastLaps" the column width will be set automatically
+      .EXAMPLE
+        C:\> Set-Column -Worksheet $ws -Heading "Link" -Value {"https://en.wikipedia.org" + $worksheet.cells["B$Row"].value  }  -AutoSize
+        In this example, the worksheet in $ws has partial links to wikipedia pages in column B.
+        Value is is a script block and it outputs a string which begins https... and ends with the value of cell at column B in the current row.
+        When given a valid URI set-Column makes it a hyperlink The column will be autosized to fit the links.
     #>
     [cmdletbinding()]
     Param (
+        #If specifing the worksheet by name the ExcelPackage object which contains it needs to be passed
         [Parameter(ParameterSetName="Package",Mandatory=$true)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         #The sheet to update can be a given as a name or an Excel Worksheet object - this sets it by name
         [Parameter(ParameterSetName="Package")]
         #The sheet to update can be a given as a name or an Excel Worksheet object - $workSheet contains the object
         [String]$Worksheetname = "Sheet1",
+        #The worksheet object can be passed instead of passing a sheet name and a package.
         [Parameter(ParameterSetName="sheet",Mandatory=$true)]
         [OfficeOpenXml.ExcelWorksheet]$Worksheet,
         #Column to fill down - first column is 1. 0 will be interpreted as first unused column
@@ -98,12 +109,13 @@
     if ($Column  -eq 0 )  {$Column     = $endColumn    + 1 }
     $columnName = [OfficeOpenXml.ExcelCellAddress]::new(1,$column).Address -replace "1",""
 
+
     Write-Verbose -Message "Updating Column $columnName"
     #If there is a heading, insert it and use it as the name for a range (if we're creating one)
     if      ($Heading)                 {
                                          $Worksheet.Cells[$StartRow, $Column].Value = $Heading
                                          $StartRow ++
-      if    ($AutoNameRange)           { $Worksheet.Names.Add(  $Heading, ($Worksheet.Cells[$StartRow, $Column, $endRow, $Column]) ) | Out-Null }
+      if    ($AutoNameRange)           { Add-ExcelName -Range $Worksheet.Cells[$StartRow, $Column, $endRow, $Column] -RangeName $Heading }
     }
     #Fill in the data
     if      ($PSBoundParameters.ContainsKey('Value')) { foreach ($row in ($StartRow..$endRow)) {

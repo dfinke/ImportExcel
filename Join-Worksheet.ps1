@@ -1,5 +1,4 @@
 ﻿function Join-Worksheet {
-    [CmdletBinding(DefaultParameterSetName = 'Default')]
     <#
       .SYNOPSIS
         Combines data on all the sheets in an Excel worksheet onto a single sheet.
@@ -32,8 +31,9 @@
         The first two command get logical disk and network card information; each type is exported to its own sheet in a workbook.
         The Join-worksheet command copies both onto a page named "Summary". Because the data is disimilar -NoHeader is specified, ensuring the whole of each page is copied.
         Specifying -LabelBlocks causes each sheet's name to become a title on the summary page above the copied data.
-        The source data is hidden, a title is addded in 22 point boldface and the columns are sized to fit the data.
+        The source data is hidden, a title is added in 22 point boldface and the columns are sized to fit the data.
     #>
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
         # Path to a new or existing .XLSX file.
         [Parameter(ParameterSetName = "Default", Position = 0)]
@@ -85,8 +85,9 @@
         [Hashtable]$PivotTableDefinition,
         #A hashtable containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts.
         [Object[]]$ExcelChartDefinition,
+        #One or more conditional formatting rules defined with New-ConditionalFormattingIconSet.
         [Object[]]$ConditionalFormat,
-        #Applies a 'Conditional formatting rule' in Excel on all the cells. When specific conditions are met a rule is triggered.
+        #Applies a Conditional formatting rule defined with New-ConditionalText. When specific conditions are met the format is applied
         [Object[]]$ConditionalText,
         #Makes each column a named range.
         [switch]$AutoNameRange,
@@ -108,6 +109,7 @@
         [String]$TableName,
         [Parameter(ParameterSetName = 'Table')]
         [Parameter(ParameterSetName = 'PackageTable')]
+        #Selects the style for the named table - defaults to 'Medium6'.
         [OfficeOpenXml.Table.TableStyles]$TableStyle = 'Medium6',
         #Selects the style for the named table - defaults to 'Medium6'.
         [switch]$ReturnRange,
