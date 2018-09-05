@@ -55,7 +55,7 @@
         [Parameter(Mandatory = $true, ParameterSetName = "ThreeIconSet")]
         [Parameter(Mandatory = $true, ParameterSetName = "FourIconSet")]
         [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSet")]
-        [OfficeOpenXml.ExcelAddress]$Range ,
+        $Range ,
         #A block of cells to format - you can use a named range with -Address $ws.names[1] or  $ws.cells["RangeName"]
         [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
         [Parameter(Mandatory = $true, ParameterSetName = "DataBarAddress")]
@@ -98,11 +98,11 @@
         #A value for the condition (e.g. 2000 if the test is 'lessthan 2000' ; Formulas should begin with "=" )
         [Parameter(ParameterSetName = "NamedRule")]
         [Parameter(ParameterSetName = "NamedRuleAddress")]
-        [string]$ConditionValue,
+        $ConditionValue,
         #A second value for the conditions like "between x and Y"
         [Parameter(ParameterSetName = "NamedRule")]
         [Parameter(ParameterSetName = "NamedRuleAddress")]
-        [string]$ConditionValue2,
+        $ConditionValue2,
         #Background colour for matching items
         [Parameter(ParameterSetName = "NamedRule")]
         [Parameter(ParameterSetName = "NamedRuleAddress")]
@@ -150,6 +150,11 @@
         $WorkSheet = $Address.Worksheet[0]
         $Range     = $Address.Address
     }
+    elseif ($Range -and $WorkSheet -and $WorkSheet.Names[$Range] ) {
+        $Range = $WorkSheet.Names[$Range].Address
+    }
+    if ($Range -match "!") {$Range = $Range -replace '^.*!',''}
+
     #region Create a rule of the right type
     if     ($PSBoundParameters.ContainsKey("ThreeIconsSet" )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)}
     elseif ($PSBoundParameters.ContainsKey("FourIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet) }
@@ -163,7 +168,7 @@
     if     ($RuleType -match "Than|Equal|Between" ) {
         if ($ConditionValue) {
                 $number = $Null
-                if ([Double]::TryParse($ConditionValue, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number) ) {
+                if ($ConditionValue -isnot [System.ValueType] -and [Double]::TryParse($ConditionValue, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number) ) {
                          $ConditionValue  = $number
                 }
                 elseif (($ConditionValue  -notmatch '^=') -and ($ConditionValue  -notmatch '^".*"$') ) {
@@ -172,7 +177,7 @@
         }
         if ($ConditionValue2) {
                 $number = $Null
-                if ([Double]::TryParse($ConditionValue2, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number) ) {
+                if ($ConditionValue -isnot [System.ValueType] -and [Double]::TryParse($ConditionValue2, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number) ) {
                          $ConditionValue2 = $number
                 }
                 elseif (($ConditionValue2 -notmatch '^=') -and ($ConditionValue2 -notmatch '^".*"$') ) {
