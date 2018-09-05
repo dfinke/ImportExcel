@@ -23,6 +23,7 @@
         When given a valid URI set-Column makes it a hyperlink The column will be autosized to fit the links.
     #>
     [cmdletbinding()]
+    [OutputType([OfficeOpenXml.ExcelColumn],[String])]
     Param (
         #If specifing the worksheet by name the ExcelPackage object which contains it needs to be passed
         [Parameter(ParameterSetName="Package",Mandatory=$true)]

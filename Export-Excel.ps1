@@ -1142,7 +1142,10 @@ function Add-WorkSheet  {
 function Select-Worksheet {
    <#
       .SYNOPSIS
-        Sets the selected tab in an Excel workbook to be a Particular sheet, and unselects all the others.
+        Sets the selected tab in an Excel workbook to be the chosen sheet, and unselects all the others.
+      .DESCRIPTION
+        Sometimes when a sheet is added we want it to be the active sheet, sometimes we want the active sheet to be left as it was.
+        Select-Worksheet exists to change the which sheet is the selected tab when Excel opens the file.
       .EXAMPLE
         Select-Worksheet -ExcelWorkbook $ExcelWorkbook -WorksheetName "NewSheet"
         $ExcelWorkbook holds the a workbook object containing a sheet named "NewSheet";

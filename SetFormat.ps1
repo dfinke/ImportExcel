@@ -2,6 +2,12 @@
     <#
       .SYNOPSIS
         Applies Number, font, alignment and colour formatting to a range of Excel Cells
+      .DESCRIPTION
+        Set-Format was created to set the style elements for a range of cells, this includes autosizing and hiding, setting
+        font elements (Name, Size, Bold, Italic, Underline & UnderlineStyle and Subscript & SuperScript), font and background colors,
+        borders, text wrapping, rotation, aliginment within cells, and number format.
+        It has been extended to set Values, Formulas and set ArrayFormulas (sometimes called Ctrl-shift-Enter [CSE] formulas); because of this
+        it has an alias of Set-ExcelRange - in the future the Alias and Canonical name may swapped.
       .EXAMPLE
         $sheet.Column(3) | Set-Format -HorizontalAlignment Right -NumberFormat "#,###"
         Selects column 3 from a sheet object (within a workbook object, which is a child of the ExcelPackage object) and passes it to Set-Format which formats as an integer with comma seperated groups
@@ -9,6 +15,7 @@
         Set-Format -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NumberFormat "#,###"
         Instead of piping the address in this version specifies a block of cells and applies similar formatting
     #>
+    [cmdletbinding()]
     Param   (
         #One or more row(s), Column(s) and/or block(s) of cells to format
         [Parameter(ValueFromPipeline = $true,ParameterSetName="Address",Mandatory=$True,Position=0)]

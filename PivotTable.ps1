@@ -54,7 +54,7 @@
         $PivotColumns,
         #Fields to use to filter in the Pivot table
         $PivotFilter,
-        #By default Pivot tables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
+        #If there are multiple datasets in a PivotTable, by default they are shown seperatate rows under the given row heading; this switch makes them seperate columns.
         [Switch]$PivotDataToColumn,
         #Define whther totals should be added to rows, columns neither, or both (the default is both)
         [ValidateSet("Both","Columns","Rows","None")]
@@ -233,8 +233,10 @@ function New-PivotTableDefinition {
         $PivotColumns,
         #Fields to use to filter in the Pivot table
         $PivotFilter,
+        #If there are multiple datasets in a PivotTable, by default they are shown seperatate rows under the given row heading; this switch makes them seperate columns.
         [Switch]$PivotDataToColumn,
         #By default Pivot tables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
+        #Define whther totals should be added to rows, columns neither, or both (the default is both)
         [ValidateSet("Both","Columns","Rows","None")]
         [String]$PivotTotals = "Both",
         #Included for compatibility - equivalent to -PivotTotals "None"

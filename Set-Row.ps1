@@ -17,6 +17,7 @@
         The script block can use $row, $column, $ColumnName, $startRow/Column $endRow/Column
     #>
     [cmdletbinding()]
+    [OutputType([OfficeOpenXml.ExcelRow],[String])]
     Param (
         #An Excel package object - e.g. from Export-Excel -passthru - requires a sheet name
         [Parameter(ParameterSetName="Package",Mandatory=$true)]

@@ -1,7 +1,12 @@
 ﻿Function Open-ExcelPackage  {
 <#
 .Synopsis
-    Returns an Excel Package Object with for the specified XLSX ile
+    Returns an Excel Package Object for the specified XLSX file
+.Description
+    Import-Excel and Export-Excel open an Excel file, carry out their tasks and close it again.
+    Sometimes it is necessary to open a file and do other work on it. Open-Excel package allows the file to be opened for these tasks.
+    It takes a KillExcel switch to make sure Excel is not holding the file open; a password parameter for existing protected files,
+    and a create switch to set-up a new file if no file already exists.
 .Example
     $excel  = Open-ExcelPackage -path $xlPath
     $sheet1 = $excel.Workbook.Worksheets["sheet1"]
@@ -18,6 +23,7 @@
         [Parameter(Mandatory=$true)]$Path,
         #If specified, any running instances of Excel will be terminated before opening the file.
         [switch]$KillExcel,
+        #The password for a protected worksheet, as a [normal] string (not a secure string.)
         [String]$Password,
         #By  default open only opens an existing file; -Create instructs it to create a new file if required.
         [switch]$Create
