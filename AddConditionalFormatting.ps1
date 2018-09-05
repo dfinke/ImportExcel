@@ -168,10 +168,11 @@
     if     ($RuleType -match "Than|Equal|Between" ) {
         if ($ConditionValue) {
                 $number = $Null
+                #if the condition type is not a value type, but parses as a number, make it the number
                 if ($ConditionValue -isnot [System.ValueType] -and [Double]::TryParse($ConditionValue, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number) ) {
                          $ConditionValue  = $number
-                }
-                elseif (($ConditionValue  -notmatch '^=') -and ($ConditionValue  -notmatch '^".*"$') ) {
+                } #else if it is not a value type, or a formula, or wrapped in quotes, wrap it in quotes.
+                elseif (($ConditionValue -isnot [System.ValueType])-and ($ConditionValue  -notmatch '^=') -and ($ConditionValue  -notmatch '^".*"$') ) {
                          $ConditionValue  = '"' + $ConditionValue +'"'
                 }
         }
@@ -180,7 +181,7 @@
                 if ($ConditionValue -isnot [System.ValueType] -and [Double]::TryParse($ConditionValue2, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number) ) {
                          $ConditionValue2 = $number
                 }
-                elseif (($ConditionValue2 -notmatch '^=') -and ($ConditionValue2 -notmatch '^".*"$') ) {
+                elseif (($ConditionValue -isnot [System.ValueType]) -and ($ConditionValue2 -notmatch '^=') -and ($ConditionValue2 -notmatch '^".*"$') ) {
                          $ConditionValue2  = '"' + $ConditionValue2 + '"'
                 }
         }

@@ -52,7 +52,7 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 - Lots of help improvements. 
-- Conditional formatting can now support named ranges, and booleans in the as a condition. 
+- Conditional formatting can now support named ranges, and booleans in the sheet as a condition. Also brought the two different kinds together inside export-excel
 - Improved handling of hyperlinks. 
 - Moved logic for adding a named range out of Export-Excel  and into new function named Add-ExcelName, and  for adding a table into a function named Add-Excel table; this is to make it easier to do these things independently of Export-Excel but minimize duplication. Add-Table command can now toggle the options from table tools toolbar (show totals etc)  
 - Fixed issues where formatting could be reset when using Export-Excel to manipulate an existing sheet without appending data; this applied to number formats and tables.

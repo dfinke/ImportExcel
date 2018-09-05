@@ -594,16 +594,6 @@
             }
         }
         catch {throw "Could not get worksheet $worksheetname"}
-        try   {
-            foreach ($format in $ConditionalFormat ) {
-                switch ($format.formatter) {
-                    "ThreeIconSet" {Add-ConditionalFormatting -WorkSheet $ws -ThreeIconsSet $format.IconType -range $format.range -reverse:$format.reverse  }
-                    "FourIconSet"  {Add-ConditionalFormatting -WorkSheet $ws  -FourIconsSet $format.IconType -range $format.range -reverse:$format.reverse  }
-                    "FiveIconSet"  {Add-ConditionalFormatting -WorkSheet $ws  -FiveIconsSet $format.IconType -range $format.range -reverse:$format.reverse  }
-                }
-            }
-        }
-        catch {throw "Error applying confitional formatting to worksheet"}
         try {
             if ($Append -and $ws.Dimension) {
                 #if there is a title or anything else above the header row, append needs to be combined wih a suitable startrow parameter
@@ -961,20 +951,30 @@
                 Add-ExcelChart -Worksheet $ws @params
             }
         }
-
-        foreach ($ct in $ConditionalText) {
+        # It now doesn't matter if the conditional formating rules are passed in $conditionalText or $conditional format.
+        # Just one with an alias for compatiblity it will break things for people who are using both at once
+        foreach ($c in  (@() + $ConditionalText  +  $ConditionalFormat) ) {
             try {
-                $cfParams = @{RuleType = $ct.ConditionalType;    ConditionValue = $ct.text ;
-                       BackgroundColor = $ct.BackgroundColor; BackgroundPattern = $ct.PatternType  ;
-                       ForeGroundColor = $ct.ConditionalTextColor
+                if ($c.ConditionalType) {
+                    $cfParams = @{RuleType = $c.ConditionalType;    ConditionValue = $c.Text ;
+                           BackgroundColor = $c.BackgroundColor; BackgroundPattern = $c.PatternType  ;
+                           ForeGroundColor = $c.ConditionalTextColor}
+                    if ($c.Range) {$cfParams.Range = $c.Range}
+                    else          {$cfParams.Range = $ws.Dimension.Address }
+                    Add-ConditionalFormatting -WorkSheet $ws @cfParams
+                    Write-Verbose -Message "Added conditional formatting to range $($c.range)"
                 }
-                if ($ct.Range) {$cfParams.range = $ct.range} else { $cfParams.Range = $ws.Dimension.Address }
-                Add-ConditionalFormatting -WorkSheet $ws @cfParams
-                Write-Verbose -Message "Added conditional formatting to range $($ct.range)"
+                elseif ($c.formatter)  {
+                    switch ($c.formatter) {
+                        "ThreeIconSet" {Add-ConditionalFormatting -WorkSheet $ws -ThreeIconsSet $c.IconType -range $c.range -reverse:$c.reverse  }
+                        "FourIconSet"  {Add-ConditionalFormatting -WorkSheet $ws  -FourIconsSet $c.IconType -range $c.range -reverse:$c.reverse  }
+                        "FiveIconSet"  {Add-ConditionalFormatting -WorkSheet $ws  -FiveIconsSet $c.IconType -range $c.range -reverse:$c.reverse  }
+                    }
+                    Write-Verbose -Message "Added conditional formatting to range $($c.range)"
+                }
             }
-            catch {Write-Warning -Message "Failed adding conditional formatting to worksheet '$WorksheetName': $_"}
+            catch {throw "Error applying confitional formatting to worksheet $_"}
         }
-
         if ($CellStyleSB) {
             try {
                 $TotalRows = $ws.Dimension.Rows
