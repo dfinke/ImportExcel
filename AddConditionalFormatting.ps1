@@ -68,6 +68,8 @@
         [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress", Position = 3)]
         [OfficeOpenXml.ConditionalFormatting.eExcelConditionalFormattingRuleType]$RuleType ,
         #Text colour for matching objects
+        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [Alias("ForeGroundColour")]
         [System.Drawing.Color]$ForeGroundColor,
         #colour for databar type charts
@@ -87,7 +89,9 @@
         [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSet")]
         [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSetAddress")]
         [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting5IconsSetType]$FiveIconsSet,
-        #Use the icon set in reverse order
+        #Use the icon set in reverse order, or reverse the orders of Two- & Three-Color Scales
+        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [Parameter(ParameterSetName = "ThreeIconSet")]
         [Parameter(ParameterSetName = "ThreeIconSetAddress")]
         [Parameter(ParameterSetName = "FourIconSet")]
@@ -155,13 +159,18 @@
     }
     if ($Range -match "!") {$Range = $Range -replace '^.*!',''}
 
-    #region Create a rule of the right type
+    #region create a rule of the right type
+    if     ($RuleType -match 'IconSet$') {Write-warning -Message "You cannot configure a IconSet rule in this way; please use -$RuleType <SetName>." ; return}
     if     ($PSBoundParameters.ContainsKey("ThreeIconsSet" )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)}
-    elseif ($PSBoundParameters.ContainsKey("FourIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet) }
-    elseif ($PSBoundParameters.ContainsKey("FiveIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Range , $FiveIconsSet) }
-    elseif ($PSBoundParameters.ContainsKey("DataBarColor"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddDatabar(     $Range , $DataBarColor) }
-    else                                                            {$rule = ($WorkSheet.ConditionalFormatting)."Add$RuleType"($Range)}
-    if     ($PSBoundParameters.ContainsKey("Reverse"       )      ) {$rule.reverse = [boolean]$Reverse}
+    elseif ($PSBoundParameters.ContainsKey("FourIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet )}
+    elseif ($PSBoundParameters.ContainsKey("FiveIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Range , $FiveIconsSet )}
+    elseif ($PSBoundParameters.ContainsKey("DataBarColor"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddDatabar(     $Range , $DataBarColor )}
+    else                                                            {$rule = ($WorkSheet.ConditionalFormatting)."Add$RuleType"($Range )                }
+    if     ($Reverse)  {
+            if     ($rule.type -match 'IconSet$'   )                {$rule.reverse = $true}
+            elseif ($rule.type -match 'ColorScale$')                {$temp =$rule.LowValue.Color ; $rule.LowValue.Color = $rule.HighValue.Color; $rule.HighValue.Color = $temp}
+            else   {Write-Warning -Message "-Reverse was ignored because $ruletype does not support it."}
+    }
     #endregion
     #region set the rule conditions
     #for lessThan/GreaterThan/Equal/Between conditions make sure that strings are wrapped in quotes. Formulas should be passed with = which will be stripped.
@@ -190,15 +199,15 @@
     if     ($RuleType -match "Text|With" -and $ConditionValue -match '^".*"$'  ) {
             Write-Warning -Message "The condition will look for the quotes at the start and end."
     }
-    if     ($PSBoundParameters.ContainsKey("ConditionValue")  -and
+    if     ($PSBoundParameters.ContainsKey("ConditionValue" ) -and
             $RuleType -match "Top|Botom"                          ) {$rule.Rank      = $ConditionValue }
-    if     ($PSBoundParameters.ContainsKey("ConditionValue")  -and
+    if     ($PSBoundParameters.ContainsKey("ConditionValue" ) -and
             $RuleType -match "StdDev"                             ) {$rule.StdDev    = $ConditionValue }
-    if     ($PSBoundParameters.ContainsKey("ConditionValue")  -and
+    if     ($PSBoundParameters.ContainsKey("ConditionValue" ) -and
             $RuleType -match "Than|Equal|Expression"              ) {$rule.Formula   = ($ConditionValue  -replace '^=','') }
-    if     ($PSBoundParameters.ContainsKey("ConditionValue")  -and
+    if     ($PSBoundParameters.ContainsKey("ConditionValue" ) -and
             $RuleType -match "Text|With"                          ) {$rule.Text      = ($ConditionValue  -replace '^=','') }
-    if     ($PSBoundParameters.ContainsKey("ConditionValue")  -and
+    if     ($PSBoundParameters.ContainsKey("ConditionValue" ) -and
             $PSBoundParameters.ContainsKey("ConditionValue2") -and
             $RuleType -match "Between"                            ) {
                                                                      $rule.Formula   = ($ConditionValue  -replace '^=','');
@@ -208,12 +217,12 @@
     if     ($PSBoundParameters.ContainsKey("Priority")            ) {$rule.Priority   = $Priority }
     #endregion
     #region set the rule format
-    if     ($PSBoundParameters.ContainsKey("NumberFormat"  )      ) {$rule.Style.NumberFormat.Format        = (Expand-NumberFormat  $NumberFormat)             }
+    if     ($PSBoundParameters.ContainsKey("NumberFormat"     )   ) {$rule.Style.NumberFormat.Format        = (Expand-NumberFormat  $NumberFormat)             }
     if     ($Underline                                            ) {$rule.Style.Font.Underline             = [OfficeOpenXml.Style.ExcelUnderLineType]::Single }
-    elseif ($PSBoundParameters.ContainsKey("Underline"     )      ) {$rule.Style.Font.Underline             = [OfficeOpenXml.Style.ExcelUnderLineType]::None   }
-    if     ($PSBoundParameters.ContainsKey("Bold"          )      ) {$rule.Style.Font.Bold                  = [boolean]$Bold       }
-    if     ($PSBoundParameters.ContainsKey("Italic"        )      ) {$rule.Style.Font.Italic                = [boolean]$Italic     }
-    if     ($PSBoundParameters.ContainsKey("StrikeThru")          ) {$rule.Style.Font.Strike                = [boolean]$StrikeThru }
+    elseif ($PSBoundParameters.ContainsKey("Underline"        )   ) {$rule.Style.Font.Underline             = [OfficeOpenXml.Style.ExcelUnderLineType]::None   }
+    if     ($PSBoundParameters.ContainsKey("Bold"             )   ) {$rule.Style.Font.Bold                  = [boolean]$Bold       }
+    if     ($PSBoundParameters.ContainsKey("Italic"           )   ) {$rule.Style.Font.Italic                = [boolean]$Italic     }
+    if     ($PSBoundParameters.ContainsKey("StrikeThru"       )   ) {$rule.Style.Font.Strike                = [boolean]$StrikeThru }
     if     ($PSBoundParameters.ContainsKey("ForeGroundColor"  )   ) {$rule.Style.Font.Color.color           = $ForeGroundColor     }
     if     ($PSBoundParameters.ContainsKey("BackgroundColor"  )   ) {$rule.Style.Fill.BackgroundColor.color = $BackgroundColor     }
     if     ($PSBoundParameters.ContainsKey("BackgroundPattern")   ) {$rule.Style.Fill.PatternType           = $BackgroundPattern   }

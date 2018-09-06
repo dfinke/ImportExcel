@@ -1,6 +1,6 @@
 try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
-Remove-Item *.xlsx
+Remove-Item "$env:temp\functions.xlsx" -ErrorAction SilentlyContinue
 
 $(
     New-PSItem =2%/12 60 500000 "=pmt(rate,nper,pv)" (echo rate nper pv pmt)
@@ -9,4 +9,4 @@ $(
     New-PSItem =5%/12 60 500000 "=pmt(rate,nper,pv)"
     New-PSItem =6%/12 60 500000 "=pmt(rate,nper,pv)"
     New-PSItem =7%/12 60 500000 "=pmt(rate,nper,pv)"
-) | Export-Excel functions.xlsx -AutoNameRange -AutoSize -Show
+) | Export-Excel "$env:temp\functions.xlsx" -AutoNameRange -AutoSize -Show
