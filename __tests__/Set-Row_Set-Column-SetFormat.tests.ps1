@@ -308,10 +308,19 @@ Describe "Table Formatting"  {
         Remove-Item $path
         $excel = $data2 | Export-excel -path $path -WorksheetName Hardware -AutoNameRange -AutoSize -BoldTopRow -FreezeTopRow -PassThru
         $ws = $excel.Workbook.Worksheets[1]
+        Add-ExcelTable -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -TotalSettings @{"Total"="Sum"} -ShowFirstColumn -ShowFilter:$false
+
         Set-Column -Worksheet $ws -Column 4 -NumberFormat 'Currency'
         Set-Column -Worksheet $ws -Column 5 -NumberFormat 'Currency'
-        Add-ExcelTable -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -ShowTotal -ShowFirstColumn -ShowFilter:$false
 
+        $PtDef =New-PivotTableDefinition -PivotTableName Totals -PivotRows Product -PivotData @{"Total"="Sum"} -PivotNumberFormat Currency -PivotTotals None -PivotTableSyle Dark2
+        Export-excel -ExcelPackage $excel -WorksheetName Hardware -PivotTableDefinition $PtDef
+        Remove-Item $path
+        $excel = $data2 | Export-excel -path $path -WorksheetName Hardware -AutoNameRange -AutoSize -BoldTopRow -FreezeTopRow -PassThru
+        $ws = $excel.Workbook.Worksheets[1]
+        $Table = Add-ExcelTable -PassThru -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -TotalSettings @{"Total"="Sum"} -ShowFirstColumn -ShowFilter:$false
+        Set-Column -Worksheet $ws -Column 4 -NumberFormat 'Currency'
+        Set-Column -Worksheet $ws -Column 5 -NumberFormat 'Currency'
         $PtDef =New-PivotTableDefinition -PivotTableName Totals -PivotRows Product -PivotData @{"Total"="Sum"} -PivotNumberFormat Currency -PivotTotals None -PivotTableSyle Dark2
         Export-excel -ExcelPackage $excel -WorksheetName Hardware -PivotTableDefinition $PtDef
         $excel= Open-ExcelPackage -Path $path
@@ -325,9 +334,9 @@ Describe "Table Formatting"  {
             $ws1.Tables[0].ShowFirstColumn                              | should     be $true
             $ws1.Tables[0].ShowLastColumn                               | should not be $true
             $ws1.Tables[0].ShowTotal                                    | should     be $true
+            $ws1.Tables[0].Columns["Total"].TotalsRowFunction           | Should     be "Sum"
             $ws1.Tables[0].StyleName                                    | should     be "TableStyleLight1"
             $ws1.Cells["D4"].Style.Numberformat.Format                  | Should     match ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol))
-            $ws1.Cells["E5"].Style.Numberformat.Format                  | Should     match ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol))
             $ws1.Cells["E5"].Style.Numberformat.Format                  | Should     match ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol))
         }
         it "Set the Pivot Options                                                                  " {
