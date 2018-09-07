@@ -191,9 +191,14 @@
         catch {Write-Warning -Message "Failed adding chart for pivotable '$pivotTableName': $_"}
     }
     elseif ($PivotChartDefinition -and -not $wsPivot.Drawings["Chart$pivotTableName"]) {
-        $params = @{PivotTable= $pivotTable }
-        $PivotChartDefinition.PSObject.Properties | ForEach-Object {if ( $null -ne $_.value) {$params[$_.name] = $_.value}}
-        Add-ExcelChart @params
+        if ($PivotChartDefinition -is [System.Management.Automation.PSCustomObject]) {
+            $params = @{PivotTable= $pivotTable }
+            $PivotChartDefinition.PSObject.Properties | ForEach-Object {if ( $null -ne $_.value) {$params[$_.name] = $_.value}}
+            Add-ExcelChart @params
+        }
+        elseif ($PivotChartDefinition -is [hashtable] -or  $PivotChartDefinition -is[System.Collections.Specialized.OrderedDictionary]) {
+            Add-ExcelChart -PivotTable $pivotTable  @PivotChartDefinition
+        }
     }
     if ($PassThru) {return $pivotTable}
 }

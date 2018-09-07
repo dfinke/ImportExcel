@@ -910,9 +910,14 @@
         }
 
         foreach ($chartDef in $ExcelChartDefinition) {
-            $params = @{}
-            $chartDef.PSObject.Properties | ForEach-Object {if ( $null -ne $_.value) {$params[$_.name] = $_.value}}
-            Add-ExcelChart -Worksheet $ws @params
+            if ($chartDef -is [System.Management.Automation.PSCustomObject]) {
+                $params = @{}
+                $chartDef.PSObject.Properties | ForEach-Object {if ( $null -ne $_.value) {$params[$_.name] = $_.value}}
+                Add-ExcelChart -Worksheet $ws @params
+            }
+            elseif ($chartDef -is [hashtable] -or  $chartDef -is[System.Collections.Specialized.OrderedDictionary]) {
+                Add-ExcelChart -Worksheet $ws @chartDef
+            }
         }
 
         if ($Calculate) {
@@ -951,10 +956,12 @@
                 Add-ExcelChart -Worksheet $ws @params
             }
         }
+
         # It now doesn't matter if the conditional formating rules are passed in $conditionalText or $conditional format.
         # Just one with an alias for compatiblity it will break things for people who are using both at once
         foreach ($c in  (@() + $ConditionalText  +  $ConditionalFormat) ) {
             try {
+                #we can take an object with a .ConditionalType property made by New-ConditionalText or with a .Formatter Property made by New-ConditionalFormattingIconSet or a hash table
                 if ($c.ConditionalType) {
                     $cfParams = @{RuleType = $c.ConditionalType;    ConditionValue = $c.Text ;
                            BackgroundColor = $c.BackgroundColor; BackgroundPattern = $c.PatternType  ;
@@ -972,9 +979,14 @@
                     }
                     Write-Verbose -Message "Added conditional formatting to range $($c.range)"
                 }
+                elseif ($c -is [hashtable] -or  $c -is[System.Collections.Specialized.OrderedDictionary]) {
+                    if (-not $c.Range) {$c.Range = $ws.Dimension.Address }
+                    Add-ConditionalFormatting -WorkSheet $ws @c
+                }
             }
-            catch {throw "Error applying confitional formatting to worksheet $_"}
+            catch {throw "Error applying conditional formatting to worksheet $_"}
         }
+
         if ($CellStyleSB) {
             try {
                 $TotalRows = $ws.Dimension.Rows
@@ -983,7 +995,6 @@
             }
             catch {Write-Warning -Message "Failed processing CellStyleSB in worksheet '$WorksheetName': $_"}
         }
-
 
         if ($Password) {
             try {

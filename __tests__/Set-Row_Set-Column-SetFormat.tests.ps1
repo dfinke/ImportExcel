@@ -37,8 +37,7 @@ Describe "Number format expansion and setting" {
     Context "Expand-NumberFormat function"  {
         It "Expanded named number formats as expected                                              " {
             $r = [regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol)
-
-            Expand-NumberFormat 'Currency'                              | Should  match "^[$r\(\)\[\]RED0#\?\-;,.]+$"
+            Expand-NumberFormat 'Currency'                              | Should  match "^[$r\(\)\[\] RED0#\?\-;,.]+$"
             Expand-NumberFormat 'Number'                                | Should     be "0.00"
             Expand-NumberFormat 'Percentage'                            | Should     be "0.00%"
             Expand-NumberFormat 'Scientific'                            | Should     be "0.00E+00"
@@ -318,7 +317,9 @@ Describe "Table Formatting"  {
         Remove-Item $path
         $excel = $data2 | Export-excel -path $path -WorksheetName Hardware -AutoNameRange -AutoSize -BoldTopRow -FreezeTopRow -PassThru
         $ws = $excel.Workbook.Worksheets[1]
+        #test showfilter & TotalSettings
         $Table = Add-ExcelTable -PassThru -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -TotalSettings @{"Total"="Sum"} -ShowFirstColumn -ShowFilter:$false
+        #test expnading named number formats
         Set-Column -Worksheet $ws -Column 4 -NumberFormat 'Currency'
         Set-Column -Worksheet $ws -Column 5 -NumberFormat 'Currency'
         $PtDef =New-PivotTableDefinition -PivotTableName Totals -PivotRows Product -PivotData @{"Total"="Sum"} -PivotNumberFormat Currency -PivotTotals None -PivotTableSyle Dark2
@@ -346,3 +347,7 @@ Describe "Table Formatting"  {
         }
     }
 }
+
+
+
+

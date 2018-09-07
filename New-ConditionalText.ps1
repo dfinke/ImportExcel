@@ -43,7 +43,9 @@ function New-ConditionalText {
     [cmdletbinding()]
     param(
         #[Parameter(Mandatory=$true)]
+        [Alias("ConditionValue")]
         $Text,
+        [Alias("ForeGroundColor")]
         [System.Drawing.Color]$ConditionalTextColor="DarkRed",
         [System.Drawing.Color]$BackgroundColor="LightPink",
         [String]$Range,
@@ -60,6 +62,7 @@ function New-ConditionalText {
             "NextMonth",       "ThisMonth",            "LastMonth",
             "AboveAverage",    "AboveOrEqualAverage",  "BelowAverage",  "BelowOrEqualAverage"
         )]
+        [Alias("RuleType")]
         $ConditionalType="ContainsText"
     )
 

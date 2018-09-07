@@ -286,7 +286,7 @@ function Add-ExcelChart {
         [OfficeOpenXml.ExcelWorksheet]$Worksheet,
         [Parameter(ParameterSetName='PivotTable',Mandatory=$true)]
         [OfficeOpenXml.Table.PivotTable.ExcelPivotTable]$PivotTable ,
-        [String]$Title = "Chart Title",
+        [String]$Title,
         #$Header,   Not used but referenced previously
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = "ColumnStacked",
         $XRange,
