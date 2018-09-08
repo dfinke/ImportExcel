@@ -149,7 +149,7 @@
         [switch]$Passthru
     )
 
-    #Allow conditional formatting to work like Set-Format (with single ADDRESS parameter), split it to get worksheet and range of cells.
+    #Allow conditional formatting to work like Set-ExcelRange (with single ADDRESS parameter), split it to get worksheet and range of cells.
     If ($Address -and -not $WorkSheet -and -not $Range) {
         $WorkSheet = $Address.Worksheet[0]
         $Range     = $Address.Address

@@ -5,6 +5,13 @@
       .Description
         If the pivot table already exists, the source data will be updated.
       .Example
+        $excel = Get-Service | Export-Excel -Path test.xlsx -WorksheetName Services -PassThru -AutoSize -DisplayPropertySet -TableName ServiceTable -Title "Services on $Env:COMPUTERNAME"
+        Add-PivotTable -ExcelPackage $excel  -PivotTableName ServiceSummary   -SourceRange $excel.Workbook.Worksheets[1].Tables[0].Address -PivotRows Status -PivotData Name -NoTotalsInPivot -Activate
+        Close-ExcelPackage $excel -Show
+
+        This exports data to new workbook and creates a table with the data in.
+        The Pivot table is added on its own page, the table created in the first command is used as the source for the PivotTable;  which counts the service names in for each Status. At the end the Pivot page is made active.
+      .Example
         $chartdef = New-ExcelChartDefinition -Title "Gross and net by city and product"  -ChartType ColumnClustered `
             -Column 11 -Width 500 -Height 360 -YMajorUnit 500 -YMinorUnit 100 -YAxisNumberformat "$#,##0" -LegendPostion Bottom
 
@@ -117,26 +124,40 @@
         [OfficeOpenXml.ExcelWorksheet]$wsPivot = $address.Worksheet
     }
     else {
-        [OfficeOpenXml.ExcelWorksheet]$wsPivot = Add-WorkSheet -ExcelPackage $ExcelPackage -WorksheetName $pivotTableName -Activate:$Activate
-        if ($wsPivot.Name -ne $PivotTableName) {Write-Warning -Message "The Worksheet name for the pivot table does not match the table name '$PivotTableName'; probably because excess or illegal characters were removed." }
-        if ($PivotFilter) {$Address =  $wsPivot.Cells["A3"]} else { $Address =  $wsPivot.Cells["A1"]}
+        try {
+            if (-not $ExcelPackage) {Write-Warning -message "This combination of Parameters needs to include the ExcelPackage." ; return }
+            [OfficeOpenXml.ExcelWorksheet]$wsPivot = Add-WorkSheet -ExcelPackage $ExcelPackage -WorksheetName $pivotTableName -Activate:$Activate
+            if ($wsPivot.Name -ne $PivotTableName) {Write-Warning -Message "The Worksheet name for the pivot table does not match the table name '$PivotTableName'; probably because excess or illegal characters were removed." }
+            if ($PivotFilter) {$Address =  $wsPivot.Cells["A3"]} else { $Address =  $wsPivot.Cells["A1"]}
+        }
+        catch {throw "Could not create the sheet for the Pivot table. $_" }
     }
     #if the pivot doesn't exist, create it.
+    if (-not $wsPivot) {throw "There was a problem getting the worksheet for the pivot table"}
     if (-not $wsPivot.PivotTables[$pivotTableName] ) {
         try {
-            #Accept a string or a worksheet object as $Source Worksheet.
-            if     ($SourceWorkSheet -is [string]) {
-                    $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets.where( {$_.name -Like $SourceWorkSheet})[0]
+            #Accept a string or a worksheet object as $SourceWorksheet - we don't need a worksheet if we have a Rangebase .
+            if     ( $SourceWorkSheet -is     [string]) {
+                     $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets.where( {$_.name -Like $SourceWorkSheet})[0]
             }
-            elseif ($SourceWorkSheet -is [int])    {
-                    $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets[$SourceWorkSheet]
+            elseif ( $SourceWorkSheet -is     [int]   ) {
+                     $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets[$SourceWorkSheet]
             }
-            if     ($SourceWorkSheet -isnot  [OfficeOpenXml.ExcelWorksheet]) {Write-Warning -Message "Could not find source Worksheet for pivot-table '$pivotTableName'." ; return }
-            else {
-
-                if (-not $SourceRange) { $SourceRange = $SourceWorkSheet.Dimension.Address}
-                $pivotTable = $wsPivot.PivotTables.Add($Address, $SourceWorkSheet.Cells[ $SourceRange], $pivotTableName)
+            if     (     $SourceRange -is     [OfficeOpenXml.Table.ExcelTable]) {$SourceRange = $SourceRange.Address }
+            if     (     $sourceRange -is     [OfficeOpenXml.ExcelRange] -or
+                         $SourceRange -is     [OfficeOpenXml.ExcelAddress])  {
+                $pivotTable = $wsPivot.PivotTables.Add($Address, $SourceRange, $pivotTableName)
             }
+            elseif (-not $SourceRange) {
+                $pivotTable = $wsPivot.PivotTables.Add($Address, $SourceWorkSheet.cells[$SourceWorkSheet.Dimension.Address], $pivotTableName)
+            }
+            elseif  ($SourceWorkSheet  -isnot [OfficeOpenXml.ExcelWorksheet]  ) {
+                Write-Warning -Message "Could not find source Worksheet for pivot-table '$pivotTableName'." ; return
+            }
+            elseif (     $SourceRange -is     [String] -or $SourceRange -is [OfficeOpenXml.ExcelAddress]) {
+                $pivotTable = $wsPivot.PivotTables.Add($Address,$SourceWorkSheet.Cells[$SourceRange], $pivotTableName)
+            }
+            else {Write-warning "Could not create a pivot table with the Source Range provided."; return}
             foreach ($Row in $PivotRows) {
                 try {$null = $pivotTable.RowFields.Add($pivotTable.Fields[$Row]) }
                 catch {Write-Warning -message "Could not add '$row' to Rows in PivotTable $pivotTableName." }

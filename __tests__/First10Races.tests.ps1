@@ -21,7 +21,7 @@ Describe "Creating small named ranges with hyperlinks" {
         1..$columns | foreach {Add-ExcelName -Range $worksheet.cells[$topRow,$_,$lastDataRow,$_]}                                                                        #Test Add-Excel Name on its own (outside Export-Excel)
 
         $scwarnVar = $null
-        Set-Column -Worksheet $worksheet -StartRow $topRow -Heading "PlacesGained/Lost" `
+        Set-ExcelColumn -Worksheet $worksheet -StartRow $topRow -Heading "PlacesGained/Lost" `
                                         -Value "=GridPosition-FinishPosition" -AutoNameRange -WarningVariable scWarnVar -WarningAction SilentlyContinue                 #Test as many set column options as possible.
         $columns ++
 

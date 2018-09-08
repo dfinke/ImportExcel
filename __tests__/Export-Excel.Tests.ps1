@@ -696,16 +696,16 @@ Describe ExportExcel {
         #Test freezing top row/first column, adding formats and a pivot table - from Add-Pivot table not a specification variable - after the export
         $excel = Get-Process | Select-Object -Property Name, Company, Handles, CPU, PM, NPM, WS | Export-Excel -Path $path -ClearSheet -WorkSheetname "Processes" -FreezeTopRowFirstColumn -PassThru
         $sheet = $excel.Workbook.Worksheets["Processes"]
-        $sheet.Column(1) | Set-Format -Bold -AutoFit
-        $sheet.Column(2) | Set-Format -Width 29 -WrapText
-        $sheet.Column(3) | Set-Format -HorizontalAlignment Right -NFormat "#,###"
-        Set-Format -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NFormat "#,###"
-        Set-Format -Address $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#,##0.0" -Bold
-        Set-Format -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
+        $sheet.Column(1) | Set-ExcelRange -Bold -AutoFit
+        $sheet.Column(2) | Set-ExcelRange -Width 29 -WrapText
+        $sheet.Column(3) | Set-ExcelRange -HorizontalAlignment Right -NFormat "#,###"
+        Set-ExcelRange -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NFormat "#,###"
+        Set-ExcelRange -Address $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#,##0.0" -Bold
+        Set-ExcelRange -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
         Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor Red
         $rule = Add-ConditionalFormatting -passthru -Address $sheet.cells["C:C"] -RuleType TopPercent -ConditionValue 20 -Bold -StrikeThru
         Add-ConditionalFormatting -WorkSheet $sheet -Range "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600" -ForeGroundColor Red -Bold -Italic -Underline -BackgroundColor Beige -BackgroundPattern LightUp -PatternColor Gray
-        foreach ($c in 5..9) {Set-Format $sheet.Column($c)  -AutoFit }
+        foreach ($c in 5..9) {Set-ExcelRange $sheet.Column($c)  -AutoFit }
         Add-PivotTable -PivotTableName "PT_Procs" -ExcelPackage $excel -SourceWorkSheet 1 -PivotRows Company -PivotData  @{'Name' = 'Count'} -IncludePivotChart -ChartType ColumnClustered -NoLegend
         Close-ExcelPackage $excel
 

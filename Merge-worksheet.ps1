@@ -256,25 +256,25 @@
          $ws =  $xl.Workbook.Worksheets[$OutputSheetName]
          for ($i = 0; $i -lt $expandedDiff.Count; $i++ ) {
             if     ( $expandedDiff[$i].side -ne "==" )  {
-                Set-Format -WorkSheet $ws     -Range ("A" + ($i + 2 )) -FontColor       $KeyFontColor
+                Set-ExcelRange -WorkSheet $ws     -Range ("A" + ($i + 2 )) -FontColor       $KeyFontColor
             }
             elseif ( $HideEqual                      )  {$ws.row($i+2).hidden = $true }
             if     ( $expandedDiff[$i].side -eq "<>" )  {
                 $range = $ws.Dimension -replace "\d+",  ($i + 2 )
-                Set-Format -WorkSheet $ws     -Range $range            -BackgroundColor $ChangeBackgroundColor
+                Set-ExcelRange -WorkSheet $ws     -Range $range            -BackgroundColor $ChangeBackgroundColor
             }
             elseif ( $expandedDiff[$i].side -eq "<=" )  {
                 $rangeR1C1 = "R[{0}]C[1]:R[{0}]C[{1}]" -f ($i + 2 ) , $lastRefColNo
                 $range = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1($rangeR1C1,0,0)
-                Set-Format -WorkSheet $ws     -Range $range            -BackgroundColor $DeleteBackgroundColor
+                Set-ExcelRange -WorkSheet $ws     -Range $range            -BackgroundColor $DeleteBackgroundColor
             }
             elseif ( $expandedDiff[$i].side -eq "=>" )  {
                 if ($propList.count -gt 1) {
                     $rangeR1C1 = "R[{0}]C[{1}]:R[{0}]C[{2}]" -f ($i + 2 ) , $FirstDiffColNo , $lastDiffColNo
                     $range = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1($rangeR1C1,0,0)
-                    Set-Format -WorkSheet $ws -Range $range            -BackgroundColor $AddBackgroundColor
+                    Set-ExcelRange -WorkSheet $ws -Range $range            -BackgroundColor $AddBackgroundColor
                 }
-                Set-Format -WorkSheet $ws     -Range ("A" + ($i + 2 )) -BackgroundColor $AddBackgroundColor
+                Set-ExcelRange -WorkSheet $ws     -Range ("A" + ($i + 2 )) -BackgroundColor $AddBackgroundColor
             }
          }
          Close-ExcelPackage -ExcelPackage $xl -Show:$Show

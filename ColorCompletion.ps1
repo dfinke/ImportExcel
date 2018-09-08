@@ -26,14 +26,14 @@ if (Get-Command -Name register-argumentCompleter -ErrorAction SilentlyContinue) 
     Register-ArgumentCompleter -CommandName New-ConditionalText        -ParameterName PatternColor           -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName New-ConditionalText        -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName New-ConditionalText        -ParameterName ConditionalTextColor   -ScriptBlock $Function:ColorCompletion
-    Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
-    Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName FontColor              -ScriptBlock $Function:ColorCompletion
-    Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName BorderColor            -ScriptBlock $Function:ColorCompletion
-    Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName PatternColor           -ScriptBlock $Function:ColorCompletion
-    Register-ArgumentCompleter -CommandName Set-Column                 -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
-    Register-ArgumentCompleter -CommandName Set-Column                 -ParameterName FontColor              -ScriptBlock $Function:ColorCompletion
-    Register-ArgumentCompleter -CommandName Set-Column                 -ParameterName PatternColor           -ScriptBlock $Function:ColorCompletion
-    Register-ArgumentCompleter -CommandName Set-Row                    -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
-    Register-ArgumentCompleter -CommandName Set-Row                    -ParameterName FontColor              -ScriptBlock $Function:ColorCompletion
-    Register-ArgumentCompleter -CommandName Set-Row                    -ParameterName PatternColor           -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Set-ExcelRange             -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Set-ExcelRange             -ParameterName FontColor              -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Set-ExcelRange             -ParameterName BorderColor            -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Set-ExcelRange             -ParameterName PatternColor           -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Set-ExcelColumn            -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Set-ExcelColumn            -ParameterName FontColor              -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Set-ExcelColumn            -ParameterName PatternColor           -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Set-ExcelRow               -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Set-ExcelRow               -ParameterName FontColor              -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Set-ExcelRow               -ParameterName PatternColor           -ScriptBlock $Function:ColorCompletion
 }

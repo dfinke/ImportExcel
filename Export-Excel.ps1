@@ -352,18 +352,18 @@
 
             $excel = Get-Process | Select-Object -Property Name,Company,Handles,CPU,PM,NPM,WS | Export-Excel -Path .\test.xlsx -ClearSheet -WorksheetName "Processes" -PassThru
             $sheet = $excel.Workbook.Worksheets["Processes"]
-            $sheet.Column(1) | Set-Format -Bold -AutoFit
-            $sheet.Column(2) | Set-Format -Width 29 -WrapText
-            $sheet.Column(3) | Set-Format -HorizontalAlignment Right -NFormat "#,###"
-            Set-Format -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NFormat "#,###"
-            Set-Format -Address $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#,##0.0" -Bold
-            Set-Format -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
+            $sheet.Column(1) | Set-ExcelRange -Bold -AutoFit
+            $sheet.Column(2) | Set-ExcelRange -Width 29 -WrapText
+            $sheet.Column(3) | Set-ExcelRange -HorizontalAlignment Right -NFormat "#,###"
+            Set-ExcelRange -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NFormat "#,###"
+            Set-ExcelRange -Address $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#,##0.0" -Bold
+            Set-ExcelRange -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
             Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor Red
             Add-ConditionalFormatting -WorkSheet $sheet -Range "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600" -ForeGroundColor Red
-            foreach ($c in 5..9) {Set-Format -Address $sheet.Column($c)  -AutoFit }
+            foreach ($c in 5..9) {Set-ExcelRange -Address $sheet.Column($c)  -AutoFit }
             Export-Excel -ExcelPackage $excel -WorksheetName "Processes" -IncludePivotChart -ChartType ColumnClustered -NoLegend -PivotRows company  -PivotData @{'Name'='Count'}  -Show
 
-            This a more sophisticated version of the previous example showing different ways of using Set-Format, and also adding conditional formatting.
+            This a more sophisticated version of the previous example showing different ways of using Set-ExcelRange, and also adding conditional formatting.
             In the final command a Pivot chart is added and the workbook is opened in Excel.
         .EXAMPLE
              0..360 | ForEach-Object {[pscustomobject][ordered]@{X=$_; Sinx="=Sin(Radians(x)) "} } | Export-Excel -now -LineChart -AutoNameRange
@@ -1147,6 +1147,10 @@ function Add-WorkSheet  {
     }
     #endregion
     if ($Activate) {Select-Worksheet -ExcelWorksheet $ws  }
+    if (-not (Get-Member -InputObject $ExcelPackage -Name $ws.Name)) {
+        $sb = [scriptblock]::Create(('$this.workbook.Worksheets["{0}"]' -f $ws.name))
+        Add-Member -InputObject $ExcelPackage -MemberType ScriptProperty -Name $ws.name -Value $sb
+    }
     return $ws
 }
 

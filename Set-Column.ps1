@@ -1,28 +1,29 @@
-﻿Function Set-Column {
+﻿Function Set-ExcelColumn {
     <#
       .SYNOPSIS
         Adds a column to the existing data area in an Excel sheet, fills values and sets formatting
       .DESCRIPTION
-        Set-Column takes a value which is either string containing a value or formula or a scriptblock
+         Set-ExcelColumn takes a value which is either string containing a value or formula or a scriptblock
         which evaluates to a string, and optionally a column number and fills that value down the column.
         A column name can be specified and the new column can be made a named range.
         The column can be formatted.
       .EXAMPLE
-        C:\>Set-Column -Worksheet $ws -Column 5 -NumberFormat 'Currency'
+        C:\> Set-ExcelColumn -Worksheet $ws -Column 5 -NumberFormat 'Currency'
         $ws contains a worksheet object - and column E is set to use the local currecy format.
         Intelisense will complete predefined number formats. Expand-NumberFormat currency will show you how currency is interpreted on the local computer.
       .EXAMPLE
-        C:\> Set-Column -Worksheet $ws -Heading "WinsToFastLaps"  -Value {"=E$row/C$row"} -Column 7 -AutoSize -AutoNameRange
+        C:\>  Set-ExcelColumn -Worksheet $ws -Heading "WinsToFastLaps"  -Value {"=E$row/C$row"} -Column 7 -AutoSize -AutoNameRange
         Here $WS already contains a worksheet which contains counts of races won and fastest laps recorded by racing drivers (in columns C and E)
-        Set-Column specifies that Column 7 should have a heading of "WinsToFastLaps" and the data cells should contain =E2/C2 , =E3/C3
+         Set-ExcelColumn specifies that Column 7 should have a heading of "WinsToFastLaps" and the data cells should contain =E2/C2 , =E3/C3
         the data cells should become a named range, which will also be "WinsToFastLaps" the column width will be set automatically
       .EXAMPLE
-        C:\> Set-Column -Worksheet $ws -Heading "Link" -Value {"https://en.wikipedia.org" + $worksheet.cells["B$Row"].value  }  -AutoSize
+        C:\>  Set-ExcelColumn -Worksheet $ws -Heading "Link" -Value {"https://en.wikipedia.org" + $worksheet.cells["B$Row"].value  }  -AutoSize
         In this example, the worksheet in $ws has partial links to wikipedia pages in column B.
         Value is is a script block and it outputs a string which begins https... and ends with the value of cell at column B in the current row.
-        When given a valid URI set-Column makes it a hyperlink The column will be autosized to fit the links.
+        When given a valid URI  Set-ExcelColumn makes it a hyperlink The column will be autosized to fit the links.
     #>
     [cmdletbinding()]
+    [Alias(" Set-Column")]
     [OutputType([OfficeOpenXml.ExcelColumn],[String])]
     Param (
         #If specifing the worksheet by name the ExcelPackage object which contains it needs to be passed
@@ -151,11 +152,11 @@
     }
     $theRange =   "$columnName$StartRow`:$columnName$endRow"
     if ($params.Count) {
-        Set-Format -WorkSheet $Worksheet -Range $theRange @params
+        Set-ExcelRange -WorkSheet $Worksheet -Range $theRange @params
     }
     #endregion
     if ($PSBoundParameters["Hide"]) {$workSheet.Column($Column).Hidden = [bool]$Hide}
     #return the new data if -passthru was specified.
-    if     ($passThru)                 { $Worksheet.Column(     $Column)}
+    if     ($passThru)                 { $Worksheet.Column($Column)}
     elseif ($ReturnRange)              { $theRange}
 }

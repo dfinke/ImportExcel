@@ -1,22 +1,23 @@
-﻿Function Set-Row {
+﻿Function  Set-ExcelRow {
     <#
       .Synopsis
-        Fills values into a [new] row in an Excel spreadsheet. To format a row without setting values, use Set-Format.
+        Fills values into a [new] row in an Excel spreadsheet. And sets row formmats.
       .Description
-        Set-Row accepts either a Worksheet object or an Excel package object returned by Export-Excel and the name of a sheet,
+         Set-ExcelRow accepts either a Worksheet object or an Excel package object returned by Export-Excel and the name of a sheet,
         and inserts the chosen contents into a row of the sheet.
         The contents can be a constant "42" , a formula or a script block which is converted into a constant or formula.
         The first cell of the row can optional be given a heading.
       .Example
-        Set-row -Worksheet $ws -Heading Total -Value {"=sum($columnName`2:$columnName$endrow)" }
+         Set-ExcelRow -Worksheet $ws -Heading Total -Value {"=sum($columnName`2:$columnName$endrow)" }
 
-        $Ws contains a worksheet object, and no Row number is specified so Set-Row will select the next row after the end of the data in the sheet
+        $Ws contains a worksheet object, and no Row number is specified so  Set-ExcelRow will select the next row after the end of the data in the sheet
         The first cell will contain "Total", and each other cell will contain
             =Sum(xx2:xx99)  - where xx is the column name, and 99 is the last row of data.
             Note the use of `2 to Prevent 2 becoming part of the variable "ColumnName"
         The script block can use $row, $column, $ColumnName, $startRow/Column $endRow/Column
     #>
     [cmdletbinding()]
+    [Alias(" Set-Row")]
     [OutputType([OfficeOpenXml.ExcelRow],[String])]
     Param (
         #An Excel package object - e.g. from Export-Excel -passthru - requires a sheet name
@@ -137,7 +138,7 @@
     }
     $theRange                            = [OfficeOpenXml.ExcelAddress]::New($Row, $StartColumn, $Row, $endColumn)
     if ($params.Count) {
-        Set-Format -WorkSheet $Worksheet -Range $theRange @params
+        Set-ExcelRange -WorkSheet $Worksheet -Range $theRange @params
     }
     #endregion
     if ($PSBoundParameters["Hide"]) {$workSheet.Row($Row).Hidden = [bool]$Hide}

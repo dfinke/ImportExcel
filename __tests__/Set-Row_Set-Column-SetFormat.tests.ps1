@@ -56,37 +56,37 @@ Describe "Number format expansion and setting" {
 
             $excel = 1..32 | ForEach-Object {$n} | Export-Excel -Path $path -show -WorksheetName s2 -PassThru
             $ws    = $excel.Workbook.Worksheets[1]
-            Set-Format -WorkSheet $ws -Range "A1"   -numberFormat 'General'
-            Set-Format -WorkSheet $ws -Range "A2"   -numberFormat 'Number'
-            Set-Format -WorkSheet $ws -Range "A3"   -numberFormat 'Percentage'
-            Set-Format -WorkSheet $ws -Range "A4"   -numberFormat 'Scientific'
-            Set-Format -WorkSheet $ws -Range "A5"   -numberFormat 'Fraction'
-            Set-Format -WorkSheet $ws -Range "A6"   -numberFormat 'Short Date'
-            Set-Format -WorkSheet $ws -Range "A7"   -numberFormat 'Short Time'
-            Set-Format -WorkSheet $ws -Range "A8"   -numberFormat 'Long Time'
-            Set-Format -WorkSheet $ws -Range "A9"   -numberFormat 'Date-Time'
-            Set-Format -WorkSheet $ws -Range "A10"  -numberFormat 'Currency'
-            Set-Format -WorkSheet $ws -Range "A11"  -numberFormat 'Text'
-            Set-Format -WorkSheet $ws -Range "A12"  -numberFormat 'h:mm AM/PM'
-            Set-Format -WorkSheet $ws -Range "A13"  -numberFormat 'h:mm:ss AM/PM'
-            Set-Format -WorkSheet $ws -Range "A14"  -numberFormat 'mm:ss'
-            Set-Format -WorkSheet $ws -Range "A15"  -numberFormat '[h]:mm:ss'
-            Set-Format -WorkSheet $ws -Range "A16"  -numberFormat 'mmss.0'
-            Set-Format -WorkSheet $ws -Range "A17"  -numberFormat 'd-mmm-yy'
-            Set-Format -WorkSheet $ws -Range "A18"  -numberFormat 'd-mmm'
-            Set-Format -WorkSheet $ws -Range "A19"  -numberFormat 'mmm-yy'
-            Set-Format -WorkSheet $ws -Range "A20"  -numberFormat '0'
-            Set-Format -WorkSheet $ws -Range "A21"  -numberFormat '0.00'
-            Set-Format -Address   $ws.Cells[ "A22"] -NumberFormat '#,##0'
-            Set-Format -Address   $ws.Cells[ "A23"] -NumberFormat '#,##0.00'
-            Set-Format -Address   $ws.Cells[ "A24"] -NumberFormat '#,'
-            Set-Format -Address   $ws.Cells[ "A25"] -NumberFormat '#.0,,'
-            Set-Format -Address   $ws.Cells[ "A26"] -NumberFormat '0%'
-            Set-Format -Address   $ws.Cells[ "A27"] -NumberFormat '0.00%'
-            Set-Format -Address   $ws.Cells[ "A28"] -NumberFormat '0.00E+00'
-            Set-Format -Address   $ws.Cells[ "A29"] -NumberFormat '# ?/?'
-            Set-Format -Address   $ws.Cells[ "A30"] -NumberFormat '# ??/??'
-            Set-Format -Address   $ws.Cells[ "A31"] -NumberFormat '@'
+            Set-ExcelRange -WorkSheet $ws -Range "A1"   -numberFormat 'General'
+            Set-ExcelRange -WorkSheet $ws -Range "A2"   -numberFormat 'Number'
+            Set-ExcelRange -WorkSheet $ws -Range "A3"   -numberFormat 'Percentage'
+            Set-ExcelRange -WorkSheet $ws -Range "A4"   -numberFormat 'Scientific'
+            Set-ExcelRange -WorkSheet $ws -Range "A5"   -numberFormat 'Fraction'
+            Set-ExcelRange -WorkSheet $ws -Range "A6"   -numberFormat 'Short Date'
+            Set-ExcelRange -WorkSheet $ws -Range "A7"   -numberFormat 'Short Time'
+            Set-ExcelRange -WorkSheet $ws -Range "A8"   -numberFormat 'Long Time'
+            Set-ExcelRange -WorkSheet $ws -Range "A9"   -numberFormat 'Date-Time'
+            Set-ExcelRange -WorkSheet $ws -Range "A10"  -numberFormat 'Currency'
+            Set-ExcelRange -WorkSheet $ws -Range "A11"  -numberFormat 'Text'
+            Set-ExcelRange -WorkSheet $ws -Range "A12"  -numberFormat 'h:mm AM/PM'
+            Set-ExcelRange -WorkSheet $ws -Range "A13"  -numberFormat 'h:mm:ss AM/PM'
+            Set-ExcelRange -WorkSheet $ws -Range "A14"  -numberFormat 'mm:ss'
+            Set-ExcelRange -WorkSheet $ws -Range "A15"  -numberFormat '[h]:mm:ss'
+            Set-ExcelRange -WorkSheet $ws -Range "A16"  -numberFormat 'mmss.0'
+            Set-ExcelRange -WorkSheet $ws -Range "A17"  -numberFormat 'd-mmm-yy'
+            Set-ExcelRange -WorkSheet $ws -Range "A18"  -numberFormat 'd-mmm'
+            Set-ExcelRange -WorkSheet $ws -Range "A19"  -numberFormat 'mmm-yy'
+            Set-ExcelRange -WorkSheet $ws -Range "A20"  -numberFormat '0'
+            Set-ExcelRange -WorkSheet $ws -Range "A21"  -numberFormat '0.00'
+            Set-ExcelRange -Address   $ws.Cells[ "A22"] -NumberFormat '#,##0'
+            Set-ExcelRange -Address   $ws.Cells[ "A23"] -NumberFormat '#,##0.00'
+            Set-ExcelRange -Address   $ws.Cells[ "A24"] -NumberFormat '#,'
+            Set-ExcelRange -Address   $ws.Cells[ "A25"] -NumberFormat '#.0,,'
+            Set-ExcelRange -Address   $ws.Cells[ "A26"] -NumberFormat '0%'
+            Set-ExcelRange -Address   $ws.Cells[ "A27"] -NumberFormat '0.00%'
+            Set-ExcelRange -Address   $ws.Cells[ "A28"] -NumberFormat '0.00E+00'
+            Set-ExcelRange -Address   $ws.Cells[ "A29"] -NumberFormat '# ?/?'
+            Set-ExcelRange -Address   $ws.Cells[ "A30"] -NumberFormat '# ??/??'
+            Set-ExcelRange -Address   $ws.Cells[ "A31"] -NumberFormat '@'
 
             Close-ExcelPackage -ExcelPackage $excel
 
@@ -129,36 +129,36 @@ Describe "Number format expansion and setting" {
     }
 }
 
-Describe "Set-Column, Set-Row and Set Format" {
+Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
     BeforeAll {
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         $excel = $data| Export-Excel -Path $path -AutoNameRange -PassThru
         $ws = $excel.Workbook.Worksheets["Sheet1"]
 
-        $c = Set-Column -PassThru -Worksheet $ws -Heading "Total" -Value "=Quantity*Price" -NumberFormat "£#,###.00" -FontColor Blue -Bold -HorizontalAlignment Right -VerticalAlignment Top
-        $r = Set-Row    -PassThru -Worksheet $ws -StartColumn 3 -BorderAround Thin -Italic -Underline -FontSize 14 -Value {"=sum($columnName`2:$columnName$endrow)" } -VerticalAlignment Bottom
-        Set-Format -Address   $excel.Workbook.Worksheets["Sheet1"].cells["b3"] -HorizontalAlignment Right -VerticalAlignment Center -BorderAround Thick -BorderColor Red -StrikeThru
-        Set-Format -Address   $excel.Workbook.Worksheets["Sheet1"].cells["c3"] -BorderColor Red -BorderTop DashDot -BorderLeft DashDotDot -BorderBottom Dashed -BorderRight Dotted
-        Set-Format -WorkSheet $ws -Range "E3"  -Bold:$false -FontShift Superscript -HorizontalAlignment Left
-        Set-Format -WorkSheet $ws -Range "E1"  -ResetFont -HorizontalAlignment General
-        Set-Format -Address   $ws.cells["E7"]  -ResetFont -WrapText -BackgroundColor AliceBlue -BackgroundPattern DarkTrellis -PatternColor Red  -NumberFormat "£#,###.00"
-        Set-Format -Address   $ws.Column(1)    -Width  0
-        Set-Format -Address   $ws.Column(2)    -AutoFit
-        Set-Format -Address   $ws.Cells["E:E"] -AutoFit
-        Set-Format -Address   $ws.row(5)       -Height 0
+        $c = Set-ExcelColumn -PassThru -Worksheet $ws -Heading "Total" -Value "=Quantity*Price" -NumberFormat "£#,###.00" -FontColor Blue -Bold -HorizontalAlignment Right -VerticalAlignment Top
+        $r = Set-ExcelRow    -PassThru -Worksheet $ws -StartColumn 3 -BorderAround Thin -Italic -Underline -FontSize 14 -Value {"=sum($columnName`2:$columnName$endrow)" } -VerticalAlignment Bottom
+        Set-ExcelRange -Address   $excel.Workbook.Worksheets["Sheet1"].cells["b3"] -HorizontalAlignment Right -VerticalAlignment Center -BorderAround Thick -BorderColor Red -StrikeThru
+        Set-ExcelRange -Address   $excel.Workbook.Worksheets["Sheet1"].cells["c3"] -BorderColor Red -BorderTop DashDot -BorderLeft DashDotDot -BorderBottom Dashed -BorderRight Dotted
+        Set-ExcelRange -WorkSheet $ws -Range "E3"  -Bold:$false -FontShift Superscript -HorizontalAlignment Left
+        Set-ExcelRange -WorkSheet $ws -Range "E1"  -ResetFont -HorizontalAlignment General
+        Set-ExcelRange -Address   $ws.cells["E7"]  -ResetFont -WrapText -BackgroundColor AliceBlue -BackgroundPattern DarkTrellis -PatternColor Red  -NumberFormat "£#,###.00"
+        Set-ExcelRange -Address   $ws.Column(1)    -Width  0
+        Set-ExcelRange -Address   $ws.Column(2)    -AutoFit
+        Set-ExcelRange -Address   $ws.Cells["E:E"] -AutoFit
+        Set-ExcelRange -Address   $ws.row(5)       -Height 0
         $rr = $r.row
-        Set-Format -WorkSheet $ws -Range "B$rr" -Value "Total"
+        Set-ExcelRange -WorkSheet $ws -Range "B$rr" -Value "Total"
         $BadHideWarnvar = $null
-        Set-Format -WorkSheet $ws -Range "D$rr" -Formula "=E$rr/C$rr" -Hidden -WarningVariable "BadHideWarnvar" -WarningAction SilentlyContinue
+        Set-ExcelRange -WorkSheet $ws -Range "D$rr" -Formula "=E$rr/C$rr" -Hidden -WarningVariable "BadHideWarnvar" -WarningAction SilentlyContinue
         $rr ++
-        Set-Format -WorkSheet $ws -Range "B$rr" -Value ([datetime]::Now)
+        Set-ExcelRange -WorkSheet $ws -Range "B$rr" -Value ([datetime]::Now)
         Close-ExcelPackage $excel -Calculate
 
 
         $excel = Open-ExcelPackage $path
         $ws = $excel.Workbook.Worksheets["Sheet1"]
     }
-    Context "Set-Row and Set-Column" {
+    Context "Set-ExcelRow and Set-ExcelColumn" {
         it "Set a row and a column to have zero width/height                                       " {
             $r                                                          | Should not beNullorEmpty
          #  $c                                                          | Should not beNullorEmpty  ## can't see why but this test breaks in appveyor
@@ -213,7 +213,7 @@ Describe "Set-Column, Set-Row and Set Format" {
         }
     }
 
-    Context "Set-Format value setting " {
+    Context "Set-ExcelRange value setting " {
         it "Inserted a formula                                                                     " {
             $ws.Cells["D7"].Formula                                     | Should     be "E7/C7"
         }
@@ -225,15 +225,15 @@ Describe "Set-Column, Set-Row and Set Format" {
         }
     }
 
-    Context "Set-Column Value Setting" {
+    Context "Set-ExcelColumn Value Setting" {
         BeforeAll {
             Remove-Item -Path $path -ErrorAction SilentlyContinue
 
             $excel = $DriverData | Export-Excel -PassThru -Path $path -AutoSize -AutoNameRange
             $ws = $excel.Workbook.Worksheets[1]
 
-            Set-Column -Worksheet $ws -Heading "Link"         -AutoSize -Value {"https://en.wikipedia.org" + $worksheet.cells["B$Row"].value  }
-            $c = Set-Column -PassThru -Worksheet $ws -Heading "NextBirthday" -Value {
+            Set-ExcelColumn -Worksheet $ws -Heading "Link"         -AutoSize -Value {"https://en.wikipedia.org" + $worksheet.cells["B$Row"].value  }
+            $c = Set-ExcelColumn -PassThru -Worksheet $ws -Heading "NextBirthday" -Value {
                 $bmonth = $worksheet.cells["C$Row"].value.month ; $bDay = $worksheet.cells["C$Row"].value.day
                 $cMonth = [datetime]::Now.Month ; $cday = [datetime]::Now.day ; $cyear = [datetime]::Now.Year
                 if (($cmonth -gt $bmonth) -or (($cMonth -eq $bmonth) -and ($cday -ge $bDay))){
@@ -241,8 +241,8 @@ Describe "Set-Column, Set-Row and Set Format" {
                 }
                 else  {[datetime]::new($cyear, $bmonth, $bday)  }
             }
-            Set-Column -Worksheet $ws -Heading "Age" -Value "=INT((NOW()-DateOfBirth)/365)"
-            Set-Format -Address $c,$ws.column(3) -NumberFormat 'Short Date' -AutoSize
+            Set-ExcelColumn -Worksheet $ws -Heading "Age" -Value "=INT((NOW()-DateOfBirth)/365)"
+            Set-ExcelRange -Address $c,$ws.column(3) -NumberFormat 'Short Date' -AutoSize
 
             Close-ExcelPackage -ExcelPackage $excel -Calculate
             $excel = Open-ExcelPackage $path
@@ -309,8 +309,8 @@ Describe "Table Formatting"  {
         $ws = $excel.Workbook.Worksheets[1]
         Add-ExcelTable -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -TotalSettings @{"Total"="Sum"} -ShowFirstColumn -ShowFilter:$false
 
-        Set-Column -Worksheet $ws -Column 4 -NumberFormat 'Currency'
-        Set-Column -Worksheet $ws -Column 5 -NumberFormat 'Currency'
+        Set-ExcelColumn -Worksheet $ws -Column 4 -NumberFormat 'Currency'
+        Set-ExcelColumn -Worksheet $ws -Column 5 -NumberFormat 'Currency'
 
         $PtDef =New-PivotTableDefinition -PivotTableName Totals -PivotRows Product -PivotData @{"Total"="Sum"} -PivotNumberFormat Currency -PivotTotals None -PivotTableSyle Dark2
         Export-excel -ExcelPackage $excel -WorksheetName Hardware -PivotTableDefinition $PtDef
@@ -320,8 +320,8 @@ Describe "Table Formatting"  {
         #test showfilter & TotalSettings
         $Table = Add-ExcelTable -PassThru -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -TotalSettings @{"Total"="Sum"} -ShowFirstColumn -ShowFilter:$false
         #test expnading named number formats
-        Set-Column -Worksheet $ws -Column 4 -NumberFormat 'Currency'
-        Set-Column -Worksheet $ws -Column 5 -NumberFormat 'Currency'
+        Set-ExcelColumn -Worksheet $ws -Column 4 -NumberFormat 'Currency'
+        Set-ExcelColumn -Worksheet $ws -Column 5 -NumberFormat 'Currency'
         $PtDef =New-PivotTableDefinition -PivotTableName Totals -PivotRows Product -PivotData @{"Total"="Sum"} -PivotNumberFormat Currency -PivotTotals None -PivotTableSyle Dark2
         Export-excel -ExcelPackage $excel -WorksheetName Hardware -PivotTableDefinition $PtDef
         $excel= Open-ExcelPackage -Path $path

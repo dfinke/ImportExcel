@@ -10,7 +10,7 @@
 .Example
     $excel  = Open-ExcelPackage -path $xlPath
     $sheet1 = $excel.Workbook.Worksheets["sheet1"]
-    Set-Format -Address $sheet1.Cells["E1:S1048576"], $sheet1.Cells["V1:V1048576"]  -NFormat ([cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern)
+    Set-ExcelRange -Range $sheet1.Cells["E1:S1048576"], $sheet1.Cells["V1:V1048576"]  -NFormat ([cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern)
     Close-ExcelPackage $excel -Show
 
    This will open the file at $xlPath, select sheet1 apply formatting to two blocks of the sheet and save the package, and launch it in Excel.
@@ -46,8 +46,15 @@
         New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
     }
     elseif (Test-Path -Path $path) {
-        if ($Password) {New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path , $Password }
-        else           {New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path }
+        if ($Password) {$pkgobj = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path , $Password }
+        else           {$pkgobj = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path }
+        if ($pkgobj) {
+            foreach ($w in $pkgobj.Workbook.Worksheets) {
+                $sb = [scriptblock]::Create(('$this.workbook.Worksheets["{0}"]' -f $w.name))
+                Add-Member -InputObject $pkgobj -MemberType ScriptProperty -Name $w.name -Value $sb
+            }
+            return $pkgobj
+        }
     }
     else   {Write-Warning "Could not find $path" }
  }
