@@ -19,7 +19,7 @@ Describe ExportExcel {
         }
 
        # it "Started Excel to display the file                                                      " {
-       #     Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should not benullorempty
+       #     Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should not beNullOrEmpty
        # }
        #Start-Sleep -Seconds 5 ;
 
@@ -28,11 +28,16 @@ Describe ExportExcel {
         #TODO Need to test opening pre-existing file with no -create switch (and graceful failure when file does not exist) somewhere else
         $Excel = Open-ExcelPackage -Path $path -KillExcel
         it "Killed Excel when Open-Excelpackage was told to                                        " {
-            Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should     benullorempty
+            Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should     beNullOrEmpty
         }
 
-        it "Created 1 worksheet                                                                    " {
+        it "Created 1 worksheet, named 'Sheet1'                                                    " {
             $Excel.Workbook.Worksheets.count                            | Should     be 1
+            $Excel.Workbook.Worksheets["Sheet1"]                        | Should not beNullOrEmpty
+        }
+
+        it "Added a 'Sheet1' property to the Package object                                        " {
+            $Excel.Sheet1                                               | Should not beNullOrEmpty
         }
 
         $ws = $Excel.Workbook.Worksheets[1]
@@ -453,6 +458,7 @@ Describe ExportExcel {
         $PTws = $Excel.Workbook.Worksheets["ProcessesPivotTable"]
         $wCount = $Excel.Workbook.Worksheets.Count
         it "Added the named sheet and pivot table to the workbook                                  " {
+            $excel.ProcessesPivotTable                                  | Should not beNullOrEmpty
             $PTws                                                       | Should not beNullOrEmpty
             $PTws.PivotTables.Count                                     | Should     be 1
             $Excel.Workbook.Worksheets["Processes"]                     | Should not beNullOrEmpty
@@ -703,8 +709,10 @@ Describe ExportExcel {
         Set-ExcelRange -Address $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#,##0.0" -Bold
         Set-ExcelRange -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
         Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor Red
+        #test Add-ConditionalFormatting -passthru and using a range (and no worksheet)
         $rule = Add-ConditionalFormatting -passthru -Address $sheet.cells["C:C"] -RuleType TopPercent -ConditionValue 20 -Bold -StrikeThru
         Add-ConditionalFormatting -WorkSheet $sheet -Range "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600" -ForeGroundColor Red -Bold -Italic -Underline -BackgroundColor Beige -BackgroundPattern LightUp -PatternColor Gray
+        #Test Set-ExcelRange with a column
         foreach ($c in 5..9) {Set-ExcelRange $sheet.Column($c)  -AutoFit }
         Add-PivotTable -PivotTableName "PT_Procs" -ExcelPackage $excel -SourceWorkSheet 1 -PivotRows Company -PivotData  @{'Name' = 'Count'} -IncludePivotChart -ChartType ColumnClustered -NoLegend
         Close-ExcelPackage $excel

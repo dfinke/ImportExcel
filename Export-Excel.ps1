@@ -1147,7 +1147,7 @@ function Add-WorkSheet  {
     }
     #endregion
     if ($Activate) {Select-Worksheet -ExcelWorksheet $ws  }
-    if (-not (Get-Member -InputObject $ExcelPackage -Name $ws.Name)) {
+    if ($ExcelPackage -and -not (Get-Member -InputObject $ExcelPackage -Name $ws.Name)) {
         $sb = [scriptblock]::Create(('$this.workbook.Worksheets["{0}"]' -f $ws.name))
         Add-Member -InputObject $ExcelPackage -MemberType ScriptProperty -Name $ws.name -Value $sb
     }

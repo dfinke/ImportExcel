@@ -42,106 +42,70 @@
         This rule is move to first in the priority list, and where cells have a value of 1, no other rules will be processed.
     #>
     Param (
-        #The worksheet where the format is to be applied
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
-        [Parameter(Mandatory = $true, ParameterSetName = "DataBar")]
-        [Parameter(Mandatory = $true, ParameterSetName = "ThreeIconSet")]
-        [Parameter(Mandatory = $true, ParameterSetName = "FourIconSet")]
-        [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSet")]
-        [OfficeOpenXml.ExcelWorksheet]$WorkSheet ,
-        #The area of the worksheet where the format is to be applied
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule")]
-        [Parameter(Mandatory = $true, ParameterSetName = "DataBar")]
-        [Parameter(Mandatory = $true, ParameterSetName = "ThreeIconSet")]
-        [Parameter(Mandatory = $true, ParameterSetName = "FourIconSet")]
-        [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSet")]
-        $Range ,
         #A block of cells to format - you can use a named range with -Address $ws.names[1] or  $ws.cells["RangeName"]
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress")]
-        [Parameter(Mandatory = $true, ParameterSetName = "DataBarAddress")]
-        [Parameter(Mandatory = $true, ParameterSetName = "ThreeIconSetAddress")]
-        [Parameter(Mandatory = $true, ParameterSetName = "FourIconSetAddress")]
-        [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSetAddress")]
+        [Parameter(Mandatory = $true, Position = 0)]
+        [Alias("Range")]
         $Address ,
+        #The worksheet where the format is to be applied
+        [OfficeOpenXml.ExcelWorksheet]$WorkSheet ,
         #One of the standard named rules - Top / Bottom / Less than / Greater than / Contains etc.
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule", Position = 3)]
-        [Parameter(Mandatory = $true, ParameterSetName = "NamedRuleAddress", Position = 3)]
+        [Parameter(Mandatory = $true, ParameterSetName = "NamedRule", Position = 1)]
         [OfficeOpenXml.ConditionalFormatting.eExcelConditionalFormattingRuleType]$RuleType ,
         #Text colour for matching objects
         [Parameter(ParameterSetName = "NamedRule")]
-        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [Alias("ForeGroundColour")]
         [System.Drawing.Color]$ForeGroundColor,
         #colour for databar type charts
         [Parameter(Mandatory = $true, ParameterSetName = "DataBar")]
-        [Parameter(Mandatory = $true, ParameterSetName = "DataBarAddress")]
         [Alias("DataBarColour")]
         [System.Drawing.Color]$DataBarColor,
         #One of the three-icon set types (e.g. Traffic Lights)
         [Parameter(Mandatory = $true, ParameterSetName = "ThreeIconSet")]
-        [Parameter(Mandatory = $true, ParameterSetName = "ThreeIconSetAddress")]
         [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting3IconsSetType]$ThreeIconsSet,
         #A four-icon set name
         [Parameter(Mandatory = $true, ParameterSetName = "FourIconSet")]
-        [Parameter(Mandatory = $true, ParameterSetName = "FourIconSetAddress")]
         [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting4IconsSetType]$FourIconsSet,
         #A five-icon set name
         [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSet")]
-        [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSetAddress")]
         [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting5IconsSetType]$FiveIconsSet,
         #Use the icon set in reverse order, or reverse the orders of Two- & Three-Color Scales
         [Parameter(ParameterSetName = "NamedRule")]
-        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [Parameter(ParameterSetName = "ThreeIconSet")]
-        [Parameter(ParameterSetName = "ThreeIconSetAddress")]
         [Parameter(ParameterSetName = "FourIconSet")]
-        [Parameter(ParameterSetName = "FourIconSetAddress")]
         [Parameter(ParameterSetName = "FiveIconSet")]
-        [Parameter(ParameterSetName = "FiveIconSetAddress")]
         [switch]$Reverse,
         #A value for the condition (e.g. 2000 if the test is 'lessthan 2000' ; Formulas should begin with "=" )
         [Parameter(ParameterSetName = "NamedRule")]
-        [Parameter(ParameterSetName = "NamedRuleAddress")]
         $ConditionValue,
         #A second value for the conditions like "between x and Y"
         [Parameter(ParameterSetName = "NamedRule")]
-        [Parameter(ParameterSetName = "NamedRuleAddress")]
         $ConditionValue2,
         #Background colour for matching items
         [Parameter(ParameterSetName = "NamedRule")]
-        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [System.Drawing.Color]$BackgroundColor,
         #Background pattern for matching items
         [Parameter(ParameterSetName = "NamedRule")]
-        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern = [OfficeOpenXml.Style.ExcelFillStyle]::None ,
         #Secondary colour when a background pattern requires it
         [Parameter(ParameterSetName = "NamedRule")]
-        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [System.Drawing.Color]$PatternColor,
         #Sets the numeric format for matching items
         [Parameter(ParameterSetName = "NamedRule")]
-        [Parameter(ParameterSetName = "NamedRuleAddress")]
         $NumberFormat,
         #Put matching items in bold face
         [Parameter(ParameterSetName = "NamedRule")]
-        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [switch]$Bold,
         #Put matching items in italic
         [Parameter(ParameterSetName = "NamedRule")]
-        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [switch]$Italic,
         #Underline matching items
         [Parameter(ParameterSetName = "NamedRule")]
-        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [switch]$Underline,
         #Strikethrough text of matching items
         [Parameter(ParameterSetName = "NamedRule")]
-        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [switch]$StrikeThru,
         #Prevent the processing of subsequent rules
         [Parameter(ParameterSetName = "NamedRule")]
-        [Parameter(ParameterSetName = "NamedRuleAddress")]
         [switch]$StopIfTrue,
         #Set the sequence for rule processong
         [int]$Priority,
@@ -150,22 +114,38 @@
     )
 
     #Allow conditional formatting to work like Set-ExcelRange (with single ADDRESS parameter), split it to get worksheet and range of cells.
-    If ($Address -and -not $WorkSheet -and -not $Range) {
+    If ($Address -is [OfficeOpenXml.Table.ExcelTable]) {
+            $WorkSheet = $Address.Address.Worksheet
+            $Address   = $Address.Address.Address
+    }
+    elseif  ($Address.Address -and $Address.Worksheet -and -not $WorkSheet) { #Address is a rangebase or similar
         $WorkSheet = $Address.Worksheet[0]
-        $Range     = $Address.Address
+        $Address   = $Address.Address
     }
-    elseif ($Range -and $WorkSheet -and $WorkSheet.Names[$Range] ) {
-        $Range = $WorkSheet.Names[$Range].Address
+    elseif ($Address -is [String] -and $WorkSheet -and $WorkSheet.Names[$Address] ) { #Address is the name of a named range.
+        $Address = $WorkSheet.Names[$Address].Address
     }
-    if ($Range -match "!") {$Range = $Range -replace '^.*!',''}
-
+    if (($Address -is [OfficeOpenXml.ExcelRow]    -and -not $WorkSheet) -or
+        ($Address -is [OfficeOpenXml.ExcelColumn] -and -not $WorkSheet) ){  #EPPLUs Can't get the worksheet object from a row or column object, so bail if that was tried
+        Write-Warning -Message "Add-ConditionalFormatting does not support Row or Column objects as an address; use a worksheet and/or specify 'R:R' or 'C:C' instead. "; return
+    }
+    elseif ($Address -is [OfficeOpenXml.ExcelRow]) {  #But if we have a column or row object and a worksheet (I don't know *why*) turn them into a string for the range
+            $Address = "$($Address.Row):$($Address.Row)"
+    }
+    elseif ($Address -is [OfficeOpenXml.ExcelColumn]) {
+        $Address = [OfficeOpenXml.ExcelAddress]::new(1,$address.ColumnMin,1,$address.ColumnMax).Address -replace '1',''
+        if ($Address -notmatch ':') {$Address = "$Address`:$Address"}
+    }
+    if ( $Address -is [string] -and $Address -match "!") {$Address = $Address -replace '^.*!',''}
+    #By this point we should have a worksheet object whose ConditionalFormatting collection we will add to. If not, bail.
+    if (-not $worksheet -or $WorkSheet -isnot [OfficeOpenXml.ExcelWorksheet]) {write-warning "You need to provide a worksheet object." ; return}
     #region create a rule of the right type
     if     ($RuleType -match 'IconSet$') {Write-warning -Message "You cannot configure a IconSet rule in this way; please use -$RuleType <SetName>." ; return}
-    if     ($PSBoundParameters.ContainsKey("ThreeIconsSet" )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddThreeIconSet($Range , $ThreeIconsSet)}
-    elseif ($PSBoundParameters.ContainsKey("FourIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFourIconSet( $Range , $FourIconsSet )}
-    elseif ($PSBoundParameters.ContainsKey("FiveIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Range , $FiveIconsSet )}
-    elseif ($PSBoundParameters.ContainsKey("DataBarColor"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddDatabar(     $Range , $DataBarColor )}
-    else                                                            {$rule = ($WorkSheet.ConditionalFormatting)."Add$RuleType"($Range )                }
+    if     ($PSBoundParameters.ContainsKey("ThreeIconsSet" )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddThreeIconSet($Address , $ThreeIconsSet)}
+    elseif ($PSBoundParameters.ContainsKey("FourIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFourIconSet( $Address , $FourIconsSet )}
+    elseif ($PSBoundParameters.ContainsKey("FiveIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Address , $FiveIconsSet )}
+    elseif ($PSBoundParameters.ContainsKey("DataBarColor"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddDatabar(     $Address , $DataBarColor )}
+    else                                                            {$rule = ($WorkSheet.ConditionalFormatting)."Add$RuleType"($Address )                }
     if     ($Reverse)  {
             if     ($rule.type -match 'IconSet$'   )                {$rule.reverse = $true}
             elseif ($rule.type -match 'ColorScale$')                {$temp =$rule.LowValue.Color ; $rule.LowValue.Color = $rule.HighValue.Color; $rule.HighValue.Color = $temp}
