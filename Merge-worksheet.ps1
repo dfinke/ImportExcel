@@ -434,7 +434,7 @@ Function Merge-MultipleSheets {
            $columnNo           = $cell.start.Column -1
            $cellAddr           = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R1C$columnNo",1,$columnNo)
            while ($sheet.cells[$cellAddr].value -match $prefix) {
-               $condFormattingParams =  @{RuleType='Expression'; BackgroundPattern='None'; WorkSheet=$sheet; Range=$([OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[1]C[$columnNo]:R[1048576]C[$columnNo]",0,0)) }
+               $condFormattingParams =  @{RuleType='Expression'; BackgroundPattern='Solid'; WorkSheet=$sheet; Range=$([OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[1]C[$columnNo]:R[1048576]C[$columnNo]",0,0)) }
                Add-ConditionalFormatting @condFormattingParams -ConditionValue ($cell.Address + '="Added"'  ) -BackgroundColor $AddBackgroundColor
                Add-ConditionalFormatting @condFormattingParams -ConditionValue ($cell.Address + '="Changed"') -BackgroundColor $ChangeBackgroundColor
                Add-ConditionalFormatting @condFormattingParams -ConditionValue ($cell.Address + '="Removed"') -BackgroundColor $DeleteBackgroundColor

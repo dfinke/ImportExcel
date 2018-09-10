@@ -307,16 +307,6 @@ Describe "Table Formatting"  {
         Remove-Item $path
         $excel = $data2 | Export-excel -path $path -WorksheetName Hardware -AutoNameRange -AutoSize -BoldTopRow -FreezeTopRow -PassThru
         $ws = $excel.Workbook.Worksheets[1]
-        Add-ExcelTable -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -TotalSettings @{"Total"="Sum"} -ShowFirstColumn -ShowFilter:$false
-
-        Set-ExcelColumn -Worksheet $ws -Column 4 -NumberFormat 'Currency'
-        Set-ExcelColumn -Worksheet $ws -Column 5 -NumberFormat 'Currency'
-
-        $PtDef =New-PivotTableDefinition -PivotTableName Totals -PivotRows Product -PivotData @{"Total"="Sum"} -PivotNumberFormat Currency -PivotTotals None -PivotTableSyle Dark2
-        Export-excel -ExcelPackage $excel -WorksheetName Hardware -PivotTableDefinition $PtDef
-        Remove-Item $path
-        $excel = $data2 | Export-excel -path $path -WorksheetName Hardware -AutoNameRange -AutoSize -BoldTopRow -FreezeTopRow -PassThru
-        $ws = $excel.Workbook.Worksheets[1]
         #test showfilter & TotalSettings
         $Table = Add-ExcelTable -PassThru -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -TotalSettings @{"Total"="Sum"} -ShowFirstColumn -ShowFilter:$false
         #test expnading named number formats

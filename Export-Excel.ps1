@@ -1049,15 +1049,17 @@ function Add-WorkSheet  {
         made the default sheet when excel opens if -Activate is specified.
       .Example
         $WorksheetActors = $ExcelPackage | Add-WorkSheet -WorkSheetname Actors
+
         $ExcelPackage holds an Excel package object (returned by Open-ExcelPackage, or Export-Excel -passthru).
-        This command will add a sheet named actors, or return the sheet if it exists, and stores the result in $WorkSheetActors
+        This command will add a sheet named 'Actors', or return the sheet if it exists, and the result is stored in $WorkSheetActors.
       .Example
         $WorksheetActors = Add-WorkSheet -ExcelPackage $ExcelPackage -WorkSheetname "Actors" -ClearSheet -MoveToStart
-        This time the Excel package object is passed as a parameter instead of piped. If the Actors sheet already exists it is deleted
-        and  re-created. The new sheet will be created last in the workbook, and -MoveToStart Moves it to the start
+
+        This time the Excel package object is passed as a parameter instead of piped. If the 'Actors' sheet already exists it is deleted
+        and  re-created. The new sheet will be created last in the workbook, and -MoveToStart Moves it to the start.
       .Example
         $null = Add-WorkSheet -ExcelWorkbook $wb -WorkSheetname $DestinationName -CopySource  $sourceWs -Activate
-        This time the workbook is used instead of the package, and a worksheet is copied - $SourceWs is a worksheet object, it can come
+        This time a workbook is used instead of a package, and a worksheet is copied - $SourceWs is a worksheet object, which can come
         from the same workbook or a different one. Here the new copy of the data is made the active sheet when the workbook is opened.
     #>
     [cmdletBinding()]
