@@ -11,32 +11,33 @@
         which will return the rule so that you can modify things which are specific to that type of rule,
         for example the values which correspond to each icon in an Icon set.
       .Example
-        C:\> $excel = $avdata | Export-Excel -Path (Join-path $FilePath "\Machines.XLSX" ) -WorksheetName "Server Anti-Virus" -AutoSize -FreezeTopRow -AutoFilter -PassThru
-
-        C:\> Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "b2:b1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "2003"
-        C:\> Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "i2:i1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "Disabled"
-        C:\> $excel.Workbook.Worksheets[1].Cells["D1:G1048576"].Style.Numberformat.Format = [cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern
-        C:\> $excel.Workbook.Worksheets[1].Row(1).style.font.bold = $true
-        C:\> $excel.Save() ; $excel.Dispose()
+        >
+        PS> $excel = $avdata | Export-Excel -Path (Join-path $FilePath "\Machines.XLSX" ) -WorksheetName "Server Anti-Virus" -AutoSize -FreezeTopRow -AutoFilter -PassThru
+        Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "b2:b1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "2003"
+        Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "i2:i1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "Disabled"
+        $excel.Workbook.Worksheets[1].Cells["D1:G1048576"].Style.Numberformat.Format = [cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern
+        $excel.Workbook.Worksheets[1].Row(1).style.font.bold = $true
+        $excel.Save() ; $excel.Dispose()
 
         Here Export-Excel is called with the -passThru parameter so the Excel Package object is stored in $Excel
         The desired worksheet is selected and the then columns B and i are conditially formatted (excluding the top row) to show red text if
         the columns contain "2003" or "Disabled respectively. A fixed date format is then applied to columns D..G, and the top row is formatted.
         Finally the workbook is saved and the Excel object closed.
       .Example
-        C:\> $r = Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Range "B1:B100" -ThreeIconsSet Flags -Passthru
-        C:\> $r.Reverse = $true ;   $r.Icon1.Type = "Num"; $r.Icon2.Type = "Num" ; $r.Icon2.value = 100 ; $r.Icon3.type = "Num" ;$r.Icon3.value = 1000
+        >
+        >PS  $r = Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Range "B1:B100" -ThreeIconsSet Flags -Passthru
+        $r.Reverse = $true ;   $r.Icon1.Type = "Num"; $r.Icon2.Type = "Num" ; $r.Icon2.value = 100 ; $r.Icon3.type = "Num" ;$r.Icon3.value = 1000
 
         Again Export-Excel has been called with -passthru leaving a package object in $Excel
         This time B1:B100 has been conditionally formatted with 3 icons, using the flags icon set.
         Add-ConditionalFormatting does not provide access to every option in the formatting rule, so passthru has been used and the
         rule is to apply the flags in reverse order, and boundaries for the number which will set the split are set to 100 and 1000
       .Example
-        C:\>  Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor Red
+        Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor Red
 
         This time $sheet holds an ExcelWorkseet object and databars are add to all of column D except for the tip row.
       .Example
-        C:\>  Add-ConditionalFormatting -Address $worksheet.cells["FinishPosition"] -RuleType Equal    -ConditionValue 1 -ForeGroundColor Purple -Bold -Priority 1 -StopIfTrue
+        Add-ConditionalFormatting -Address $worksheet.cells["FinishPosition"] -RuleType Equal    -ConditionValue 1 -ForeGroundColor Purple -Bold -Priority 1 -StopIfTrue
 
         In this example a named range is used to select the cells where the formula should apply. If a cell in the "FinishPosition" range is 1, then the text is turned to puple, boldface.
         This rule is move to first in the priority list, and where cells have a value of 1, no other rules will be processed.

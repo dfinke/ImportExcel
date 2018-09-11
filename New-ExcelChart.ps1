@@ -82,7 +82,8 @@ function New-ExcelChartDefinition {
       .PARAMETER Header
         No longer used. This may be removed in future versions
       .Example
-        $cDef = New-ExcelChartDefinition  -ChartType line -XRange "X" -YRange "Sinx"  -Title "Graph of Sine X" -TitleBold -TitleSize 14 `
+        >
+        PS> $cDef = New-ExcelChartDefinition  -ChartType line -XRange "X" -YRange "Sinx"  -Title "Graph of Sine X" -TitleBold -TitleSize 14 `
                        -Column 2 -ColumnOffSetPixels 35 -Width 800 -XAxisTitleText "Degrees" -XAxisTitleBold -XAxisTitleSize 12 -XMajorUnit 30 -XMinorUnit 10 -XMinValue 0 -XMaxValue 361  -XAxisNumberformat "000" `
                        -YMinValue -1.25 -YMaxValue 1.25 -YMajorUnit 0.25 -YAxisNumberformat "0.00" -YAxisTitleText "Sine" -YAxisTitleBold -YAxisTitleSize 12 `
                        -SeriesHeader "Sin(x)" -LegendSize 8 -legendBold  -LegendPostion Bottom
@@ -265,7 +266,8 @@ function Add-ExcelChart {
       .PARAMETER PassThru
         Add-Excel chart doesn't normally return anything, but if -PassThru is specified it returns the newly created chart to allow it to be fine tuned
       .EXAMPLE
-        $Excel = ConvertFrom-Csv    @"
+        >
+        PS> $Excel = ConvertFrom-Csv    @"
         Product, City, Sales
         Apple, London , 300
         Orange, London , 400
@@ -282,15 +284,17 @@ function Add-ExcelChart {
         combine the name of the product and the name of the City to create the table.
         The width of the chart is set explictly, the default legend is used and there is no Chart title.
       .EXAMPLE
-        $Excel = Invoke-Sum (Get-Process) Company Handles, PM, VirtualMemorySize | Export-Excel $path  -AutoSize -ExcelChartDefinition $c -AutoNameRange -PassThru
+        >
+        PS> $Excel = Invoke-Sum (Get-Process) Company Handles, PM, VirtualMemorySize | Export-Excel $path  -AutoSize -ExcelChartDefinition $c -AutoNameRange -PassThru
         Add-ExcelChart -Worksheet $Excel.Workbook.Worksheets[1] -Title "VM use" -ChartType PieExploded3D   -XRange "Name" -YRange "VirtualMemorySize" -NoLegend -ShowCategory
         Close-ExcelPackage $Excel -Show
 
-      The first line exports information and creates named ranges for each column.
-      The Second line uses the ranges to specify a chart - the labels come from the range "Name" and the data from the range "VirtualMemorySize"
-      The chart is specified as a 3D exploded PIE chart, with a title of "VM Use" and instead of a legend the the pie slices are identified with a label.
+        The first line exports information and creates named ranges for each column.
+        The Second line uses the ranges to specify a chart - the labels come from the range "Name" and the data from the range "VirtualMemorySize"
+        The chart is specified as a 3D exploded PIE chart, with a title of "VM Use" and instead of a legend the the pie slices are identified with a label.
       .EXAMPLE
-        $Excel = Invoke-Sum (Get-Process) Company Handles, PM, VirtualMemorySize | Export-Excel test.xlsx  -TableName Processes -PassThru
+        >
+        PS> $Excel = Invoke-Sum (Get-Process) Company Handles, PM, VirtualMemorySize | Export-Excel test.xlsx  -TableName Processes -PassThru
         Add-ExcelChart -Worksheet $Excel.Workbook.Worksheets[1] -Title Stats -ChartType LineMarkersStacked   -XRange "Processes[Name]" -YRange "Processes[PM]", "Processes[VirtualMemorySize]" -SeriesHeader 'PM', 'VMSize'
         Close-ExcelPackage $Excel -Show
 
@@ -298,7 +302,8 @@ function Add-ExcelChart {
         The second line creates a chart on the first page of the work sheet, using the notation "TableName[ColumnnName]" to refer to the data,
         the labels come Name column in the table, and the data series from its PM and VirtualMemorySize columns. The display names for these in the header are set to PM and VMSize
       .EXAMPLE
-        $excel = 0..360 | ForEach-Object {[pscustomobject][ordered]@{x = $_; Sinx = "=Sin(Radians(x)) "}} | Export-Excel -AutoNameRange -Path Text.xlsx -WorkSheetname SinX -PassThru
+        >
+        PS> $excel = 0..360 | ForEach-Object {[pscustomobject][ordered]@{x = $_; Sinx = "=Sin(Radians(x)) "}} | Export-Excel -AutoNameRange -Path Text.xlsx -WorkSheetname SinX -PassThru
         Add-ExcelChart -Worksheet $excel.Workbook.Worksheets["Sinx"] -ChartType line -XRange "X" -YRange "Sinx"  -Title "Graph of Sine X" -TitleBold -TitleSize 14 `
                        -Column 2 -ColumnOffSetPixels 35 -Width 800 -XAxisTitleText "Degrees" -XAxisTitleBold -XAxisTitleSize 12 -XMajorUnit 30 -XMinorUnit 10 -XMinValue 0 -XMaxValue 361  -XAxisNumberformat "000" `
                        -YMinValue -1.25 -YMaxValue 1.25 -YMajorUnit 0.25 -YAxisNumberformat "0.00" -YAxisTitleText "Sine" -YAxisTitleBold -YAxisTitleSize 12 `

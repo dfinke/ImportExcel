@@ -178,7 +178,8 @@
             Export all the processes to the Excel file 'Test.xlsx' and open the file immediately.
 
         .EXAMPLE
-            $ExcelParams = @{
+        >
+        PS> $ExcelParams = @{
                 Path    = $env:TEMP + '\Excel.xlsx'
                 Show    = $true
                 Verbose = $true
@@ -190,7 +191,8 @@
             Exports all data to the Excel file 'Excel.xslx' and colors the negative values in 'Red' and the positive values in 'Blue'. It will also add a dollar sign '$' in front of the rounded numbers to two decimal characters behind the comma.
 
         .EXAMPLE
-            $ExcelParams = @{
+        >
+        PS> $ExcelParams = @{
                 Path    = $env:TEMP + '\Excel.xlsx'
                 Show    = $true
                 Verbose = $true
@@ -215,7 +217,8 @@
             Exports all data to the Excel file 'Excel.xslx' and tries to convert all values to numbers where possible except for 'IPAddress' and 'Number1'. These are stored in the sheet 'as is', without being converted to a number.
 
         .EXAMPLE
-            $ExcelParams = @{
+        >
+        PS> $ExcelParams = @{
                 Path    = $env:TEMP + '\Excel.xlsx'
                 Show    = $true
                 Verbose = $true
@@ -240,7 +243,8 @@
             Exports all data to the Excel file 'Excel.xslx' as is, no number conversion will take place. This means that Excel will show the exact same data that you handed over to the 'Export-Excel' function.
 
         .EXAMPLE
-            $ExcelParams = @{
+        >
+        PS> $ExcelParams = @{
                 Path    = $env:TEMP + '\Excel.xlsx'
                 Show    = $true
                 Verbose = $true
@@ -254,7 +258,8 @@
             Exports data that will have a 'Conditional formatting rule' in Excel on these cells that will show the background fill color in 'LightPink' and the text color in 'DarkRed' when the value is greater then '525'. In case this condition is not met the color will be the default, black text on a white background.
 
         .EXAMPLE
-            $ExcelParams = @{
+        >
+        PS> $ExcelParams = @{
                 Path    = $env:TEMP + '\Excel.xlsx'
                 Show    = $true
                 Verbose = $true
@@ -269,7 +274,8 @@
             Export all services to an Excel sheet where all cells have a 'Conditional formatting rule' in Excel that will show the background fill color in 'LightPink' and the text color in 'DarkRed' when the value contains the word 'Stop'. If the value contains the word 'Running' it will have a background fill color in 'Cyan' and a text color 'Blue'. In case none of these conditions are met the color will be the default, black text on a white background.
 
         .EXAMPLE
-            $ExcelParams = @{
+        >
+        PS> $ExcelParams = @{
                 Path      = $env:TEMP + '\Excel.xlsx'
                 Show      = $true
                 Verbose   = $true
@@ -312,7 +318,8 @@
             Get-Service | Export-Excel 'c:\temp\test.xlsx'  -Show -IncludePivotTable -PivotRows status -PivotData @{status='count'}
 
         .EXAMPLE
-            $pt = [ordered]@{}
+        >
+        PS> $pt = [ordered]@{}
             $pt.pt1=@{ SourceWorkSheet   = 'Sheet1';
                        PivotRows         = 'Status'
                        PivotData         = @{'Status'='count'}
@@ -335,7 +342,8 @@
 
 
         .EXAMPLE
-            Remove-Item  -Path .\test.xlsx
+        >
+        PS> Remove-Item  -Path .\test.xlsx
             $excel = Get-Service | Select-Object -Property Status,Name,DisplayName,StartType | Export-Excel -Path .\test.xlsx -PassThru
             $excel.Workbook.Worksheets["Sheet1"].Row(1).style.font.bold = $true
             $excel.Workbook.Worksheets["Sheet1"].Column(3 ).width = 29
@@ -348,7 +356,8 @@
             It then uses the package object to apply formatting, and then saves the workbook and disposes of the object before loading the document in Excel.
 
         .EXAMPLE
-            Remove-Item -Path .\test.xlsx -ErrorAction Ignore
+        >
+        PS> Remove-Item -Path .\test.xlsx -ErrorAction Ignore
 
             $excel = Get-Process | Select-Object -Property Name,Company,Handles,CPU,PM,NPM,WS | Export-Excel -Path .\test.xlsx -ClearSheet -WorksheetName "Processes" -PassThru
             $sheet = $excel.Workbook.Worksheets["Processes"]

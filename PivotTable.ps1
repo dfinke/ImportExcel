@@ -5,15 +5,17 @@
       .Description
         If the pivot table already exists, the source data will be updated.
       .Example
-        $excel = Get-Service | Export-Excel -Path test.xlsx -WorksheetName Services -PassThru -AutoSize -DisplayPropertySet -TableName ServiceTable -Title "Services on $Env:COMPUTERNAME"
+        >
+        PS> $excel = Get-Service | Export-Excel -Path test.xlsx -WorksheetName Services -PassThru -AutoSize -DisplayPropertySet -TableName ServiceTable -Title "Services on $Env:COMPUTERNAME"
         Add-PivotTable -ExcelPackage $excel  -PivotTableName ServiceSummary   -SourceRange $excel.Workbook.Worksheets[1].Tables[0].Address -PivotRows Status -PivotData Name -NoTotalsInPivot -Activate
         Close-ExcelPackage $excel -Show
 
         This exports data to new workbook and creates a table with the data in.
         The Pivot table is added on its own page, the table created in the first command is used as the source for the PivotTable;  which counts the service names in for each Status. At the end the Pivot page is made active.
       .Example
-        $chartdef = New-ExcelChartDefinition -Title "Gross and net by city and product"  -ChartType ColumnClustered `
-            -Column 11 -Width 500 -Height 360 -YMajorUnit 500 -YMinorUnit 100 -YAxisNumberformat "$#,##0" -LegendPostion Bottom
+        >
+        PS> $chartdef = New-ExcelChartDefinition -Title "Gross and net by city and product"  -ChartType ColumnClustered `
+               -Column 11 -Width 500 -Height 360 -YMajorUnit 500 -YMinorUnit 100 -YAxisNumberformat "$#,##0" -LegendPostion Bottom
 
         $excel = ConvertFrom-Csv    @"
         Product, City, Gross, Net
@@ -29,6 +31,7 @@
                     -SourceWorkSheet $excel.Workbook.Worksheets[1]  -PivotRows City -PivotColumns Product -PivotData @{Gross="Sum";Net="Sum"} `
                     -PivotNumberFormat "$#,##0.00"  -PivotTotals Both  -PivotTableSyle Medium12 -PivotChartDefinition $chartdef
         Close-ExcelPackage -show $excel
+
 
         This script starts by defining a chart. Then it exports some data to an XLSX file and keeps the file open.
         The next step is to add the pivot table, normally this would be on its own sheeet in the workbook,
@@ -226,15 +229,16 @@
 
 function New-PivotTableDefinition {
     <#
-        .Synopsis
+      .Synopsis
         Creates Pivot table definitons for Export-Excel
-        .Description
+      .Description
         Export-Excel allows a single Pivot table to be defined using the parameters -IncludePivotTable, -PivotColumns -PivotRows,
         =PivotData, -PivotFilter, -PivotTotals, -PivotDataToColumn, -IncludePivotChart and -ChartType.
         Its -PivotTableDefintion paramater allows multiple pivot tables to be defined, with additional parameters.
         New-PivotTableDefinition is a convenient way to build these definitions.
-        .Example
-        $pt  = New-PivotTableDefinition -PivotTableName "PT1" -SourceWorkSheet "Sheet1" -PivotRows "Status"  -PivotData @{Status='Count' } -PivotFilter 'StartType' -IncludePivotChart  -ChartType BarClustered3D
+      .Example
+        >
+        PS>   $pt  = New-PivotTableDefinition -PivotTableName "PT1" -SourceWorkSheet "Sheet1" -PivotRows "Status"  -PivotData @{Status='Count' } -PivotFilter 'StartType' -IncludePivotChart  -ChartType BarClustered3D
         $Pt += New-PivotTableDefinition -PivotTableName "PT2" -SourceWorkSheet "Sheet2" -PivotRows "Company" -PivotData @{Company='Count'} -IncludePivotChart  -ChartType PieExploded3D  -ShowPercent -ChartTitle "Breakdown of processes by company"
         Get-Service | Select-Object    -Property Status,Name,DisplayName,StartType | Export-Excel -Path .\test.xlsx -AutoSize
         Get-Process | Select-Object    -Property Name,Company,Handles,CPU,VM       | Export-Excel -Path .\test.xlsx -AutoSize -WorksheetName 'sheet2'

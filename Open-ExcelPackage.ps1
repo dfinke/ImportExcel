@@ -8,13 +8,15 @@
     It takes a KillExcel switch to make sure Excel is not holding the file open; a password parameter for existing protected files,
     and a create switch to set-up a new file if no file already exists.
 .Example
-    $excel = Open-ExcelPackage -Path "$env:TEMP\test99.xlsx" -Create
+    >
+    PS> $excel = Open-ExcelPackage -Path "$env:TEMP\test99.xlsx" -Create
     $ws = Add-WorkSheet -ExcelPackage $excel
 
    This will create a new file in the temp folder if it doesn't already exist. It then adds a worksheet -
    because no name is specified it will use the default name of "Sheet1"
 .Example
-    $excel  = Open-ExcelPackage -path "$xlPath" -Password $password
+     >
+    PS>     $excel  = Open-ExcelPackage -path "$xlPath" -Password $password
     $sheet1 = $excel.Workbook.Worksheets["sheet1"]
     Set-ExcelRange -Range $sheet1.Cells["E1:S1048576"], $sheet1.Cells["V1:V1048576"]  -NFormat ([cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern)
     Close-ExcelPackage $excel -Show
