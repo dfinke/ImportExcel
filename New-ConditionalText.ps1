@@ -25,17 +25,11 @@ function New-ConditionalText {
         Export-Excel -ExcelPackage $excel -ConditionalTest $ct -show
 
         The first line creates a definition object which will highlight the word "Ferrari" in any cell.
-        and the third uses Export-Excel with an open package to apply the format and save and open the file.
+        and the secind uses Export-Excel with an open package to apply the format and save and open the file.
       .EXAMPLE
-        $ct = New-ConditionalText -Text  'Ferrari'
-        Export-Excel -ExcelPackage $excel -ConditionalTest $ct -show
-
-        The first line creates a definition object which will highlight the word "Ferrari" in any cell.
-        and the third uses Export-Excel with an open package to apply the format and save and open the file.
-     .EXAMPLE
         $ct  = New-ConditionalText -Text "Ferrari"
         $ct2 = New-ConditionalText -Range $worksheet.Names["FinishPosition"].Address -ConditionalType LessThanOrEqual -Text 3 -ConditionalTextColor Red -BackgroundColor White
-        Export-Excel -ExcelPackage $excel -ConditionalTest $ct,$c2 -show
+        Export-Excel -ExcelPackage $excel -ConditionalText $ct,$ct2 -show
 
         This builds on the previous example, and specifies a condition of <=3 with a format of Red text on a white background; this applies to a named range "Finish Position"
         the range could be written "C:C" to specify a named column, or "C2:C102" to specify certain cells in the column.

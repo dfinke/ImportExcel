@@ -8,12 +8,19 @@
     It takes a KillExcel switch to make sure Excel is not holding the file open; a password parameter for existing protected files,
     and a create switch to set-up a new file if no file already exists.
 .Example
-    $excel  = Open-ExcelPackage -path $xlPath
+    $excel = Open-ExcelPackage -Path "$env:TEMP\test99.xlsx" -Create
+    $ws = Add-WorkSheet -ExcelPackage $excel
+
+   This will create a new file in the temp folder if it doesn't already exist. It then adds a worksheet -
+   because no name is specified it will use the default name of "Sheet1"
+.Example
+    $excel  = Open-ExcelPackage -path "$xlPath" -Password $password
     $sheet1 = $excel.Workbook.Worksheets["sheet1"]
     Set-ExcelRange -Range $sheet1.Cells["E1:S1048576"], $sheet1.Cells["V1:V1048576"]  -NFormat ([cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern)
     Close-ExcelPackage $excel -Show
 
-   This will open the file at $xlPath, select sheet1 apply formatting to two blocks of the sheet and save the package, and launch it in Excel.
+   This will open the password protected file at $xlPath using the password stored in $Password.
+   Sheet1 is selected and formatting applied to two blocks of the sheet; then the file is and saved and loaded into Excel.
 #>
     [CmdLetBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword","")]

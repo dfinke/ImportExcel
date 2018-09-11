@@ -14,7 +14,7 @@ function New-ConditionalFormattingIconSet {
       .PARAMETER Reverse
         Use the icons in the reverse order.
       .Example
-        $cfRange = [OfficeOpenXml.ExcelAddress]::new($topRow,$column,$lastDataRow,$column)
+        $cfRange = [OfficeOpenXml.ExcelAddress]::new($topRow, $column, $lastDataRow, $column)
         $cfdef = New-ConditionalFormattingIconSet -Range $cfrange -ConditionalFormat ThreeIconSet -IconType Arrows
         Export-Excel -ExcelPackage $excel -ConditionalFormat $cfdef -show
 

@@ -9,11 +9,18 @@
         It has been extended to set Values, Formulas and set ArrayFormulas (sometimes called Ctrl-shift-Enter [CSE] formulas); because of this
         the name has become Set-ExcelRange - but the old name of Set-Format is preserved as an alias name may swapped.
       .EXAMPLE
-        $sheet.Column(3) | Set-ExcelRange -HorizontalAlignment Right -NumberFormat "#,###"
-        Selects column 3 from a sheet object (within a workbook object, which is a child of the ExcelPackage object) and passes it to Set-ExcelRange which formats as an integer with comma seperated groups
+        $sheet.Column(3) | Set-ExcelRange -HorizontalAlignment Right -NumberFormat "#,###" -AutoFit
+
+        Selects column 3 from a sheet object (within a workbook object, which is a child of the ExcelPackage object) and passes it to Set-ExcelRange
+         which formats as an integer with comma seperated groups, aligns it right, and auto-fits the column to the contents.
       .EXAMPLE
         Set-ExcelRange -Range $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NumberFormat "#,###"
+
         Instead of piping the address in this version specifies a block of cells and applies similar formatting
+      .EXAMPLE
+        Set-ExcelRange $excel.Workbook.Worksheets[1].Tables["Processes"] -Italic
+
+        This time instead of specifying a range of cells, a table is selected by name and formatted as italic.
     #>
     [cmdletbinding()]
     [Alias("Set-Format")]

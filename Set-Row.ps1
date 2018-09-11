@@ -6,7 +6,7 @@
          Set-ExcelRow accepts either a Worksheet object or an Excel package object returned by Export-Excel and the name of a sheet,
         and inserts the chosen contents into a row of the sheet.
         The contents can be a constant "42" , a formula or a script block which is converted into a constant or formula.
-        The first cell of the row can optional be given a heading.
+        The first cell of the row can optionally be given a heading.
       .Example
          Set-ExcelRow -Worksheet $ws -Heading Total -Value {"=sum($columnName`2:$columnName$endrow)" }
 
@@ -15,6 +15,12 @@
             =Sum(xx2:xx99)  - where xx is the column name, and 99 is the last row of data.
             Note the use of `2 to Prevent 2 becoming part of the variable "ColumnName"
         The script block can use $row, $column, $ColumnName, $startRow/Column $endRow/Column
+      .Example
+        Set-ExcelRow -Worksheet $ws -Heading Total -HeadingBold -Value {"=sum($columnName`2:$columnName$endrow)" } -NumberFormat 'Currency' -StartColumn 2 -Bold -BorderTop Double -BorderBottom Thin
+
+        This builds on the previous example, but this time the label "Total" appears in column 2 and the formula fills from column 3 onwards;
+        the formula and heading are set in bold face, and the formula is formatted for the local currency,
+        and given a double line border above and single line border below.
     #>
     [cmdletbinding()]
     [Alias(" Set-Row")]
@@ -37,11 +43,25 @@
         $Value,
         #Optional Row heading
         $Heading ,
+        #Set the heading in bold type
+        [Switch]$HeadingBold,
+        #Change the size of the heading type
+        [Int]$HeadingSize ,
         #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "£#,##0.00;[Red]-£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc
         [Alias("NFormat")]
         $NumberFormat,
         #Style of border to draw around the row
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderAround,
+        #Color of the border
+        [System.Drawing.Color]$BorderColor=[System.Drawing.Color]::Black,
+        #Style for the bottom border
+        [OfficeOpenXml.Style.ExcelBorderStyle]$BorderBottom,
+        #Style for the top border
+        [OfficeOpenXml.Style.ExcelBorderStyle]$BorderTop,
+        #Style for the left border
+        [OfficeOpenXml.Style.ExcelBorderStyle]$BorderLeft,
+        #Style for the right border
+        [OfficeOpenXml.Style.ExcelBorderStyle]$BorderRight,
         #Colour for the text - if none specified it will be left as it it is
         [System.Drawing.Color]$FontColor,
         #Make text bold; use -Bold:$false to remove bold
@@ -99,8 +119,10 @@
     Write-Verbose -Message "Updating Row $Row"
     #Add a row label
     if      ($Heading)                   {
-                                           $Worksheet.Cells[$Row, $StartColumn].Value = $Heading
-                                           $StartColumn ++
+        $Worksheet.Cells[$Row, $StartColumn].Value = $Heading
+        if ($HeadingBold) {$Worksheet.Cells[$Row, $StartColumn].Style.Font.Bold = $true}
+        if ($HeadingSize) {$Worksheet.Cells[$Row, $StartColumn].Style.Font.Size = $HeadingSize}
+        $StartColumn ++
     }
     #Fill in the data
     if      ($PSBoundParameters.ContainsKey('Value')) {foreach ($column in ($StartColumn..$endColumn)) {
@@ -133,7 +155,8 @@
     $params = @{}
     foreach ($p in @('Underline','Bold','Italic','StrikeThru','FontSize', 'FontShift','NumberFormat','TextRotation',
                      'WrapText', 'HorizontalAlignment','VerticalAlignment', 'Height', 'FontColor'
-                     'BorderAround', 'BackgroundColor', 'BackgroundPattern', 'PatternColor')) {
+                     'BorderAround', 'BorderBottom', 'BorderTop', 'BorderLeft', 'BorderRight', 'BorderColor',
+                     'BackgroundColor', 'BackgroundPattern', 'PatternColor')) {
         if ($PSBoundParameters.ContainsKey($p)) {$params[$p] = $PSBoundParameters[$p]}
     }
     $theRange                            = [OfficeOpenXml.ExcelAddress]::New($Row, $StartColumn, $Row, $endColumn)

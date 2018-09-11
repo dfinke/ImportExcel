@@ -1211,7 +1211,7 @@ Function Add-ExcelName {
         It is often helpful to be able to refer to sets of cells with a name rather than using their co-ordinates; Add-ExcelName sets up these names.
       .EXAMPLE
           Add-ExcelName -Range $ws.Cells[$dataRange] -RangeName $rangeName
-          $WS is a worksheet, and $dataRange holds a range of cells - e.g. "A1:Z10"
+          $WS is a worksheet, and $dataRange is a string describing a range of cells - e.g. "A1:Z10"
           which will become a named range, using the name in $rangeName.
     #>
     [CmdletBinding()]
@@ -1252,9 +1252,10 @@ function Add-ExcelTable {
         Unlike named ranges, where the name only needs to be unique within a sheet, Table names must be unique in the workbook
         Tables carry formatting by default have a filter. The filter, header, Totals, first and last column highlights
       .EXAMPLE
-        Add-ExcelName -Range $ws.Cells[$dataRange] -RangeName $rangeName
-        $WS is a worksheet, and $dataRange holds a range of cells - e.g. "A1:Z10"
-        which will become a named range, using the name in $rangeName.
+        Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName
+
+        $WS is a worksheet, and $dataRange is a string describing a range of cells - e.g. "A1:Z10"
+        this range which will become a table, named $TableName
       .EXAMPLE
         Add-ExcelTable -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName Musictable -ShowFilter:$false -ShowTotal -ShowFirstColumn
         Again $ws is a worksheet, range here is the whole of the active part of the worksheet. The table style and name are set,

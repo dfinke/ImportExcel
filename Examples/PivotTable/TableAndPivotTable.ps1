@@ -1,8 +1,7 @@
 $path = "$Env:TEMP\test.xlsx"
 remove-item -path $path -ErrorAction SilentlyContinue
 
-#Export some sales data to Excel, format it as a table and put a data-bar in
-
+#Export some sales data to Excel, format it as a table and put a data-bar in.  For this example we won't create the pivot table during the export
 $excel =  ConvertFrom-Csv    @"
 Product, City, Gross, Net
 Apple, London , 300, 250
@@ -11,12 +10,13 @@ Banana, London , 300, 200
 Orange, Paris,   600, 500
 Banana, Paris,   300, 200
 Apple, New York, 1200,700
-"@  | Export-Excel  -Path $path  -TableStyle Medium13 -tablename "RawData" -ConditionalFormat @{Range="C2:C7"; DataBarColor="Green"}  -PassThru
+"@  | Export-Excel -PassThru  -Path $path  -TableStyle Medium13 -tablename "RawData" -ConditionalFormat @{Range="C2:C7"; DataBarColor="Green"}
 
-#Add a pivot table on the same sheet, using this data. set the table style and number format. Use the "City" as row names, and "Product" for columnnames, and total both the gross and net columns
-#Add a pivot chart (defined in a hash table)
-Add-PivotTable -Address $excel.Sheet1.Cells["F1"] -SourceWorkSheet $Excel.Sheet1 -SourceRange $Excel.Sheet1.Dimension.Address -PivotTableName "Sales" -PivotTableSyle "Medium12" -Activate  `
-                 -PivotRows "City" -PivotColumns "Product" -PivotData @{Gross="Sum";Net="Sum"} -PivotNumberFormat "$#,##0.00" -PivotTotals "Both"  -PivotChartDefinition @{
+#Add a pivot table, specify its address to put it on the same sheet, use the data that was just exported  set the table style and number format.
+#Use the "City" for the row names, and "Product" for the columnnames, and sum both the gross and net values for each City/Product combination; add grand totals to rows and columns.
+# activate the sheet and add a pivot chart (defined in a hash table)
+Add-PivotTable -Address $excel.Sheet1.Cells["F1"] -SourceWorkSheet $Excel.Sheet1 -SourceRange $Excel.Sheet1.Dimension.Address -PivotTableName "Sales" -PivotTableSyle "Medium12"  -PivotNumberFormat "$#,##0.00"   `
+                 -PivotRows "City" -PivotColumns "Product" -PivotData @{Gross="Sum";Net="Sum"}-PivotTotals "Both"  -Activate  -PivotChartDefinition @{
                         Title="Gross and net by city and product";
                         ChartType="ColumnClustered";
                         Column=11; Width=500; Height=360;
