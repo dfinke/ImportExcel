@@ -109,6 +109,10 @@
             Closes Excel - prevents errors writing to the file because Excel has it open.
         .PARAMETER AutoNameRange
             Makes each column a named range.
+        
+        .PARAMETER AutoNameDelimiter
+            Default: _ 
+            For Columns with spaces in the text, replaces the space with the given Delimiter (the _ (underscore) is the default).
         .PARAMETER StartRow
             Row to start adding data. 1 by default. Row 1 will contain the title if any. Then headers will appear (Unless -No header is specified) then the data appears.
         .PARAMETER StartColumn
@@ -439,6 +443,7 @@
         $MoveAfter ,
         [Switch]$KillExcel,
         [Switch]$AutoNameRange,
+        [String]$AutoNameDelimiter="_",
         [Int]$StartRow = 1,
         [Int]$StartColumn = 1,
         [Switch]$PassThru,
@@ -766,6 +771,9 @@
                 # but we have to add the start column on when referencing positions
                 foreach ($c in 0..($LastCol - $StartColumn)) {
                     $targetRangeName = $script:Header[$c] -replace '\W' , '_'
+                    
+                    #Convert Spaces in the Header Names to _
+                    $targetRangeName = $targetRangeName -replace(" ",$AutoNameDelimiter)
                     $targetColumn = $c + $StartColumn
                     $theRange = $ws.Cells[$targetRow, $targetColumn, $LastRow , $targetColumn ]
                     if ($ws.names[$targetRangeName]) { $ws.names[$targetRangeName].Address = $theRange.FullAddressAbsolute }
