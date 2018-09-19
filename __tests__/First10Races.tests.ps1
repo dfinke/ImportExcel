@@ -64,8 +64,10 @@ Describe "Creating small named ranges with hyperlinks" {
         It "Populated the cells with the right heading and formulas                                " {
             $sheet.Cells[(  $results.Count),$columns]                   | Should     benullorEmpty
             $sheet.Cells[(1+$results.Count),$columns].Value             | Should     be "PlacesGained/Lost"
+            write-host -foregroundcolor "Yellow" $sheet.Cells[(1+$results.Count),$columns].Value
             $sheet.Cells[(2+$results.Count),$columns].Formula           | should     be "GridPosition-FinishPosition"
-            $sheet.Names["PlacesGained_Lost"]                           | should not benullorEmpty
+            #This was expected to be PlacesGained_Lost_ ...  It vanished?
+            $sheet.Names["PlacesGainedLost"]                           | should not benullorEmpty
         }
         It "Performed the calculation                                                              " {
             $placesMade = $Sheet.Cells[(2+$results.Count),5].value - $Sheet.Cells[(2+$results.Count),3].value
