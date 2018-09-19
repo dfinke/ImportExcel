@@ -770,11 +770,9 @@
                 # if we have 5 columns from 3 to 8, headers are numbered 0..4, so that is in the for loop and used for getting the name...
                 # but we have to add the start column on when referencing positions
                 foreach ($c in 0..($LastCol - $StartColumn)) {
-                    $targetRangeName = $script:Header[$c] -replace '\W' , '_'
-                    write-host "Target Name Range is $targetRangeName"
+                    $targetRangeName = $script:Header[$c] -replace '\W' , $AutoNameRangeDelimiter
+                    Write-Debug "Target Name Range is $targetRangeName"
                     
-                    #Convert Spaces in the Header Names to $AutoNameRangeDelimiter
-                    #$targetRangeName = $targetRangeName -replace(" ",$AutoNameRangeDelimiter)
                     $targetColumn = $c + $StartColumn
                     $theRange = $ws.Cells[$targetRow, $targetColumn, $LastRow , $targetColumn ]
                     if ($ws.names[$targetRangeName]) { $ws.names[$targetRangeName].Address = $theRange.FullAddressAbsolute }
