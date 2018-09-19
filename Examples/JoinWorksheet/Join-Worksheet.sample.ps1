@@ -40,4 +40,4 @@ $ptdef = New-PivotTableDefinition -PivotTableName "Summary" -PivotRows "Store" -
 #Put in a title and freeze to top of the sheet including title and colmun headings
 #Add the Pivot table.
 #Show the result
-Join-Worksheet -Path $path -WorkSheetName "Total" -Clearsheet -FromLabel "Store" -TableName "Summary" -TableStyle Light1 -AutoSize -BoldTopRow -FreezePane 2,1 -Title "Store Sales Summary" -TitleBold -TitleSize 14  -PivotTableDefinition $ptdef -show
+Join-Worksheet -Path $path -WorkSheetName "Total" -Clearsheet -FromLabel "Store" -TableName "Combined" -TableStyle Light1 -AutoSize -BoldTopRow -FreezePane 2,1 -Title "Store Sales Summary" -TitleBold -TitleSize 14  -PivotTableDefinition $ptdef -show

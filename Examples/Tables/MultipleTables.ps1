@@ -1,7 +1,7 @@
 try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
-$xlfile = "testData.xlsx"
-Remove-Item *.xlsx
+$xlfile = "$env:Temp\testData.xlsx"
+Remove-Item $xlfile -ErrorAction SilentlyContinue
 
 $r = Get-ChildItem C:\WINDOWS\system32
 
@@ -23,16 +23,19 @@ $top10ByFileSize = $r |
     Select-Object -First 10 Name, @{n="Size";e={$_.Length}} #,Extension,Path
 
 
-$top10BySize     | Export-Excel $xlfile -WorkSheetname FileInfo -TableName ExtSize
-$top10ByCount    | Export-Excel $xlfile -WorkSheetname FileInfo -StartRow 13 -TableName ExtCount
-$top10ByFileSize | Export-Excel $xlfile -WorkSheetname FileInfo -StartRow 25 -AutoSize -TableName FileSize
+$xlPkg = $top10BySize     | Export-Excel -path $xlfile        -WorkSheetname FileInfo              -TableName ExtSize  -PassThru
+$xlPkg = $top10ByCount    | Export-Excel -ExcelPackage $xlPkg -WorkSheetname FileInfo -StartRow 13 -TableName ExtCount -PassThru
+$xlPkg = $top10ByFileSize | Export-Excel -ExcelPackage $xlPkg -WorkSheetname FileInfo -StartRow 25 -TableName FileSize -PassThru -AutoSize
+
+#worksheets.tables["Name1","Name2"] returns 2 tables. Set-ExcelRange can process those and will set the number format over both
+Set-ExcelRange -Range $xlpkg.Workbook.Worksheets[1].Tables["ExtSize","FileSize"] -NumberFormat '0,,"MB"'
 
 $ps = Get-Process | Where-Object Company
 
 $ps |
     Sort-Object handles -Descending |
     Select-Object -First 10 company, handles |
-    Export-Excel $xlfile -WorkSheetname Handles -AutoSize -TableName Handles
+    Export-Excel -ExcelPackage $xlPkg -WorkSheetname Handles -AutoSize -TableName Handles
 
 $ps |
     Sort-Object PM -Descending |

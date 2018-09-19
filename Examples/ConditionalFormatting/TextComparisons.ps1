@@ -1,6 +1,4 @@
-cls
-
-ipmo ..\..\ImportExcel.psd1 -Force
+try {ipmo ..\..\ImportExcel.psd1 -Force} catch {}
 
 $data = $(
     New-PSItem 100 (echo test testx)
@@ -10,8 +8,8 @@ $data = $(
     New-PSItem 500
 )
 
-$file1 = "tryComparison1.xlsx"
-$file2 = "tryComparison2.xlsx"
+$file1 = "$env:Temp\tryComparison1.xlsx"
+$file2 = "$env:Temp\tryComparison2.xlsx"
 
 rm $file1 -ErrorAction Ignore
 rm $file2 -ErrorAction Ignore
@@ -22,6 +20,6 @@ $data | Export-Excel $file1 -Show -ConditionalText $(
 )
 
 $data | Export-Excel $file2 -Show -ConditionalText $(
-    New-ConditionalText -ConditionalType GreaterThanOrEqual 275 
+    New-ConditionalText -ConditionalType GreaterThanOrEqual 275
     New-ConditionalText -ConditionalType LessThanOrEqual 250 -BackgroundColor cyan
 )

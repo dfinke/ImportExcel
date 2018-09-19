@@ -1,26 +1,43 @@
-﻿Function Set-Column {
+﻿Function Set-ExcelColumn {
     <#
       .SYNOPSIS
         Adds a column to the existing data area in an Excel sheet, fills values and sets formatting
       .DESCRIPTION
-        Set-Column takes a value which is either string containing a value or formula or a scriptblock
+        Set-ExcelColumn takes a value which is either a string containing a value or formula or a scriptblock
         which evaluates to a string, and optionally a column number and fills that value down the column.
-        A column name can be specified and the new column can be made a named range.
-        The column can be formatted.
-      .Example
-        C:> Set-Column -Worksheet $ws -Heading "WinsToFastLaps"  -Value {"=E$row/C$row"} -Column 7 -AutoSize -AutoNameRange
+        A column heading can be specified and the new column can be made a named range.
+        The column can be formatted in the same operation.
+      .EXAMPLE
+        Set-ExcelColumn -Worksheet $ws -Column 5 -NumberFormat 'Currency'
+
+        $ws contains a worksheet object - and column E is set to use the local currecy format.
+        Intelisense will complete predefined number formats. You can see how currency is interpreted on the local computer with the command
+        Expand-NumberFormat currency
+      .EXAMPLE
+        Set-ExcelColumn -Worksheet $ws -Heading "WinsToFastLaps"  -Value {"=E$row/C$row"} -Column 7 -AutoSize -AutoNameRange
+
         Here $WS already contains a worksheet which contains counts of races won and fastest laps recorded by racing drivers (in columns C and E)
-        Set-Column specifies that Column 7 should have a heading of "WinsToFastLaps" and the data cells should contain =E2/C2 , =E3/C3
+         Set-ExcelColumn specifies that Column 7 should have a heading of "WinsToFastLaps" and the data cells should contain =E2/C2 , =E3/C3 etc
         the data cells should become a named range, which will also be "WinsToFastLaps" the column width will be set automatically
+      .EXAMPLE
+        Set-ExcelColumn -Worksheet $ws -Heading "Link" -Value {"https://en.wikipedia.org" + $worksheet.cells["B$Row"].value  }  -AutoSize
+
+        In this example, the worksheet in $ws has partial links to wikipedia pages in column B.
+        The Value parameter is is a script block and it outputs a string which begins https... and ends with the value of cell at column B in the current row.
+        When given a valid URI,  Set-ExcelColumn makes it a hyperlink. The column will be autosized to fit the links.
     #>
     [cmdletbinding()]
+    [Alias(" Set-Column")]
+    [OutputType([OfficeOpenXml.ExcelColumn],[String])]
     Param (
+        #If specifing the worksheet by name the ExcelPackage object which contains it needs to be passed
         [Parameter(ParameterSetName="Package",Mandatory=$true)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         #The sheet to update can be a given as a name or an Excel Worksheet object - this sets it by name
         [Parameter(ParameterSetName="Package")]
         #The sheet to update can be a given as a name or an Excel Worksheet object - $workSheet contains the object
         [String]$Worksheetname = "Sheet1",
+        #The worksheet object can be passed instead of passing a sheet name and a package.
         [Parameter(ParameterSetName="sheet",Mandatory=$true)]
         [OfficeOpenXml.ExcelWorksheet]$Worksheet,
         #Column to fill down - first column is 1. 0 will be interpreted as first unused column
@@ -79,6 +96,8 @@
         [float]$Width,
         #Set the inserted data to be a named range (ignored if header is not specified)
         [Switch]$AutoNameRange,
+        #Hide the column
+        [Switch]$Hide,
         #If Sepecified returns the range of cells which were affected
         [Switch]$ReturnRange,
         #If Specified, return an ExcelPackage object to allow further work to be done on the file.
@@ -96,12 +115,13 @@
     if ($Column  -eq 0 )  {$Column     = $endColumn    + 1 }
     $columnName = [OfficeOpenXml.ExcelCellAddress]::new(1,$column).Address -replace "1",""
 
+
     Write-Verbose -Message "Updating Column $columnName"
     #If there is a heading, insert it and use it as the name for a range (if we're creating one)
     if      ($Heading)                 {
                                          $Worksheet.Cells[$StartRow, $Column].Value = $Heading
                                          $StartRow ++
-      if    ($AutoNameRange)           { $Worksheet.Names.Add(  $Heading, ($Worksheet.Cells[$StartRow, $Column, $endRow, $Column]) ) | Out-Null }
+      if    ($AutoNameRange)           { Add-ExcelName -Range $Worksheet.Cells[$StartRow, $Column, $endRow, $Column] -RangeName $Heading }
     }
     #Fill in the data
     if      ($PSBoundParameters.ContainsKey('Value')) { foreach ($row in ($StartRow..$endRow)) {
@@ -136,10 +156,11 @@
     }
     $theRange =   "$columnName$StartRow`:$columnName$endRow"
     if ($params.Count) {
-        Set-Format -WorkSheet $Worksheet -Range $theRange @params
+        Set-ExcelRange -WorkSheet $Worksheet -Range $theRange @params
     }
     #endregion
+    if ($PSBoundParameters["Hide"]) {$workSheet.Column($Column).Hidden = [bool]$Hide}
     #return the new data if -passthru was specified.
-    if     ($passThru)                 { $Worksheet.Column(     $Column)}
+    if     ($passThru)                 { $Worksheet.Column($Column)}
     elseif ($ReturnRange)              { $theRange}
 }

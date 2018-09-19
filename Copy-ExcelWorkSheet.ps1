@@ -1,5 +1,4 @@
 ﻿function Copy-ExcelWorkSheet {
-    [CmdletBinding()]
     <#
       .SYNOPSIS
         Copies a worksheet between workbooks or within the same workbook.
@@ -27,6 +26,7 @@
          because -Show is not specified, so other steps can be carried using the package object, at the end the file is saved by Close-ExcelPackage
 
     #>
+    [CmdletBinding()]
     param(
         #An ExcelWorkbook or ExcelPackage object or the path to an XLSx file where the data is found.
         [Parameter(Mandatory=$true)]

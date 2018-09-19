@@ -1,5 +1,4 @@
 ﻿function Join-Worksheet {
-    [CmdletBinding(DefaultParameterSetName = 'Default')]
     <#
       .SYNOPSIS
         Combines data on all the sheets in an Excel worksheet onto a single sheet.
@@ -9,31 +8,36 @@
         In the former case the header row is copied from the first sheet and, by default, each row of data is labelled with the name of the sheet it came from.
         In the latter case -NoHeader is specified, and each copied block can have the sheet it came from placed above it as a title.
       .EXAMPLE
-        foreach ($computerName in @('Server1', 'Server2', 'Server3', 'Server4')) {
-            Get-Service -ComputerName $computerName |  Select-Object -Property Status, Name, DisplayName, StartType |
-                Export-Excel -Path .\test.xlsx -WorkSheetname $computerName -AutoSize
-        }
-        $ptDef =New-PivotTableDefinition -PivotTableName "Pivot1" -SourceWorkSheet "Combined" -PivotRows "Status" -PivotFilter "MachineName" -PivotData @{Status='Count'} -IncludePivotChart -ChartType BarClustered3D
-        Join-Worksheet -Path .\test.xlsx -WorkSheetName combined -FromLabel "MachineName" -HideSource  -AutoSize -FreezeTopRow -BoldTopRow  -PivotTableDefinition $pt -Show
-
-        The foreach command gets the services running on four servers and exports each to its own page in Test.xlsx.
-        $PtDef=  creates a defintion for a single Pivot table.
-        The Join-Worksheet command uses the same file and merges the results onto a sheet named "Combined". It sets a column header of "Machinename",
-        this column will contain the name of the sheet the data was copied from; after copying the data to the sheet "combined", the other sheets will be hidden.
-        Join-Worksheet finishes by calling export-Excel to AutoSize cells, freeze the top row and make it bold and add the Pivot table.
 
       .EXAMPLE
-        Get-WmiObject -Class win32_logicaldisk | select -Property DeviceId,VolumeName, Size,Freespace |
-           Export-Excel -Path "$env:computerName.xlsx" -WorkSheetname Volumes -NumberFormat "0,000"
-        Get-NetAdapter  | Select-Object Name,InterfaceDescription,MacAddress,LinkSpeed |
-            Export-Excel -Path "$env:COMPUTERNAME.xlsx" -WorkSheetname NetAdapter
-        Join-Worksheet -Path "$env:COMPUTERNAME.xlsx"  -WorkSheetName Summary -Title "Summary" -TitleBold -TitleSize 22 -NoHeader -LabelBlocks -AutoSize -HideSource -show
+      >
+      PS> foreach ($computerName in @('Server1', 'Server2', 'Server3', 'Server4')) {
+      Get-Service -ComputerName $computerName |  Select-Object -Property Status, Name, DisplayName, StartType |
+                Export-Excel -Path .\test.xlsx -WorkSheetname $computerName -AutoSize
+      }
+      $ptDef =New-PivotTableDefinition -PivotTableName "Pivot1" -SourceWorkSheet "Combined" -PivotRows "Status" -PivotFilter "MachineName" -PivotData @{Status='Count'} -IncludePivotChart -ChartType BarClustered3D
+      Join-Worksheet -Path .\test.xlsx -WorkSheetName combined -FromLabel "MachineName" -HideSource  -AutoSize -FreezeTopRow -BoldTopRow  -PivotTableDefinition $pt -Show
 
-        The first two command get logical disk and network card information; each type is exported to its own sheet in a workbook.
-        The Join-worksheet command copies both onto a page named "Summary". Because the data is disimilar -NoHeader is specified, ensuring the whole of each page is copied.
-        Specifying -LabelBlocks causes each sheet's name to become a title on the summary page above the copied data.
-        The source data is hidden, a title is addded in 22 point boldface and the columns are sized to fit the data.
+      The foreach command gets the services running on four servers and exports each to its own page in Test.xlsx.
+      $PtDef=  creates a defintion for a single Pivot table.
+      The Join-Worksheet command uses the same file and merges the results onto a sheet named "Combined". It sets a column header of "Machinename",
+      this column will contain the name of the sheet the data was copied from; after copying the data to the sheet "combined", the other sheets will be hidden.
+      Join-Worksheet finishes by calling export-Excel to AutoSize cells, freeze the top row and make it bold and add the Pivot table.
+
+      .EXAMPLE
+      >
+      PS> Get-WmiObject -Class win32_logicaldisk | select -Property DeviceId,VolumeName, Size,Freespace |
+                Export-Excel -Path "$env:computerName.xlsx" -WorkSheetname Volumes -NumberFormat "0,000"
+      Get-NetAdapter  | Select-Object Name,InterfaceDescription,MacAddress,LinkSpeed |
+                Export-Excel -Path "$env:COMPUTERNAME.xlsx" -WorkSheetname NetAdapter
+      Join-Worksheet -Path "$env:COMPUTERNAME.xlsx"  -WorkSheetName Summary -Title "Summary" -TitleBold -TitleSize 22 -NoHeader -LabelBlocks -AutoSize -HideSource -show
+
+      The first two commands get logical disk and network card information; each type is exported to its own sheet in a workbook.
+      The Join-worksheet command copies both onto a page named "Summary". Because the data is disimilar -NoHeader is specified, ensuring the whole of each page is copied.
+      Specifying -LabelBlocks causes each sheet's name to become a title on the summary page above the copied data.
+      The source data is hidden, a title is added in 22 point boldface and the columns are sized to fit the data.
     #>
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
         # Path to a new or existing .XLSX file.
         [Parameter(ParameterSetName = "Default", Position = 0)]
@@ -85,8 +89,9 @@
         [Hashtable]$PivotTableDefinition,
         #A hashtable containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts.
         [Object[]]$ExcelChartDefinition,
+        #One or more conditional formatting rules defined with New-ConditionalFormattingIconSet.
         [Object[]]$ConditionalFormat,
-        #Applies a 'Conditional formatting rule' in Excel on all the cells. When specific conditions are met a rule is triggered.
+        #Applies a Conditional formatting rule defined with New-ConditionalText. When specific conditions are met the format is applied
         [Object[]]$ConditionalText,
         #Makes each column a named range.
         [switch]$AutoNameRange,
@@ -108,6 +113,7 @@
         [String]$TableName,
         [Parameter(ParameterSetName = 'Table')]
         [Parameter(ParameterSetName = 'PackageTable')]
+        #Selects the style for the named table - defaults to 'Medium6'.
         [OfficeOpenXml.Table.TableStyles]$TableStyle = 'Medium6',
         #Selects the style for the named table - defaults to 'Medium6'.
         [switch]$ReturnRange,

@@ -52,6 +52,8 @@
             Name(s) columns from the spreadhseet which will provide the Filter name(s) in a pivot table created from command line parameters.
         .PARAMETER PivotData
             In a pivot table created from command line parameters, the fields to use in the table body is given as a Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP .
+        .PARAMETER PivotDataToColumn
+            If there are multiple datasets in a PivotTable, by default they are shown seperatate rows under the given row heading; this switch makes them seperate columns.
         .PARAMETER NoTotalsInPivot
             In a pivot table created from command line parameters, prevents the addition of totals to rows and columns.
         .PARAMETER IncludePivotChart
@@ -111,6 +113,9 @@
             Sizes the width of the Excel column to the maximum width needed to display all the containing data in that cell.
         .PARAMETER Show
             Opens the Excel file immediately after creation. Convenient for viewing the results instantly without having to search for the file first.
+        .PARAMETER CellStyleSB
+            A script block which is run at the end of the process to apply styles to cells (although it can be used for other purposes).
+            The script block is given three paramaters; an object containing the current worksheet, the Total number of Rows and the number of the last column.
         .PARAMETER ReturnRange
             If specified, Export-Excel returns the range of added cells in the format "A1:Z100"
         .PARAMETER PassThru

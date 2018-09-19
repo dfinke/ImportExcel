@@ -1,4 +1,4 @@
-$data1 = ConvertFrom-Csv -InputObject @"
+﻿$data1 = ConvertFrom-Csv -InputObject @"
 ID,Product,Quantity,Price,Total
 12001,Nails,37,3.99,147.63
 12002,Hammer,5,12.10,60.5
@@ -29,33 +29,33 @@ Describe "Join Worksheet" {
         $data1 | Export-Excel -Path $path -WorkSheetname Oxford
         $data2 | Export-Excel -Path $path -WorkSheetname Abingdon
         $data3 | Export-Excel -Path $path -WorkSheetname Banbury
-        $ptdef = New-PivotTableDefinition -PivotTableName "Summary" -PivotRows "Store" -PivotColumns "Product" -PivotData @{"Total"="SUM"} -IncludePivotChart -ChartTitle "Sales Breakdown" -ChartType ColumnStacked -ChartColumn 10
-        Join-Worksheet -Path $path -WorkSheetName "Total" -Clearsheet -FromLabel "Store" -TableName "Summary" -TableStyle Light1 -AutoSize -BoldTopRow -FreezePane 2,1 -Title "Store Sales Summary" -TitleBold -TitleSize 14  -PivotTableDefinition $ptdef
+        $ptdef = New-PivotTableDefinition -PivotTableName "SummaryPivot" -PivotRows "Store" -PivotColumns "Product" -PivotData @{"Total"="SUM"} -IncludePivotChart -ChartTitle "Sales Breakdown" -ChartType ColumnStacked -ChartColumn 10
+        Join-Worksheet -Path $path -WorkSheetName "Total" -Clearsheet -FromLabel "Store" -TableName "SummaryTable" -TableStyle Light1 -AutoSize -BoldTopRow -FreezePane 2,1 -Title "Store Sales Summary" -TitleBold -TitleSize 14  -PivotTableDefinition $ptdef
 
-       $excel = Export-Excel -path $path -WorkSheetname Summary -Activate -HideSheet * -UnHideSheet "Total","Summary" -PassThru
+       $excel = Export-Excel -path $path -WorkSheetname SummaryPivot -Activate -HideSheet * -UnHideSheet "Total","SummaryPivot" -PassThru
         # Open-ExcelPackage -Path $path
 
         $ws    = $excel.Workbook.Worksheets["Total"]
-        $pt    = $excel.Workbook.Worksheets["Summary"].pivottables[0]
-        $pc    = $excel.Workbook.Worksheets["Summary"].Drawings[0]
+        $pt    = $excel.Workbook.Worksheets["SummaryPivot"].pivottables[0]
+        $pc    = $excel.Workbook.Worksheets["SummaryPivot"].Drawings[0]
     }
     Context "Export-Excel setting spreadsheet visibility" {
         it "Hid the worksheets                                                                     " {
-            $excel.Workbook.Worksheets["Oxford"].Hidden                 | Should     be $true
-            $excel.Workbook.Worksheets["Banbury"].Hidden                | Should     be $true
-            $excel.Workbook.Worksheets["Abingdon"].Hidden               | Should     be $true
+            $excel.Workbook.Worksheets["Oxford"].Hidden                 | Should     be 'Hidden'
+            $excel.Workbook.Worksheets["Banbury"].Hidden                | Should     be 'Hidden'
+            $excel.Workbook.Worksheets["Abingdon"].Hidden               | Should     be 'Hidden'
         }
         it "Un-hid two of the worksheets                                                           " {
-            $excel.Workbook.Worksheets["Total"].Hidden                  | Should     be $false
-            $excel.Workbook.Worksheets["Summary"].Hidden                | Should     be $false
+            $excel.Workbook.Worksheets["Total"].Hidden                  | Should     be 'Visible'
+            $excel.Workbook.Worksheets["SummaryPivot"].Hidden           | Should     be 'Visible'
         }
         it "Activated the correct worksheet                                                        " {
-            $excel.Workbook.worksheets["Summary"].View.TabSelected      | Should     be $true
+            $excel.Workbook.worksheets["SummaryPivot"].View.TabSelected | Should     be $true
             $excel.Workbook.worksheets["Total"].View.TabSelected        | Should     be $false
 
         }
     }
-     Context "Merging 3 blocks" {
+    Context "Merging 3 blocks" {
         it "Created sheet of the right size with a title and a table                               " {
             $ws.Dimension.Address                                       | Should     be "A1:F16"
             $ws.Tables[0].Address.Address                               | Should     be "A2:F16"
