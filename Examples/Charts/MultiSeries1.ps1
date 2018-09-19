@@ -11,7 +11,7 @@ A,B,C,Date
 $c = New-ExcelChartDefinition -Title Impressions `
     -ChartType Line   `
     -XRange "Impressions[Date]" `
-    -YRange "Impressions[B]" #   @("Impressions[B]","Impressions[A]") `
+    -YRange @("Impressions[B]","Impressions[A]") `
     -SeriesHeader 'B data','A data' `
     -Row 0 -Column 0
 

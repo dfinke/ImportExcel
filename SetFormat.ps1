@@ -1,34 +1,50 @@
-﻿Function Set-Format {
-<#
-.SYNOPSIS
-    Applies Number, font, alignment and colour formatting to a range of Excel Cells
-.EXAMPLE
-    $sheet.Column(3) | Set-Format -HorizontalAlignment Right -NumberFormat "#,###"
-    Selects column 3 from a sheet object (within a workbook object, which is a child of the ExcelPackage object) and passes it to Set-Format which formats as an integer with comma seperated groups
-.EXAMPLE
-    Set-Format -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NumberFormat "#,###"
-    Instead of piping the address in this version specifies a block of cells and applies similar formatting
+﻿Function Set-ExcelRange {
+    <#
+      .SYNOPSIS
+        Applies Number, font, alignment and colour formatting, values or formulas to a range of Excel Cells
+      .DESCRIPTION
+        Set-ExcelRange was created to set the style elements for a range of cells, this includes autosizing and hiding, setting
+        font elements (Name, Size, Bold, Italic, Underline & UnderlineStyle and Subscript & SuperScript), font and background colors,
+        borders, text wrapping, rotation, aliginment within cells, and number format. It was orignally named "Set-ExcelRange"
+        It has been extended to set Values, Formulas and set ArrayFormulas (sometimes called Ctrl-shift-Enter [CSE] formulas); because of this
+        the name has become Set-ExcelRange - but the old name of Set-Format is preserved as an alias name may swapped.
+      .EXAMPLE
+        $sheet.Column(3) | Set-ExcelRange -HorizontalAlignment Right -NumberFormat "#,###" -AutoFit
 
-#>
+        Selects column 3 from a sheet object (within a workbook object, which is a child of the ExcelPackage object) and passes it to Set-ExcelRange
+         which formats as an integer with comma seperated groups, aligns it right, and auto-fits the column to the contents.
+      .EXAMPLE
+        Set-ExcelRange -Range $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NumberFormat "#,###"
+
+        Instead of piping the address in this version specifies a block of cells and applies similar formatting
+      .EXAMPLE
+        Set-ExcelRange $excel.Workbook.Worksheets[1].Tables["Processes"] -Italic
+
+        This time instead of specifying a range of cells, a table is selected by name and formatted as italic.
+    #>
+    [cmdletbinding()]
+    [Alias("Set-Format")]
     Param   (
         #One or more row(s), Column(s) and/or block(s) of cells to format
-        [Parameter(ValueFromPipeline = $true,ParameterSetName="Address",Mandatory=$True,Position=0)]
-        $Address ,
+        [Parameter(ValueFromPipeline = $true,Position=0)]
+        [Alias("Address")]
+        $Range ,
         #The worksheet where the format is to be applied
-        [Parameter(ParameterSetName="SheetAndRange",Mandatory=$True)]
         [OfficeOpenXml.ExcelWorksheet]$WorkSheet ,
-        #The area of the worksheet where the format is to be applied
-        [Parameter(ParameterSetName="SheetAndRange",Mandatory=$True)]
-        [OfficeOpenXml.ExcelAddress]$Range,
         #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "£#,##0.00;[Red]-£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc
         [Alias("NFormat")]
         $NumberFormat,
         #Style of border to draw around the range
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderAround,
+        #Color of the border
         [System.Drawing.Color]$BorderColor=[System.Drawing.Color]::Black,
+        #Style for the bottom border
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderBottom,
+        #Style for the top border
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderTop,
+        #Style for the left border
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderLeft,
+        #Style for the right border
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderRight,
         #Colour for the text - if none specified it will be left as it it is
         [System.Drawing.Color]$FontColor,
@@ -82,130 +98,133 @@
         #Hide a row or column  (not a range); use -Hidden:$false to unhide
         [Switch]$Hidden
     )
-    begin {
-        #Allow Set-Format to take Worksheet and range parameters (like Add Contitional formatting) -  convert them to an address
-        if ($WorkSheet -and $Range) {$Address = $WorkSheet.Cells[$Range] }
-    }
-
     process {
-        if   ($Address -is [Array])  {
-            [void]$PSBoundParameters.Remove("Address")
-            $Address | Set-Format @PSBoundParameters
+        if  ($Range -is [Array])  {
+            [void]$PSBoundParameters.Remove("Range")
+            $Range | Set-ExcelRange @PSBoundParameters
         }
         else {
+            #We should accept, a worksheet and a name of a range or a cell address; a table; the address of a table; a named range; a row, a column or .Cells[ ]
+            if ($Range -is [OfficeOpenXml.Table.ExcelTable]) {$Range = $Range.Address}
+            elseif ($WorkSheet -and ($Range -is [string] -or $Range -is [OfficeOpenXml.ExcelAddress])) {
+                $Range = $WorkSheet.Cells[$Range]
+            }
+            elseif ($Range -is [string]) {Write-Warning -Message "The range pararameter you have specified also needs a worksheet parameter."}
+
             if ($ResetFont) {
-                $Address.Style.Font.Color.SetColor("Black")
-                $Address.Style.Font.Bold      = $false
-                $Address.Style.Font.Italic    = $false
-                $Address.Style.Font.UnderLine = $false
-                $Address.Style.Font.Strike    = $false
+                $Range.Style.Font.Color.SetColor("Black")
+                $Range.Style.Font.Bold          = $false
+                $Range.Style.Font.Italic        = $false
+                $Range.Style.Font.UnderLine     = $false
+                $Range.Style.Font.Strike        = $false
+                $Range.Style.Font.VerticalAlign = [OfficeOpenXml.Style.ExcelVerticalAlignmentFont]::None
             }
             if ($PSBoundParameters.ContainsKey('Underline')) {
-                $Address.Style.Font.UnderLine      = [boolean]$Underline
-                $Address.Style.Font.UnderLineType  = $UnderLineType
+                $Range.Style.Font.UnderLine      = [boolean]$Underline
+                $Range.Style.Font.UnderLineType  = $UnderLineType
             }
             if ($PSBoundParameters.ContainsKey('Bold')) {
-                $Address.Style.Font.Bold           = [boolean]$bold
+                $Range.Style.Font.Bold           = [boolean]$bold
             }
             if ($PSBoundParameters.ContainsKey('Italic')) {
-                $Address.Style.Font.Italic         = [boolean]$italic
+                $Range.Style.Font.Italic         = [boolean]$italic
             }
             if ($PSBoundParameters.ContainsKey('StrikeThru')) {
-                $Address.Style.Font.Strike         = [boolean]$StrikeThru
+                $Range.Style.Font.Strike         = [boolean]$StrikeThru
             }
             if ($PSBoundParameters.ContainsKey('FontSize')){
-                $Address.Style.Font.Size           = $FontSize
+                $Range.Style.Font.Size           = $FontSize
             }
             if ($PSBoundParameters.ContainsKey('FontShift')){
-                $Address.Style.Font.VerticalAlign  = $FontShift
+                $Range.Style.Font.VerticalAlign  = $FontShift
             }
             if ($PSBoundParameters.ContainsKey('FontColor')){
-                $Address.Style.Font.Color.SetColor(  $FontColor)
+                $Range.Style.Font.Color.SetColor(  $FontColor)
             }
             if ($PSBoundParameters.ContainsKey('TextRotation')) {
-                $Address.Style.TextRotation        = $TextRotation
+                $Range.Style.TextRotation        = $TextRotation
             }
             if ($PSBoundParameters.ContainsKey('WrapText')) {
-                $Address.Style.WrapText            = [boolean]$WrapText
+                $Range.Style.WrapText            = [boolean]$WrapText
             }
             if ($PSBoundParameters.ContainsKey('HorizontalAlignment')) {
-                $Address.Style.HorizontalAlignment = $HorizontalAlignment
+                $Range.Style.HorizontalAlignment = $HorizontalAlignment
             }
             if ($PSBoundParameters.ContainsKey('VerticalAlignment')) {
-                $Address.Style.VerticalAlignment   = $VerticalAlignment
+                $Range.Style.VerticalAlignment   = $VerticalAlignment
             }
             if ($PSBoundParameters.ContainsKey('Value')) {
-                if ($Value -like '=*')      {$PSBoundParameters["Formula"] = $Value }
+                if ($Value -match '^=')      {$PSBoundParameters["Formula"] = $Value -replace '^=','' }
                 else {
-                    $Address.Value = $Value
-                    if ($Value -is  [datetime])  { $Address.Style.Numberformat.Format = 'm/d/yy h:mm' }# This is not a custom format, but a preset recognized as date and localized. It might be overwritten in a moment
-                    if  ($Value -is [timespan])  { $Address.Style.Numberformat.Format = '[h]:mm:ss'   }
+                    $Range.Value = $Value
+                    if ($Value -is [datetime])  { $Range.Style.Numberformat.Format = 'm/d/yy h:mm' }# This is not a custom format, but a preset recognized as date and localized. It might be overwritten in a moment
+                    if ($Value -is [timespan])  { $Range.Style.Numberformat.Format = '[h]:mm:ss'   }
                 }
             }
             if ($PSBoundParameters.ContainsKey('Formula')) {
-                if ($ArrayFormula) {$Address.CreateArrayFormula(($Formula -replace '^=','')) }
-                else               {$Address.Formula         =  ($Formula -replace '^=','')  }
+                if ($ArrayFormula) {$Range.CreateArrayFormula(($Formula -replace '^=','')) }
+                else               {$Range.Formula         =  ($Formula -replace '^=','')  }
             }
             if ($PSBoundParameters.ContainsKey('NumberFormat')) {
-                $Address.Style.Numberformat.Format = (Expand-NumberFormat $NumberFormat)
+                $Range.Style.Numberformat.Format = (Expand-NumberFormat $NumberFormat)
             }
             if ($PSBoundParameters.ContainsKey('BorderAround')) {
-                $Address.Style.Border.BorderAround($BorderAround, $BorderColor)
+                $Range.Style.Border.BorderAround($BorderAround, $BorderColor)
             }
             if ($PSBoundParameters.ContainsKey('BorderBottom')) {
-                $Address.Style.Border.Bottom.Style=$BorderBottom
-                $Address.Style.Border.Bottom.Color.SetColor($BorderColor)
+                $Range.Style.Border.Bottom.Style=$BorderBottom
+                $Range.Style.Border.Bottom.Color.SetColor($BorderColor)
             }
             if ($PSBoundParameters.ContainsKey('BorderTop')) {
-                $Address.Style.Border.Top.Style=$BorderTop
-                $Address.Style.Border.Top.Color.SetColor($BorderColor)
+                $Range.Style.Border.Top.Style=$BorderTop
+                $Range.Style.Border.Top.Color.SetColor($BorderColor)
             }
             if ($PSBoundParameters.ContainsKey('BorderLeft')) {
-                $Address.Style.Border.Left.Style=$BorderLeft
-                $Address.Style.Border.Left.Color.SetColor($BorderColor)
+                $Range.Style.Border.Left.Style=$BorderLeft
+                $Range.Style.Border.Left.Color.SetColor($BorderColor)
             }
             if ($PSBoundParameters.ContainsKey('BorderRight')) {
-                $Address.Style.Border.Right.Style=$BorderRight
-                $Address.Style.Border.Right.Color.SetColor($BorderColor)
+                $Range.Style.Border.Right.Style=$BorderRight
+                $Range.Style.Border.Right.Color.SetColor($BorderColor)
             }
             if ($PSBoundParameters.ContainsKey('BackgroundColor')) {
-                $Address.Style.Fill.PatternType = $BackgroundPattern
-                $Address.Style.Fill.BackgroundColor.SetColor($BackgroundColor)
+                $Range.Style.Fill.PatternType = $BackgroundPattern
+                $Range.Style.Fill.BackgroundColor.SetColor($BackgroundColor)
                 if ($PatternColor) {
-                    $Address.Style.Fill.PatternColor.SetColor( $PatternColor)
+                    $Range.Style.Fill.PatternColor.SetColor( $PatternColor)
                 }
             }
             if ($PSBoundParameters.ContainsKey('Height')) {
-                if ($Address -is [OfficeOpenXml.ExcelRow]   ) {$Address.Height = $Height }
-                elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {
-                    ($Address.Start.Row)..($Address.Start.Row + $Address.Rows) |
-                        ForEach-Object {$Address.WorkSheet.Row($_).Height = $Height }
+                if ($Range -is [OfficeOpenXml.ExcelRow]   ) {$Range.Height = $Height }
+                elseif ($Range -is [OfficeOpenXml.ExcelRange] ) {
+                    ($Range.Start.Row)..($Range.Start.Row + $Range.Rows) |
+                        ForEach-Object {$Range.WorkSheet.Row($_).Height = $Height }
                 }
-                else {Write-Warning -Message ("Can set the height of a row or a range but not a {0} object" -f ($Address.GetType().name)) }
+                else {Write-Warning -Message ("Can set the height of a row or a range but not a {0} object" -f ($Range.GetType().name)) }
             }
             if ($Autosize) {
-                if ($Address -is [OfficeOpenXml.ExcelColumn]) {$Address.AutoFit() }
-                elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {
-                    $Address.AutoFitColumns()
+                if ($Range -is [OfficeOpenXml.ExcelColumn]) {$Range.AutoFit() }
+                elseif ($Range -is [OfficeOpenXml.ExcelRange] ) {
+                    $Range.AutoFitColumns()
                 }
-                else {Write-Warning -Message ("Can autofit a column or a range but not a {0} object" -f ($Address.GetType().name)) }
+                else {Write-Warning -Message ("Can autofit a column or a range but not a {0} object" -f ($Range.GetType().name)) }
 
             }
             elseif ($PSBoundParameters.ContainsKey('Width')) {
-                if ($Address -is [OfficeOpenXml.ExcelColumn]) {$Address.Width = $Width}
-                elseif ($Address -is [OfficeOpenXml.ExcelRange] ) {
-                    ($Address.Start.Column)..($Address.Start.Column + $Address.Columns - 1) |
+                if ($Range -is [OfficeOpenXml.ExcelColumn]) {$Range.Width = $Width}
+                elseif ($Range -is [OfficeOpenXml.ExcelRange] ) {
+                    ($Range.Start.Column)..($Range.Start.Column + $Range.Columns - 1) |
                         ForEach-Object {
                             #$ws.Column($_).Width = $Width
-                            $Address.Worksheet.Column($_).Width = $Width
+                            $Range.Worksheet.Column($_).Width = $Width
                         }
                 }
-                else {Write-Warning -Message ("Can set the width of a column or a range but not a {0} object" -f ($Address.GetType().name)) }
+                else {Write-Warning -Message ("Can set the width of a column or a range but not a {0} object" -f ($Range.GetType().name)) }
             }
             if ($PSBoundParameters.ContainsKey('Hidden')) {
-                if ($Address -is [OfficeOpenXml.ExcelRow] -or
-                    $Address -is [OfficeOpenXml.ExcelColumn]  ) {$Address.Hidden = [boolean]$Hidden}
-                else {Write-Warning -Message ("Can hide a row or a column but not a {0} object" -f ($Address.GetType().name)) }
+                if ($Range -is [OfficeOpenXml.ExcelRow] -or
+                    $Range -is [OfficeOpenXml.ExcelColumn]  ) {$Range.Hidden = [boolean]$Hidden}
+                else {Write-Warning -Message ("Can hide a row or a column but not a {0} object" -f ($Range.GetType().name)) }
             }
         }
     }
@@ -254,9 +273,11 @@ Function NumberFormatCompletion {
 if (Get-Command -ErrorAction SilentlyContinue -name Register-ArgumentCompleter) {
     Register-ArgumentCompleter -CommandName Add-ConditionalFormatting  -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName Export-Excel               -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
-    Register-ArgumentCompleter -CommandName Set-Format                 -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
-    Register-ArgumentCompleter -CommandName Set-Column                 -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
-    Register-ArgumentCompleter -CommandName Set-Row                    -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName Set-ExcelRange             -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName Set-ExcelColumn            -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName Set-ExcelRow               -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName Add-PivotTable             -ParameterName PivotNumberFormat   -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName New-PivotTableDefinition   -ParameterName PivotNumberFormat   -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName New-ExcelChartDefinition   -ParameterName XAxisNumberformat   -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName New-ExcelChartDefinition   -ParameterName YAxisNumberformat   -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName Add-ExcelChart             -ParameterName XAxisNumberformat   -ScriptBlock $Function:NumberFormatCompletion
@@ -264,7 +285,33 @@ if (Get-Command -ErrorAction SilentlyContinue -name Register-ArgumentCompleter) 
 }
 
 Function Expand-NumberFormat {
-    param  ($NumberFormat)
+    <#
+      .SYNOPSIS
+        Converts short names for Number formats to the formatting strings used in Excel
+      .DESCRIPTION
+        Where you can type a number format you can write, for example 'Short-Date' and the module will translate it into the format string used by excel
+        Some formats, like Short-Date change how they are presented when Excel loads. (So date will use the local ordering of year, month and Day)
+        Other formats change how they appear when loaded with different cultures (depending on the country "," or "." or " " may be the thousand seperator
+        although excel always stores it as ",")
+      .EXAMPLE
+        Expand-NumberFormat percentage
+
+        Returns "0.00%"
+      .EXAMPLE
+        Expand-NumberFormat Currency
+
+        Returns the currency format specified in the local regional settings. This may not be the same as Excel uses
+        The regional settings set the currency symbol and then whether it is before or after the number and seperated with a space or not;
+        for negative numbers the number by wrapped in parentheses or a - sign might appear before or after the number and symbol.
+        So this returns $#,##0.00;($#,##0.00) for English US, #,##0.00 €;€#,##0.00- for French. (Note some Eurozone countries write €1,23 and others 1,23€ )
+        In French the decimal point will be rendered as a "," and the thousand seperator as a space.
+    #>
+    [cmdletbinding()]
+    [OutputType([String])]
+    param  (
+        #the format string to Expand
+        $NumberFormat
+    )
     switch ($NumberFormat) {
         "Currency"      {
             #https://msdn.microsoft.com/en-us/library/system.globalization.numberformatinfo.currencynegativepattern(v=vs.110).aspx

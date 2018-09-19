@@ -19,7 +19,7 @@ Describe ExportExcel {
         }
 
        # it "Started Excel to display the file                                                      " {
-       #     Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should not benullorempty
+       #     Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should not beNullOrEmpty
        # }
        #Start-Sleep -Seconds 5 ;
 
@@ -28,11 +28,16 @@ Describe ExportExcel {
         #TODO Need to test opening pre-existing file with no -create switch (and graceful failure when file does not exist) somewhere else
         $Excel = Open-ExcelPackage -Path $path -KillExcel
         it "Killed Excel when Open-Excelpackage was told to                                        " {
-            Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should     benullorempty
+            Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should     beNullOrEmpty
         }
 
-        it "Created 1 worksheet                                                                    " {
+        it "Created 1 worksheet, named 'Sheet1'                                                    " {
             $Excel.Workbook.Worksheets.count                            | Should     be 1
+            $Excel.Workbook.Worksheets["Sheet1"]                        | Should not beNullOrEmpty
+        }
+
+        it "Added a 'Sheet1' property to the Package object                                        " {
+            $Excel.Sheet1                                               | Should not beNullOrEmpty
         }
 
         $ws = $Excel.Workbook.Worksheets[1]
@@ -147,13 +152,13 @@ Describe ExportExcel {
         BeforeAll {
             $path = "$env:temp\test.xlsx"
             Remove-Item -Path  $path -ErrorAction SilentlyContinue
-            1..10  | Export-Excel -Path $path -Numberformat 'Number'                                                                                                                                     
-            1..10  | Export-Excel -Path $path -Numberformat 'Percentage' -Append                                                                                                                          
-            21..30 | Export-Excel -Path $path -Numberformat 'Currency'   -StartColumn 3 
-            $excel = Open-ExcelPackage -Path   $path   
-            $ws = $excel.Workbook.Worksheets[1] 
+            1..10  | Export-Excel -Path $path -Numberformat 'Number'
+            1..10  | Export-Excel -Path $path -Numberformat 'Percentage' -Append
+            21..30 | Export-Excel -Path $path -Numberformat 'Currency'   -StartColumn 3
+            $excel = Open-ExcelPackage -Path   $path
+            $ws = $excel.Workbook.Worksheets[1]
         }
-        it "Set the worksheet default number format correctly                                      " { 
+        it "Set the worksheet default number format correctly                                      " {
             $ws.Cells.Style.Numberformat.Format                         | Should     be "0.00"
         }
         it "Set number formats on specific blocks of cells                                         " {
@@ -197,6 +202,7 @@ Describe ExportExcel {
             Link2            = "https://github.com/dfinke/ImportExcel"
             Link3            = "xl://internal/sheet1!A1"
             Link4            = "xl://internal/sheet1!C5"
+            Link5            = (New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList "Sheet1!E2" , "Display Text")
             Process          = (Get-Process -Id $PID)
             TimeSpan         = [datetime]::Now.Subtract([datetime]::Today)
         } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2  -Path $path -Calculate -WarningVariable $warnVar
@@ -211,7 +217,7 @@ Describe ExportExcel {
         $ws = $Excel.Workbook.Worksheets[1]
         it "Created the worksheet with the expected name, number of rows and number of columns     " {
             $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be  26
+            $ws.Dimension.Columns                                       | Should     be  27
             $ws.Dimension.Rows                                          | Should     be  2
         }
         it "Set a date     in Cell A2                                                              " {
@@ -247,6 +253,8 @@ Describe ExportExcel {
             $ws.Cells[2, 24].Hyperlink.Scheme                          | Should     be  "xl"
             $ws.Cells[2, 24].Hyperlink.ReferenceAddress                | Should     be  "sheet1!c5"
             $ws.Cells[2, 24].Hyperlink.Display                         | Should     be  "sheet1!c5"
+            $ws.Cells[2, 25].Hyperlink.ReferenceAddress                | Should     be  "sheet1!E2"
+            $ws.Cells[2, 25].Hyperlink.Display                         | Should     be  "Display Text"
         }
         it "Processed thousands according to local settings   (Cells H2 and I2)                    " {
             if ((Get-Culture).NumberFormat.NumberGroupSeparator -EQ ",") {
@@ -271,12 +279,12 @@ Describe ExportExcel {
             ($ws.Cells[2, 20].Value -is [valuetype] )                   | Should     be  $true
         }
         it "Converted a nested object to a string (Y2)                                             " {
-             $ws.Cells[2, 25].Value                                     | should     match '^System\.Diagnostics\.Process\s+\(.*\)$'
+             $ws.Cells[2, 26].Value                                     | should     match '^System\.Diagnostics\.Process\s+\(.*\)$'
         }
         it "Processed a timespan object (Z2)                                                       " {
-             $ws.cells[2, 26].Value.ToOADate()                          | should     beGreaterThan 0
-             $ws.cells[2, 26].Value.ToOADate()                          | should     beLessThan    1
-             $ws.cells[2, 26].Style.Numberformat.Format                 | should     be  '[h]:mm:ss'
+             $ws.cells[2, 27].Value.ToOADate()                          | should     beGreaterThan 0
+             $ws.cells[2, 27].Value.ToOADate()                          | should     beLessThan    1
+             $ws.cells[2, 27].Style.Numberformat.Format                 | should     be  '[h]:mm:ss'
         }
     }
 
@@ -450,6 +458,7 @@ Describe ExportExcel {
         $PTws = $Excel.Workbook.Worksheets["ProcessesPivotTable"]
         $wCount = $Excel.Workbook.Worksheets.Count
         it "Added the named sheet and pivot table to the workbook                                  " {
+            $excel.ProcessesPivotTable                                  | Should not beNullOrEmpty
             $PTws                                                       | Should not beNullOrEmpty
             $PTws.PivotTables.Count                                     | Should     be 1
             $Excel.Workbook.Worksheets["Processes"]                     | Should not beNullOrEmpty
@@ -693,16 +702,18 @@ Describe ExportExcel {
         #Test freezing top row/first column, adding formats and a pivot table - from Add-Pivot table not a specification variable - after the export
         $excel = Get-Process | Select-Object -Property Name, Company, Handles, CPU, PM, NPM, WS | Export-Excel -Path $path -ClearSheet -WorkSheetname "Processes" -FreezeTopRowFirstColumn -PassThru
         $sheet = $excel.Workbook.Worksheets["Processes"]
-        $sheet.Column(1) | Set-Format -Bold -AutoFit
-        $sheet.Column(2) | Set-Format -Width 29 -WrapText
-        $sheet.Column(3) | Set-Format -HorizontalAlignment Right -NFormat "#,###"
-        Set-Format -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NFormat "#,###"
-        Set-Format -Address $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#,##0.0" -Bold
-        Set-Format -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
+        $sheet.Column(1) | Set-ExcelRange -Bold -AutoFit
+        $sheet.Column(2) | Set-ExcelRange -Width 29 -WrapText
+        $sheet.Column(3) | Set-ExcelRange -HorizontalAlignment Right -NFormat "#,###"
+        Set-ExcelRange -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NFormat "#,###"
+        Set-ExcelRange -Address $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#,##0.0" -Bold
+        Set-ExcelRange -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
         Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor Red
+        #test Add-ConditionalFormatting -passthru and using a range (and no worksheet)
         $rule = Add-ConditionalFormatting -passthru -Address $sheet.cells["C:C"] -RuleType TopPercent -ConditionValue 20 -Bold -StrikeThru
         Add-ConditionalFormatting -WorkSheet $sheet -Range "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600" -ForeGroundColor Red -Bold -Italic -Underline -BackgroundColor Beige -BackgroundPattern LightUp -PatternColor Gray
-        foreach ($c in 5..9) {Set-Format $sheet.Column($c)  -AutoFit }
+        #Test Set-ExcelRange with a column
+        foreach ($c in 5..9) {Set-ExcelRange $sheet.Column($c)  -AutoFit }
         Add-PivotTable -PivotTableName "PT_Procs" -ExcelPackage $excel -SourceWorkSheet 1 -PivotRows Company -PivotData  @{'Name' = 'Count'} -IncludePivotChart -ChartType ColumnClustered -NoLegend
         Close-ExcelPackage $excel
 
@@ -757,9 +768,21 @@ Describe ExportExcel {
     Context "                # Chart from MultiSeries.ps1 in the Examples\charts Directory" {
         $path = "$env:TEMP\Test.xlsx"
         Remove-Item -Path   $path -ErrorAction SilentlyContinue
+        #Test we haven't missed any parameters on New-ChartDefinition which are on add chart or vice versa.
+
+        $ParamChk1 =  (get-command Add-ExcelChart          ).Parameters.Keys.where({-not (get-command New-ExcelChartDefinition).Parameters.ContainsKey($_) }) | Sort-Object
+        $ParamChk2 =  (get-command New-ExcelChartDefinition).Parameters.Keys.where({-not (get-command Add-ExcelChart          ).Parameters.ContainsKey($_) })
+        it "Found the same parameters for Add-ExcelChart and New-ExcelChartDefinintion             " {
+            $ParamChk1.count                                            | Should     be 3
+            $ParamChk1[0]                                               | Should     be "PassThru"
+            $ParamChk1[1]                                               | Should     be "PivotTable"
+            $ParamChk1[2]                                               | Should     be "Worksheet"
+            $ParamChk2.count                                            | Should     be 1
+            $ParamChk2[0]                                               | Should     be "Header"
+        }
         #Test Invoke-Sum
         $data = Invoke-Sum (Get-Process) Company Handles, PM, VirtualMemorySize
-        it "used Invoke-Sum to create a data set                                                   " {
+        it "Used Invoke-Sum to create a data set                                                   " {
             $data                                                       | Should not beNullOrEmpty
             $data.count                                                 | Should     beGreaterThan 1
             $data[1].Name                                               | Should not beNullOrEmpty

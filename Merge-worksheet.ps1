@@ -72,6 +72,7 @@
          $DifferenceObject ,
          [parameter(ParameterSetName='D',Position=2)]
          [parameter(ParameterSetName='E',Position=3)]
+         #If there isn't a filename to use to label data from the "Difference" side, DiffPrefix is used, it defaults to "=>"
          $DiffPrefix = "=>" ,
          #File to hold merged data.
          [parameter(Position=3)]
@@ -255,25 +256,25 @@
          $ws =  $xl.Workbook.Worksheets[$OutputSheetName]
          for ($i = 0; $i -lt $expandedDiff.Count; $i++ ) {
             if     ( $expandedDiff[$i].side -ne "==" )  {
-                Set-Format -WorkSheet $ws     -Range ("A" + ($i + 2 )) -FontColor       $KeyFontColor
+                Set-ExcelRange -WorkSheet $ws     -Range ("A" + ($i + 2 )) -FontColor       $KeyFontColor
             }
             elseif ( $HideEqual                      )  {$ws.row($i+2).hidden = $true }
             if     ( $expandedDiff[$i].side -eq "<>" )  {
                 $range = $ws.Dimension -replace "\d+",  ($i + 2 )
-                Set-Format -WorkSheet $ws     -Range $range            -BackgroundColor $ChangeBackgroundColor
+                Set-ExcelRange -WorkSheet $ws     -Range $range            -BackgroundColor $ChangeBackgroundColor
             }
             elseif ( $expandedDiff[$i].side -eq "<=" )  {
                 $rangeR1C1 = "R[{0}]C[1]:R[{0}]C[{1}]" -f ($i + 2 ) , $lastRefColNo
                 $range = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1($rangeR1C1,0,0)
-                Set-Format -WorkSheet $ws     -Range $range            -BackgroundColor $DeleteBackgroundColor
+                Set-ExcelRange -WorkSheet $ws     -Range $range            -BackgroundColor $DeleteBackgroundColor
             }
             elseif ( $expandedDiff[$i].side -eq "=>" )  {
                 if ($propList.count -gt 1) {
                     $rangeR1C1 = "R[{0}]C[{1}]:R[{0}]C[{2}]" -f ($i + 2 ) , $FirstDiffColNo , $lastDiffColNo
                     $range = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1($rangeR1C1,0,0)
-                    Set-Format -WorkSheet $ws -Range $range            -BackgroundColor $AddBackgroundColor
+                    Set-ExcelRange -WorkSheet $ws -Range $range            -BackgroundColor $AddBackgroundColor
                 }
-                Set-Format -WorkSheet $ws     -Range ("A" + ($i + 2 )) -BackgroundColor $AddBackgroundColor
+                Set-ExcelRange -WorkSheet $ws     -Range ("A" + ($i + 2 )) -BackgroundColor $AddBackgroundColor
             }
          }
          Close-ExcelPackage -ExcelPackage $xl -Show:$Show
@@ -281,8 +282,6 @@
 }
 
 Function Merge-MultipleSheets {
-[cmdletbinding()]
-[Alias("Merge-MulipleSheets")]
   <#
     .Synopsis
         Merges worksheets into a single worksheet with differences marked up.
@@ -321,8 +320,10 @@ Function Merge-MultipleSheets {
         (the information was obtained by running Get-Hotfix | Sort-Object -Property description,hotfixid  | Select-Object -Property Description,HotfixID)
         This ignores any sheets which are not named "Serv*", and uses the HotfixID as the key ; in this version the row numbers are hidden.
   #>
-
+  [cmdletbinding()]
+  [Alias("Merge-MulipleSheets")]
    param   (
+        #Paths to the files to be merged.
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [string[]]$Path  ,
         #The row from where we start to import data, all rows above the StartRow are disregarded. By default this is the first row.
@@ -433,7 +434,7 @@ Function Merge-MultipleSheets {
            $columnNo           = $cell.start.Column -1
            $cellAddr           = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R1C$columnNo",1,$columnNo)
            while ($sheet.cells[$cellAddr].value -match $prefix) {
-               $condFormattingParams =  @{RuleType='Expression'; BackgroundPattern='None'; WorkSheet=$sheet; Range=$([OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[1]C[$columnNo]:R[1048576]C[$columnNo]",0,0)) }
+               $condFormattingParams =  @{RuleType='Expression'; BackgroundPattern='Solid'; WorkSheet=$sheet; Range=$([OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[1]C[$columnNo]:R[1048576]C[$columnNo]",0,0)) }
                Add-ConditionalFormatting @condFormattingParams -ConditionValue ($cell.Address + '="Added"'  ) -BackgroundColor $AddBackgroundColor
                Add-ConditionalFormatting @condFormattingParams -ConditionValue ($cell.Address + '="Changed"') -BackgroundColor $ChangeBackgroundColor
                Add-ConditionalFormatting @condFormattingParams -ConditionValue ($cell.Address + '="Removed"') -BackgroundColor $DeleteBackgroundColor

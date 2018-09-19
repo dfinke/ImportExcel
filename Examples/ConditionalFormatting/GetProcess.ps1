@@ -1,10 +1,12 @@
 try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
-Remove-Item .\testExport.xlsx -ErrorAction Ignore
+Remove-Item "$env:TEMP\testExport.xlsx" -ErrorAction Ignore
 
 Get-Process | Where-Object Company | Select-Object Company, Name, PM, Handles, *mem* |
 
-    Export-Excel .\testExport.xlsx -Show -AutoSize -AutoNameRange `
+#This example creates a 3 Icon set for the values in the "PM column, and Highlights company names (anywhere in the data) with different colors
+
+    Export-Excel "$env:TEMP\testExport.xlsx" -Show -AutoSize -AutoNameRange `
         -ConditionalFormat $(
             New-ConditionalFormattingIconSet -Range "C:C" `
                 -ConditionalFormat ThreeIconSet -IconType Arrows
