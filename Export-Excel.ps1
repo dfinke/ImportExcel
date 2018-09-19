@@ -110,8 +110,7 @@
         .PARAMETER KillExcel
             Closes Excel - prevents errors writing to the file because Excel has it open.
         .PARAMETER AutoNameRange
-            Makes each column a named range.
-        
+            Makes each column a named range.        
         .PARAMETER AutoNameRangeDelimiter
             Default: _ 
             For Columns with spaces in the text, replaces the space with the given Delimiter (the _ (underscore) is the default).
@@ -788,7 +787,6 @@
                     if ($ws.names[$targetRangeName]) { $ws.names[$targetRangeName].Address = $theRange.FullAddressAbsolute }
                     else {$ws.Names.Add($targetRangeName, $theRange) | Out-Null }
 
-                    $targetRangeName = $script:Header[$c] -replace '\W' , '_'
                     Add-ExcelName  -RangeName $targetRangeName -Range $ws.Cells[$targetRow, ($StartColumn + $c ), $LastRow, ($StartColumn + $c )]
                     if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress($targetRangeName)) {
                         Write-Warning "AutoNameRange: Property name '$targetRangeName' is also a valid Excel address and may cause issues. Consider renaming the property name."
@@ -1251,8 +1249,8 @@ Function Add-ExcelName {
             $Range  = ($Range.Worksheet.cells[($range.start.row +1), $range.start.Column ,  $range.end.row, $range.end.column])
         }
         if ($RangeName -match '\W') {
-            Write-Warning -Message "Range name '$RangeName' contains illegal characters, they will be replaced with '_'."
-            $RangeName = $RangeName -replace '\W','_'
+            Write-Warning -Message "Range name '$RangeName' contains illegal characters, they will be replaced with $AutoNameRangeDelimiter."
+            $RangeName = $RangeName -replace '\W',$AutoNameRangeDelimiter
         }
         if ($ws.names[$RangeName]) {
             Write-verbose -Message "Updating Named range '$RangeName' to $($Range.FullAddressAbsolute)."
@@ -1315,8 +1313,8 @@ function Add-ExcelTable {
     )
     try {
         if ($TableName -match "\W") {
-            Write-Warning -Message "At least one character in $TableName is illegal in a table name and will be replaced with '_' . "
-            $TableName = $TableName -replace '\W', '_'
+            Write-Warning -Message "At least one character in $TableName is illegal in a table name and will be replaced with $AutoNameRangeDelimiter . "
+            $TableName = $TableName -replace '\W', $AutoNameRangeDelimiter
         }
         $ws = $Range.Worksheet
         #if the table exists in this worksheet, update it.
