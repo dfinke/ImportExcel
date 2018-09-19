@@ -96,7 +96,10 @@
         #Set cells to a fixed hieght  (rows or ranges only)
         [float]$Height,
         #Hide a row or column  (not a range); use -Hidden:$false to unhide
-        [Switch]$Hidden
+        [Switch]$Hidden,
+        #Deal with Spaces in Range names and automatically convert them to $RangeNameDelimiter as below.
+        [String]$RangeNameDelimiter="_"
+
     )
     process {
         if  ($Range -is [Array])  {
@@ -107,6 +110,7 @@
             #We should accept, a worksheet and a name of a range or a cell address; a table; the address of a table; a named range; a row, a column or .Cells[ ]
             if ($Range -is [OfficeOpenXml.Table.ExcelTable]) {$Range = $Range.Address}
             elseif ($WorkSheet -and ($Range -is [string] -or $Range -is [OfficeOpenXml.ExcelAddress])) {
+                if ($Range -is [String]) {$Range = $Range -Replace(" ",$RangeNameDelimiter)}
                 $Range = $WorkSheet.Cells[$Range]
             }
             elseif ($Range -is [string]) {Write-Warning -Message "The range pararameter you have specified also needs a worksheet parameter."}

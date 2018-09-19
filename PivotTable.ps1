@@ -117,7 +117,8 @@
         #If there is already content in the workbook the sheet with the Pivot table will not be active UNLESS Activate is specified
         [switch]$Activate,
         #Return the pivot table so it can be customized
-        [Switch]$PassThru
+        [Switch]$PassThru,
+        [String]$RangeDelimiter="_"
     )
     if ($PivotTableName.length -gt 250) {
         Write-warning -Message "Pivot table name will be truncated"
@@ -158,6 +159,8 @@
                 Write-Warning -Message "Could not find source Worksheet for pivot-table '$pivotTableName'." ; return
             }
             elseif (     $SourceRange -is     [String] -or $SourceRange -is [OfficeOpenXml.ExcelAddress]) {
+                
+                if ($SourceRange -is [string]) {$SourceRange = $SourceRange -replace(" ",$RangeDelimiter)}
                 $pivotTable = $wsPivot.PivotTables.Add($Address,$SourceWorkSheet.Cells[$SourceRange], $pivotTableName)
             }
             else {Write-warning "Could not create a pivot table with the Source Range provided."; return}
