@@ -110,7 +110,7 @@
         .PARAMETER AutoNameRange
             Makes each column a named range.
         
-        .PARAMETER AutoNameDelimiter
+        .PARAMETER AutoNameRangeDelimiter
             Default: _ 
             For Columns with spaces in the text, replaces the space with the given Delimiter (the _ (underscore) is the default).
         .PARAMETER StartRow
@@ -443,7 +443,7 @@
         $MoveAfter ,
         [Switch]$KillExcel,
         [Switch]$AutoNameRange,
-        [String]$AutoNameDelimiter="_",
+        [String]$AutoNameRangeDelimiter="_",
         [Int]$StartRow = 1,
         [Int]$StartColumn = 1,
         [Switch]$PassThru,
@@ -771,9 +771,10 @@
                 # but we have to add the start column on when referencing positions
                 foreach ($c in 0..($LastCol - $StartColumn)) {
                     $targetRangeName = $script:Header[$c] -replace '\W' , '_'
+                    write-host "Target Name Range is $targetRangeName"
                     
-                    #Convert Spaces in the Header Names to _
-                    $targetRangeName = $targetRangeName -replace(" ",$AutoNameDelimiter)
+                    #Convert Spaces in the Header Names to $AutoNameRangeDelimiter
+                    #$targetRangeName = $targetRangeName -replace(" ",$AutoNameRangeDelimiter)
                     $targetColumn = $c + $StartColumn
                     $theRange = $ws.Cells[$targetRow, $targetColumn, $LastRow , $targetColumn ]
                     if ($ws.names[$targetRangeName]) { $ws.names[$targetRangeName].Address = $theRange.FullAddressAbsolute }
