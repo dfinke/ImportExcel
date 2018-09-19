@@ -780,7 +780,6 @@
                 # if we have 5 columns from 3 to 8, headers are numbered 0..4, so that is in the for loop and used for getting the name...
                 # but we have to add the start column on when referencing positions
                 foreach ($c in 0..($LastCol - $StartColumn)) {
-<<<<<<< HEAD
                     $targetRangeName = $script:Header[$c] -replace '\W' , $AutoNameRangeDelimiter
                     Write-Debug "Target Name Range is $targetRangeName"
                     
@@ -789,10 +788,8 @@
                     if ($ws.names[$targetRangeName]) { $ws.names[$targetRangeName].Address = $theRange.FullAddressAbsolute }
                     else {$ws.Names.Add($targetRangeName, $theRange) | Out-Null }
 
-=======
                     $targetRangeName = $script:Header[$c] -replace '\W' , '_'
                     Add-ExcelName  -RangeName $targetRangeName -Range $ws.Cells[$targetRow, ($StartColumn + $c ), $LastRow, ($StartColumn + $c )]
->>>>>>> upstream/master
                     if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress($targetRangeName)) {
                         Write-Warning "AutoNameRange: Property name '$targetRangeName' is also a valid Excel address and may cause issues. Consider renaming the property name."
                     }
