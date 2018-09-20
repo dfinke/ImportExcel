@@ -23,7 +23,7 @@
         and given a double line border above and single line border below.
     #>
     [cmdletbinding()]
-    [Alias(" Set-Row")]
+    [Alias("Set-Row")]
     [OutputType([OfficeOpenXml.ExcelRow],[String])]
     Param (
         #An Excel package object - e.g. from Export-Excel -passthru - requires a sheet name

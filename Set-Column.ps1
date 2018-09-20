@@ -27,7 +27,7 @@
         When given a valid URI,  Set-ExcelColumn makes it a hyperlink. The column will be autosized to fit the links.
     #>
     [cmdletbinding()]
-    [Alias(" Set-Column")]
+    [Alias("Set-Column")]
     [OutputType([OfficeOpenXml.ExcelColumn],[String])]
     Param (
         #If specifing the worksheet by name the ExcelPackage object which contains it needs to be passed
