@@ -1,3 +1,7 @@
+##
+#   Used in Appveyor.yml
+##
+
 $PSVersionTable.PSVersion
 
 ## Create the zip before the tests run
