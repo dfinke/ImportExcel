@@ -1,4 +1,0 @@
-- [ ] Investigate regional support for number conversion & possible date conversion. Also investigate feasablity of preserving number format when converting string to number
-- [ ] Add help to ConvertToExcelXLSx.ps1, Get-HTMLTable.ps1, GetRange.PS1,  GetExcelTable.Ps1, Import-HTML.PS1,   New-Psitem.PS1 and Remove-Worksheet.ps1 
-- [ ] Add Examples and tests for new "Quick charts" in Export Excel  (is it possible to replace examples that use Charting.ps1, GetXYRange.ps1, InferData.PS1 ? ). 
-- [ ] Increase Test code-covereage for import-excel
