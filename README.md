@@ -13,6 +13,7 @@ If this project helped you reduce the time to get your job done, let me know.
 <br/>
 <p align="center">
 <a href="https://ci.appveyor.com/project/dfinke/importexcel/branch/master"><img src="https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true"></a>
+<a href="https://dougfinke.visualstudio.com/ImportExcel/_build?definitionId=10"><img src="https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/ImportExcel-CI?branchName=master"></a>
 </p>
 
 <p align="center">
