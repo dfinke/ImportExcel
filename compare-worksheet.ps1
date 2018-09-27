@@ -1,4 +1,4 @@
-Function Compare-WorkSheet {
+﻿Function Compare-WorkSheet {
 <#
     .Synopsis
         Compares two worksheets with the same name in different files.
@@ -197,6 +197,8 @@ Function Compare-WorkSheet {
 
     #if nothing was found write a message which wont be redirected
     if (-not $diff) {Write-Host "Comparison of $Referencefile::$worksheet1 and $Differencefile::$WorkSheet2 returned no results."  }
+
+
 
     if      ($Show)               {
         Start-Process -FilePath $Referencefile

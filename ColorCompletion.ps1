@@ -15,6 +15,7 @@ if (Get-Command -Name register-argumentCompleter -ErrorAction SilentlyContinue) 
     Register-ArgumentCompleter -CommandName Compare-Worksheet          -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Compare-Worksheet          -ParameterName FontColor              -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Compare-Worksheet          -ParameterName TabColor               -ScriptBlock $Function:ColorCompletion
+    Register-ArgumentCompleter -CommandName Join-Worksheet             -ParameterName TitleBackgroundColor   -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Merge-Worksheet            -ParameterName AddBackgroundColor     -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Merge-Worksheet            -ParameterName ChangeBackgroundColor  -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Merge-Worksheet       `    -ParameterName DeleteBackgroundColor  -ScriptBlock $Function:ColorCompletion
@@ -36,4 +37,5 @@ if (Get-Command -Name register-argumentCompleter -ErrorAction SilentlyContinue) 
     Register-ArgumentCompleter -CommandName Set-ExcelRow               -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Set-ExcelRow               -ParameterName FontColor              -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Set-ExcelRow               -ParameterName PatternColor           -ScriptBlock $Function:ColorCompletion
+
 }
