@@ -762,29 +762,29 @@
                     $headerRange = $ws.Dimension.Address -replace "\d+$", $StartRow
                     #using a slightly odd syntax otherwise header ends up as a 2D array
                     $ws.Cells[$headerRange].Value | ForEach-Object -Begin {$Script:header = @()} -Process {$Script:header += $_ }
-                    #if there is no header start the range at $startRow
-                    $targetRow = $StartRow
-                }
-                else {
-                    #if there is a header, start the range and the next row down.
-                    $targetRow = $StartRow + 1
-                }
+                    if   ($PSBoundParameters.ContainsKey($TargetData)) {  #if Export was called with data that writes no header start the range at $startRow ($startRow is data)
+                           $targetRow = $StartRow
+                    }
+                    else { $targetRow = $StartRow + 1 }                   #if Export was called without data to add names (assume $startRow is a header) or...
+                }                                                         #          ... called with data that writes a header, then start the range at $startRow + 1
+                else {     $targetRow = $StartRow + 1 }
 
                 #Dimension.start.row always seems to be one so we work out the target row
                 #, but start.column is the first populated one and .Columns is the count of populated ones.
                 # if we have 5 columns from 3 to 8, headers are numbered 0..4, so that is in the for loop and used for getting the name...
                 # but we have to add the start column on when referencing positions
                 foreach ($c in 0..($LastCol - $StartColumn)) {
-                    $targetRangeName = $script:Header[$c] -replace '\W' , '_'
+                    $targetRangeName = $script:Header[$c]  #Let Add-ExcelName fix (and warn about) bad names
                     Add-ExcelName  -RangeName $targetRangeName -Range $ws.Cells[$targetRow, ($StartColumn + $c ), $LastRow, ($StartColumn + $c )]
-                    if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress($targetRangeName)) {
-                        Write-Warning "AutoNameRange: Property name '$targetRangeName' is also a valid Excel address and may cause issues. Consider renaming the property name."
-                    }
+                    try {#this test can throw with some names, surpress any error
+                        if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress(($targetRangeName -replace '\W' , '_' ))) {
+                            Write-Warning "AutoNameRange: Property name '$targetRangeName' is also a valid Excel address and may cause issues. Consider renaming the property name."
+                        }
+                    } Catch {}
                 }
             }
             catch {Write-Warning -Message "Failed adding named ranges to worksheet '$WorksheetName': $_"  }
         }
-
         if ($RangeName) { Add-ExcelName  -Range $ws.Cells[$dataRange] -RangeName $RangeName}
 
         if ($TableName) {

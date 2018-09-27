@@ -254,7 +254,7 @@
         $rowCount        = $dataAdapter.fill($dataTable)
         Write-Verbose -Message "Query returned $rowCount row(s)"
     }
-    if ($DataTable.Rows) {
+    if ($DataTable.Rows.Count) {
         #ExportExcel user a -NoHeader parameter so that's what we use here, but needs to be the other way around.
         $printHeaders    = -not $NoHeader
         if ($Title)  {$r = $StartRow +1 }

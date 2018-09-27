@@ -30,9 +30,9 @@ Describe "Join Worksheet" {
         $data2 | Export-Excel -Path $path -WorkSheetname Abingdon
         $data3 | Export-Excel -Path $path -WorkSheetname Banbury
         $ptdef = New-PivotTableDefinition -PivotTableName "SummaryPivot" -PivotRows "Store" -PivotColumns "Product" -PivotData @{"Total"="SUM"} -IncludePivotChart -ChartTitle "Sales Breakdown" -ChartType ColumnStacked -ChartColumn 10
-        Join-Worksheet -Path $path -WorkSheetName "Total" -Clearsheet -FromLabel "Store" -TableName "SummaryTable" -TableStyle Light1 -AutoSize -BoldTopRow -FreezePane 2,1 -Title "Store Sales Summary" -TitleBold -TitleSize 14  -PivotTableDefinition $ptdef
+        Join-Worksheet -Path $path -WorkSheetName "Total" -Clearsheet -FromLabel "Store" -TableName "SummaryTable" -TableStyle Light1 -AutoSize -BoldTopRow -FreezePane 2,1 -Title "Store Sales Summary" -TitleBold -TitleSize 14  -TitleBackgroundColor AliceBlue -PivotTableDefinition $ptdef
 
-       $excel = Export-Excel -path $path -WorkSheetname SummaryPivot -Activate -HideSheet * -UnHideSheet "Total","SummaryPivot" -PassThru
+       $excel = Export-Excel -path $path -WorkSheetname SummaryPivot -Activate -NoTotalsInPivot -PivotDataToColumn -HideSheet * -UnHideSheet "Total","SummaryPivot" -PassThru
         # Open-ExcelPackage -Path $path
 
         $ws    = $excel.Workbook.Worksheets["Total"]
@@ -52,28 +52,31 @@ Describe "Join Worksheet" {
         it "Activated the correct worksheet                                                        " {
             $excel.Workbook.worksheets["SummaryPivot"].View.TabSelected | Should     be $true
             $excel.Workbook.worksheets["Total"].View.TabSelected        | Should     be $false
-
         }
+
     }
     Context "Merging 3 blocks" {
         it "Created sheet of the right size with a title and a table                               " {
             $ws.Dimension.Address                                       | Should     be "A1:F16"
             $ws.Tables[0].Address.Address                               | Should     be "A2:F16"
-            $ws.cells["A1"].Value                                       | Should     be "Store Sales Summary"
-            $ws.cells["A1"].Style.Font.Size                             | Should     be 14
+            $ws.Cells["A1"].Value                                       | Should     be "Store Sales Summary"
+            $ws.Cells["A1"].Style.Font.Size                             | Should     be 14
+            $ws.Cells["A1"].Style.Font.Bold                             | Should     be $True
+            $ws.Cells["A1"].Style.Fill.BackgroundColor.Rgb              | Should     be "FFF0F8FF"
+            $ws.Cells["A1"].Style.Fill.PatternType.ToString()           | Should     be "Solid"
             $ws.Tables[0].StyleName                                     | Should     be "TableStyleLight1"
-            $ws.cells["A2:F2"].Style.Font.Bold                          | Should     be $True
+            $ws.Cells["A2:F2"].Style.Font.Bold                          | Should     be $True
         }
         it "Added a from column with the right heading                                             " {
-            $ws.cells["F2" ].Value                                      | Should     be "Store"
-            $ws.cells["F3" ].Value                                      | Should     be "Oxford"
-            $ws.cells["F8" ].Value                                      | Should     be "Abingdon"
-            $ws.cells["F13"].Value                                      | Should     be "Banbury"
+            $ws.Cells["F2" ].Value                                      | Should     be "Store"
+            $ws.Cells["F3" ].Value                                      | Should     be "Oxford"
+            $ws.Cells["F8" ].Value                                      | Should     be "Abingdon"
+            $ws.Cells["F13"].Value                                      | Should     be "Banbury"
         }
         it "Filled in the data                                                                     " {
-            $ws.cells["C3" ].Value                                      | Should     be $data1[0].quantity
-            $ws.cells["C8" ].Value                                      | Should     be $data2[0].quantity
-            $ws.cells["C13"].Value                                      | Should     be $data3[0].quantity
+            $ws.Cells["C3" ].Value                                      | Should     be $data1[0].quantity
+            $ws.Cells["C8" ].Value                                      | Should     be $data2[0].quantity
+            $ws.Cells["C13"].Value                                      | Should     be $data3[0].quantity
         }
         it "Created the pivot table                                                                " {
             $pt                                                         | Should not beNullOrEmpty

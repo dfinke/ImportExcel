@@ -78,7 +78,7 @@
         #Text of a title to be placed in Cell A1.
         [String]$Title,
         #Sets the fill pattern for the title cell.
-        [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern = 'None',
+        [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern = 'Solid',
         #Sets the cell background color for the title cell.
         [System.Drawing.Color]$TitleBackgroundColor,
         #Sets the title in boldface type.

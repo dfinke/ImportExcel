@@ -36,6 +36,7 @@
         [Parameter(ParameterSetName="Sheet",Mandatory=$true)]
         [OfficeOpenXml.Excelworksheet] $Worksheet,
         #Row to fill right - first row is 1. 0 will be interpreted as first unused row
+        [Parameter(ValueFromPipeline = $true)]
         $Row = 0 ,
         #Position in the row to start from
         [int]$StartColumn,
@@ -105,67 +106,70 @@
         #If Specified, return a row object to allow further work to be done
         [Switch]$PassThru
     )
+    begin {
+        #if we were passed a package object and a worksheet name , get the worksheet.
+        if ($ExcelPackage)     {$Worksheet   = $ExcelPackage.Workbook.worksheets[$Worksheetname] }
 
-    #if we were passed a package object and a worksheet name , get the worksheet.
-    if ($ExcelPackage)     {$Worksheet   = $ExcelPackage.Workbook.worksheets[$Worksheetname] }
-
-    #In a script block to build a formula, we may want any of corners or the columnname,
-    #if row and start column aren't specified assume first unused row, and first column
-    if (-not $StartColumn) {$StartColumn = $Worksheet.Dimension.Start.Column    }
-    $startRow                            = $Worksheet.Dimension.Start.Row   + 1
-    $endColumn                           = $Worksheet.Dimension.End.Column
-    $endRow                              = $Worksheet.Dimension.End.Row
-    if ($Row  -eq 0 )      {$Row         = $endRow + 1 }
-    Write-Verbose -Message "Updating Row $Row"
-    #Add a row label
-    if      ($Heading)                   {
-        $Worksheet.Cells[$Row, $StartColumn].Value = $Heading
-        if ($HeadingBold) {$Worksheet.Cells[$Row, $StartColumn].Style.Font.Bold = $true}
-        if ($HeadingSize) {$Worksheet.Cells[$Row, $StartColumn].Style.Font.Size = $HeadingSize}
-        $StartColumn ++
+        #In a script block to build a formula, we may want any of corners or the columnname,
+        #if row and start column aren't specified assume first unused row, and first column
+        if (-not $StartColumn) {$StartColumn = $Worksheet.Dimension.Start.Column    }
+        $startRow                            = $Worksheet.Dimension.Start.Row   + 1
+        $endColumn                           = $Worksheet.Dimension.End.Column
+        $endRow                              = $Worksheet.Dimension.End.Row
     }
-    #Fill in the data
-    if      ($PSBoundParameters.ContainsKey('Value')) {foreach ($column in ($StartColumn..$endColumn)) {
-        #We might want the column name in a script block
-        $columnName = [OfficeOpenXml.ExcelCellAddress]::new(1,$column).Address -replace "1",""
-        if  ($Value -is [scriptblock] ) {
-             #re-create the script block otherwise variables from this function are out of scope.
-             $cellData = & ([scriptblock]::create( $Value ))
-             Write-Verbose -Message $cellData
+    process {
+        if      ($Row  -eq 0 ) {$Row         = $endRow + 1 }
+        Write-Verbose -Message "Updating Row $Row"
+        #Add a row label
+        if      ($Heading)     {
+            $Worksheet.Cells[$Row, $StartColumn].Value = $Heading
+            if ($HeadingBold) {$Worksheet.Cells[$Row, $StartColumn].Style.Font.Bold = $true}
+            if ($HeadingSize) {$Worksheet.Cells[$Row, $StartColumn].Style.Font.Size = $HeadingSize}
+            $StartColumn ++
         }
-        else{$cellData = $Value}
-        if  ($cellData -match "^=")      { $Worksheet.Cells[$Row, $column].Formula                    = ($cellData -replace '^=','') } #EPPlus likes formulas with no = sign; Excel doesn't care
-        elseif ( [System.Uri]::IsWellFormedUriString($cellData , [System.UriKind]::Absolute)) {
-            # Save a hyperlink : internal links can be in the form xl://sheet!E419 (use A1 as goto sheet), or xl://RangeName
-            if ($cellData -match "^xl://internal/") {
-                  $referenceAddress = $cellData -replace "^xl://internal/" , ""
-                  $display          = $referenceAddress -replace "!A1$"    , ""
-                  $h = New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList $referenceAddress , $display
-                  $Worksheet.Cells[$Row, $Column].HyperLink = $h
+        #Fill in the data
+        if      ($PSBoundParameters.ContainsKey('Value')) {foreach ($column in ($StartColumn..$endColumn)) {
+            #We might want the column name in a script block
+            $columnName = [OfficeOpenXml.ExcelCellAddress]::new(1,$column).Address -replace "1",""
+            if  ($Value -is [scriptblock] ) {
+                #re-create the script block otherwise variables from this function are out of scope.
+                $cellData = & ([scriptblock]::create( $Value ))
+                Write-Verbose -Message $cellData
             }
-            else {$Worksheet.Cells[$Row, $Column].HyperLink = $cellData }
-            $Worksheet.Cells[$Row, $Column].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
-            $Worksheet.Cells[$Row, $Column].Style.Font.UnderLine = $true
+            else{$cellData = $Value}
+            if  ($cellData -match "^=")      { $Worksheet.Cells[$Row, $column].Formula                    = ($cellData -replace '^=','') } #EPPlus likes formulas with no = sign; Excel doesn't care
+            elseif ( [System.Uri]::IsWellFormedUriString($cellData , [System.UriKind]::Absolute)) {
+                # Save a hyperlink : internal links can be in the form xl://sheet!E419 (use A1 as goto sheet), or xl://RangeName
+                if ($cellData -match "^xl://internal/") {
+                    $referenceAddress = $cellData -replace "^xl://internal/" , ""
+                    $display          = $referenceAddress -replace "!A1$"    , ""
+                    $h = New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList $referenceAddress , $display
+                    $Worksheet.Cells[$Row, $Column].HyperLink = $h
+                }
+                else {$Worksheet.Cells[$Row, $Column].HyperLink = $cellData }
+                $Worksheet.Cells[$Row, $Column].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
+                $Worksheet.Cells[$Row, $Column].Style.Font.UnderLine = $true
+            }
+            else                             { $Worksheet.Cells[$Row, $column].Value                      = $cellData                    }
+            if  ($cellData -is [datetime])   { $Worksheet.Cells[$Row, $column].Style.Numberformat.Format  = 'm/d/yy h:mm'                } #This is not a custom format, but a preset recognized as date and localized.
+            if  ($cellData -is [timespan])   { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format  = '[h]:mm:ss'                  }
+        }}
+        #region Apply formatting
+        $params = @{}
+        foreach ($p in @('Underline','Bold','Italic','StrikeThru','FontSize', 'FontShift','NumberFormat','TextRotation',
+                        'WrapText', 'HorizontalAlignment','VerticalAlignment', 'Height', 'FontColor'
+                        'BorderAround', 'BorderBottom', 'BorderTop', 'BorderLeft', 'BorderRight', 'BorderColor',
+                        'BackgroundColor', 'BackgroundPattern', 'PatternColor')) {
+            if ($PSBoundParameters.ContainsKey($p)) {$params[$p] = $PSBoundParameters[$p]}
         }
-        else                             { $Worksheet.Cells[$Row, $column].Value                      = $cellData                    }
-        if  ($cellData -is [datetime])   { $Worksheet.Cells[$Row, $column].Style.Numberformat.Format  = 'm/d/yy h:mm'                } #This is not a custom format, but a preset recognized as date and localized.
-        if  ($cellData -is [timespan])   { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format  = '[h]:mm:ss'                  }
-    }}
-    #region Apply formatting
-    $params = @{}
-    foreach ($p in @('Underline','Bold','Italic','StrikeThru','FontSize', 'FontShift','NumberFormat','TextRotation',
-                     'WrapText', 'HorizontalAlignment','VerticalAlignment', 'Height', 'FontColor'
-                     'BorderAround', 'BorderBottom', 'BorderTop', 'BorderLeft', 'BorderRight', 'BorderColor',
-                     'BackgroundColor', 'BackgroundPattern', 'PatternColor')) {
-        if ($PSBoundParameters.ContainsKey($p)) {$params[$p] = $PSBoundParameters[$p]}
+        if ($params.Count) {
+            $theRange = [OfficeOpenXml.ExcelAddress]::New($Row, $StartColumn, $Row, $endColumn)
+            Set-ExcelRange -WorkSheet $Worksheet -Range $theRange @params
+        }
+        #endregion
+        if ($PSBoundParameters.ContainsKey('Hide')) {$workSheet.Row($Row).Hidden = [bool]$Hide}
+        #return the new data if -passthru was specified.
+        if     ($passThru)     {$Worksheet.Row($Row)}
+        elseif ($ReturnRange)  {$theRange}
     }
-    $theRange                            = [OfficeOpenXml.ExcelAddress]::New($Row, $StartColumn, $Row, $endColumn)
-    if ($params.Count) {
-        Set-ExcelRange -WorkSheet $Worksheet -Range $theRange @params
-    }
-    #endregion
-    if ($PSBoundParameters["Hide"]) {$workSheet.Row($Row).Hidden = [bool]$Hide}
-    #return the new data if -passthru was specified.
-    if     ($passThru)    {$Worksheet.Row($Row)}
-    elseif ($ReturnRange) {$theRange}
 }

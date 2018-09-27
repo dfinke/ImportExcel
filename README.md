@@ -52,6 +52,15 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
+ # What's new
+- In Export-Excel fixed a bug where -AutoNameRange on pre-existing data included the header in the range
+- In Join-Worksheet: added Argument completer to  -TitleBackgroundColor and Set default for -TitleBackgroundStyle to 'Solid'. 
+- In Send-SqlDataToExcel: improved robustness of check for no data returned.
+- In Set-ExcelColumn: -column can come from the pipeline (supporting an array introduces complications for supporting script blocks); -AutoNameRange no longer requires heading to specified (so you can do 1..10 | Set-ExcelColumn -AutoNameRange )
+- In Set-ExcelRow: -Row can come from the pipeline
+- Fleshed out Examples In "Index - music.ps1" the module for querying the index can be downloaded from PowerShell gallery #requires set to demand it. In SQL+FillColumns+Pivot\example2.ps1 the GetSQL module can be downloaded and #Requires has been set. The F1 results spreadsheet is available from one drive and a link is provided. 
+- Improved test coverage (back over 80%). 
+
 # What's new in Release 5.3
 
 - Help improvements and tidying up of examples and extra examples

@@ -145,7 +145,8 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
         Set-ExcelRange -Address   $ws.Column(1)    -Width  0
         Set-ExcelRange -Address   $ws.Column(2)    -AutoFit
         Set-ExcelRange -Address   $ws.Cells["E:E"] -AutoFit
-        Set-ExcelRange -Address   $ws.row(5)       -Height 0
+        #Test alias
+        Set-Format     -Address   $ws.row(5)       -Height 0
         $rr = $r.row
         Set-ExcelRange -WorkSheet $ws -Range "B$rr" -Value "Total"
         $BadHideWarnvar = $null
@@ -242,7 +243,10 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
                 else  {[datetime]::new($cyear, $bmonth, $bday)  }
             }
             Set-ExcelColumn -Worksheet $ws -Heading "Age" -Value "=INT((NOW()-DateOfBirth)/365)"
-            Set-ExcelRange -Address $c,$ws.column(3) -NumberFormat 'Short Date' -AutoSize
+            # Test Piping column Numbers into Set excelColumn
+            3, $c.ColumnMin | Set-ExcelColumn -Worksheet $ws -NumberFormat 'Short Date' -AutoSize
+
+            4..6 | Set-ExcelColumn -Worksheet $ws -AutoNameRange
 
             Close-ExcelPackage -ExcelPackage $excel -Calculate
             $excel = Open-ExcelPackage $path
@@ -251,9 +255,8 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
         It "Inserted Hyperlinks                                                                    " {
             $ws.Cells["D2"].Hyperlink                                   | Should not beNullorEmpty
             $ws.Cells["D2"].Style.Font.UnderLine                        | Should     be $true
-
         }
-        It "Inserted Dates                                                                         " {
+        It "Inserted and formatted Dates                                                           " {
             $ws.Cells["C2"].Value.GetType().name                        | should     be "DateTime"
             $ws.Cells["C2"].Style.Numberformat.NumFmtID                 | should     be 14
             $ws.Cells["E2"].Value.GetType().name                        | should     be "DateTime"
@@ -262,6 +265,17 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
         It "Inserted Formulas                                                                      " {
             $ws.Cells["F2"].Formula                                     | Should not beNullorEmpty
         }
+        It "Created Named ranges                                                                   " {
+            $ws.Names.Count                                             | Should     be 6
+            $ws.Names["Age"]                                            | Should not beNullorEmpty
+            $ws.Names["Age"].Start.Column                               | Should     be 6
+            $ws.Names["Age"].Start.Row                                  | Should     be 2
+            $ws.Names["Age"].End.Row                                    | Should     be 7
+            $ws.names[0].name                                           | Should     be "Name"
+            $ws.Names[0].Start.Column                                   | Should     be 1
+            $ws.Names[0].Start.Row                                      | Should     be 2
+        }
+
     }
 }
 
