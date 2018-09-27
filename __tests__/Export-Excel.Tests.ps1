@@ -896,7 +896,7 @@ Describe ExportExcel {
             $d.Title.text                                                 | Should     beNullOrEmpty
             $d.ChartType                                                  | Should     be "line"
             $d.Series[0].Header                                           | Should     be "Sinx"
-            $d.Series[0].xSeries                                          | Should     be "'Sheet1'!A2:B362"
+            $d.Series[0].xSeries                                          | Should     be "'Sheet1'!A2:A362"
             $d.Series[0].Series                                           | Should     be "'Sheet1'!B2:B362"
         }
 
