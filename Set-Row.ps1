@@ -3,18 +3,18 @@
       .Synopsis
         Fills values into a [new] row in an Excel spreadsheet. And sets row formmats.
       .Description
-         Set-ExcelRow accepts either a Worksheet object or an Excel package object returned by Export-Excel and the name of a sheet,
+        Set-ExcelRow accepts either a Worksheet object or an Excel package object returned by Export-Excel and the name of a sheet,
         and inserts the chosen contents into a row of the sheet.
-        The contents can be a constant "42" , a formula or a script block which is converted into a constant or formula.
+        The contents can be a constant e.g. "42" , a formula or a script block which is converted into a constant or formula.
         The first cell of the row can optionally be given a heading.
       .Example
          Set-ExcelRow -Worksheet $ws -Heading Total -Value {"=sum($columnName`2:$columnName$endrow)" }
 
-        $Ws contains a worksheet object, and no Row number is specified so  Set-ExcelRow will select the next row after the end of the data in the sheet
-        The first cell will contain "Total", and each other cell will contain
+        $Ws contains a worksheet object, and no Row number is specified so  Set-ExcelRow will select the next row after the end
+        of the data in the sheet. The first cell in the row will contain "Total", and each other cell will contain
             =Sum(xx2:xx99)  - where xx is the column name, and 99 is the last row of data.
             Note the use of `2 to Prevent 2 becoming part of the variable "ColumnName"
-        The script block can use $row, $column, $ColumnName, $startRow/Column $endRow/Column
+        The script block can use $Worksheet, $Row, $Column (number), $ColumnName (letter), $StartRow/Column and $EndRow/Column
       .Example
         Set-ExcelRow -Worksheet $ws -Heading Total -HeadingBold -Value {"=sum($columnName`2:$columnName$endrow)" } -NumberFormat 'Currency' -StartColumn 2 -Bold -BorderTop Double -BorderBottom Thin
 

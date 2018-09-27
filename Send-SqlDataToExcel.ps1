@@ -3,21 +3,26 @@
         .SYNOPSIS
             Inserts a DataTable - returned by SQL query into an ExcelSheet, more efficiently than sending it via Export-Excel
         .DESCRIPTION
-            This command can accept a data table object or take a SQL command and run it against a database connection.
-            If running the SQL command, it accepts an object representing a session with a SQL server or ODBC database, or a connection String to make a session.
-            It the DataTable is inserted into the Excel sheet
-            It takes most of the parameters of Export-Excel, but it is more efficient than getting dataRows and piping them into Export-Excel,
-            data-rows have additional properties which need to be stripped off.
+            This command can accept a data table object or take a SQL statement and run it against a database connection.
+            If running a SQL statement, the accepts either
+            * an object representing a session with a SQL server or ODBC database, or
+            * a connection String to make a session.
+            The command takes most of the parameters of Export-Excel, and after inserting the table into the worksheet it
+            calls Export-Excel to carry out other tasks on the sheet. It is more efficient to do this than to get data-rows
+             and pipe them into Export-Excel, stripped off the database 'housekeeping' properties.
         .PARAMETER DataTable
             A System.Data.DataTable object containing the data to be inserted into the spreadsheet without running a query.
         .PARAMETER Session
             An active ODBC Connection or SQL connection object representing a session with a database which will be queried to get the data .
         .PARAMETER Connection
-            Database connection string; either DSN=ODBC_Data_Source_Name, a full odbc or SQL Connection string, or the name of a SQL server. This is used to create a database session.
+            A database connection string to be used to create a database session; either
+            * A Data source name written in the form DSN=ODBC_Data_Source_Name, or
+            * A full odbc or SQL Connection string, or
+            * The name of a SQL server.
         .PARAMETER MSSQLServer
-            Specifies the connection string is for SQL server, not ODBC .
+            Specifies the connection string is for SQL server, not ODBC.
         .PARAMETER SQL
-            The SQL query to run against the session which was passed in -Session or set up from $Connection.
+            The SQL query to run against the session which was passed in -Session or set up from -Connection.
         .PARAMETER Database
            Switches to a specific database on a SQL server.
         .PARAMETER QueryTimeout
@@ -25,9 +30,9 @@
         .PARAMETER Path
             Path to a new or existing .XLSX file.
         .PARAMETER WorkSheetName
-            The name of a sheet within the workbook - "Sheet1" by default .
+            The name of a sheet within the workbook - "Sheet1" by default.
         .PARAMETER KillExcel
-            Closes Excel - prevents errors writing to the file because Excel has it open
+            Closes Excel - prevents errors writing to the file because Excel has it open.
         .PARAMETER Title
             Text of a title to be placed in the top left cell.
         .PARAMETER TitleBold
@@ -123,7 +128,8 @@
 
       .EXAMPLE
         C:\> Send-SQLDataToExcel -MsSQLserver -Connection localhost -SQL  "select name,type,type_desc from [master].[sys].[all_objects]" -Path .\temp.xlsx -WorkSheetname master -AutoSize -FreezeTopRow -AutoFilter -BoldTopRow
-        Connects to the local SQL server and selects 3 columns from [Sys].[all_objects] and exports then to a sheet named master with some basic header manager
+
+        Connects to the local SQL server and selects 3 columns from [Sys].[all_objects] and exports then to a sheet named master with some basic header management
       .EXAMPLE
         C:\> $SQL="SELECT top 25 DriverName, Count(RaceDate) as Races, Count(Win) as Wins, Count(Pole) as Poles, Count(FastestLap) as Fastlaps FROM Results GROUP BY DriverName ORDER BY (count(win)) DESC"
         C:\> $Connection = 'Driver={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};DriverId=790;ReadOnly=0;Dbq=C:\users\James\Documents\f1Results.xlsx;'
@@ -136,7 +142,7 @@
         C:\> Get-SQL -Session F1 -excel -Connection "C:\Users\mcp\OneDrive\public\f1\f1Results.xlsx" -sql $sql -OutputVariable Table | out-null
         C:\> Send-SQLDataToExcel -DataTable $Table -Path ".\demo3.xlsx" -WorkSheetname Gpwinners -autosize  -TableName winners -TableStyle Light6 -show
 
-        This uses Get-SQL (at least V1.1 download from the gallery with Install-Module -Name GetSQL - note the function is get-SQL the module is GetSQL without the "-" )
+        This uses Get-SQL (at least V1.1 - download from the gallery with Install-Module -Name GetSQL - note the function is Get-SQL the module is GetSQL without the "-" )
         to simplify making database connections and building /submitting SQL statements.
         Here it uses the same SQL statement as before; -OutputVariable leaves a System.Data.DataTable object in $table
         and Send-SQLDataToExcel puts $table into the worksheet and sets it as an Excel table.
@@ -145,7 +151,7 @@
         C:\> $SQL = "SELECT top 25 DriverName,  Count(Win) as Wins FROM Results GROUP BY DriverName ORDER BY (count(win)) DESC"
         C:\> Send-SQLDataToExcel -Session $DbSessions["f1"] -SQL $sql -Path  ".\demo3.xlsx" -WorkSheetname Gpwinners -autosize -ColumnChart
 
-        Like the previous example, this uses Get-SQL (download from the gallery with Install-Module -Name GetSQL).It uses the connection which Get-SQL made rather than an ODFBC connection string
+        Like the previous example, this uses Get-SQL (download from the gallery with Install-Module -Name GetSQL). It uses the connection which Get-SQL made rather than an ODFBC connection string
         Here the data is presented as a quick chart.
       .EXAMPLE
         C:\>  Send-SQLDataToExcel -path .\demo3.xlsx -WorkSheetname "LR" -Connection "DSN=LR" -sql "SELECT name AS CollectionName FROM AgLibraryCollection Collection ORDER BY CollectionName"

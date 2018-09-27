@@ -39,22 +39,24 @@
         .PARAMETER IncludePivotTable
             Adds a Pivot table using the data in the worksheet.
         .PARAMETER PivotTableName
-            If a Pivot table is created from command line parameters, specificies the name of the new sheet holding the pivot. If Omitted this will be "WorksheetName-PivotTable"
+            If a Pivot table is created from command line parameters, specifies the name of the new sheet holding the pivot. If Omitted this will be "WorksheetName-PivotTable"
         .PARAMETER PivotRows
-            Name(s) columns from the spreadhseet which will provide the Row name(s) in a pivot table created from command line parameters.
+            Name(s) columns from the spreadsheet which will provide the Row name(s) in a pivot table created from command line parameters.
         .PARAMETER PivotColumns
-            Name(s) columns from the spreadhseet which will provide the Column name(s) in a pivot table created from command line parameters.
+            Name(s) columns from the spreadsheet which will provide the Column name(s) in a pivot table created from command line parameters.
         .PARAMETER PivotFilter
-            Name(s) columns from the spreadhseet which will provide the Filter name(s) in a pivot table created from command line parameters.
+            Name(s) columns from the spreadsheet which will provide the Filter name(s) in a pivot table created from command line parameters.
         .PARAMETER PivotData
             In a pivot table created from command line parameters, the fields to use in the table body are given as a Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP .
         .PARAMETER PivotDataToColumn
-            If there are multiple datasets in a PivotTable, by default they are shown seperatate rows under the given row heading; this switch makes them seperate columns.
+            If there are multiple datasets in a PivotTable, by default they are shown as separate rows under the given row heading; this switch makes them separate columns.
         .PARAMETER NoTotalsInPivot
             In a pivot table created from command line parameters, prevents the addition of totals to rows and columns.
+        .PARAMETER PivotTotals
+            By default, Pivot tables have totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
         .PARAMETER PivotTableDefinition
-            Instead of describing a single pivot table with mutliple commandline paramters; you can use a HashTable in the form PivotTableName = Definition;
-            Definition is itself a hashtable with Sheet PivotTows, PivotColumns, PivotData, IncludePivotChart and ChartType values.
+            Instead of describing a single pivot table with multiple commandline parameters; you can use a HashTable in the form PivotTableName = Definition;
+            Definition is itself a hashtable with Sheet, PivotRows, PivotColumns, PivotData, IncludePivotChart and ChartType values.
         .PARAMETER IncludePivotChart
             Include a chart with the Pivot table - implies -IncludePivotTable.
         .PARAMETER ChartType
@@ -92,20 +94,20 @@
         .PARAMETER ExcelChartDefinition
             A hash table containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts.
         .PARAMETER HideSheet
-            Name(s) of Sheet(s) to hide in the workbook, supports wildcards. If all sheets would be hidden, the sheet being worked on will be revealed .
+            Name(s) of Sheet(s) to hide in the workbook, supports wildcards. If all sheets would be hidden, the sheet being worked on will be revealed.
         .PARAMETER UnHideSheet
             Name(s) of Sheet(s) to Reveal in the workbook, supports wildcards.
         .PARAMETER MoveToStart
             If specified, the worksheet will be moved to the start of the workbook.
-            MoveToStart takes precedence over MoveToEnd, Movebefore and MoveAfter if more than one is specified.
+            -MoveToStart takes precedence over -MoveToEnd, -Movebefore and -MoveAfter if more than one is specified.
         .PARAMETER MoveToEnd
             If specified, the worksheet will be moved to the end of the workbook.
             (This is the default position for newly created sheets, but this can be used to move existing sheets.)
         .PARAMETER MoveBefore
-            If specified, the worksheet will be moved before the nominated one (which can be a postion starting from 1, or a name).
-            MoveBefore takes precedence over MoveAfter if both are specified.
+            If specified, the worksheet will be moved before the nominated one (which can be a position starting from 1, or a name).
+            -MoveBefore takes precedence over -MoveAfter if both are specified.
         .PARAMETER MoveAfter
-            If specified, the worksheet will be moved after the nominated one (which can be a postion starting from 1, or a name or *).
+            If specified, the worksheet will be moved after the nominated one (which can be a position starting from 1, or a name or *).
             If * is used, the worksheet names will be examined starting with the first one, and the sheet placed after the last sheet which comes before it alphabetically.
         .PARAMETER KillExcel
             Closes Excel - prevents errors writing to the file because Excel has it open.
@@ -124,7 +126,7 @@
         .PARAMETER FreezePane
              Freezes panes at specified coordinates (in the form  RowNumber , ColumnNumber).
         .PARAMETER AutoFilter
-            Enables the 'Filter' in Excel on the complete header row. So users can easily sort, filter and/or search the data in the selected column from within Excel.
+            Enables the 'Filter' in Excel on the complete header row, so users can easily sort, filter and/or search the data in the selected column from within Excel.
         .PARAMETER AutoSize
             Sizes the width of the Excel column to the maximum width needed to display all the containing data in that cell.
         .PARAMETER Activate
@@ -147,10 +149,10 @@
             # number with 2 decimal places.
             '0.00'
 
-            # number with 2 decimal places and thousand separator.
+            # number with 2 decimal places and thousand-separator.
             '#,##0.00'
 
-            # number with 2 decimal places and thousand separator and money symbol.
+            # number with 2 decimal places and thousand-separator and money-symbol.
             '€#,##0.00'
 
             # percentage (1 = 100%, 0.01 = 1%)
@@ -255,7 +257,9 @@
                     New-ConditionalText -ConditionalType GreaterThan 525 -ConditionalTextColor DarkRed -BackgroundColor LightPink
                 )
 
-            Exports data that will have a 'Conditional formatting rule' in Excel on these cells that will show the background fill color in 'LightPink' and the text color in 'DarkRed' when the value is greater then '525'. In case this condition is not met the color will be the default, black text on a white background.
+            Exports data that will have a 'Conditional formatting rule' in Excel on these cells that will show the background fill color in
+            'LightPink' and the text color in 'DarkRed' when the value is greater than '525'. In case this condition is not met the color will
+            be the default, black text on a white background.
 
         .EXAMPLE
         >
@@ -352,13 +356,12 @@
             $excel.Dispose()
             Start-Process .\test.xlsx
 
-            This example uses -passthrough - put service information into sheet1 of the work book and saves the excelPackageObject in $Excel.
+            This example uses -passthrough - put service information into sheet1 of the workbook and saves the ExcelPackageObject in $Excel.
             It then uses the package object to apply formatting, and then saves the workbook and disposes of the object before loading the document in Excel.
 
         .EXAMPLE
         >
         PS> Remove-Item -Path .\test.xlsx -ErrorAction Ignore
-
             $excel = Get-Process | Select-Object -Property Name,Company,Handles,CPU,PM,NPM,WS | Export-Excel -Path .\test.xlsx -ClearSheet -WorksheetName "Processes" -PassThru
             $sheet = $excel.Workbook.Worksheets["Processes"]
             $sheet.Column(1) | Set-ExcelRange -Bold -AutoFit
@@ -1090,10 +1093,10 @@ function Add-WorkSheet  {
         #If specified, the worksheet will be moved to the end of the workbook.
         #(This is the default position for newly created sheets, but this can be used to move existing sheets.)
         [Switch]$MoveToEnd,
-        #If specified, the worksheet will be moved before the nominated one (which can be a postion starting from 1, or a name).
+        #If specified, the worksheet will be moved before the nominated one (which can be a position starting from 1, or a name).
         #MoveBefore takes precedence over MoveAfter if both are specified.
         $MoveBefore ,
-        # If specified, the worksheet will be moved after the nominated one (which can be a postion starting from 1, or a name or *).
+        # If specified, the worksheet will be moved after the nominated one (which can be a position starting from 1, or a name or *).
         # If * is used, the worksheet names will be examined starting with the first one, and the sheet placed after the last sheet which comes before it alphabetically.
         $MoveAfter ,
         #If there is already content in the workbook the new sheet will not be active UNLESS Activate is specified
