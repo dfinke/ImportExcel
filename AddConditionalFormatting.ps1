@@ -1,7 +1,7 @@
 ﻿Function Add-ConditionalFormatting {
     <#
       .Synopsis
-        Adds contitional formatting to worksheet.
+        Adds conditional formatting to worksheet.
       .Description
         Conditional formatting allows excel to
         * Mark cells with Icons depending on their value
@@ -20,7 +20,7 @@
         $excel.Save() ; $excel.Dispose()
 
         Here Export-Excel is called with the -passThru parameter so the Excel Package object is stored in $Excel
-        The desired worksheet is selected and the then columns B and i are conditially formatted (excluding the top row) to show red text if
+        The desired worksheet is selected and the then columns" B" and "I" are conditionally formatted (excluding the top row) to show red text if
         the columns contain "2003" or "Disabled respectively. A fixed date format is then applied to columns D..G, and the top row is formatted.
         Finally the workbook is saved and the Excel object closed.
       .Example
@@ -31,7 +31,7 @@
         Again Export-Excel has been called with -passthru leaving a package object in $Excel
         This time B1:B100 has been conditionally formatted with 3 icons, using the flags icon set.
         Add-ConditionalFormatting does not provide access to every option in the formatting rule, so passthru has been used and the
-        rule is to apply the flags in reverse order, and boundaries for the number which will set the split are set to 100 and 1000
+        rule is modified to apply the flags in reverse order, and boundaries for the number which will set the split are set to 100 and 1000
       .Example
         Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor Red
 
@@ -39,8 +39,8 @@
       .Example
         Add-ConditionalFormatting -Address $worksheet.cells["FinishPosition"] -RuleType Equal    -ConditionValue 1 -ForeGroundColor Purple -Bold -Priority 1 -StopIfTrue
 
-        In this example a named range is used to select the cells where the formula should apply. If a cell in the "FinishPosition" range is 1, then the text is turned to puple, boldface.
-        This rule is move to first in the priority list, and where cells have a value of 1, no other rules will be processed.
+        In this example a named range is used to select the cells where the formula should apply. If a cell in the "FinishPosition" range is 1, then the text is turned to Bold & Purple.
+        This rule is moved to first in the priority list, and where cells have a value of 1, no other rules will be processed.
     #>
     Param (
         #A block of cells to format - you can use a named range with -Address $ws.names[1] or  $ws.cells["RangeName"]
@@ -49,14 +49,14 @@
         $Address ,
         #The worksheet where the format is to be applied
         [OfficeOpenXml.ExcelWorksheet]$WorkSheet ,
-        #One of the standard named rules - Top / Bottom / Less than / Greater than / Contains etc.
+        #A standard named-rule - Top / Bottom / Less than / Greater than / Contains etc.
         [Parameter(Mandatory = $true, ParameterSetName = "NamedRule", Position = 1)]
         [OfficeOpenXml.ConditionalFormatting.eExcelConditionalFormattingRuleType]$RuleType ,
         #Text colour for matching objects
         [Parameter(ParameterSetName = "NamedRule")]
         [Alias("ForeGroundColour")]
         [System.Drawing.Color]$ForeGroundColor,
-        #colour for databar type charts
+        #Colour for databar type charts
         [Parameter(Mandatory = $true, ParameterSetName = "DataBar")]
         [Alias("DataBarColour")]
         [System.Drawing.Color]$DataBarColor,
@@ -75,7 +75,7 @@
         [Parameter(ParameterSetName = "FourIconSet")]
         [Parameter(ParameterSetName = "FiveIconSet")]
         [switch]$Reverse,
-        #A value for the condition (e.g. 2000 if the test is 'lessthan 2000' ; Formulas should begin with "=" )
+        #A value for the condition (for example 2000 if the test is 'lessthan 2000'; Formulas should begin with "=" )
         [Parameter(ParameterSetName = "NamedRule")]
         $ConditionValue,
         #A second value for the conditions like "between x and Y"
@@ -108,7 +108,7 @@
         #Prevent the processing of subsequent rules
         [Parameter(ParameterSetName = "NamedRule")]
         [switch]$StopIfTrue,
-        #Set the sequence for rule processong
+        #Set the sequence for rule processing
         [int]$Priority,
         #If specified pass the rule back to the caller to allow additional customization.
         [switch]$Passthru

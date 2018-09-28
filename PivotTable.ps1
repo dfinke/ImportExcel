@@ -1,9 +1,9 @@
 ﻿function Add-PivotTable {
     <#
       .Synopsis
-        Adds a Pivot table (and optional pivot chart) to a workbook
+        Adds a PivotTable (and optional PivotChart) to a workbook.
       .Description
-        If the pivot table already exists, the source data will be updated.
+        If the PivotTable already exists, the source data will be updated.
       .Example
         >
         PS> $excel = Get-Service | Export-Excel -Path test.xlsx -WorksheetName Services -PassThru -AutoSize -DisplayPropertySet -TableName ServiceTable -Title "Services on $Env:COMPUTERNAME"
@@ -34,66 +34,66 @@
 
 
         This script starts by defining a chart. Then it exports some data to an XLSX file and keeps the file open.
-        The next step is to add the pivot table, normally this would be on its own sheeet in the workbook,
+        The next step is to add the pivot table, normally this would be on its own sheet in the workbook,
         but here -Address is specified to place it beside the data. The Add-Pivot table is given the chart definition and told to create a tale
         using the City field to create rows, the Product field to create columns and the data should be the sum of the gross field and the sum of the net field;
-        grand totals for both gross and net are included for rows (Cities) and columns (product) and the the data is explicitly formatted as a currency.
-        Not that in thee the chart definition the number format for the axis does not include any fraction part
+        grand totals for both gross and net are included for rows (Cities) and columns (product) and the data is explicitly formatted as a currency.
+        Not that in the chart definition the number format for the axis does not include any fraction part.
     #>
     [cmdletbinding(defaultParameterSetName='ChartbyParams')]
     [OutputType([OfficeOpenXml.Table.PivotTable.ExcelPivotTable])]
     param (
-        #Name for the new Pivot table - this will be the name of a sheet in the workbook
+        #Name for the new PivotTable - this will be the name of a sheet in the Workbook.
         [Parameter(Mandatory = $true)]
         [string]$PivotTableName,
-        #By default a pivot table will be created on its own sheet, but it can be created on an existing sheet by giving the address where the top left corner of the table should go. (Allow two rows for the filter if one is used.)
+        #By default, a PivotTable will be created on its own sheet, but it can be created on an existing sheet by giving the address where the top left corner of the table should go. (Allow two rows for the filter if one is used.)
         [OfficeOpenXml.ExcelAddressBase]
         $Address,
         #An excel package object for the workbook.
         $ExcelPackage,
-        #Worksheet where the data is found
+        #Worksheet where the data is found.
         $SourceWorkSheet,
         #Address range in the worksheet e.g "A10:F20" - the first row must be column names: if not specified the whole sheet will be used.
         $SourceRange,
-        #Fields to set as rows in the Pivot table
+        #Fields to set as rows in the PivotTable.
         $PivotRows,
         #A hash table in form "FieldName"="Function", where function is one of
-        #Average, Count, CountNums, Max, Min, Product, None, StdDev, StdDevP, Sum, Var, VarP
+        #Average, Count, CountNums, Max, Min, Product, None, StdDev, StdDevP, Sum, Var, VarP.
         $PivotData,
-        #Fields to set as columns in the Pivot table
+        #Fields to set as columns in the PivotTable.
         $PivotColumns,
-        #Fields to use to filter in the Pivot table
+        #Fields to use to filter in the PivotTable.
         $PivotFilter,
-        #If there are multiple datasets in a PivotTable, by default they are shown seperatate rows under the given row heading; this switch makes them seperate columns.
+        #If there are multiple data items in a PivotTable, by default they are shown on separate rows; this switch makes them separate columns.
         [Switch]$PivotDataToColumn,
-        #Define whther totals should be added to rows, columns neither, or both (the default is both)
+        #Define whether totals should be added to rows, columns neither, or both (the default is both).
         [ValidateSet("Both","Columns","Rows","None")]
         [String]$PivotTotals = "Both",
-        #Included for compatibility - equivalent to -PivotTotals "None"
+        #Included for compatibility - equivalent to -PivotTotals "None".
         [Switch]$NoTotalsInPivot,
-        #Number format to apply to the data cells in the Pivot table
+        #Number format to apply to the data cells in the PivotTable.
         [string]$PivotNumberFormat,
-        #Apply a table style to the PivotTable
+        #Apply a table style to the PivotTable.
         [OfficeOpenXml.Table.TableStyles]$PivotTableSyle,
-        #Use a chart definition instead of specifying chart settings one by one
+        #Use a chart definition instead of specifying chart settings one by one.
         [Parameter(ParameterSetName='ChartbyDef', Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
         $PivotChartDefinition,
-        #If specified a chart Will be included.
+        #If specified, a chart will be included.
         [Parameter(ParameterSetName='ChartbyParams')]
         [Switch]$IncludePivotChart,
         #Optional title for the pivot chart, by default the title omitted.
         [Parameter(ParameterSetName='ChartbyParams')]
         [String]$ChartTitle = "",
-        #Height of the chart in Pixels (400 by default)
+        #Height of the chart in Pixels (400 by default).
         [Parameter(ParameterSetName='ChartbyParams')]
         [int]$ChartHeight = 400 ,
-        #Width of the chart in Pixels (600 by default)
+        #Width of the chart in Pixels (600 by default).
         [Parameter(ParameterSetName='ChartbyParams')]
         [int]$ChartWidth = 600,
         #Cell position of the top left corner of the chart, there will be this number of rows above the top edge of the chart (default is 0, chart starts at top edge of row 1).
         [Parameter(ParameterSetName='ChartbyParams')]
         [Int]$ChartRow = 0 ,
-        #Cell position of the top left corner of the chart, there will be this number of cells to the left of the chart (default is 4, chart starts at left edge of column E)
+        #Cell position of the top left corner of the chart, there will be this number of cells to the left of the chart (default is 4, chart starts at left edge of column E).
         [Parameter(ParameterSetName='ChartbyParams')]
         [Int]$ChartColumn = 4,
         #Vertical offset of the chart from the cell corner.
@@ -102,25 +102,25 @@
         [Parameter(ParameterSetName='ChartbyParams')]
         #Horizontal offset of the chart from the cell corner.
         [Int]$ChartColumnOffSetPixels = 0,
-        #Type of chart
+        #Type of chart; defaults to "Pie".
         [Parameter(ParameterSetName='ChartbyParams')]
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = 'Pie',
-        #If specified hides the chart legend
+        #If specified hides the chart legend.
         [Parameter(ParameterSetName='ChartbyParams')]
         [Switch]$NoLegend,
-        #if specified attaches the category to slices in a pie chart : not supported on all chart types, this may give errors if applied to an unsupported type.
+        #If specified attaches the category to slices in a pie chart : not supported on all chart types, this may give errors if applied to an unsupported type.
         [Parameter(ParameterSetName='ChartbyParams')]
         [Switch]$ShowCategory,
         #If specified attaches percentages to slices in a pie chart.
         [Parameter(ParameterSetName='ChartbyParams')]
         [Switch]$ShowPercent,
-        #If there is already content in the workbook the sheet with the Pivot table will not be active UNLESS Activate is specified
+        #If there is already content in the workbook the sheet with the PivotTable will not be active UNLESS Activate is specified.
         [switch]$Activate,
-        #Return the pivot table so it can be customized
+        #Return the PivotTable so it can be customized.
         [Switch]$PassThru
     )
     if ($PivotTableName.length -gt 250) {
-        Write-warning -Message "Pivot table name will be truncated"
+        Write-warning -Message "PivotTable name will be truncated"
         $PivotTableName = $PivotTableName.Substring(0,250)
     }
     if ($Address) {
@@ -130,13 +130,13 @@
         try {
             if (-not $ExcelPackage) {Write-Warning -message "This combination of Parameters needs to include the ExcelPackage." ; return }
             [OfficeOpenXml.ExcelWorksheet]$wsPivot = Add-WorkSheet -ExcelPackage $ExcelPackage -WorksheetName $pivotTableName -Activate:$Activate
-            if ($wsPivot.Name -ne $PivotTableName) {Write-Warning -Message "The Worksheet name for the pivot table does not match the table name '$PivotTableName'; probably because excess or illegal characters were removed." }
+            if ($wsPivot.Name -ne $PivotTableName) {Write-Warning -Message "The Worksheet name for the PivotTable does not match the table name '$PivotTableName'; probably because excess or illegal characters were removed." }
             if ($PivotFilter) {$Address =  $wsPivot.Cells["A3"]} else { $Address =  $wsPivot.Cells["A1"]}
         }
-        catch {throw "Could not create the sheet for the Pivot table. $_" }
+        catch {throw "Could not create the sheet for the PivotTable. $_" }
     }
     #if the pivot doesn't exist, create it.
-    if (-not $wsPivot) {throw "There was a problem getting the worksheet for the pivot table"}
+    if (-not $wsPivot) {throw "There was a problem getting the worksheet for the PivotTable"}
     if (-not $wsPivot.PivotTables[$pivotTableName] ) {
         try {
             #Accept a string or a worksheet object as $SourceWorksheet - we don't need a worksheet if we have a Rangebase .
@@ -160,7 +160,7 @@
             elseif (     $SourceRange -is     [String] -or $SourceRange -is [OfficeOpenXml.ExcelAddress]) {
                 $pivotTable = $wsPivot.PivotTables.Add($Address,$SourceWorkSheet.Cells[$SourceRange], $pivotTableName)
             }
-            else {Write-warning "Could not create a pivot table with the Source Range provided."; return}
+            else {Write-warning "Could not create a PivotTable with the Source Range provided."; return}
             foreach ($Row in $PivotRows) {
                 try {$null = $pivotTable.RowFields.Add($pivotTable.Fields[$Row]) }
                 catch {Write-Warning -message "Could not add '$row' to Rows in PivotTable $pivotTableName." }
@@ -203,7 +203,7 @@
         catch {Write-Warning -Message "Failed adding PivotTable '$pivotTableName': $_"}
     }
     else {
-        Write-Warning -Message "Pivot table defined in $($pivotTableName) already exists, only the data range will be changed."
+        Write-Warning -Message "PivotTable defined in $($pivotTableName) already exists, only the data range will be changed."
         $pivotTable = $wsPivot.PivotTables[$pivotTableName]
         if (-not $SourceRange) { $SourceRange = $SourceWorkSheet.Dimension.Address}
         $pivotTable.CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.ref = $SourceRange
@@ -230,11 +230,11 @@
 function New-PivotTableDefinition {
     <#
       .Synopsis
-        Creates Pivot table definitons for Export-Excel
+        Creates PivotTable definitons for Export-Excel 
       .Description
-        Export-Excel allows a single Pivot table to be defined using the parameters -IncludePivotTable, -PivotColumns -PivotRows,
-        =PivotData, -PivotFilter, -PivotTotals, -PivotDataToColumn, -IncludePivotChart and -ChartType.
-        Its -PivotTableDefintion paramater allows multiple pivot tables to be defined, with additional parameters.
+        Export-Excel allows a single PivotTable to be defined using the parameters -IncludePivotTable, -PivotColumns -PivotRows,
+        -PivotData, -PivotFilter, -PivotTotals, -PivotDataToColumn, -IncludePivotChart and -ChartType.
+        Its -PivotTableDefintion paramater allows multiple PivotTables to be defined, with additional parameters.
         New-PivotTableDefinition is a convenient way to build these definitions.
       .Example
         >
@@ -254,24 +254,24 @@ function New-PivotTableDefinition {
         $SourceWorkSheet,
         #Address range in the worksheet e.g "A10:F20" - the first row must be column names: if not specified the whole sheet will be used/
         $SourceRange,
-        #Fields to set as rows in the Pivot table
+        #Fields to set as rows in the PivotTable
         $PivotRows,
         #A hash table in form "FieldName"="Function", where function is one of
         #Average, Count, CountNums, Max, Min, Product, None, StdDev, StdDevP, Sum, Var, VarP
         [hashtable]$PivotData,
-        #Fields to set as columns in the Pivot table
+        #Fields to set as columns in the PivotTable
         $PivotColumns,
-        #Fields to use to filter in the Pivot table
+        #Fields to use to filter in the PivotTable
         $PivotFilter,
         #If there are multiple datasets in a PivotTable, by default they are shown seperatate rows under the given row heading; this switch makes them seperate columns.
         [Switch]$PivotDataToColumn,
-        #By default Pivot tables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
+        #By default PivotTables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
         #Define whther totals should be added to rows, columns neither, or both (the default is both)
         [ValidateSet("Both","Columns","Rows","None")]
         [String]$PivotTotals = "Both",
         #Included for compatibility - equivalent to -PivotTotals "None"
         [Switch]$NoTotalsInPivot,
-        #Number format to apply to the data cells in the Pivot table
+        #Number format to apply to the data cells in the PivotTable
         [string]$PivotNumberFormat,
         #Apply a table style to the PivotTable
         [OfficeOpenXml.Table.TableStyles]$PivotTableSyle,
@@ -314,7 +314,7 @@ function New-PivotTableDefinition {
         #If specified attaches percentages to slices in a pie chart.
         [Parameter(ParameterSetName='ChartbyParams')]
         [Switch]$ShowPercent,
-        #If there is already content in the workbook the sheet with the Pivot table will not be active UNLESS Activate is specified
+        #If there is already content in the workbook the sheet with the PivotTable will not be active UNLESS Activate is specified
         [switch]$Activate
     )
     $validDataFuntions = [system.enum]::GetNames([OfficeOpenXml.Table.PivotTable.DataFieldFunctions])

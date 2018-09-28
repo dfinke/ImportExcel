@@ -1,31 +1,31 @@
 function New-ConditionalText {
     <#
       .SYNOPSIS
-        Creates an object which describes a conditional formatting rule for single valued rules
+        Creates an object which describes a conditional formatting rule for single valued rules.
       .DESCRIPTION
-        Some Conditional formatting rules don't apply styles to a cell (IconSets and Databars)
-        Some take two parameters (Between)
-        Some take none (ThisWeek , containsErrors, AboveAverage etc.)
-        The others take a single paramter (top, BottomPercent, GreaterThan, Contains etc)
-        This command  creates an object to describe the last two categories, which can be passed to Export-Excel
+        Some Conditional formatting rules don't apply styles to a cell (IconSets and Databars).
+        Some take two parameters (Between).
+        Some take none (ThisWeek , containsErrors, AboveAverage etc).
+        The others take a single parameter (Top, BottomPercent, GreaterThan, Contains etc).
+        This command  creates an object to describe the last two categories, which can then be passed to Export-Excel.
       .PARAMETER Range
-        The range of cells that the conditional format applies to; if none is specified the range will be apply to all the data in the sheet
+        The range of cells that the conditional format applies to; if none is specified the range will be apply to all the data in the sheet.
       .PARAMETER ConditionalType
-        One the supported rules by default - "ContainsText" is selected
+        One of the supported rules; by default "ContainsText" is selected.
       .PARAMETER Text
-        The text (or other value) to use in the rule. Not that Equals, GreaterThan/LessThan rules require text to wrapped in double quotes
+        The text (or other value) to use in the rule. Not that Equals, GreaterThan/LessThan rules require text to wrapped in double quotes.
       .PARAMETER ConditionalTextColor
-        The font color for the cell - by default: Dark red
+        The font color for the cell - by default: Dark red.
       .PARAMETER BackgroundColor
-        The fill color for the cell - by default: light pink
+        The fill color for the cell - by default: Light pink.
       .PARAMETER PatternType
-        The Background pattern for the cell - by deault: Solid
+        The Background pattern for the cell - by default: Solid
       .EXAMPLE
         $ct = New-ConditionalText -Text  'Ferrari'
         Export-Excel -ExcelPackage $excel -ConditionalTest $ct -show
 
         The first line creates a definition object which will highlight the word "Ferrari" in any cell.
-        and the secind uses Export-Excel with an open package to apply the format and save and open the file.
+        and the second uses Export-Excel with an open package to apply the format and save and open the file.
       .EXAMPLE
         $ct  = New-ConditionalText -Text "Ferrari"
         $ct2 = New-ConditionalText -Range $worksheet.Names["FinishPosition"].Address -ConditionalType LessThanOrEqual -Text 3 -ConditionalTextColor Red -BackgroundColor White

@@ -1,11 +1,11 @@
 ﻿Function  Set-ExcelRow {
     <#
       .Synopsis
-        Fills values into a [new] row in an Excel spreadsheet. And sets row formmats.
+        Fills values into a [new] row in an Excel spreadsheet. And sets row formats.
       .Description
-        Set-ExcelRow accepts either a Worksheet object or an Excel package object returned by Export-Excel and the name of a sheet,
+        Set-ExcelRow accepts either a Worksheet object or an Excel Package object returned by Export-Excel and the name of a sheet,
         and inserts the chosen contents into a row of the sheet.
-        The contents can be a constant e.g. "42" , a formula or a script block which is converted into a constant or formula.
+        The contents can be a constant e.g. "42", a formula or a script block which is converted into a constant or a formula.
         The first cell of the row can optionally be given a heading.
       .Example
          Set-ExcelRow -Worksheet $ws -Heading Total -Value {"=sum($columnName`2:$columnName$endrow)" }
@@ -26,84 +26,84 @@
     [Alias("Set-Row")]
     [OutputType([OfficeOpenXml.ExcelRow],[String])]
     Param (
-        #An Excel package object - e.g. from Export-Excel -passthru - requires a sheet name
+        #An Excel package object - e.g. from Export-Excel -passthru - requires a sheet name.
         [Parameter(ParameterSetName="Package",Mandatory=$true)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
-        #the name  to update in the package
+        #The name of the sheet to update in the package.
         [Parameter(ParameterSetName="Package")]
         $Worksheetname = "Sheet1",
-        #A worksheet object
+        #A worksheet object instead of passing a name and package.
         [Parameter(ParameterSetName="Sheet",Mandatory=$true)]
         [OfficeOpenXml.Excelworksheet] $Worksheet,
-        #Row to fill right - first row is 1. 0 will be interpreted as first unused row
+        #Row to fill right - first row is 1. 0 will be interpreted as first unused row.
         [Parameter(ValueFromPipeline = $true)]
         $Row = 0 ,
-        #Position in the row to start from
+        #Position in the row to start from.
         [int]$StartColumn,
         #Value, formula or script block to fill in. Script block can use $worksheet,  $row, $Column [number], $ColumnName [letter(s)], $startRow, $startColumn, $endRow, $endColumn
         $Value,
-        #Optional Row heading
+        #Optional Row heading.
         $Heading ,
-        #Set the heading in bold type
+        #Set the heading in bold type.
         [Switch]$HeadingBold,
-        #Change the size of the heading type
+        #Change the size of the heading type.
         [Int]$HeadingSize ,
-        #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "£#,##0.00;[Red]-£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc
+        #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "£#,##0.00;[Red]-£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc.
         [Alias("NFormat")]
         $NumberFormat,
-        #Style of border to draw around the row
+        #Style of border to draw around the row.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderAround,
         #Color of the border
         [System.Drawing.Color]$BorderColor=[System.Drawing.Color]::Black,
-        #Style for the bottom border
+        #Style for the bottom border.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderBottom,
-        #Style for the top border
+        #Style for the top border.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderTop,
-        #Style for the left border
+        #Style for the left border.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderLeft,
-        #Style for the right border
+        #Style for the right border.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderRight,
-        #Colour for the text - if none specified it will be left as it it is
+        #Colour for the text - if none specified it will be left as it it is.
         [System.Drawing.Color]$FontColor,
-        #Make text bold; use -Bold:$false to remove bold
+        #Make text bold; use -Bold:$false to remove bold.
         [Switch]$Bold,
-        #Make text italic;  use -Italic:$false to remove italic
+        #Make text italic;  use -Italic:$false to remove italic.
         [Switch]$Italic,
-        #Underline the text using the underline style in -underline type;  use -Underline:$false to remove underlining
+        #Underline the text using the underline style in -UnderlineType;  use -Underline:$false to remove underlining.
         [Switch]$Underline,
-        #Should Underline use single or double, normal or accounting mode : default is single normal
+        #Should Underline use single or double, normal or accounting mode : default is single normal.
         [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
-        #Strike through text; use -Strikethru:$false to remove Strike through
+        #Strike through text; use -Strikethru:$false to remove Strike through.
         [Switch]$StrikeThru,
-        #Subscript or superscript (or none)
+        #Subscript or Superscript (or none).
         [OfficeOpenXml.Style.ExcelVerticalAlignmentFont]$FontShift,
-        #Font to use - Excel defaults to Calibri
+        #Font to use - Excel defaults to Calibri.
         [String]$FontName,
-        #Point size for the text
+        #Point size for the text.
         [float]$FontSize,
-        #Change background colour
+        #Change background color.
         [System.Drawing.Color]$BackgroundColor,
-        #Background pattern - solid by default
+        #Background pattern - solid by default.
         [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern = [OfficeOpenXml.Style.ExcelFillStyle]::Solid ,
-        #Secondary colour for background pattern
+        #Secondary color for background pattern.
         [Alias("PatternColour")]
         [System.Drawing.Color]$PatternColor,
-        #Turn on text wrapping; use -WrapText:$false to turn off word wrapping
+        #Turn on text wrapping; use -WrapText:$false to turn off word wrapping.
         [Switch]$WrapText,
-        #Position cell contents to left, right, center etc. default is 'General'
+        #Position cell contents to Left, Right, Center etc. default is 'General'.
         [OfficeOpenXml.Style.ExcelHorizontalAlignment]$HorizontalAlignment,
-        #Position cell contents to top bottom or centre
+        #Position cell contents to Top Bottom or Center.
         [OfficeOpenXml.Style.ExcelVerticalAlignment]$VerticalAlignment,
-        #Degrees to rotate text. Up to +90 for anti-clockwise ("upwards"), or to -90 for clockwise
+        #Degrees to rotate text. Up to +90 for anti-clockwise ("upwards"), or to -90 for clockwise.
         [ValidateRange(-90, 90)]
         [int]$TextRotation ,
-        #Set cells to a fixed hieght
+        #Set cells to a fixed hieght.
         [float]$Height,
-        #Hide the Row
+        #Hide the Row.
         [Switch]$Hide,
-        #If Sepecified returns the range of cells which were affected
+        #If Sepecified returns the range of cells which were affected.
         [Switch]$ReturnRange,
-        #If Specified, return a row object to allow further work to be done
+        #If Specified, return a row object to allow further work to be done.
         [Switch]$PassThru
     )
     begin {

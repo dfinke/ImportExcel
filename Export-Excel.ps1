@@ -39,7 +39,7 @@
         .PARAMETER IncludePivotTable
             Adds a Pivot table using the data in the worksheet.
         .PARAMETER PivotTableName
-            If a Pivot table is created from command line parameters, specifies the name of the new sheet holding the pivot. If Omitted this will be "WorksheetName-PivotTable"
+            If a Pivot table is created from command line parameters, specifies the name of the new sheet holding the pivot. Defaults to "WorksheetName-PivotTable"
         .PARAMETER PivotRows
             Name(s) columns from the spreadsheet which will provide the Row name(s) in a pivot table created from command line parameters.
         .PARAMETER PivotColumns
@@ -47,7 +47,7 @@
         .PARAMETER PivotFilter
             Name(s) columns from the spreadsheet which will provide the Filter name(s) in a pivot table created from command line parameters.
         .PARAMETER PivotData
-            In a pivot table created from command line parameters, the fields to use in the table body are given as a Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP .
+            In a pivot table created from command line parameters, the fields to use in the table body are given as a Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP.
         .PARAMETER PivotDataToColumn
             If there are multiple datasets in a PivotTable, by default they are shown as separate rows under the given row heading; this switch makes them separate columns.
         .PARAMETER NoTotalsInPivot
@@ -55,7 +55,7 @@
         .PARAMETER PivotTotals
             By default, Pivot tables have totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
         .PARAMETER PivotTableDefinition
-            Instead of describing a single pivot table with multiple commandline parameters; you can use a HashTable in the form PivotTableName = Definition;
+            Instead of describing a single pivot table with multiple commandline parameters; you can use a hashTable in the form PivotTableName = Definition;
             Definition is itself a hashtable with Sheet, PivotRows, PivotColumns, PivotData, IncludePivotChart and ChartType values.
         .PARAMETER IncludePivotChart
             Include a chart with the Pivot table - implies -IncludePivotTable.
@@ -124,7 +124,7 @@
         .PARAMETER FreezeTopRowFirstColumn
              Freezes top row and left column (equivalent to Freeze pane 2,2 ).
         .PARAMETER FreezePane
-             Freezes panes at specified coordinates (in the form  RowNumber , ColumnNumber).
+             Freezes panes at specified coordinates (in the form  RowNumber, ColumnNumber).
         .PARAMETER AutoFilter
             Enables the 'Filter' in Excel on the complete header row, so users can easily sort, filter and/or search the data in the selected column from within Excel.
         .PARAMETER AutoSize
@@ -173,8 +173,8 @@
         .PARAMETER ReturnRange
             If specified, Export-Excel returns the range of added cells in the format "A1:Z100"
         .PARAMETER PassThru
-            If specified, Export-Excel returns an object representing the Excel package without saving the package first. To save it you need to call the save or Saveas method or send it back to Export-Excel.
-
+            If specified, Export-Excel returns an object representing the Excel package without saving the package first. 
+            To save, you need to call Close-ExcelPackage or send the object back to Export-Excel, or use its .Save() or SaveAs() method.
         .EXAMPLE
             Get-Process | Export-Excel .\Test.xlsx -show
             Export all the processes to the Excel file 'Test.xlsx' and open the file immediately.
@@ -342,7 +342,7 @@
             Export-Excel -Path .\test.xlsx -PivotTableDefinition $pt -Show
 
             This example defines two pivot tables. Then it puts Service data on Sheet1 with one call to Export-Excel and Process Data on sheet2 with a second call to Export-Excel.
-            The thrid and final call adds the two pivot tables and opens the spreadsheet in Excel.
+            The third and final call adds the two pivot tables and opens the spreadsheet in Excel.
 
 
         .EXAMPLE
@@ -356,7 +356,7 @@
             $excel.Dispose()
             Start-Process .\test.xlsx
 
-            This example uses -passthrough - put service information into sheet1 of the workbook and saves the ExcelPackageObject in $Excel.
+            This example uses -passthrough. It puts service information into sheet1 of the workbook and saves the ExcelPackageObject in $Excel.
             It then uses the package object to apply formatting, and then saves the workbook and disposes of the object before loading the document in Excel.
 
         .EXAMPLE
@@ -1080,10 +1080,10 @@ function Add-WorkSheet  {
         #An object representing an Excel Package.
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = "Package", Position = 0)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
-        #An Excel workbook to which the Worksheet will be added - a package contains one workbook so you can use whichever fits at the time.
+        #An Excel Workbook to which the Worksheet will be added - a Package contains one Workbook, so you can use whichever fits at the time.
         [Parameter(Mandatory = $true, ParameterSetName = "WorkBook")]
         [OfficeOpenXml.ExcelWorkbook]$ExcelWorkbook,
-        #The name of the worksheet 'Sheet1' by default.
+        #The name of the worksheet, 'Sheet1' by default.
         [string]$WorksheetName ,
         #If the worksheet already exists, by default it will returned, unless -ClearSheet is specified in which case it will be deleted and re-created.
         [switch]$ClearSheet,
@@ -1093,13 +1093,13 @@ function Add-WorkSheet  {
         #If specified, the worksheet will be moved to the end of the workbook.
         #(This is the default position for newly created sheets, but this can be used to move existing sheets.)
         [Switch]$MoveToEnd,
-        #If specified, the worksheet will be moved before the nominated one (which can be a position starting from 1, or a name).
+        #If specified, the worksheet will be moved before the nominated one (which can be an index starting from 1, or a name).
         #MoveBefore takes precedence over MoveAfter if both are specified.
         $MoveBefore ,
-        # If specified, the worksheet will be moved after the nominated one (which can be a position starting from 1, or a name or *).
+        # If specified, the worksheet will be moved after the nominated one (which can be an index starting from 1, or a name or *).
         # If * is used, the worksheet names will be examined starting with the first one, and the sheet placed after the last sheet which comes before it alphabetically.
         $MoveAfter ,
-        #If there is already content in the workbook the new sheet will not be active UNLESS Activate is specified
+        #If there is already content in the workbook the new sheet will not be active UNLESS Activate is specified.
         [switch]$Activate,
         #If worksheet is provided as a copy source the new worksheet will be a copy of it. The source can be in the same workbook, or in a different file.
         [OfficeOpenXml.ExcelWorksheet]$CopySource,
@@ -1171,34 +1171,34 @@ function Add-WorkSheet  {
 function Select-Worksheet {
    <#
       .SYNOPSIS
-        Sets the selected tab in an Excel workbook to be the chosen sheet, and unselects all the others.
+        Sets the selected tab in an Excel workbook to be the chosen sheet and unselects all the others.
       .DESCRIPTION
         Sometimes when a sheet is added we want it to be the active sheet, sometimes we want the active sheet to be left as it was.
         Select-Worksheet exists to change the which sheet is the selected tab when Excel opens the file.
       .EXAMPLE
         Select-Worksheet -ExcelWorkbook $ExcelWorkbook -WorksheetName "NewSheet"
-        $ExcelWorkbook holds the a workbook object containing a sheet named "NewSheet";
+        $ExcelWorkbook holds a workbook object containing a sheet named "NewSheet";
         This sheet will become the [only] active sheet in the workbook
       .EXAMPLE
         Select-Worksheet -ExcelPackage $Pkg -WorksheetName "NewSheet2"
         $pkg holds an Excel Package, whose workbook contains a sheet named "NewSheet2"
-        This sheet will become the [only] active sheet in the workbook
+        This sheet will become the [only] active sheet in the workbook.
       .EXAMPLE
         Select-Worksheet -ExcelWorksheet $ws
-        $ws holds an Excel worksheet which will become the [only] active sheet in the workbook
+        $ws holds an Excel worksheet which will become the [only] active sheet in the workbook.
     #>
     param (
         #An object representing an Excel Package.
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Package', Position = 0)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
-        #An Excel workbook to which the Worksheet will be added - a package contains one workbook so you can use workbook or package as it suits
+        #An Excel workbook to which the Worksheet will be added - a package contains one Workbook so you can use workbook or package as it suits.
         [Parameter(Mandatory = $true, ParameterSetName = 'WorkBook')]
         [OfficeOpenXml.ExcelWorkbook]$ExcelWorkbook,
         [Parameter(ParameterSetName='Package')]
         [Parameter(ParameterSetName='Workbook')]
         #The name of the worksheet 'Sheet1' by default.
         [string]$WorksheetName,
-        #An object representing an Excel worksheet
+        #An object representing an Excel worksheet.
         [Parameter(ParameterSetName='Sheet',Mandatory=$true)]
         [OfficeOpenXml.ExcelWorksheet]$ExcelWorksheet
     )
@@ -1218,7 +1218,7 @@ function Select-Worksheet {
 Function Add-ExcelName {
     <#
       .SYNOPSIS
-        Adds a named range to an existing Excel worksheet
+        Adds a named-range to an existing Excel worksheet.
       .DESCRIPTION
         It is often helpful to be able to refer to sets of cells with a name rather than using their co-ordinates; Add-ExcelName sets up these names.
       .EXAMPLE
@@ -1231,7 +1231,7 @@ Function Add-ExcelName {
         #The range of cells to assign as a name.
         [Parameter(Mandatory=$true)]
         [OfficeOpenXml.ExcelRange]$Range,
-        #The name to assign to the range. If the name exists it will be updated to the new range. If no name is specified the first cell in the range will be used as the name
+        #The name to assign to the range. If the name exists it will be updated to the new range. If no name is specified, the first cell in the range will be used as the name.
         [String]$RangeName
     )
     try {
@@ -1271,36 +1271,36 @@ function Add-ExcelTable {
       .EXAMPLE
         Add-ExcelTable -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName Musictable -ShowFilter:$false -ShowTotal -ShowFirstColumn
         Again $ws is a worksheet, range here is the whole of the active part of the worksheet. The table style and name are set,
-        the filter is turned off, a totals row added and first column set in bold.
+        the filter is turned off, and a "Totals" row added, and first column is set in bold.
     #>
     [CmdletBinding()]
     [OutputType([OfficeOpenXml.Table.ExcelTable])]
     param (
-        #The range of cells to assign to a table
+        #The range of cells to assign to a table.
         [Parameter(Mandatory=$true)]
         [OfficeOpenXml.ExcelRange]$Range,
-        #The name for the table
+        #The name for the Table - this should be unqiue in the Workbook.
         [Parameter(Mandatory=$true)]
         [String]$TableName,
-        #The Style for the table, by default Medium 6
+        #The Style for the table, by default "Medium6" is used
         [OfficeOpenXml.Table.TableStyles]$TableStyle = 'Medium6',
-        #By default the header row is shown - it can be turned off with -ShowHeader:$false
+        #By default the header row is shown - it can be turned off with -ShowHeader:$false.
         [Switch]$ShowHeader ,
-        #By default the filter is enabled - it can be turned off with -ShowFilter:$false
+        #By default the filter is enabled - it can be turned off with -ShowFilter:$false.
         [Switch]$ShowFilter,
         #Show total adds a totals row. This does not automatically sum the columns but provides a drop-down in each to select sum, average etc
         [Switch]$ShowTotal,
-        #Hashtable in the form ColumnName = "Average"|"Count"|"CountNums"|"Max"|"Min"|"None"|"StdDev"|"Sum"|"Var" - if specified ShowTotal is not needed.
+        #A HashTable in the form ColumnName = "Average"|"Count"|"CountNums"|"Max"|"Min"|"None"|"StdDev"|"Sum"|"Var" - if specified, -ShowTotal is not needed.
         [hashtable]$TotalSettings,
-        #Highlights the first column in bold
+        #Highlights the first column in bold.
         [Switch]$ShowFirstColumn,
-        #Highlights the last column in bold
+        #Highlights the last column in bold.
         [Switch]$ShowLastColumn,
         #By default the table formats show striped rows, the can be turned off with -ShowRowStripes:$false
         [Switch]$ShowRowStripes,
         #Turns on column stripes.
         [Switch]$ShowColumnStripes,
-        #If -PassThru is specified the table object will be returned to allow additional
+        #If -PassThru is specified, the table object will be returned to allow additional changes to be made.
         [Switch]$PassThru
     )
     try {
