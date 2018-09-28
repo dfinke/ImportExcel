@@ -1,10 +1,12 @@
-function New-ExcelChartDefinition {
+﻿function New-ExcelChartDefinition {
     <#
       .SYNOPSIS
-        Creates a Definition of a chart which can be added using Export Excel
+        Creates a Definition of a chart which can be added using Export-Excel, or Add-PivotTable
       .DESCRIPTION
         All the parameters which are passed to Add-ExcelChart can be added to an object and
-        passed to Export-Excel with the -ExcelChartDefinition parameter. This command sets up those objects.
+        passed to Export-Excel with the -ExcelChartDefinition parameter, 
+        or to Add-PivotTable with the -PivotChartDefinition parameter. 
+        This command sets up those definitions.
       .PARAMETER Title
         The title for the chart.
       .PARAMETER TitleBold
@@ -12,7 +14,7 @@ function New-ExcelChartDefinition {
       .PARAMETER TitleSize
         Sets the point size for the title.
       .PARAMETER ChartType
-        One of the built in chart types, such as Pie, ClusteredColumn, Line etc. Defaults to "ColumnStacked".
+        One of the built-in chart types, such as Pie, ClusteredColumn, Line etc. Defaults to "ColumnStacked".
       .PARAMETER XRange
         The range of cells containing values for the X-Axis - usually labels.
       .PARAMETER YRange
@@ -24,11 +26,11 @@ function New-ExcelChartDefinition {
       .PARAMETER Row
         Row position of the top left corner of the chart. 0 places at the top of the sheet, 1 below row 1 and so on.
       .PARAMETER RowOffSetPixels
-        Offset to postion the chart by a fraction of of a row .
+        Offset to position the chart by a fraction of of a row.
       .PARAMETER Column
-        Column Postion of the top left corner of the chart. 0 places at the edge of the sheet 1 to the right of column A and so on.
+        Column position of the top left corner of the chart. 0 places at the edge of the sheet 1 to the right of column A and so on.
       .PARAMETER ColumnOffSetPixels
-        Offset to postion the chart by a fraction of of a column.
+        Offset to position the chart by a fraction of of a column.
       .PARAMETER NoLegend
         If specified, turns of display of the key. If you only have one data series it may be preferable to use the title to say what the chart is.
       .PARAMETER SeriesHeader
@@ -36,51 +38,51 @@ function New-ExcelChartDefinition {
       .PARAMETER LegendPosition
         Location of the key, either left, right, top, bottom or TopRight.
       .PARAMETER LegendSize
-        Font size for the key
+        Font size for the key.
       .PARAMETER LegendBold
         Sets the key in bold type.
       .PARAMETER ShowCategory
-        Attaches a category label  in charts which support this.
+        Attaches a category label in charts which support this.
       .PARAMETER ShowPercent
-        Attaches a pecentage label in charts which support this.
+        Attaches a percentage label in charts which support this.
       .PARAMETER XAxisTitleText
-        Specifies a title for the X axis.
+        Specifies a title for the X-axis.
       .PARAMETER XAxisTitleBold
-        Sets the X axis title in bold face.
+        Sets the X-axis title in bold face.
       .PARAMETER XAxisTitleSize
-        Sets the font size for the axis title
+        Sets the font size for the axis title.
       .PARAMETER XAxisNumberformat
-        A number formatting string, like "#,##0.00" for numbers along the X axis
+        A number formatting string, like "#,##0.00", for numbers along the X-axis.
       .PARAMETER XMajorUnit
-        Spacing for the major gridlines / tick marks along the X axis
+        Spacing for the major gridlines / tick marks along the X-axis.
       .PARAMETER XMinorUnit
-        Spacing for the major gridlines / tick marks along the X axis
+        Spacing for the minor gridlines / tick marks along the X-axis.
       .PARAMETER XMaxValue
-        Maximum value for the scale along the Xaxis
+        Maximum value for the scale along the X-axis.
       .PARAMETER XMinValue
-        Minimum value for the scale along the Xaxis
+        Minimum value for the scale along the X-axis.
       .PARAMETER xAxisPosition
-        Postion for the X axis (top or bottom)
+        Postion for the X-axis (Top or Bottom).
       .PARAMETER YAxisTitleText
-        Specifies a title for the Y axis.
+        Specifies a title for the Y-axis.
       .PARAMETER YAxisTitleBold
-        Sets the Y axis title in bold face.
+        Sets the Y-axis title in bold face.
       .PARAMETER YAxisTitleSize
-        Sets the font size for the Y axis title
+        Sets the font size for the Y-axis title.
       .PARAMETER YAxisNumberformat
-        A number formatting string, like "#,##0.00" for numbers on the Y axis
+        A number formatting string, like "#,##0.00", for numbers on the Y-axis
       .PARAMETER YMajorUnit
-        Spacing for the major gridlines / tick marks on the Y axis
+        Spacing for the major gridlines / tick marks on the Y-axis.
       .PARAMETER YMinorUnit
-        Spacing for the major gridlines / tick marks on the Y axis
+        Spacing for the minor gridlines / tick marks on the Y-axis.
       .PARAMETER YMaxValue
-        Maximum value on the Yaxis
+        Maximum value on the Y-axis.
       .PARAMETER YMinValue
-        Minimum value on the Yaxis
+        Minimum value on the Y-axis.
       .PARAMETER YAxisPosition
-        Postion for the Y axis (left or right)
+        Postion for the Y-axis (Left or Right).
       .PARAMETER Header
-        No longer used. This may be removed in future versions
+        No longer used. This may be removed in future versions.
       .Example
         >
         PS> $cDef = New-ExcelChartDefinition  -ChartType line -XRange "X" -YRange "Sinx"  -Title "Graph of Sine X" -TitleBold -TitleSize 14 `
@@ -180,13 +182,13 @@ function New-ExcelChartDefinition {
 function Add-ExcelChart {
     <#
       .SYNOPSIS
-        Creates a chart in an existing Excel worksheet
+        Creates a chart in an existing Excel worksheet.
       .DESCRIPTION
         Creates a chart. It is possible to configure the type of chart, the range of X values (labels) and Y values.
-        the title, the legend, the ranges for both axes, the format and postion of the axes.
+        the title, the legend, the ranges for both axes, the format and position of the axes.
         Normally the command does not return anything, but if -passthru is specified the chart is returned so that it can be customized.
       .PARAMETER Worksheet
-        An exisiting Sheet where the chart will be created.
+        An existing Sheet where the chart will be created.
       .PARAMETER Title
         The title for the chart.
       .PARAMETER TitleBold
@@ -194,7 +196,7 @@ function Add-ExcelChart {
       .PARAMETER TitleSize
         Sets the point size for the title.
       .PARAMETER ChartType
-        One of the built in chart types, such as Pie, ClusteredColumn, Line etc. Defaults to "ColumnStacked".
+        One of the built-in chart types, such as Pie, ClusteredColumn, Line etc. Defaults to "ColumnStacked".
       .PARAMETER XRange
         The range of cells containing values for the X-Axis - usually labels.
        .PARAMETER YRange
@@ -208,11 +210,11 @@ function Add-ExcelChart {
       .PARAMETER Row
         Row position of the top left corner of the chart. 0 places at the top of the sheet, 1 below row 1 and so on.
       .PARAMETER RowOffSetPixels
-        Offset to postion the chart by a fraction of of a row .
+        Offset to position the chart by a fraction  of a row.
       .PARAMETER Column
-        Column Postion of the top left corner of the chart. 0 places at the edge of the sheet 1 to the right of column A and so on.
+        Column position of the top left corner of the chart. 0 places at the edge of the sheet 1 to the right of column A and so on.
       .PARAMETER ColumnOffSetPixels
-        Offset to postion the chart by a fraction of of a column.
+        Offset to position the chart by a fraction of a column.
       .PARAMETER NoLegend
         If specified, turns of display of the key. If you only have one data series it may be preferable to use the title to say what the chart is.
       .PARAMETER SeriesHeader
@@ -220,51 +222,51 @@ function Add-ExcelChart {
        .PARAMETER LegendPosition
         Location of the key, either left, right, top, bottom or TopRight.
       .PARAMETER LegendSize
-        Font size for the key
+        Font size for the key.
       .PARAMETER LegendBold
         Sets the key in bold type.
-       .PARAMETER ShowCategory
-        Attaches a category label  in charts which support this.
+      .PARAMETER ShowCategory
+        Attaches a category label in charts which support this.
       .PARAMETER ShowPercent
-        Attaches a pecentage label in charts which support this.
+        Attaches a percentage label in charts which support this.
       .PARAMETER XAxisTitleText
-        Specifies a title for the X axis.
+        Specifies a title for the X-axis.
       .PARAMETER XAxisTitleBold
-        Sets the X axis title in bold face.
+        Sets the X-axis title in bold face.
       .PARAMETER XAxisTitleSize
-        Sets the font size for the axis title
+        Sets the font size for the axis title.
       .PARAMETER XAxisNumberformat
-        A number formatting string, like "#,##0.00" for numbers along the X axis
+        A number formatting string, like "#,##0.00", for numbers along the X-axis.
       .PARAMETER XMajorUnit
-        Spacing for the major gridlines / tick marks along the X axis
+        Spacing for the major gridlines / tick marks along the X-axis.
       .PARAMETER XMinorUnit
-        Spacing for the major gridlines / tick marks along the X axis
+        Spacing for the minor gridlines / tick marks along the X-axis.
       .PARAMETER XMaxValue
-        Maximum value for the scale along the Xaxis
+        Maximum value for the scale along the X-axis.
       .PARAMETER XMinValue
-        Minimum value for the scale along the Xaxis
+        Minimum value for the scale along the X-axis.
       .PARAMETER xAxisPosition
-        Postion for the X axis (top or bottom)
+        Position for the X-axis (Top or Bottom).
       .PARAMETER YAxisTitleText
-        Specifies a title for the Y axis.
+        Specifies a title for the Y-axis.
       .PARAMETER YAxisTitleBold
-        Sets the Y axis title in bold face.
+        Sets the Y-axis title in bold face.
       .PARAMETER YAxisTitleSize
-        Sets the font size for the Y axis title
+        Sets the font size for the Y-axis title
       .PARAMETER YAxisNumberformat
-        A number formatting string, like "#,##0.00" for numbers on the Y axis
+        A number formatting string, like "#,##0.00", for numbers on the Y-axis.
       .PARAMETER YMajorUnit
-        Spacing for the major gridlines / tick marks on the Y axis
+        Spacing for the major gridlines / tick marks on the Y-axis.
       .PARAMETER YMinorUnit
-        Spacing for the major gridlines / tick marks on the Y axis
+        Spacing for the minor gridlines / tick marks on the Y-axis.
       .PARAMETER YMaxValue
-        Maximum value on the Yaxis
+        Maximum value on the Y-axis.
       .PARAMETER YMinValue
-        Minimum value on the Yaxis
+        Minimum value on the Y-axis.
       .PARAMETER YAxisPosition
-        Postion for the Y axis (left or right)
+        Position for the Y-axis (Left or Right).
       .PARAMETER PassThru
-        Add-Excel chart doesn't normally return anything, but if -PassThru is specified it returns the newly created chart to allow it to be fine tuned
+        Add-Excel chart doesn't normally return anything, but if -PassThru is specified it returns the newly created chart to allow it to be fine tuned.
       .EXAMPLE
         >
         PS> $Excel = ConvertFrom-Csv    @"
@@ -280,8 +282,8 @@ function Add-ExcelChart {
         Close-ExcelPackage -Show $Excel
 
         The first command expands a multi-line string into 6 rows of data which is exported to new Excel file; leaving an ExcelPackage object in $excel
-        The second command adds a chart - the cell ranges are explitly specified. Note the at the XRange (labels) is TWO columns wide and the chart will
-        combine the name of the product and the name of the City to create the table.
+        The second command adds a chart - the cell ranges are explicitly specified. Note that the XRange (labels) is TWO columns wide and the chart will
+        combine the name of the product and the name of the City to create the label.
         The width of the chart is set explictly, the default legend is used and there is no Chart title.
       .EXAMPLE
         >
@@ -310,13 +312,17 @@ function Add-ExcelChart {
                        -SeriesHeader "Sin(x)" -LegendSize 8 -legendBold  -LegendPosition Bottom
         Close-ExcelPackage $Excel -Show
 
-        The first line puts numbers from 0 to 360 into a sheet, as the first column, and a formula to calculate the Sine of that number of number of degrees in the second column.
-        It creates ranges for the two columns  - "X" and "SinX" respectively
-        The Add-Excel chart colum adds a chart to that work sheet, specifying a line chart with the X values comming from named range "X" and the the Y values comming the range named "SinX".
-        The chart has a title, and is positioned to the right of column 2 and sized 8000 pixels wide
-        Thed X axis s labeled "Degrees", in bold 12 point type and runs from 0 to 361 with labels every 30, and minor tick marks every 10. Degres are shown badded to 3 didits.
-        The Y axis is labeled "Sine" and to allow some room above and below its scale runs from -1.25 to 1.25, and is marked off in units of 0.25 show to two decimal places.
-        The key will for the chart will be at the bottom in 8 point bold type and the line will be named "Sin(x)"
+        The first line puts numbers from 0 to 360 into a sheet, as the first column, and 
+        a formula to calculate the Sine of that number of number of degrees in the second column.
+        It creates named-ranges for the two columns - "X" and "SinX" respectively
+        The Add-ExcelChart command adds a chart to that worksheet, specifying a line chart 
+        with the X values coming from named-range "X" and the Y values coming from named-range "SinX".
+        The chart has a title, and is positioned to the right of column 2 and sized 800 pixels wide
+        The X-axis is labelled "Degrees", in bold 12 point type and runs from 0 to 361 with labels every 30, 
+        and minor tick marks every 10. Degrees are shown padded to 3 digits.
+        The Y-axis is labelled "Sine" and to allow some room above and below its scale runs from -1.25 to 1.25, 
+        and is marked off in units of 0.25 shown to two decimal places.
+        The key will for the chart will be at the bottom in 8 point bold type and the line will be named "Sin(x)".
     #>
     [cmdletbinding(DefaultParameterSetName='Worksheet')]
     [OutputType([OfficeOpenXml.Drawing.Chart.ExcelChart])]
@@ -404,7 +410,7 @@ function Add-ExcelChart {
             if ($XAxisTitleBold)  {$chart.XAxis.Title.Font.Bold = $true}
             if ($XAxisTitleSize)  {$chart.XAxis.Title.Font.Size = $XAxisTitleSize}
         }
-        if ($XAxisPosition)       {Write-Warning "X Axis position is not being set propertly at the moment, parameter ignored" }
+        if ($XAxisPosition)       {Write-Warning "X-axis position is not being set propertly at the moment, parameter ignored" }
                                    #$chart.ChartXml.chartSpace.chart.plotArea.catAx.axPos.val = $XAxisPosition.ToString().substring(0,1)}
         if ($XMajorUnit)          {$chart.XAxis.MajorUnit       = $XMajorUnit}
         if ($XMinorUnit)          {$chart.XAxis.MinorUnit       = $XMinorUnit}
@@ -417,7 +423,7 @@ function Add-ExcelChart {
             if ($YAxisTitleBold) {$chart.YAxis.Title.Font.Bold = $true}
             if ($YAxisTitleSize) {$chart.YAxis.Title.Font.Size = $YAxisTitleSize}
         }
-        if ($YAxisPosition)      {Write-Warning "Y Axis position is not being set propertly at the moment, parameter ignored" }
+        if ($YAxisPosition)      {Write-Warning "Y-axis position is not being set propertly at the moment, parameter ignored" }
                                   #$chart.ChartXml.chartSpace.chart.plotArea.valAx.axPos.val= $YAxisPosition.ToString().substring(0,1)}
         if ($YMajorUnit)         {$chart.YAxis.MajorUnit       = $YMajorUnit}
         if ($YMinorUnit)         {$chart.YAxis.MinorUnit       = $YMinorUnit}
