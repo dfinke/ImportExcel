@@ -15,7 +15,7 @@
       .Example
         >
         PS> $chartdef = New-ExcelChartDefinition -Title "Gross and net by city and product"  -ChartType ColumnClustered `
-               -Column 11 -Width 500 -Height 360 -YMajorUnit 500 -YMinorUnit 100 -YAxisNumberformat "$#,##0" -LegendPostion Bottom
+               -Column 11 -Width 500 -Height 360 -YMajorUnit 500 -YMinorUnit 100 -YAxisNumberformat "$#,##0" -LegendPosition Bottom
 
         $excel = ConvertFrom-Csv    @"
         Product, City, Gross, Net

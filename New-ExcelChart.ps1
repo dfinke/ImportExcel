@@ -33,7 +33,7 @@ function New-ExcelChartDefinition {
         If specified, turns of display of the key. If you only have one data series it may be preferable to use the title to say what the chart is.
       .PARAMETER SeriesHeader
         Specify explicit name(s) for the data series, which will appear in the legend/key
-      .PARAMETER LegendPostion
+      .PARAMETER LegendPosition
         Location of the key, either left, right, top, bottom or TopRight.
       .PARAMETER LegendSize
         Font size for the key
@@ -86,7 +86,7 @@ function New-ExcelChartDefinition {
         PS> $cDef = New-ExcelChartDefinition  -ChartType line -XRange "X" -YRange "Sinx"  -Title "Graph of Sine X" -TitleBold -TitleSize 14 `
                        -Column 2 -ColumnOffSetPixels 35 -Width 800 -XAxisTitleText "Degrees" -XAxisTitleBold -XAxisTitleSize 12 -XMajorUnit 30 -XMinorUnit 10 -XMinValue 0 -XMaxValue 361  -XAxisNumberformat "000" `
                        -YMinValue -1.25 -YMaxValue 1.25 -YMajorUnit 0.25 -YAxisNumberformat "0.00" -YAxisTitleText "Sine" -YAxisTitleBold -YAxisTitleSize 12 `
-                       -SeriesHeader "Sin(x)" -LegendSize 8 -legendBold  -LegendPostion Bottom
+                       -SeriesHeader "Sin(x)" -LegendSize 8 -legendBold  -LegendPosition Bottom
 
         0..360 | ForEach-Object {[pscustomobject][ordered]@{x = $_; Sinx = "=Sin(Radians(x)) "}} | Export-Excel -AutoNameRange -now -WorkSheetname SinX -ExcelChartDefinition $cDef -Show
 
@@ -106,7 +106,7 @@ function New-ExcelChartDefinition {
         $RowOffSetPixels = 10,
         $Column = 6,
         $ColumnOffSetPixels = 5,
-        [OfficeOpenXml.Drawing.Chart.eLegendPosition]$LegendPostion,
+        [OfficeOpenXml.Drawing.Chart.eLegendPosition]$LegendPosition,
         $LegendSize,
         [Switch]$LegendBold,
         [Switch]$NoLegend,
@@ -147,7 +147,7 @@ function New-ExcelChartDefinition {
         RowOffSetPixels    = $RowOffSetPixels
         Column             = $Column
         ColumnOffSetPixels = $ColumnOffSetPixels
-        LegendPostion      = $LegendPostion
+        LegendPosition      = $LegendPosition
         LegendSize         = $LegendSize
         Legendbold         = $LegendBold
         NoLegend           = $NoLegend     -as [Boolean]
@@ -217,7 +217,7 @@ function Add-ExcelChart {
         If specified, turns of display of the key. If you only have one data series it may be preferable to use the title to say what the chart is.
       .PARAMETER SeriesHeader
         Specify explicit name(s) for the data series, which will appear in the legend/key
-       .PARAMETER LegendPostion
+       .PARAMETER LegendPosition
         Location of the key, either left, right, top, bottom or TopRight.
       .PARAMETER LegendSize
         Font size for the key
@@ -307,7 +307,7 @@ function Add-ExcelChart {
         Add-ExcelChart -Worksheet $excel.Workbook.Worksheets["Sinx"] -ChartType line -XRange "X" -YRange "Sinx"  -Title "Graph of Sine X" -TitleBold -TitleSize 14 `
                        -Column 2 -ColumnOffSetPixels 35 -Width 800 -XAxisTitleText "Degrees" -XAxisTitleBold -XAxisTitleSize 12 -XMajorUnit 30 -XMinorUnit 10 -XMinValue 0 -XMaxValue 361  -XAxisNumberformat "000" `
                        -YMinValue -1.25 -YMaxValue 1.25 -YMajorUnit 0.25 -YAxisNumberformat "0.00" -YAxisTitleText "Sine" -YAxisTitleBold -YAxisTitleSize 12 `
-                       -SeriesHeader "Sin(x)" -LegendSize 8 -legendBold  -LegendPostion Bottom
+                       -SeriesHeader "Sin(x)" -LegendSize 8 -legendBold  -LegendPosition Bottom
         Close-ExcelPackage $Excel -Show
 
         The first line puts numbers from 0 to 360 into a sheet, as the first column, and a formula to calculate the Sine of that number of number of degrees in the second column.
@@ -336,7 +336,7 @@ function Add-ExcelChart {
         [int]$RowOffSetPixels    =  10,
         [int]$Column             =   6,
         [int]$ColumnOffSetPixels =   5,
-        [OfficeOpenXml.Drawing.Chart.eLegendPosition]$LegendPostion,
+        [OfficeOpenXml.Drawing.Chart.eLegendPosition]$LegendPosition,
         $LegendSize,
         [Switch]$LegendBold,
         [Switch]$NoLegend,
@@ -394,7 +394,7 @@ function Add-ExcelChart {
         }
         if ($NoLegend) { $chart.Legend.Remove() }
         else {
-            if ($LegendPostion) {$Chart.Legend.Position    = $LegendPostion}
+            if ($LegendPosition) {$Chart.Legend.Position    = $LegendPosition}
             if ($LegendSize)    {$chart.Legend.Font.Size   = $LegendSize}
             if ($legendBold)    {$chart.Legend.Font.Bold   = $true}
         }
