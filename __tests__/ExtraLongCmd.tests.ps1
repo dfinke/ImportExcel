@@ -12,7 +12,7 @@ Banana, Paris,   300, 200
 Apple, New York, 1200,700
 "@  | Export-Excel  -Path $path  -TableStyle Medium13 -tablename "RawData" -ConditionalFormat @{Range="C2:C7"; DataBarColor="Green"} -ExcelChartDefinition @{ChartType="Doughnut";XRange="A2:B7"; YRange="C2:C7"; width=800; }  -PivotTableDefinition @{Sales=@{
             PivotRows="City"; PivotColumns="Product"; PivotData=@{Gross="Sum";Net="Sum"}; PivotNumberFormat="$#,##0.00"; PivotTotals="Both"; PivotTableSyle="Medium12"; Activate=$true
-            PivotChartDefinition=@{Title="Gross and net by city and product"; ChartType="ColumnClustered"; Column=6; Width=600; Height=360; YMajorUnit=500; YMinorUnit=100; YAxisNumberformat="$#,##0"; LegendPostion="Bottom"}}}
+            PivotChartDefinition=@{Title="Gross and net by city and product"; ChartType="ColumnClustered"; Column=6; Width=600; Height=360; YMajorUnit=500; YMinorUnit=100; YAxisNumberformat="$#,##0"; LegendPosition="Bottom"}}}
 
 $excel = Open-ExcelPackage $path
 $ws1 = $excel.Workbook.Worksheets[1]

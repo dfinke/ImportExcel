@@ -850,8 +850,7 @@ Describe ExportExcel {
         Add-ExcelChart -Worksheet $excel.Workbook.Worksheets["Sinx"] -ChartType line -XRange "X" -YRange "Sinx" -SeriesHeader "Sin(x)" -Title "Graph of Sine X" -TitleBold -TitleSize 14 `
                        -Column 2 -ColumnOffSetPixels 35 -Width 800 -XAxisTitleText "Degrees" -XAxisTitleBold -XAxisTitleSize 12 -XMajorUnit 30 -XMinorUnit 10 -XMinValue 0 -XMaxValue 361  -XAxisNumberformat "000" `
                        -YMinValue -1.25 -YMaxValue 1.25 -YMajorUnit 0.25 -YAxisNumberformat "0.00" -YAxisTitleText "Sine" -YAxisTitleBold -YAxisTitleSize 12 `
-                       -LegendSize 8 -legendBold  -LegendPostion Bottom
-        #Test simple formula based conditional formatting rule
+                       -LegendSize 8 -legendBold  -LegendPosition Bottom
         Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets["Sinx"] -Range "B2:B362" -RuleType LessThan -ConditionValue "=B1" -ForeGroundColor Red
         $ws = $Excel.Workbook.Worksheets["Sinx"]
         $d  = $ws.Drawings[0]

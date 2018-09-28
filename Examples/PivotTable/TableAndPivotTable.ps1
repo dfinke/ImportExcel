@@ -21,6 +21,6 @@ Add-PivotTable -Address $excel.Sheet1.Cells["F1"] -SourceWorkSheet $Excel.Sheet1
                         ChartType="ColumnClustered";
                         Column=11; Width=500; Height=360;
                         YMajorUnit=500; YMinorUnit=100; YAxisNumberformat="$#,##0"
-                        LegendPostion="Bottom"}
+                        LegendPosition="Bottom"}
 #Save and open in excel
 Close-ExcelPackage $excel -Show
