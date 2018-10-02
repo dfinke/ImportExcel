@@ -147,7 +147,7 @@ Context 'input' {
             it 'not found' {
                 {Import-Excel -Path $Path -WorksheetName NotExisting} | Should Throw 'not found'
             }
-            it 'empty' {               
+            it 'empty' {
                 Import-Excel -Path $Path -WorksheetName Test -NoHeader | Should BeNullOrEmpty
             }
             it 'select first worksheet by default' {
@@ -155,15 +155,15 @@ Context 'input' {
                 #region Create test file
                     $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
                     $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
-                    
-                    
+
+
                     #  ----------------------------------------------
                     #  |           A           B            C       |
                     #  |1     First Name                 Address    |
                     #  |2     Chuck         Norris       California |
                     #  |3     Jean-Claude   Vandamme     Brussels   |
                     #  ----------------------------------------------
-                    
+
                     # Row, Column
                     $WorksheetActors = $Excel | Add-WorkSheet -WorkSheetname Actors
                     $WorksheetActors.Cells[1, 1].Value = 'First Name'
@@ -183,7 +183,7 @@ Context 'input' {
                     #    |4                                                                  |
                     #    |5     Skyfall         2012           9                    Thriller |
                     #    ---------------------------------------------------------------------
-                    
+
                     # Row, Column
                     $WorksheetMovies = $Excel | Add-WorkSheet -WorkSheetname Movies
                     $WorksheetMovies.Cells[1, 1].Value = 'Movie name'
@@ -226,7 +226,7 @@ Context 'input' {
                 #region Create test file
                     $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
                     $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
-                   
+
                     #   ---------------------------------------------------------------------
                     #   |           A            B            C          D         E        |
                     #   |1     Movie name      Year           Rating               Genre    |
@@ -235,7 +235,7 @@ Context 'input' {
                     #   |4                                                                  |
                     #   |5     Skyfall         2012           9                    Thriller |
                     #   ---------------------------------------------------------------------
-                    
+
                     # Row, Column
                     $WorksheetMovies = $Excel | Add-WorkSheet -WorkSheetname Movies
                     $WorksheetMovies.Cells[1, 1].Value = 'Movie name'
@@ -254,14 +254,14 @@ Context 'input' {
                     $WorksheetMovies.Cells[5, 2].Value = '2012'
                     $WorksheetMovies.Cells[5, 3].Value = '9'
                     $WorksheetMovies.Cells[5, 5].Value = 'Thriller'
-                    
+
                     #    ----------------------------------------------
                     #    |           A           B            C       |
                     #    |1     First Name                 Address    |
                     #    |2     Chuck         Norris       California |
                     #    |3     Jean-Claude   Vandamme     Brussels   |
                     #    ----------------------------------------------
-                    
+
                     # Row, Column
                     $WorksheetActors = $Excel | Add-WorkSheet -WorkSheetname Actors
                     $WorksheetActors.Cells[1, 1].Value = 'First Name'
@@ -316,14 +316,14 @@ Context 'output' {
         Describe 'missing column header' {
 
             #region Create test file
-            
+
             #    ----------------------------------------------
             #    |           A           B            C       |
             #    |1     First Name                 Address    |
             #    |2     Chuck         Norris       California |
             #    |3     Jean-Claude   Vandamme     Brussels   |
             #    ----------------------------------------------
-            
+
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
             $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
             $Worksheet = $Excel | Add-WorkSheet -WorkSheetname Test
@@ -354,7 +354,7 @@ Context 'output' {
                     }
                 )
 
-                $Result = Import-Excel -Path $Path -WorksheetName Test 
+                $Result = Import-Excel -Path $Path -WorksheetName Test
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
             }
             it 'Default and StartRow' {
@@ -363,10 +363,10 @@ Context 'output' {
                     'Norris'     = 'Vandamme'
                     'California' = 'Brussels'
                 }
-                
+
                 $Result = Import-Excel -Path $Path -WorksheetName Test -StartRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
-                
+
                 Import-Excel -Path $Path -WorksheetName Test -StartRow 4 | Should BeNullOrEmpty
             }
             it 'Default and DataOnly' {
@@ -668,7 +668,7 @@ Context 'output' {
         Describe 'blank rows and columns' {
 
             #region Create test file
-            
+
             #    ---------------------------------------------------------------------
             #    |           A            B            C          D         E        |
             #    |1     Movie name      Year           Rating               Genre    |
@@ -677,7 +677,7 @@ Context 'output' {
             #    |4                                                                  |
             #    |5     Skyfall         2012           9                    Thriller |
             #    ---------------------------------------------------------------------
-            
+
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
             $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
             $Worksheet = $Excel | Add-WorkSheet -WorkSheetname Test
@@ -806,7 +806,7 @@ Context 'output' {
 
                 $Result = Import-Excel -Path $Path -WorksheetName Test -DataOnly -StartRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
-                
+
                 {Import-Excel -Path $Path -WorksheetName Test -DataOnly -StartRow 4} | Should Throw 'No column headers found'
 
                 Import-Excel -Path $Path -WorksheetName Test -DataOnly -StartRow 5 | Should BeNullOrEmpty
@@ -953,7 +953,7 @@ Context 'output' {
 
                 $Result = Import-Excel -Path $Path -WorksheetName Test -HeaderName MovieName, Year, Rating, Genre, Country -StartRow 2
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
-                
+
                 $ExpectedResult = @(
                     [PSCustomObject]@{
                         'MovieName' = $null
@@ -981,7 +981,7 @@ Context 'output' {
                     'Genre'     = $null
                     'Country'   = 'Thriller'
                 }
-                
+
                 $Result = Import-Excel -Path $Path -WorksheetName Test -HeaderName MovieName, Year, Rating, Genre, Country  -StartRow 5
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
 
@@ -1115,10 +1115,10 @@ Context 'output' {
                     'Genre'     = 'Thriller'
                     'Country'   = $null
                 }
-                
+
                 $Result = Import-Excel -Path $Path -WorksheetName Test -HeaderName MovieName, Year, Rating, Genre, Country -DataOnly -StartRow 4
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
-                
+
                 $Result = Import-Excel -Path $Path -WorksheetName Test -HeaderName MovieName, Year, Rating, Genre, Country -DataOnly  -StartRow 5
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
 
@@ -1219,7 +1219,7 @@ Context 'output' {
                 )
                 $Result = Import-Excel -Path $Path -WorksheetName Test -NoHeader -StartRow 4
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
-                
+
                 $ExpectedResult = [PSCustomObject]@{
                     'P1' = 'Skyfall'
                     'P2' = '2012'
@@ -1227,7 +1227,7 @@ Context 'output' {
                     'P4' = $null
                     'P5' = 'Thriller'
                 }
-                
+
                 $Result = Import-Excel -Path $Path -WorksheetName Test -NoHeader -StartRow 5
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
 
@@ -1295,7 +1295,7 @@ Context 'output' {
                     'P3' = '9'
                     'P4' = 'Thriller'
                 }
-                
+
                 $Result = Import-Excel -Path $Path -WorksheetName Test -NoHeader -DataOnly -StartRow 4
                 Assert-Equivalent -Actual $Result -Expected $ExpectedResult
 
@@ -1308,7 +1308,7 @@ Context 'output' {
         Describe 'blank rows and columns with missing headers' {
 
             #region Create test file
-            
+
             #    ---------------------------------------------------------------------------------------------------
             #    |           A            B            C          D         E               F          G           |
             #    |1     Movie name                     Rating                                         Director     |
@@ -1318,7 +1318,7 @@ Context 'output' {
             #    |5     Skyfall         2012           9                    Thriller                  Sam Mendes   |
             #    |6                                    10                                                          |
             #    ---------------------------------------------------------------------------------------------------
-            
+
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
             $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
             $Worksheet = $Excel | Add-WorkSheet -WorkSheetname Test
@@ -1973,14 +1973,14 @@ Context 'special cases' {
         Describe 'duplicate column headers' {
             it 'worksheet' {
                 #region Create test file
-                
+
                 #    ----------------------------------------------
                 #    |           A           B            C       |
                 #    |1     First Name    first name   Address    |
                 #    |2     Chuck         Norris       California |
                 #    |3     Jean-Claude   Vandamme     Brussels   |
                 #    ----------------------------------------------
-                
+
                 $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
                 $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
                 $Worksheet = $Excel | Add-WorkSheet -WorkSheetname Test
@@ -2004,14 +2004,14 @@ Context 'special cases' {
 
                 #region Create test file
                 Remove-Item .\* -Force
-                
+
                 #    ----------------------------------------------
                 #    |           A           B            C       |
                 #    |1                                           |
                 #    |2     Fruit         Fruit      Color        |
                 #    |3     Kiwi                     Green        |
                 #    ----------------------------------------------
-                
+
                 $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
                 $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
                 $Worksheet = $Excel | Add-WorkSheet -WorkSheetname Test
@@ -2036,18 +2036,18 @@ Context 'special cases' {
         #>
         Describe 'open password protected files' {
             $Password = 'P@ssw0rd'
-            
+
             #region Create password protected file
-            
+
             #    ----------------
             #    |         A    |
             #    |1   Type      |
             #    |2   Sensitive |
             #    ----------------
-            
+
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
             $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
-            
+
             # Row, Column
             $Worksheet = $Excel | Add-WorkSheet -WorkSheetname Test
             $Worksheet.Cells[1, 1].Value = 'Type'

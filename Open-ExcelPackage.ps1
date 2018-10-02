@@ -75,7 +75,7 @@ Function Close-ExcelPackage {
       .Description
         When working with an ExcelPackage object, the Workbook is held in memory and not saved until the .Save() method of the package is called.
         Close-ExcelPackage saves and disposes of the Package object. It can be called with -NoSave to abandon the file without saving, with a new "SaveAs" filename,
-        and/or with a password to protect the file. And -Show will open the file in Excel; 
+        and/or with a password to protect the file. And -Show will open the file in Excel;
         -Calculate will try to update the workbook, although not everything can be recalculated
       .Example
         Close-ExcelPackage -show $excel

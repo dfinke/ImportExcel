@@ -4,8 +4,8 @@
         Creates a Definition of a chart which can be added using Export-Excel, or Add-PivotTable
       .DESCRIPTION
         All the parameters which are passed to Add-ExcelChart can be added to an object and
-        passed to Export-Excel with the -ExcelChartDefinition parameter, 
-        or to Add-PivotTable with the -PivotChartDefinition parameter. 
+        passed to Export-Excel with the -ExcelChartDefinition parameter,
+        or to Add-PivotTable with the -PivotChartDefinition parameter.
         This command sets up those definitions.
       .PARAMETER Title
         The title for the chart.
@@ -312,15 +312,15 @@ function Add-ExcelChart {
                        -SeriesHeader "Sin(x)" -LegendSize 8 -legendBold  -LegendPosition Bottom
         Close-ExcelPackage $Excel -Show
 
-        The first line puts numbers from 0 to 360 into a sheet, as the first column, and 
+        The first line puts numbers from 0 to 360 into a sheet, as the first column, and
         a formula to calculate the Sine of that number of number of degrees in the second column.
         It creates named-ranges for the two columns - "X" and "SinX" respectively
-        The Add-ExcelChart command adds a chart to that worksheet, specifying a line chart 
+        The Add-ExcelChart command adds a chart to that worksheet, specifying a line chart
         with the X values coming from named-range "X" and the Y values coming from named-range "SinX".
         The chart has a title, and is positioned to the right of column 2 and sized 800 pixels wide
-        The X-axis is labelled "Degrees", in bold 12 point type and runs from 0 to 361 with labels every 30, 
+        The X-axis is labelled "Degrees", in bold 12 point type and runs from 0 to 361 with labels every 30,
         and minor tick marks every 10. Degrees are shown padded to 3 digits.
-        The Y-axis is labelled "Sine" and to allow some room above and below its scale runs from -1.25 to 1.25, 
+        The Y-axis is labelled "Sine" and to allow some room above and below its scale runs from -1.25 to 1.25,
         and is marked off in units of 0.25 shown to two decimal places.
         The key will for the chart will be at the bottom in 8 point bold type and the line will be named "Sin(x)".
     #>

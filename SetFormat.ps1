@@ -4,9 +4,9 @@
         Applies Number, font, alignment and color formatting, values or formulas to a range of Excel Cells.
       .DESCRIPTION
         Set-ExcelRange was created to set the style elements for a range of cells, this includes
-        auto-sizing and hiding, setting font elements (Name, Size, Bold, Italic, Underline & UnderlineStyle and Subscript & SuperScript), 
-        font and background colors, borders, text wrapping, rotation, aliginment within cells, and number format. 
-        It was orignally named "Set-Format",but it has been extended to set Values, Formulas and 
+        auto-sizing and hiding, setting font elements (Name, Size, Bold, Italic, Underline & UnderlineStyle and Subscript & SuperScript),
+        font and background colors, borders, text wrapping, rotation, aliginment within cells, and number format.
+        It was orignally named "Set-Format",but it has been extended to set Values, Formulas and
         ArrayFormulas (sometimes called Ctrl-shift-Enter [CSE] formulas); because of this
         The name has become Set-ExcelRange - but the old name of Set-Format is preserved as an alias name.
       .EXAMPLE

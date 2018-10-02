@@ -230,7 +230,7 @@
 function New-PivotTableDefinition {
     <#
       .Synopsis
-        Creates PivotTable definitons for Export-Excel 
+        Creates PivotTable definitons for Export-Excel
       .Description
         Export-Excel allows a single PivotTable to be defined using the parameters -IncludePivotTable, -PivotColumns -PivotRows,
         -PivotData, -PivotFilter, -PivotTotals, -PivotDataToColumn, -IncludePivotChart and -ChartType.

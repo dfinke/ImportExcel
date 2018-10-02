@@ -1,6 +1,6 @@
 function Get-DateOffset {
     param($days=0)
-    
+
     (Get-Date).AddDays($days).ToShortDateString()
 }
 

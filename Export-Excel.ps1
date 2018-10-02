@@ -173,7 +173,7 @@
         .PARAMETER ReturnRange
             If specified, Export-Excel returns the range of added cells in the format "A1:Z100"
         .PARAMETER PassThru
-            If specified, Export-Excel returns an object representing the Excel package without saving the package first. 
+            If specified, Export-Excel returns an object representing the Excel package without saving the package first.
             To save, you need to call Close-ExcelPackage or send the object back to Export-Excel, or use its .Save() or SaveAs() method.
         .EXAMPLE
             Get-Process | Export-Excel .\Test.xlsx -show

@@ -3,7 +3,7 @@ function ConvertFrom-ExcelData {
       .SYNOPSIS
         Reads data from a sheet, and for each row, calls a custom scriptblock with a list of property names and the row of data.
 
-        
+
       .EXAMPLE
         ConvertFrom-ExcelData .\testSQLGen.xlsx {
             param($propertyNames, $record)

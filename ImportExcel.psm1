@@ -327,11 +327,11 @@ function Import-Excel {
             $Path = (Resolve-Path -Path $path).ProviderPath
             Write-Verbose -Message "Import Excel workbook '$Path' with worksheet '$Worksheetname'"
             $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
-        } 
-        Catch {throw "Could not open $Path ; $_ "} 
+        }
+        Catch {throw "Could not open $Path ; $_ "}
 
         if ($Password) {
-            Try   {$Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage 
+            Try   {$Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage
                    $excel.Load( $Stream,$Password)}
             Catch { throw "Could not read $Path with the provided password." }
         }

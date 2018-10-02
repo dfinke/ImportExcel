@@ -23,7 +23,7 @@
         Set-ExcelColumn -Worksheet $ws -Heading "Link" -Value {"https://en.wikipedia.org" + $worksheet.cells["B$Row"].value  }  -AutoSize
 
         In this example, the worksheet in $ws has partial links to wikipedia pages in column B.
-        The -Value parameter is is a script block and it outputs a string which begins https... and ends with the value of cell at 
+        The -Value parameter is is a script block and it outputs a string which begins https... and ends with the value of cell at
         column B in the current row. When given a valid URI,  Set-ExcelColumn makes it a hyperlink. The column will be autosized to fit the links.
       .EXAMPLE
         4..6 | Set-ExcelColumn -Worksheet $ws -AutoNameRange

@@ -10,7 +10,7 @@ Function ConvertTo-ExcelXlsx {
     Process
     {
         if(-Not ($Path | Test-Path) ){
-            throw "File not found" 
+            throw "File not found"
         }
         if(-Not ($Path | Test-Path -PathType Leaf) ){
             throw "Folder paths are not allowed"
@@ -37,7 +37,7 @@ Function ConvertTo-ExcelXlsx {
             }
         }
 
-        try{    
+        try{
             $Excel = New-Object -ComObject "Excel.Application"
         } catch {
             throw "Could not create Excel.Application ComObject. Please verify that Excel is installed."

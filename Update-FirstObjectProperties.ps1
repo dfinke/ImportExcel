@@ -1,6 +1,6 @@
 Function Update-FirstObjectProperties {
-    <# 
-        .SYNOPSIS   
+    <#
+        .SYNOPSIS
             Updates the first object to contain all the properties of the object with the most properties in the array.
 
         .DESCRIPTION
@@ -30,7 +30,7 @@ Function Update-FirstObjectProperties {
             $Array = $Obj1, $Obj2, $Obj3
             $Array | Out-GridView -Title 'Not showing Member3 and Member4'
             $Array | Update-FirstObjectProperties | Out-GridView -Title 'All properties are visible'
-            
+
             Updates the fist object of the array by adding Member3 and Member4.
 
         .EXAMPLE

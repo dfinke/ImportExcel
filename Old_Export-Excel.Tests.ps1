@@ -32,7 +32,7 @@ $fakeData = [PSCustOmobject]@{
     Property_10_Number   = (5/3).ToString('F2') # US '1.67' BE '1,67'
     Property_11_Number   = (15999998/3).ToString('N2') # US '5,333,332.67' BE '5.333.332,67'
     Property_12_Number   = '1.555,83'
-    Property_13_PhoneNr  = '+32 44' 
+    Property_13_PhoneNr  = '+32 44'
     Property_14_PhoneNr  = '+32 4 4444 444'
     Property_15_PhoneNr  =  '+3244444444'
 }
@@ -43,9 +43,9 @@ Describe 'Export-Excel' {
     in $TestDrive {
         Describe 'Number conversion' {
             Context 'numerical values expected' {
-                #region Create test file                
+                #region Create test file
                 $fakeData | Export-Excel -Path $Path
-                
+
                 $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
                 $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
                 $Worksheet = $Excel.Workbook.WorkSheets[1]
@@ -62,13 +62,13 @@ Describe 'Export-Excel' {
                     $Worksheet.Cells[2, 7].Text | Should -BeExactly $fakeData.Property_7_Number
                     $Worksheet.Cells[2, 7].Value | Test-isNumeric | Should -Be $true
                 }
-                
+
                 It 'number starting with zero' {
                     $fakeData.Property_8_Number | Should -BeExactly '007'
                     $Worksheet.Cells[2, 8].Text | Should -BeExactly '7'
                     $Worksheet.Cells[2, 8].Value | Test-isNumeric | Should -Be $true
                 }
-                
+
                 It 'decimal number' {
                     # US '33.00' BE '33,00'
                     $fakeData.Property_9_Number | Should -BeExactly (33).ToString('F2')

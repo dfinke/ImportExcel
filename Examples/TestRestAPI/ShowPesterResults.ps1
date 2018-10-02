@@ -6,20 +6,20 @@
     $ConditionalText += New-ConditionalText -Range "Result" -Text failed  -BackgroundColor red   -ConditionalTextColor black
     $ConditionalText += New-ConditionalText -Range "Result" -Text passed  -BackgroundColor green -ConditionalTextColor black
     $ConditionalText += New-ConditionalText -Range "Result" -Text pending -BackgroundColor gray  -ConditionalTextColor black
-    
+
     $xlParams = @{
         Path=$xlfilename
         WorkSheetname = 'PesterTests'
-        ConditionalText=$ConditionalText 
+        ConditionalText=$ConditionalText
         PivotRows = 'Description'
         PivotColumns = 'Result'
-        PivotData = @{'Result'='Count'} 
-        IncludePivotTable  = $true 
-        #IncludePivotChart = $true 
-        #NoLegend = $true 
-        #ShowPercent = $true 
-        #ShowCategory = $true 
-        AutoSize = $true 
+        PivotData = @{'Result'='Count'}
+        IncludePivotTable  = $true
+        #IncludePivotChart = $true
+        #NoLegend = $true
+        #ShowPercent = $true
+        #ShowCategory = $true
+        AutoSize = $true
         AutoNameRange = $true
         AutoFilter = $true
         Show  = $true
@@ -36,5 +36,5 @@
             StackTrace  = $result.StackTrace
         }
 
-    }) | Sort Description | Export-Excel @xlParams 
+    }) | Sort Description | Export-Excel @xlParams
 }
