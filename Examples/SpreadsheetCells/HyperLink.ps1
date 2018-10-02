@@ -1,6 +1,6 @@
 try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
-Remove-Item "$env:temp\hyperlink.xlsx" -ErrorAction SilentlyContinue
+Remove-Item -Path "$env:temp\hyperlink.xlsx" -ErrorAction SilentlyContinue
 
 $(
     New-PSItem '=Hyperlink("http://dougfinke.com/blog","Doug Finke")' @("Link")

@@ -65,7 +65,7 @@
             return $pkgobj
         }
     }
-    else   {Write-Warning "Could not find $path" }
+    else   {Write-Warning -Message "Could not find $path" }
  }
 
 Function Close-ExcelPackage {
@@ -106,7 +106,7 @@ Function Close-ExcelPackage {
     else {
           if ($Calculate) {
             try   { [OfficeOpenXml.CalculationExtension]::Calculate($ExcelPackage.Workbook) }
-            Catch { Write-Warning "One or more errors occured while calculating, save will continue, but there may be errors in the workbook."}
+            Catch { Write-Warning -Message "One or more errors occured while calculating, save will continue, but there may be errors in the workbook."}
           }
           if ($SaveAs) {
               $SaveAs = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($SaveAs)

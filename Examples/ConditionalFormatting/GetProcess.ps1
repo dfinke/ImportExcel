@@ -1,6 +1,6 @@
 try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
-Remove-Item "$env:TEMP\testExport.xlsx" -ErrorAction Ignore
+Remove-Item -Path "$env:TEMP\testExport.xlsx" -ErrorAction Ignore
 
 Get-Process | Where-Object Company | Select-Object Company, Name, PM, Handles, *mem* |
 

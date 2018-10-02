@@ -160,7 +160,7 @@
             elseif (     $SourceRange -is     [String] -or $SourceRange -is [OfficeOpenXml.ExcelAddress]) {
                 $pivotTable = $wsPivot.PivotTables.Add($Address,$SourceWorkSheet.Cells[$SourceRange], $pivotTableName)
             }
-            else {Write-warning "Could not create a PivotTable with the Source Range provided."; return}
+            else {Write-Warning -Message "Could not create a PivotTable with the Source Range provided."; return}
             foreach ($Row in $PivotRows) {
                 try {$null = $pivotTable.RowFields.Add($pivotTable.Fields[$Row]) }
                 catch {Write-Warning -message "Could not add '$row' to Rows in PivotTable $pivotTableName." }

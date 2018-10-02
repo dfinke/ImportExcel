@@ -3,7 +3,7 @@
         BeforeAll {
             $password = "YouMustRememberThis" 
             $path = "$env:TEMP\Test.xlsx" 
-            Remove-Item $path -ErrorAction SilentlyContinue
+            Remove-Item -Path $path -ErrorAction SilentlyContinue
             Get-Service | Select-Object -First 10 | Export-excel -password $password -Path $Path -DisplayPropertySet 
         }
         it "Threw an error when the password was omitted                                           " {

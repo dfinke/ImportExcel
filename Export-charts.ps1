@@ -27,7 +27,7 @@ if (-not $Destination) {$Destination = Split-Path -Path $Path -Parent }
 
 #Call up Excel and tell it to open the file. 
 try   { $excelApp      = New-Object -ComObject "Excel.Application" } 
-catch { Write-Warning "Could not start Excel application - which usually means it is not installed."  ; return } 
+catch { Write-Warning -Message "Could not start Excel application - which usually means it is not installed."  ; return } 
 
 try   { $excelWorkBook = $excelApp.Workbooks.Open($Path) } 
 catch { Write-Warning -Message "Could not Open $Path."  ; return } 

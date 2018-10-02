@@ -1,7 +1,7 @@
 try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 $f = ".\dashboard.xlsx"
-Remove-Item $f -ErrorAction Ignore
+Remove-Item -Path $f -ErrorAction Ignore
 
 $data = @"
 From,To,RDollars,RPercent,MDollars,MPercent,Revenue,Margin

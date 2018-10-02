@@ -1,7 +1,7 @@
 try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 $xlfile = "$env:Temp\testData.xlsx"
-Remove-Item $xlfile -ErrorAction SilentlyContinue
+Remove-Item -Path $xlfile -ErrorAction SilentlyContinue
 
 $r = Get-ChildItem C:\WINDOWS\system32
 

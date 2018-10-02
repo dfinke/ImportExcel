@@ -136,7 +136,7 @@
         $YMinValue,
         [OfficeOpenXml.Drawing.Chart.eAxisPosition]$YAxisPosition
     )
-    if ( $Header ) {Write-Warning "The header parameter is ignored."} #Nothing was done with it when creating a chart.
+    if ( $Header ) {Write-Warning -Message "The header parameter is ignored."} #Nothing was done with it when creating a chart.
     #might be able to do [PSCustomObject]$PsboundParameters,   the defaults here match those in Add-Excel Chart
     [PSCustomObject]@{
         Title              = $Title
@@ -410,7 +410,7 @@ function Add-ExcelChart {
             if ($XAxisTitleBold)  {$chart.XAxis.Title.Font.Bold = $true}
             if ($XAxisTitleSize)  {$chart.XAxis.Title.Font.Size = $XAxisTitleSize}
         }
-        if ($XAxisPosition)       {Write-Warning "X-axis position is not being set propertly at the moment, parameter ignored" }
+        if ($XAxisPosition)       {Write-Warning -Message "X-axis position is not being set propertly at the moment, parameter ignored" }
                                    #$chart.ChartXml.chartSpace.chart.plotArea.catAx.axPos.val = $XAxisPosition.ToString().substring(0,1)}
         if ($XMajorUnit)          {$chart.XAxis.MajorUnit       = $XMajorUnit}
         if ($XMinorUnit)          {$chart.XAxis.MinorUnit       = $XMinorUnit}
@@ -423,7 +423,7 @@ function Add-ExcelChart {
             if ($YAxisTitleBold) {$chart.YAxis.Title.Font.Bold = $true}
             if ($YAxisTitleSize) {$chart.YAxis.Title.Font.Size = $YAxisTitleSize}
         }
-        if ($YAxisPosition)      {Write-Warning "Y-axis position is not being set propertly at the moment, parameter ignored" }
+        if ($YAxisPosition)      {Write-Warning -Message "Y-axis position is not being set propertly at the moment, parameter ignored" }
                                   #$chart.ChartXml.chartSpace.chart.plotArea.valAx.axPos.val= $YAxisPosition.ToString().substring(0,1)}
         if ($YMajorUnit)         {$chart.YAxis.MajorUnit       = $YMajorUnit}
         if ($YMinorUnit)         {$chart.YAxis.MinorUnit       = $YMinorUnit}

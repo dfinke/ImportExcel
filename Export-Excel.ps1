@@ -554,7 +554,7 @@
                   ($NoNumberConversion -contains $Name) -or ($NoNumberConversion -eq '*'))) } {
                     #Save text without it to converting to number
                     $TargetCell.Value = $_
-                    #Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' unconverted"
+                    #Write-Verbose -Message "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' unconverted"
                     break
                 }
                 Default {
@@ -568,7 +568,7 @@
                     }
                     else {
                         $TargetCell.Value = $_
-                        #Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' as string"
+                        #Write-Verbose -Message "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' as string"
                     }
                     break
                 }
@@ -697,7 +697,7 @@
                     $ColumnIndex = $StartColumn
                     $Row += 1
                     try    {Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData}
-                    catch  {Write-Warning "Could not insert value at Row $Row. "}
+                    catch  {Write-Warning -Message "Could not insert value at Row $Row. "}
                 }
                 else {
                     #region Add headers - if we are appending, or we have been through here once already we will have the headers
@@ -718,7 +718,7 @@
                         else {
                             foreach ($Name in $script:Header) {
                                 $ws.Cells[$Row, $ColumnIndex].Value = $Name
-                                Write-Verbose "Cell '$Row`:$ColumnIndex' add header '$Name'"
+                                Write-Verbose -Message "Cell '$Row`:$ColumnIndex' add header '$Name'"
                                 $ColumnIndex += 1
                             }
                         }
@@ -781,7 +781,7 @@
                     Add-ExcelName  -RangeName $targetRangeName -Range $ws.Cells[$targetRow, ($StartColumn + $c ), $LastRow, ($StartColumn + $c )]
                     try {#this test can throw with some names, surpress any error
                         if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress(($targetRangeName -replace '\W' , '_' ))) {
-                            Write-Warning "AutoNameRange: Property name '$targetRangeName' is also a valid Excel address and may cause issues. Consider renaming the property name."
+                            Write-Warning -Message "AutoNameRange: Property name '$targetRangeName' is also a valid Excel address and may cause issues. Consider renaming the property name."
                         }
                     } Catch {}
                 }
@@ -934,7 +934,7 @@
 
         if ($Calculate) {
             try   { [OfficeOpenXml.CalculationExtension]::Calculate($ws) }
-            catch { Write-Warning "One or more errors occured while calculating, save will continue, but there may be errors in the workbook. $_"}
+            catch { Write-Warning -Message "One or more errors occured while calculating, save will continue, but there may be errors in the workbook. $_"}
         }
 
         if ($Barchart -or $PieChart -or $LineChart -or $ColumnChart) {
@@ -1030,13 +1030,13 @@
                     Add-Type -AssemblyName 'System.IO.Compression.Filesystem' -ErrorAction stop
                 }
                 catch {
-                    Write-Error "The -ReZip parameter requires .NET Framework 4.5 or later to be installed. Recommend to install Powershell v4+"
+                    Write-Error -Message "The -ReZip parameter requires .NET Framework 4.5 or later to be installed. Recommend to install Powershell v4+"
                     continue
                 }
                 try {
                     $TempZipPath = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath ([System.IO.Path]::GetRandomFileName())
                     [io.compression.zipfile]::ExtractToDirectory($pkg.File, $TempZipPath)  | Out-Null
-                    Remove-Item $pkg.File -Force
+                    Remove-Item -Path $pkg.File -Force
                     [io.compression.zipfile]::CreateFromDirectory($TempZipPath, $pkg.File) | Out-Null
                 }
                 catch {throw "Error resizipping $path : $_"}
@@ -1138,7 +1138,7 @@ function Add-WorkSheet  {
             }
             else {$ExcelWorkbook.Worksheets.MoveBefore($WorksheetName, $MoveBefore)}
         }
-        else {Write-Warning "Can't find worksheet '$MoveBefore'; worsheet '$WorksheetName' will not be moved."}
+        else {Write-Warning -Message "Can't find worksheet '$MoveBefore'; worsheet '$WorksheetName' will not be moved."}
     }
     elseif ($MoveAfter  ) {
         if ($MoveAfter -eq "*") {
@@ -1157,7 +1157,7 @@ function Add-WorkSheet  {
                 $ExcelWorkbook.Worksheets.MoveAfter($WorksheetName, $MoveAfter)
             }
         }
-        else {Write-Warning "Can't find worksheet '$MoveAfter'; worsheet '$WorksheetName' will not be moved."}
+        else {Write-Warning -Message "Can't find worksheet '$MoveAfter'; worsheet '$WorksheetName' will not be moved."}
     }
     #endregion
     if ($Activate) {Select-Worksheet -ExcelWorksheet $ws  }

@@ -9,7 +9,7 @@ $ExcelParams = @{
     Show              = $true
     Activate          = $true
 }
-Remove-Item $ExcelParams.Path -ErrorAction Ignore
+Remove-Item -Path $ExcelParams.Path -ErrorAction Ignore
 Get-Process | Select-Object Company, Handles | Export-Excel @ExcelParams
 
 <#  Builds a pivot table that looks like this:

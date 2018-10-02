@@ -15,7 +15,7 @@ function Export-ExcelSheet {
         [string]$Delimiter = ';'
     )
 
-    $Path = (Resolve-Path $Path).Path
+    $Path = (Resolve-Path -Path $path).Path
     $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
     $workbook = $xl.Workbook
 
@@ -29,7 +29,7 @@ function Export-ExcelSheet {
 
     Foreach ($sheet in $targetSheets)
     {
-        Write-Verbose "Exporting sheet: $($sheet.Name)"
+        Write-Verbose -Message "Exporting sheet: $($sheet.Name)"
 
         $params.Path = "$OutputPath\$($Sheet.Name)$Extension"
 

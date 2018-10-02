@@ -4,7 +4,7 @@
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 
-Import-Module $here -Force
+Import-Module -Name $here -Force
 
 $WarningPreference = 'SilentlyContinue'
 $ProgressPreference = 'SilentlyContinue'

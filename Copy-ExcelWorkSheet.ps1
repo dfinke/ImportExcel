@@ -68,9 +68,9 @@
         if     ($SourceWorkbook -is [OfficeOpenXml.ExcelWorkbook]) {$sourcews=$SourceWorkbook.Worksheets[$SourceWorkSheet]}
         elseif ($SourceWorkbook -is [OfficeOpenXml.ExcelPackage] ) {$sourcews=$SourceWorkbook.Workbook.Worksheets[$SourceWorkSheet]}
         else {
-                $SourceWorkbook = (Resolve-Path $SourceWorkbook).ProviderPath
+                $SourceWorkbook = (Resolve-Path -Path $SourceWorkbook).ProviderPath
                 try {
-                    Write-Verbose "Opening worksheet '$Worksheetname' in Excel workbook '$SourceWorkbook'."
+                    Write-Verbose -Message "Opening worksheet '$Worksheetname' in Excel workbook '$SourceWorkbook'."
                     $Stream    = New-Object -TypeName System.IO.FileStream -ArgumentList $SourceWorkbook, 'Open', 'Read' ,'ReadWrite'
                     $Package1  = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
                     $sourceWs = $Package1.Workbook.Worksheets[$SourceWorkSheet]
@@ -93,10 +93,10 @@
                     }
                     if (-not  $DestinationWorkSheet) {$DestinationWorkSheet = $SourceWs.Name}
                     if ($wb.Worksheets[$DestinationWorkSheet]) {
-                            Write-Verbose "Destination workbook already has a sheet named '$DestinationWorkSheet', deleting it."
+                            Write-Verbose -Message "Destination workbook already has a sheet named '$DestinationWorkSheet', deleting it."
                             $wb.Worksheets.Delete($DestinationWorkSheet)
                     }
-                    Write-Verbose "Copying $($SourceWorkSheet) from $($SourceWorkbook) to $($DestinationWorkSheet) in $($DestinationWorkbook)"
+                    Write-Verbose -Message "Copying $($SourceWorkSheet) from $($SourceWorkbook) to $($DestinationWorkSheet) in $($DestinationWorkbook)"
                     $null = Add-WorkSheet -ExcelWorkbook $wb -WorkSheetname $DestinationWorkSheet -CopySource  $sourceWs
                     if ($package1) {Close-ExcelPackage -ExcelPackage $Package1 -NoSave     }
                     if ($package2) {Close-ExcelPackage -ExcelPackage $Package2 -Show:$show }

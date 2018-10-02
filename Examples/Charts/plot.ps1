@@ -11,7 +11,7 @@ function plot {
     $maxx=[math]::Round($maxx,1)
 
     $file = 'C:\temp\plot.xlsx'
-    Remove-Item $file -ErrorAction Ignore
+    Remove-Item -Path $file -ErrorAction Ignore
 
    # $c = New-ExcelChart -XRange X -YRange Y -ChartType Line -NoLegend -Title Plot -Column 2 -ColumnOffSetPixels 35
 

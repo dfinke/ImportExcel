@@ -139,7 +139,7 @@
     }
     if ( $Address -is [string] -and $Address -match "!") {$Address = $Address -replace '^.*!',''}
     #By this point we should have a worksheet object whose ConditionalFormatting collection we will add to. If not, bail.
-    if (-not $worksheet -or $WorkSheet -isnot [OfficeOpenXml.ExcelWorksheet]) {write-warning "You need to provide a worksheet object." ; return}
+    if (-not $worksheet -or $WorkSheet -isnot [OfficeOpenXml.ExcelWorksheet]) {Write-Warning -Message "You need to provide a worksheet object." ; return}
     #region create a rule of the right type
     if     ($RuleType -match 'IconSet$') {Write-warning -Message "You cannot configure a IconSet rule in this way; please use -$RuleType <SetName>." ; return}
     if     ($PSBoundParameters.ContainsKey("ThreeIconsSet" )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddThreeIconSet($Address , $ThreeIconsSet)}

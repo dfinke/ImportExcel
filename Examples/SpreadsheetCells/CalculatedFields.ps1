@@ -3,7 +3,7 @@ try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 #. ..\New-PSItem.ps1
 
-Remove-Item "$env:temp\functions.xlsx" -ErrorAction SilentlyContinue
+Remove-Item -Path "$env:temp\functions.xlsx" -ErrorAction SilentlyContinue
 
 $(
     New-PSItem 12001 Nails  37  3.99 =C2*D2 (echo ID Product Quantity Price Total)

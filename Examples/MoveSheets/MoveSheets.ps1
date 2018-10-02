@@ -1,7 +1,7 @@
 try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 $xlfile = "$env:TEMP\testThis.xlsx"
-Remove-Item $xlfile -ErrorAction Ignore
+Remove-Item -Path $xlfile -ErrorAction Ignore
 
 1..10  | Export-Excel $xlfile -WorkSheetname First                           #'First' will be the only sheet
 11..20 | Export-Excel $xlfile -WorkSheetname Second -MoveToStart             #'Second' is moved before first so the order is 'Second', 'First'

@@ -1,6 +1,6 @@
 ﻿# To ship, is to choose 
 
-#ipmo .\ImportExcel.psd1 -Force
+#Import-Module .\ImportExcel.psd1 -Force
 
 $pt=[ordered]@{}
 

@@ -2,7 +2,7 @@ try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 $file = "$env:Temp\sales.xlsx"
 
-Remove-Item $file -ErrorAction Ignore
+Remove-Item -Path $file -ErrorAction Ignore
 
 #Using -Passthru with Export-Excel returns an Excel Package object.
 $xlPkg = Import-Csv .\sales.csv | Export-Excel $file -PassThru

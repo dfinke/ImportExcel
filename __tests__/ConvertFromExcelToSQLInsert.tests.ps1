@@ -1,4 +1,4 @@
-﻿Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
+﻿Import-Module -Name $PSScriptRoot\..\ImportExcel.psd1 -Force
 
 $xlFile = ".\testSQL.xlsx"
 
@@ -13,7 +13,7 @@ Describe "ConvertFrom-ExcelToSQLInsert" {
     }
 
     AfterAll {
-        Remove-Item $xlFile -Recurse -Force -ErrorAction Ignore
+        Remove-Item -Path $xlFile -Recurse -Force -ErrorAction Ignore
     }
 
     It "Should be empty double single quotes" {

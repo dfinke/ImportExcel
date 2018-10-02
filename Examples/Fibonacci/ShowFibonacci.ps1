@@ -3,7 +3,7 @@ param ($fibonacciDigits=10)
 try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 $file = "fib.xlsx"
-Remove-Item "fib.xlsx" -ErrorAction Ignore
+Remove-Item -Path "fib.xlsx" -ErrorAction Ignore
 
 $(
     New-PSItem 0

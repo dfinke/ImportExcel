@@ -17,7 +17,7 @@ Param (
 
 Begin {
     Try {
-        Write-Verbose "$ModuleName module installation started"
+        Write-Verbose -Message "$ModuleName module installation started"
 
         $Files = @(
             'AddConditionalFormatting.ps1',
@@ -68,35 +68,35 @@ Begin {
 Process {
     Try {
         if (-not $InstallDirectory) {
-            Write-Verbose "$ModuleName no installation directory provided"
+            Write-Verbose -Message "$ModuleName no installation directory provided"
 
             $PersonalModules = Join-Path -Path ([Environment]::GetFolderPath('MyDocuments')) -ChildPath WindowsPowerShell\Modules
 
             if (($env:PSModulePath -split ';') -notcontains $PersonalModules) {
-                Write-Warning "$ModuleName personal module path '$PersonalModules' not found in '`$env:PSModulePath'"
+                Write-Warning -Message "$ModuleName personal module path '$PersonalModules' not found in '`$env:PSModulePath'"
             }
 
             if (-not (Test-Path $PersonalModules)) {
-                Write-Error "$ModuleName path '$PersonalModules' does not exist"
+                Write-Error -Message "$ModuleName path '$PersonalModules' does not exist"
             }
 
             $InstallDirectory = Join-Path -Path $PersonalModules -ChildPath $ModuleName
-            Write-Verbose "$ModuleName default installation directory is '$InstallDirectory'"
+            Write-Verbose -Message "$ModuleName default installation directory is '$InstallDirectory'"
         }
 
         if (-not (Test-Path $InstallDirectory)) {
             New-Item -Path $InstallDirectory -ItemType Directory -EA Stop | Out-Null
-            Write-Verbose "$ModuleName created module folder '$InstallDirectory'"
+            Write-Verbose -Message "$ModuleName created module folder '$InstallDirectory'"
         }
 
         $WebClient = New-Object System.Net.WebClient
         
         $Files | ForEach-Object {
             $WebClient.DownloadFile("$GitPath/$_","$installDirectory\$_")
-            Write-Verbose "$ModuleName installed module file '$_'"
+            Write-Verbose -Message "$ModuleName installed module file '$_'"
         }
 
-        Write-Verbose "$ModuleName module installation successful"
+        Write-Verbose -Message "$ModuleName module installation successful"
     }
     Catch {
         throw "Failed installing the module in the install directory '$InstallDirectory': $_"

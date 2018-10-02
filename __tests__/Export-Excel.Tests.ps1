@@ -1,6 +1,6 @@
 ﻿#Requires -Modules Pester
 
-#Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
+#Import-Module -Name $PSScriptRoot\..\ImportExcel.psd1 -Force
 
 if (Get-process -Name Excel,xlim -ErrorAction SilentlyContinue) {    Write-Warning -Message "You need to close Excel before running the tests." ; return}
 Describe ExportExcel {
@@ -706,7 +706,7 @@ Describe ExportExcel {
 
     Context "#Example 13     # Formatting and another way to do a pivot.  " {
         $path = "$env:TEMP\Test.xlsx"
-        Remove-Item $path
+        Remove-Item -Path $path
         #Test freezing top row/first column, adding formats and a pivot table - from Add-Pivot table not a specification variable - after the export
         $excel = Get-Process | Select-Object -Property Name, Company, Handles, CPU, PM, NPM, WS | Export-Excel -Path $path -ClearSheet -WorkSheetname "Processes" -FreezeTopRowFirstColumn -PassThru
         $sheet = $excel.Workbook.Worksheets["Processes"]

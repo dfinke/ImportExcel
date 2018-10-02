@@ -2,7 +2,7 @@ try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 $file = "$env:temp\disks.xlsx"
 
-Remove-Item $file -ErrorAction Ignore
+Remove-Item -Path $file -ErrorAction Ignore
 
 $data = $(
     New-PSItem 100 -100

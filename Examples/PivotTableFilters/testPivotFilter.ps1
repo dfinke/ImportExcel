@@ -1,7 +1,7 @@
 ﻿try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 $xlFile="$env:TEMP\testPivot.xlsx"
-Remove-Item $xlFile -ErrorAction Ignore
+Remove-Item -Path $xlFile -ErrorAction Ignore
 
 $data =@"
 Region,Area,Product,Units,Cost

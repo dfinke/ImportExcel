@@ -46,7 +46,7 @@
 
     Process {
         Try {
-            $Path = (Resolve-Path $Path).ProviderPath
+            $Path = (Resolve-Path -Path $path).ProviderPath
 
             $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,'Open','Read','ReadWrite'
             $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream

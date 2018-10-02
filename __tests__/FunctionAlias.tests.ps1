@@ -1,5 +1,5 @@
 #Requires -Modules Pester
-Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
+Import-Module -Name $PSScriptRoot\..\ImportExcel.psd1 -Force
 
 Describe "Check if Function aliases exist" {
 

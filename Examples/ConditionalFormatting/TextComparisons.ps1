@@ -1,4 +1,4 @@
-try {ipmo ..\..\ImportExcel.psd1 -Force} catch {}
+try {Import-Module -Name ..\..\ImportExcel.psd1 -Force} catch {}
 
 $data = $(
     New-PSItem 100 (echo test testx)

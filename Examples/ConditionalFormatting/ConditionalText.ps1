@@ -1,7 +1,7 @@
 try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 $file = "$env:temp\conditionalTextFormatting.xlsx"
-Remove-Item $file -ErrorAction Ignore
+Remove-Item -Path $file -ErrorAction Ignore
 
 Get-Service |
     Select-Object Status, Name, DisplayName, ServiceName |

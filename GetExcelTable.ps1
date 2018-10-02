@@ -4,7 +4,7 @@ Function Get-ExcelTableName {
         $WorksheetName
     )
 
-    $Path = (Resolve-Path $Path).ProviderPath
+    $Path = (Resolve-Path -Path $path).ProviderPath
     $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
 
     $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
@@ -35,7 +35,7 @@ Function Get-ExcelTable {
         $WorksheetName
     )
 
-    $Path = (Resolve-Path $Path).ProviderPath
+    $Path = (Resolve-Path -Path $path).ProviderPath
     $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
 
     $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
@@ -96,7 +96,7 @@ function ConvertFrom-ExcelColumnName {
     $sum
 }
 
-ipmo .\ImportExcel.psd1 -Force
+Import-Module .\ImportExcel.psd1 -Force
 
 #Get-ExcelTableName .\testTable.xlsx | Get-ExcelTable .\testTable.xlsx
 Get-ExcelTable .\testTable.xlsx Table3

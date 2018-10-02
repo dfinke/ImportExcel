@@ -1,7 +1,7 @@
 try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 $xlfile = "$env:temp\testFmt.xlsx"
-Remove-Item $xlfile -ErrorAction Ignore
+Remove-Item -Path $xlfile -ErrorAction Ignore
 
 $RandomStyle = {
     param(

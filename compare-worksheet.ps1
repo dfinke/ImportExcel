@@ -204,7 +204,7 @@
     elseif  ($diff -and $FontColor) {Write-Warning -Message "To match rows to set changed cells, you must specify -Key and it must match one of the included properties." }
 
     #if nothing was found write a message which wont be redirected
-    if (-not $diff) {Write-Host "Comparison of $Referencefile::$worksheet1 and $Differencefile::$WorkSheet2 returned no results."  }
+    if (-not $diff) {Write-Host -InputObject "Comparison of $Referencefile::$worksheet1 and $Differencefile::$WorkSheet2 returned no results."  }
 
 
 

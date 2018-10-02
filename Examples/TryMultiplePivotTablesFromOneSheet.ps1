@@ -2,7 +2,7 @@
 
 $file = "C:\Temp\test.xlsx"
 
-Remove-Item $file -ErrorAction Ignore -Force
+Remove-Item -Path $file -ErrorAction Ignore -Force
 
 $base = @{
     SourceWorkSheet   = 'gsv'

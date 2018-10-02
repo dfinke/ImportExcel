@@ -2,7 +2,7 @@ try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 $f = "$env:TEMP\testExport.xlsx"
 
-Remove-Item $f -ErrorAction Ignore
+Remove-Item -Path $f -ErrorAction Ignore
 
 $data = $(
 

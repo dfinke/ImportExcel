@@ -324,8 +324,8 @@ function Import-Excel {
     Process {
         #region Open file
         try {
-            $Path = (Resolve-Path $Path).ProviderPath
-            Write-Verbose "Import Excel workbook '$Path' with worksheet '$Worksheetname'"
+            $Path = (Resolve-Path -Path $path).ProviderPath
+            Write-Verbose -Message "Import Excel workbook '$Path' with worksheet '$Worksheetname'"
             $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
         } 
         Catch {throw "Could not open $Path ; $_ "} 
@@ -389,17 +389,17 @@ function Import-Excel {
             #endregion
             Write-Debug $sw.Elapsed.TotalMilliseconds
             if (-not $Rows) {
-                Write-Warning "Worksheet '$WorksheetName' in workbook '$Path' contains no data in the rows after top row '$StartRow'"
+                Write-Warning -Message "Worksheet '$WorksheetName' in workbook '$Path' contains no data in the rows after top row '$StartRow'"
             }
             else {
                 #region Create one object per row
                 foreach ($R in $Rows) {
-                    Write-Verbose "Import row '$R'"
+                    Write-Verbose -Message "Import row '$R'"
                     $NewRow = [Ordered]@{}
 
                     foreach ($P in $PropertyNames) {
                        $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value
-                       Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
+                       Write-Verbose -Message "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
                     }
 
                     [PSCustomObject]$NewRow
@@ -456,7 +456,7 @@ function ConvertFrom-ExcelSheet {
         $Delimiter = ';'
     )
 
-    $Path = (Resolve-Path $Path).Path
+    $Path = (Resolve-Path -Path $path).Path
     $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,"Open","Read","ReadWrite"
     $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
     $workbook = $xl.Workbook
@@ -471,7 +471,7 @@ function ConvertFrom-ExcelSheet {
 
     Foreach ($sheet in $targetSheets)
     {
-        Write-Verbose "Exporting sheet: $($sheet.Name)"
+        Write-Verbose -Message "Exporting sheet: $($sheet.Name)"
 
         $params.Path = "$OutputPath\$($Sheet.Name)$Extension"
 

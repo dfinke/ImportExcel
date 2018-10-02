@@ -2,7 +2,7 @@ try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 $xlfile = "$env:temp\AllSales.xlsx"
 
-Remove-Item $xlfile -ErrorAction Ignore
+Remove-Item -Path $xlfile -ErrorAction Ignore
 
 $params = @{
     AutoSize             = $true

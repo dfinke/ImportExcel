@@ -2,7 +2,7 @@ try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 $xlFile = "$env:TEMP\mw.xlsx"
 
-Remove-Item $xlFile -ErrorAction Ignore
+Remove-Item -Path $xlFile -ErrorAction Ignore
 
 $leftCsv = @"
 MyProp1,MyProp2,Length

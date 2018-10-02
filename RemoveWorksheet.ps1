@@ -4,7 +4,7 @@
         $WorksheetName
     )
 
-    $Path = (Resolve-Path $Path).ProviderPath
+    $Path = (Resolve-Path -Path $path).ProviderPath
 
     $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage $Path
 

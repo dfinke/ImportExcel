@@ -8,7 +8,7 @@ function Get-HtmlTable {
         [Switch]$UseDefaultCredentials
     )
 
-    $r = Invoke-WebRequest $url -UseDefaultCredentials: $UseDefaultCredentials
+    $r = Invoke-WebRequest -Uri $url -UseDefaultCredentials: $UseDefaultCredentials
     
     $table = $r.ParsedHtml.getElementsByTagName("table")[$tableIndex]
     $propertyNames=$Header

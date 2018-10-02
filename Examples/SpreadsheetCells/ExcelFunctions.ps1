@@ -1,6 +1,6 @@
 try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
-Remove-Item "$env:temp\functions.xlsx" -ErrorAction SilentlyContinue
+Remove-Item -Path "$env:temp\functions.xlsx" -ErrorAction SilentlyContinue
 
 $(
     New-PSItem =2%/12 60 500000 "=pmt(rate,nper,pv)" (echo rate nper pv pmt)

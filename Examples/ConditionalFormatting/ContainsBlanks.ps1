@@ -14,6 +14,6 @@ $data = $(
 
 $file ="$env:temp\testblanks.xlsx"
 
-Remove-Item $file -ErrorAction Ignore
+Remove-Item -Path $file -ErrorAction Ignore
 #use the conditional format definition created above
 $data | Export-Excel $file -show -ConditionalText $ContainsBlanks

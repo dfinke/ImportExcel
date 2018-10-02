@@ -1,7 +1,7 @@
 try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
 $f = ".\testExport.xlsx"
-Remove-Item $f -ErrorAction Ignore
+Remove-Item -Path $f -ErrorAction Ignore
 
 function Get-DateOffset ($days=0) {
     (Get-Date).AddDays($days).ToShortDateString()

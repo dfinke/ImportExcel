@@ -141,7 +141,7 @@
             $destinationSheet.Cells[1, 1].Style.Fill.PatternType = $TitleFillPattern
             $destinationSheet.Cells[1, 1].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
         }
-        elseif ($TitleBackgroundColor) { Write-Warning "Title Background Color ignored. You must set the TitleFillPattern parameter to a value other than 'None'. Try 'Solid'." }
+        elseif ($TitleBackgroundColor) { Write-Warning -Message "Title Background Color ignored. You must set the TitleFillPattern parameter to a value other than 'None'. Try 'Solid'." }
         $row = 2
     }
 

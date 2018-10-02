@@ -27,11 +27,11 @@ Function ConvertTo-ExcelXlsx {
         if(Test-Path -Path $xlsxPath){
             if($Force){
                 try {
-                    Remove-Item $xlsxPath -Force
+                    Remove-Item -Path $xlsxPath -Force
                 } catch {
                     throw "{0} already exists and cannot be removed. The file may be locked by another application." -f $xlsxPath
                 }
-                Write-Verbose $("Removed {0}" -f $xlsxPath)
+                Write-Verbose -Message $("Removed {0}" -f $xlsxPath)
             } else {
                 throw "{0} already exists!" -f $xlsxPath
             }
