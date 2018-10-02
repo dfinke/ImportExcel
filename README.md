@@ -801,7 +801,7 @@ Examples
 
 Example
 
-	Get-CimInstance win32_service |
+	Get-CimInstance -ClassName win32_service |
 		select state, accept*, start*, caption |
 		Export-Excel test.xlsx -Show -BoldTopRow -AutoFilter -FreezeTopRow -AutoSize
 

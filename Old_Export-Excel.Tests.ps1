@@ -47,7 +47,7 @@ Describe 'Export-Excel' {
                 $fakeData | Export-Excel -Path $Path
 
                 $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
-                $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
+                $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
                 $Worksheet = $Excel.Workbook.WorkSheets[1]
                 #endregion
 

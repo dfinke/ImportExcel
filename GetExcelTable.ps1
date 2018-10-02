@@ -60,7 +60,7 @@ Function Get-ExcelTable {
     $start, $end=$Table.Address.Address.Split(':')
 
     $pos=$start.IndexOfAny($digits)
-    [int]$startCol=ConvertFrom-ExcelColumnName $start.Substring(0,$pos)
+    [int]$startCol=ConvertFrom-ExcelColumnName -columnName $start.Substring(0,$pos)
     [int]$startRow=$start.Substring($pos)
 
     $propertyNames = for($col=$startCol; $col -lt ($startCol+$colCount); $col+= 1) {

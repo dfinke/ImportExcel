@@ -10,6 +10,6 @@ function ConvertFrom-ExcelColumnName {
     $sum
 }
 
-ConvertFrom-ExcelColumnName p
-ConvertFrom-ExcelColumnName ah
-ConvertFrom-ExcelColumnName xfd
+ConvertFrom-ExcelColumnName -columnName p
+ConvertFrom-ExcelColumnName -columnName ah
+ConvertFrom-ExcelColumnName -columnName xfd

@@ -31,7 +31,7 @@ function New-ConditionalFormattingIconSet {
     )
 
     DynamicParam {
-        $IconType = New-Object System.Management.Automation.ParameterAttribute
+        $IconType = New-Object -TypeName System.Management.Automation.ParameterAttribute
         $IconType.Position = 2
         $IconType.Mandatory = $true
 
@@ -41,19 +41,19 @@ function New-ConditionalFormattingIconSet {
 
         switch ($ConditionalFormat) {
             "ThreeIconSet" {
-                $IconTypeParam = New-Object System.Management.Automation.RuntimeDefinedParameter('IconType', [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting3IconsSetType], $attributeCollection)
+                $IconTypeParam = New-Object -TypeName System.Management.Automation.RuntimeDefinedParameter('IconType', [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting3IconsSetType], $attributeCollection)
             }
 
             "FourIconSet" {
-                $IconTypeParam = New-Object System.Management.Automation.RuntimeDefinedParameter('IconType', [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting4IconsSetType], $attributeCollection)
+                $IconTypeParam = New-Object -TypeName System.Management.Automation.RuntimeDefinedParameter('IconType', [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting4IconsSetType], $attributeCollection)
             }
 
             "FiveIconSet" {
-                $IconTypeParam = New-Object System.Management.Automation.RuntimeDefinedParameter('IconType', [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting5IconsSetType], $attributeCollection)
+                $IconTypeParam = New-Object -TypeName System.Management.Automation.RuntimeDefinedParameter('IconType', [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting5IconsSetType], $attributeCollection)
             }
         }
 
-        $paramDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
+        $paramDictionary = New-Object -TypeName System.Management.Automation.RuntimeDefinedParameterDictionary
 
         $paramDictionary.Add('IconType', $IconTypeParam)
 

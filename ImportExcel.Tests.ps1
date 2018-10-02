@@ -138,7 +138,7 @@ Context 'input' {
         Describe 'worksheet' {
             #region Create test file
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
-            $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
+            $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
             $Excel | Add-WorkSheet -WorkSheetname Test
             $Excel.Save()
             $Excel.Dispose()
@@ -154,7 +154,7 @@ Context 'input' {
                 Remove-Item ./* -Force
                 #region Create test file
                     $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
-                    $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
+                    $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
 
 
                     #  ----------------------------------------------
@@ -225,7 +225,7 @@ Context 'input' {
 
                 #region Create test file
                     $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
-                    $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
+                    $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
 
                     #   ---------------------------------------------------------------------
                     #   |           A            B            C          D         E        |
@@ -325,7 +325,7 @@ Context 'output' {
             #    ----------------------------------------------
 
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
-            $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
+            $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
             $Worksheet = $Excel | Add-WorkSheet -WorkSheetname Test
 
             # Row, Column
@@ -679,7 +679,7 @@ Context 'output' {
             #    ---------------------------------------------------------------------
 
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
-            $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
+            $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
             $Worksheet = $Excel | Add-WorkSheet -WorkSheetname Test
 
             # Row, Column
@@ -1320,7 +1320,7 @@ Context 'output' {
             #    ---------------------------------------------------------------------------------------------------
 
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
-            $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
+            $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
             $Worksheet = $Excel | Add-WorkSheet -WorkSheetname Test
 
             # Row, Column
@@ -1982,7 +1982,7 @@ Context 'special cases' {
                 #    ----------------------------------------------
 
                 $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
-                $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
+                $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
                 $Worksheet = $Excel | Add-WorkSheet -WorkSheetname Test
 
                 # Row, Column
@@ -2013,7 +2013,7 @@ Context 'special cases' {
                 #    ----------------------------------------------
 
                 $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
-                $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
+                $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
                 $Worksheet = $Excel | Add-WorkSheet -WorkSheetname Test
 
                 # Row, Column
@@ -2046,7 +2046,7 @@ Context 'special cases' {
             #    ----------------
 
             $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
-            $Excel = New-Object OfficeOpenXml.ExcelPackage $Path
+            $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
 
             # Row, Column
             $Worksheet = $Excel | Add-WorkSheet -WorkSheetname Test
