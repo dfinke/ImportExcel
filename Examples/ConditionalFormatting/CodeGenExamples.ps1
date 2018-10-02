@@ -1,5 +1,5 @@
 echo Last7Days LastMonth LastWeek NextMonth NextWeek ThisMonth ThisWeek Today Tomorrow Yesterday |
-    % {
+    Foreach-Object {
     $text = @"
 `$f = ".\testExport.xlsx"
 

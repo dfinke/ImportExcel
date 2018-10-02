@@ -24,7 +24,7 @@
 
       .EXAMPLE
       >
-      PS> Get-WmiObject -Class win32_logicaldisk | select -Property DeviceId,VolumeName, Size,Freespace |
+      PS> Get-WmiObject -Class win32_logicaldisk | Select-Object -Property DeviceId,VolumeName, Size,Freespace |
                 Export-Excel -Path "$env:computerName.xlsx" -WorkSheetname Volumes -NumberFormat "0,000"
       PS> Get-NetAdapter  | Select-Object Name,InterfaceDescription,MacAddress,LinkSpeed |
                 Export-Excel -Path "$env:COMPUTERNAME.xlsx" -WorkSheetname NetAdapter

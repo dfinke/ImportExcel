@@ -8,7 +8,7 @@
 $sign=@{sign=echo + -}
 $location=@{location=echo Atlanta Newark Washington Chicago Philadelphia Houston Phoneix}
 
-$(1..6 | % {
+$(1..6 | Foreach-Object {
     
     $from=$to=""
     while($from -eq $to) {

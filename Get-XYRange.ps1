@@ -1,7 +1,7 @@
 function Get-XYRange {
     param($targetData)
 
-    $record = $targetData| select -First 1
+    $record = $targetData | Select-Object -First 1
     $p=$record.psobject.Properties.name
 
     $infer = for ($idx = 0; $idx -lt $p.Count; $idx++) {
@@ -20,7 +20,7 @@ function Get-XYRange {
     }
 
     [PSCustomObject]@{
-        XRange = $infer | ? {$_.datatype -match 'string'} | select -First 1 excelcolumn, name
-        YRange = $infer | ? {$_.datatype -match 'int|double'} |select -First 1 excelcolumn, name
+        XRange = $infer | Where-Object -FilterScript {$_.datatype -match 'string'} | Select-Object -First 1 -Property excelcolumn, name
+        YRange = $infer | Where-Object -FilterScript {$_.datatype -match 'int|double'} | Select-Object -First 1 -Property excelcolumn, name
     }
 }

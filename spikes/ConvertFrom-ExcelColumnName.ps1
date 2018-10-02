@@ -3,7 +3,7 @@ function ConvertFrom-ExcelColumnName {
 
     $sum=0
     $columnName.ToCharArray() |
-        ForEach {
+        ForEach-Object {
             $sum*=26
             $sum+=[char]$_.tostring().toupper()-[char]'A'+1
         } 

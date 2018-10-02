@@ -269,7 +269,7 @@
                 Verbose = $true
             }
             Remove-Item -Path $ExcelParams.Path -Force -EA Ignore
-            Get-Service | Select Name, Status, DisplayName, ServiceName |
+            Get-Service | Select-Object -Property Name, Status, DisplayName, ServiceName |
                 Export-Excel @ExcelParams -ConditionalText $(
                     New-ConditionalText Stop DarkRed LightPink
                     New-ConditionalText Running Blue Cyan
