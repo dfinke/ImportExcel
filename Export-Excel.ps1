@@ -173,7 +173,7 @@
         .PARAMETER ReturnRange
             If specified, Export-Excel returns the range of added cells in the format "A1:Z100"
         .PARAMETER PassThru
-            If specified, Export-Excel returns an object representing the Excel package without saving the package first. 
+            If specified, Export-Excel returns an object representing the Excel package without saving the package first.
             To save, you need to call Close-ExcelPackage or send the object back to Export-Excel, or use its .Save() or SaveAs() method.
         .EXAMPLE
             Get-Process | Export-Excel .\Test.xlsx -show
@@ -684,15 +684,14 @@
     }
 
     Process {
-        if ($TargetData) {
+        if ($PSBoundParameters.ContainsKey("TargetData")) {
             try {
                 if ($firstTimeThru) {
                     $firstTimeThru = $false
-                    $isDataTypeValueType = $TargetData.GetType().name -match 'string|timespan|datetime|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort|URI|ExcelHyperLink'
+                    $isDataTypeValueType = ($null -eq $TargetData) -or ($TargetData.GetType().name -match 'string|timespan|datetime|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort|URI|ExcelHyperLink')
                     if ($isDataTypeValueType -and -not $Append) {$row -= 1} #row incremented before adding values, so it is set to the number of rows inserted at the end
-                    Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'"
+                    if ($null -ne  $TargetData) {Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'" }
                 }
-
                 if ($isDataTypeValueType) {
                     $ColumnIndex = $StartColumn
                     $Row += 1
@@ -744,18 +743,18 @@
     }
 
     End {
-        if ($firstTimeThru) {
-              $LastRow      = $ws.Dimension.End.Row
-              $LastCol      = $ws.Dimension.End.Column
-              $endAddress   = $ws.Dimension.End.Address
+        if ($firstTimeThru -and $ws.Dimension) {
+              $LastRow        = $ws.Dimension.End.Row
+              $LastCol        = $ws.Dimension.End.Column
+              $endAddress     = $ws.Dimension.End.Address
         }
         else {
-              $LastRow      = $Row
-              $LastCol      = $ColumnIndex
-              $endAddress   = [OfficeOpenXml.ExcelAddress]::GetAddress($LastRow , $LastCol)
+              $LastRow        = $Row
+              $LastCol        = $ColumnIndex
+              $endAddress     = [OfficeOpenXml.ExcelAddress]::GetAddress($LastRow , $LastCol)
         }
-        $startAddress       = [OfficeOpenXml.ExcelAddress]::GetAddress($StartRow, $StartColumn)
-        $dataRange          = "{0}:{1}" -f $startAddress, $endAddress
+        $startAddress         = [OfficeOpenXml.ExcelAddress]::GetAddress($StartRow, $StartColumn)
+        $dataRange            = "{0}:{1}" -f $startAddress, $endAddress
 
         Write-Debug "Data Range '$dataRange'"
         if ($AutoNameRange) {

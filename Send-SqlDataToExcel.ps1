@@ -269,6 +269,13 @@
         $excelPackage    = Export-Excel -Path $Path -WorkSheetname $WorkSheetname  -PassThru
         $excelPackage.Workbook.Worksheets[$WorkSheetname].Cells[$r,$StartColumn].LoadFromDataTable($dataTable, $printHeaders )  | Out-Null
 
+        #Apply date format
+        for ($c=0 ; $c -lt $DataTable.Columns.Count ; $c++) {
+            if ($DataTable.Columns[$c].DataType -eq [datetime]) {
+                Set-ExcelColumn -Worksheet $excelPackage.Workbook.Worksheets[$WorkSheetname] -Column ($c +1) -NumberFormat 'Date-Time'
+            }
+        }
+
         #Call export-excel with any parameters which don't relate to the SQL query
         "Connection", "Database" , "Session", "MsSQLserver", "Destination" , "SQL" , "DataTable", "Path" | ForEach-Object {$null = $PSBoundParameters.Remove($_) }
         Export-Excel -ExcelPackage $excelPackage   @PSBoundParameters
