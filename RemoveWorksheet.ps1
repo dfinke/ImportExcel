@@ -29,6 +29,6 @@
 Import-Module .\ImportExcel.psd1 -Force
 
 $names = Get-ExcelSheetInfo C:\Temp\testDelete.xlsx
-$names | % { Remove-WorkSheet C:\Temp\testDelete.xlsx $_.Name}
+$names | Foreach-Object { Remove-WorkSheet C:\Temp\testDelete.xlsx $_.Name}
 
 ##Remove-WorkSheet C:\Temp\testDelete.xlsx sheet6

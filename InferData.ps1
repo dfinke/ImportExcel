@@ -68,7 +68,7 @@ function Invoke-AllTests {
     )
 
     $resultCount=0
-    $tests.GetEnumerator() | ForEach {
+    $tests.GetEnumerator() | ForEach-Object {
 
         $result=& $_.Value $target
 

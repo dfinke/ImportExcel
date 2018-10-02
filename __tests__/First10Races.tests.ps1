@@ -18,7 +18,7 @@ Describe "Creating small named ranges with hyperlinks" {
         $worksheet = $excel.Workbook.Worksheets[1]
         $columns   = $worksheet.Dimension.Columns
 
-        1..$columns | foreach {Add-ExcelName -Range $worksheet.cells[$topRow,$_,$lastDataRow,$_]}                                                                        #Test Add-Excel Name on its own (outside Export-Excel)
+        1..$columns | ForEach-Object {Add-ExcelName -Range $worksheet.cells[$topRow,$_,$lastDataRow,$_]}                                                                        #Test Add-Excel Name on its own (outside Export-Excel)
 
         $scwarnVar = $null
         Set-ExcelColumn -Worksheet $worksheet -StartRow $topRow -Heading "PlacesGained/Lost" `
@@ -39,7 +39,7 @@ Describe "Creating small named ranges with hyperlinks" {
         $ct = New-ConditionalText -Text "Ferrari"
         $ct2 =  New-ConditionalText -Range $worksheet.Names["FinishPosition"].Address -ConditionalType LessThanOrEqual -Text 3 -ConditionalText Red -Background White      #Test new-conditionalText in shortest and longest forms.
         #Create links for each group name (race) and Export them so they start at Cell A1; create a pivot table with definition just created, save the file and open in Excel
-        $results | foreach {(New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList "Sheet1!$($_.Name)" , "$($_.name) GP")} |                                     #Test Exporting Hyperlinks with display property.
+        $results | ForEach-Object {(New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList "Sheet1!$($_.Name)" , "$($_.name) GP")} |                                     #Test Exporting Hyperlinks with display property.
             Export-Excel -ExcelPackage $excel -AutoSize -PivotTableDefinition $pt -Calculate   -ConditionalFormat $ct,$ct2                                                 #Test conditional text rules in conditional format (orignally icon sets only )
 
         $excel = Open-ExcelPackage $path
