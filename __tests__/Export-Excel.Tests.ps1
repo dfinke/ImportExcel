@@ -120,10 +120,10 @@ Describe ExportExcel {
         $path = "$env:TEMP\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
         #testing -ReturnRange switch and applying number format to Formulas as well as values.
-        $returnedRange = Write-Output -1 668 34 777 860 -0.5 119 -0.1 234 788,"=A9+A10" | Export-Excel -NumberFormat '[Blue]$#,##0.00;[Red]-$#,##0.00' -Path $path -ReturnRange
+        $returnedRange =   @($null, -1, 0, 34, 777, "", -0.5, 119, -0.1, 234, 788,"=A9+A10")   | Export-Excel -NumberFormat '[Blue]$#,##0.00;[Red]-$#,##0.00' -Path $path -ReturnRange
         it "Created a new file and returned the expected range                                     " {
             Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
-            $returnedRange                                              | Should     be "A1:A11"
+            $returnedRange                                              | Should     be "A1:A12"
         }
 
         $Excel = Open-ExcelPackage -Path $path
@@ -135,16 +135,22 @@ Describe ExportExcel {
         it "Created the worksheet with the expected name, number of rows and number of columns     " {
             $ws.Name                                                    | Should     be "sheet1"
             $ws.Dimension.Columns                                       | Should     be  1
-            $ws.Dimension.Rows                                          | Should     be  11
+            $ws.Dimension.Rows                                          | Should     be  12
         }
 
         it "Set the default style for the sheet as expected                                        " {
             $ws.cells.Style.Numberformat.Format                         | Should     be  '[Blue]$#,##0.00;[Red]-$#,##0.00'
         }
 
-        it "Set the default style and value for Cell A1  as expected                               " {
+        it "Set the default style and set values for Cells as expected, handling null,0 and ''     " {
             $ws.cells[1, 1].Style.Numberformat.Format                   | Should     be  '[Blue]$#,##0.00;[Red]-$#,##0.00'
-            $ws.cells[1, 1].Value                                       | Should     be  -1
+            $ws.cells[1, 1].Value                                       | Should     beNullorEmpty
+            $ws.cells[2, 1].Value                                       | Should     be -1
+            $ws.cells[3, 1].Value                                       | Should     be 0
+            $ws.cells[5, 1].Value                                       | Should     be 777
+            $ws.cells[6, 1].Value                                       | Should     be ""
+            $ws.cells[4, 1].Style.Numberformat.Format                   | Should     be  '[Blue]$#,##0.00;[Red]-$#,##0.00'
+
         }
     }
 
