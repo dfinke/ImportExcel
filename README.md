@@ -60,7 +60,7 @@ Install-Module ImportExcel
 - In Export-Excel fixed a bug which caused a zero, null, or empty string in a list of simple objects to be skipped.
 - In Export-Excel improved the behaviour when a new worksheet is created without data, and Tables etc are added to it.
 - In Join-Worksheet: added argument completer to  -TitleBackgroundColor and set default for -TitleBackgroundStyle to 'Solid'.
-- In Add-Excel chart fixed mis-spelling of "Position"
+- In Add-Excel chart, New-ExcelChart, tests and Examples fixed mis-spelling of "Position"
 - In Send-SqlDataToExcel: improved robustness of check for no data returned.
 - In Set-ExcelColumn: -column can come from the pipeline (supporting an array introduces complications for supporting script blocks); -AutoNameRange no longer requires heading to specified (so you can do 1..10 | Set-ExcelColumn -AutoNameRange );  In Set-ExcelRow: -Row can come from the pipeline
 - Improved test coverage (back over 80%).
