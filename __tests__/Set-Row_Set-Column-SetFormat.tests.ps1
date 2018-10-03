@@ -326,7 +326,7 @@ Describe "Table Formatting"  {
         #test expnading named number formats
         Set-ExcelColumn -Worksheet $ws -Column 4 -NumberFormat 'Currency'
         Set-ExcelColumn -Worksheet $ws -Column 5 -NumberFormat 'Currency'
-        $PtDef =New-PivotTableDefinition -PivotTableName Totals -PivotRows Product -PivotData @{"Total"="Sum"} -PivotNumberFormat Currency -PivotTotals None -PivotTableSyle Dark2
+        $PtDef =New-PivotTableDefinition -PivotTableName Totals -PivotRows Product -PivotData @{"Total"="Sum"} -PivotNumberFormat Currency -PivotTotals None -PivotTableStyle Dark2
         Export-excel -ExcelPackage $excel -WorksheetName Hardware -PivotTableDefinition $PtDef
         $excel= Open-ExcelPackage -Path $path
         $ws1   = $excel.Workbook.Worksheets["Hardware"]

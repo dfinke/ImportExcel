@@ -29,7 +29,7 @@
 
         Add-PivotTable -PivotTableName Sales -Address $excel.Workbook.Worksheets[1].Cells["F1"] `
                     -SourceWorkSheet $excel.Workbook.Worksheets[1]  -PivotRows City -PivotColumns Product -PivotData @{Gross="Sum";Net="Sum"} `
-                    -PivotNumberFormat "$#,##0.00"  -PivotTotals Both  -PivotTableSyle Medium12 -PivotChartDefinition $chartdef
+                    -PivotNumberFormat "$#,##0.00"  -PivotTotals Both  -PivotTableStyle Medium12 -PivotChartDefinition $chartdef
         Close-ExcelPackage -show $excel
 
 
@@ -74,7 +74,7 @@
         #Number format to apply to the data cells in the PivotTable.
         [string]$PivotNumberFormat,
         #Apply a table style to the PivotTable.
-        [OfficeOpenXml.Table.TableStyles]$PivotTableSyle,
+        [OfficeOpenXml.Table.TableStyles]$PivotTableStyle,
         #Use a chart definition instead of specifying chart settings one by one.
         [Parameter(ParameterSetName='ChartbyDef', Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
         $PivotChartDefinition,
@@ -198,7 +198,7 @@
             if     ($PivotTotals -eq "None" -or $PivotTotals -eq "Rows")    { $pivotTable.ColumGrandTotals = $false }   # Epplus spelling mistake, not mine!
             elseif ($PivotTotals -eq "Both" -or $PivotTotals -eq "Columns") { $pivotTable.ColumGrandTotals = $true  }
             if     ($PivotDataToColumn ) { $pivotTable.DataOnRows = $false }
-            if     ($PivotTableSyle)     { $pivotTable.TableStyle = $PivotTableSyle}
+            if     ($PivotTableStyle)     { $pivotTable.TableStyle = $PivotTableStyle}
         }
         catch {Write-Warning -Message "Failed adding PivotTable '$pivotTableName': $_"}
     }
@@ -230,7 +230,7 @@
 function New-PivotTableDefinition {
     <#
       .Synopsis
-        Creates PivotTable definitons for Export-Excel 
+        Creates PivotTable definitons for Export-Excel
       .Description
         Export-Excel allows a single PivotTable to be defined using the parameters -IncludePivotTable, -PivotColumns -PivotRows,
         -PivotData, -PivotFilter, -PivotTotals, -PivotDataToColumn, -IncludePivotChart and -ChartType.
@@ -274,7 +274,7 @@ function New-PivotTableDefinition {
         #Number format to apply to the data cells in the PivotTable
         [string]$PivotNumberFormat,
         #Apply a table style to the PivotTable
-        [OfficeOpenXml.Table.TableStyles]$PivotTableSyle,
+        [OfficeOpenXml.Table.TableStyles]$PivotTableStyle,
         #Use a chart definition instead of specifying chart settings one by one
         [Parameter(ParameterSetName='ChartbyDef', Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
         $PivotChartDefinition,
