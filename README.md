@@ -53,7 +53,11 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
- # What's new 5.3.3
+# What's new 5.3.4
+
+- HotFix for parameter PivotTableSyle should be PivotTableStyle https://github.com/dfinke/ImportExcel/issues/453
+
+# What's new 5.3.3
 
 - Thank you to (lazywinadmin)[https://github.com/lazywinadmin] - Expand aliases in examples and elsewhere
 - In Export-Excel fixed a bug where -AutoNameRange on pre-existing data included the header in the range.
