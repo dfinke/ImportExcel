@@ -27,51 +27,63 @@
     [cmdletbinding(SupportsShouldProcess=$true)]
     Param(
          #First Excel file to compare. You can compare two Excel files or two other objects but not one of each.
-         [parameter(ParameterSetName='A',Mandatory=$true,Position=0)]
-         [parameter(ParameterSetName='B',Mandatory=$true,Position=0)]
-         [parameter(ParameterSetName='C',Mandatory=$true,Position=0)]
+         [parameter(ParameterSetName='A',Mandatory=$true,Position=0)]  #A = Compare two files default headers
+         [parameter(ParameterSetName='B',Mandatory=$true,Position=0)]  #B = Compare two files user supplied headers
+         [parameter(ParameterSetName='C',Mandatory=$true,Position=0)]  #C = Compare two files headers P1, P2, P3 etc
          $Referencefile ,
 
          #Second Excel file to compare.
          [parameter(ParameterSetName='A',Mandatory=$true,Position=1)]
          [parameter(ParameterSetName='B',Mandatory=$true,Position=1)]
          [parameter(ParameterSetName='C',Mandatory=$true,Position=1)]
-         [parameter(ParameterSetName='E',Mandatory=$true,Position=1)]
+         [parameter(ParameterSetName='E',Mandatory=$true,Position=1)] #D Compat two objects; E = Compare one object one file that uses default headers
+         [parameter(ParameterSetName='F',Mandatory=$true,Position=1)] #F = Compare one object one file that uses user supplied headers
+         [parameter(ParameterSetName='G',Mandatory=$true,Position=1)] #G   Compare one object one file that uses headers P1, P2, P3 etc
          $Differencefile ,
 
          #Name(s) of worksheets to compare,
-         [parameter(ParameterSetName='A',Position=2)]
+         [parameter(ParameterSetName='A',Position=2)]  #Applies to all sets EXCEPT D which is two objects (no sheets)
          [parameter(ParameterSetName='B',Position=2)]
          [parameter(ParameterSetName='C',Position=2)]
          [parameter(ParameterSetName='E',Position=2)]
+         [parameter(ParameterSetName='F',Position=2)]
+         [parameter(ParameterSetName='G',Position=2)]
          $WorkSheetName   = "Sheet1",
 
          #The row from where we start to import data, all rows above the StartRow are disregarded. By default this is the first row.
-         [parameter(ParameterSetName='A')]
+         [parameter(ParameterSetName='A')]  #Applies to all sets EXCEPT D which is two objects (no sheets, so no start row )
          [parameter(ParameterSetName='B')]
          [parameter(ParameterSetName='C')]
          [parameter(ParameterSetName='E')]
+         [parameter(ParameterSetName='F')]
+         [parameter(ParameterSetName='G')]
          [int]$Startrow = 1,
 
          #Specifies custom property names to use, instead of the values defined in the column headers of the TopRow.
-         [Parameter(ParameterSetName='B',Mandatory=$true)]
+         [Parameter(ParameterSetName='B',Mandatory=$true)]  #Compare  object + sheet or 2 sheets with user supplied headers
+         [Parameter(ParameterSetName='F',Mandatory=$true)]
          [String[]]$Headername,
 
          #Automatically generate property names (P1, P2, P3, ..) instead of the using the values the top row of the sheet.
-         [Parameter(ParameterSetName='C',Mandatory=$true)]
+         [Parameter(ParameterSetName='C',Mandatory=$true)]  #Compare  object + sheet or 2 sheets with headers of P1, P2, P3 ...
+         [Parameter(ParameterSetName='G',Mandatory=$true)]
          [switch]$NoHeader,
 
-         #Object to compare if a worksheet is NOT being used.
+         #Reference object to compare if a worksheet is NOT being used. Reference object can combine with a difference sheet or difference object
          [parameter(ParameterSetName='D',Mandatory=$true)]
          [parameter(ParameterSetName='E',Mandatory=$true)]
+         [parameter(ParameterSetName='F',Mandatory=$true)]
+         [parameter(ParameterSetName='G',Mandatory=$true)]
          [Alias('RefObject')]
          $ReferenceObject ,
-         #Object to compare if a worksheet is NOT being used.
+         #Difference object to compare if a worksheet is NOT being used for either half. Can't have a reference sheet and difference object.
          [parameter(ParameterSetName='D',Mandatory=$true,Position=1)]
          [Alias('DiffObject')]
          $DifferenceObject ,
          [parameter(ParameterSetName='D',Position=2)]
-         [parameter(ParameterSetName='E',Position=3)]
+         [parameter(ParameterSetName='E',Position=2)]
+         [parameter(ParameterSetName='F',Position=2)]
+         [parameter(ParameterSetName='G',Position=2)]
          #If there isn't a filename to use to label data from the "Difference" side, DiffPrefix is used, it defaults to "=>"
          $DiffPrefix = "=>" ,
          #File to hold merged data.
@@ -105,7 +117,7 @@
     )
 
  #region Read Excel data
-     if ($Referencefile -and $Differencefile) {
+    if ($Referencefile -and $Differencefile) {
          #if the filenames don't resolve, give up now.
          try     { $oneFile = ((Resolve-Path -Path $Referencefile -ErrorAction Stop).path -eq (Resolve-Path -Path $Differencefile  -ErrorAction Stop).path)}
          Catch   { Write-Warning -Message "Could not Resolve the filenames." ; return }
@@ -131,7 +143,8 @@
      }
      elseif (                $Differencefile) {
          if ($WorkSheetName -isnot [string]) {Write-Warning -Message "You must provide a single worksheet name." ; return }
-         $params     = @{WorkSheetName=$WorkSheetName; Path=$Differencefile; ErrorAction = [System.Management.Automation.ActionPreference]::Stop ;}
+         $params     =  @{WorkSheetName=$WorkSheetName; Path=$Differencefile; ErrorAction=[System.Management.Automation.ActionPreference]::Stop }
+         foreach ($p in @("HeaderName","NoHeader","StartRow")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
          try            {$DifferenceObject = Import-Excel   @Params }
          Catch          {Write-Warning -Message "Could not read the worksheet '$WorkSheetName' from $Differencefile::$WorkSheetName." ; return }
          if ($DiffPrefix -eq "=>" ) {
@@ -321,7 +334,7 @@ Function Merge-MultipleSheets {
         This ignores any sheets which are not named "Serv*", and uses the HotfixID as the key ; in this version the row numbers are hidden.
   #>
   [cmdletbinding()]
-  [Alias("Merge-MulipleSheets")]
+  #[Alias("Merge-MulipleSheets")] #There was a spelling error in the first release. This was there to ensure things didn't break but intelisense gave the alias first.
    param   (
         #Paths to the files to be merged.
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
@@ -434,7 +447,7 @@ Function Merge-MultipleSheets {
            $columnNo           = $cell.start.Column -1
            $cellAddr           = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R1C$columnNo",1,$columnNo)
            while ($sheet.cells[$cellAddr].value -match $prefix) {
-               $condFormattingParams =  @{RuleType='Expression'; BackgroundPattern='Solid'; WorkSheet=$sheet; Range=$([OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[1]C[$columnNo]:R[1048576]C[$columnNo]",0,0)) }
+               $condFormattingParams =  @{RuleType='Expression'; BackgroundPattern='Solid'; WorkSheet=$sheet; StopIfTrue=$true; Range=$([OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[1]C[$columnNo]:R[1048576]C[$columnNo]",0,0)) }
                Add-ConditionalFormatting @condFormattingParams -ConditionValue ($cell.Address + '="Added"'  ) -BackgroundColor $AddBackgroundColor
                Add-ConditionalFormatting @condFormattingParams -ConditionValue ($cell.Address + '="Changed"') -BackgroundColor $ChangeBackgroundColor
                Add-ConditionalFormatting @condFormattingParams -ConditionValue ($cell.Address + '="Removed"') -BackgroundColor $DeleteBackgroundColor
@@ -450,8 +463,9 @@ Function Merge-MultipleSheets {
         $nameRegex             = $colNames -Join '|'
         foreach ($cell in $sheet.Cells[($sheet.Dimension.Address -replace "\d+$","1")].Where({$_.value -Notmatch $nameRegex}) ) {
            $cell.Value         = $refPrefix + $cell.Value
-           $condFormattingParams =  @{RuleType='Expression'; BackgroundPattern='None'; WorkSheet=$sheet; Range=[OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[2]C[$($cell.start.column)]:R[1048576]C[$($cell.start.column)]",0,0)}
-           Add-ConditionalFormatting @condFormattingParams -ConditionValue ("OR(" +(($sameChecks -join ",") -replace '<>"Same"','="Added"') +")" )   -BackgroundColor $DeleteBackgroundColor
+           $condFormattingParams =  @{RuleType='Expression'; BackgroundPattern='Solid'; WorkSheet=$sheet; StopIfTrue=$true; Range=[OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[2]C[$($cell.start.column)]:R[1048576]C[$($cell.start.column)]",0,0)}
+           Add-ConditionalFormatting @condFormattingParams -ConditionValue ("OR("  +(($sameChecks -join ",") -replace '<>"Same"','="Added"'  ) +")" )   -BackgroundColor $DeleteBackgroundColor
+           Add-ConditionalFormatting @condFormattingParams -ConditionValue ("AND(" +(($sameChecks -join ",") -replace '<>"Same"','="Changed"') +")" )   -BackgroundColor $ChangeBackgroundColor
         }
         #We've made a bunch of things wider so now is the time to autofit columns. Any hiding has to come AFTER this, because it unhides things
         $sheet.Cells.AutoFitColumns()
