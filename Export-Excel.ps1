@@ -381,6 +381,16 @@
              0..360 | ForEach-Object {[pscustomobject][ordered]@{X=$_; Sinx="=Sin(Radians(x)) "} } | Export-Excel -now -LineChart -AutoNameRange
 
              Creates a line chart showing the value of Sine(x) for values of X between 0 and 360 degrees.
+
+        .EXAMPLE
+        >
+        PS> Invoke-Sqlcmd -ServerInstance localhost\DEFAULT -Database AdventureWorks2014 -Query "select *  from sys.tables" -OutputAs DataRows |
+            Export-Excel -Path .\SysTables_AdventureWorks2014.xlsx -WorksheetName Tables
+
+            Runs a query against a SQL Server database and outputs the resulting rows DataRows using the -OutputAs parameter.
+            The results are then piped to the Export-Excel function.
+            NOTE: You need to install the SqlServer module from the PowerShell Gallery in oder to get the -OutputAs parameter for the Invoke-Sqlcmd cmdlet.
+            
         .LINK
             https://github.com/dfinke/ImportExcel
     #>
