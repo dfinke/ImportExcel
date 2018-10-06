@@ -27,6 +27,8 @@ src="https://img.shields.io/powershellgallery/v/ImportExcel.svg"></a>
 
 <!-- /BADGES -->
 
+see if appveyor skips after checking in the readme
+
 PowerShell Import-Excel
 -
 
