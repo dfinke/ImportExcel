@@ -321,19 +321,21 @@ Describe "Merge Multiple sheets" {
         }
         it "Creared Conditional formatting rules                                                   " {
             $cf=$ws.ConditionalFormatting
-            $cf.Count                                                     | Should     be 15
-            $cf[14].Address.Address                                       | Should     be 'B2:B1048576'
+            $cf.Count                                                     | Should     be 17
+            $cf[16].Address.Address                                       | Should     be 'B2:B1048576'
+            $cf[16].Type                                                  | Should     be 'Expression'
+            $cf[16].Formula                                               | Should     be 'OR(G2<>"Same",K2<>"Same")'
+            $cf[16].Style.Font.Color.Color.Name                           | Should     be "FFFF0000"
+            $cf[14].Address.Address                                       | Should     be 'D2:D1048576'
             $cf[14].Type                                                  | Should     be 'Expression'
-            $cf[14].Formula                                               | Should     be 'OR(G2<>"Same",K2<>"Same")'
-            $cf[14].Style.Font.Color.Color.Name                           | Should     be "FFFF0000"
-            $cf[13].Address.Address                                       | Should     be 'D2:D1048576'
-            $cf[13].Type                                                  | Should     be 'Expression'
-            $cf[13].Formula                                               | Should     be 'OR(G2="Added",K2="Added")'
-            $cf[13].Style.Fill.BackgroundColor.Color.Name                 | Should     be 'ffffb6c1'
+            $cf[14].Formula                                               | Should     be 'OR(G2="Added",K2="Added")'
+            $cf[14].Style.Fill.BackgroundColor.Color.Name                 | Should     be 'ffffb6c1'
+            $cf[14].Style.Fill.PatternType.ToString()                     | Should     be 'Solid'
             $cf[ 0].Address.Address                                       | Should     be 'F1:F1048576'
             $cf[ 0].Type                                                  | Should     be 'Expression'
             $cf[ 0].Formula                                               | Should     be 'G1="Added"'
             $cf[ 0].Style.Fill.BackgroundColor.Color.Name                 | Should     be 'ffffa500'
+            $cf[ 0].Style.Fill.PatternType.ToString()                     | Should     be 'Solid'
         }
     }
 }

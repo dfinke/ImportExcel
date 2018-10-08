@@ -1,26 +1,28 @@
 #Requires -Modules Pester
+remove-module importExcel -erroraction silentlyContinue
 Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
+
 
 Describe "Check if Function aliases exist" {
 
     It "Set-Column should exist" {
-        Get-Command Set-Column | Should Not Be $null
+        ${Alias:Set-Column} | Should Not BeNullOrEmpty
     }
 
     It "Set-Row should exist" {
-        Get-Command Set-Row | Should Not Be $null
+          ${Alias:Set-Row} | Should Not BeNullOrEmpty
     }
 
     It "Set-Format should exist" {
-        Get-Command Set-Format | Should Not Be $null
+          ${Alias:Set-Format} | Should Not BeNullOrEmpty
     }
 
-    It "Merge-MulipleSheets should exist" {
+  <#It "Merge-MulipleSheets should exist" {
         Get-Command Merge-MulipleSheets | Should Not Be $null
     }
-
+#>
     It "New-ExcelChart should exist" {
-        Get-Command New-ExcelChart | Should Not Be $null
+          ${Alias:New-ExcelChart} | Should Not BeNullOrEmpty
     }
 
 }

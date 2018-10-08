@@ -337,11 +337,11 @@ function Import-Excel {
             $Path = (Resolve-Path $Path).ProviderPath
             Write-Verbose "Import Excel workbook '$Path' with worksheet '$Worksheetname'"
             $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
-        } 
-        Catch {throw "Could not open $Path ; $_ "} 
+        }
+        Catch {throw "Could not open $Path ; $_ "}
 
         if ($Password) {
-            Try   {$Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage 
+            Try   {$Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage
                    $excel.Load( $Stream,$Password)}
             Catch { throw "Could not read $Path with the provided password." }
         }
@@ -404,12 +404,13 @@ function Import-Excel {
             else {
                 #region Create one object per row
                 foreach ($R in $Rows) {
-                    Write-Verbose "Import row '$R'"
+                #Disabled write-verbose for speed
+                 #  Write-Verbose "Import row '$R'"
                     $NewRow = [Ordered]@{}
 
                     foreach ($P in $PropertyNames) {
                        $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value
-                       Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
+                  #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
                     }
 
                     [PSCustomObject]$NewRow
