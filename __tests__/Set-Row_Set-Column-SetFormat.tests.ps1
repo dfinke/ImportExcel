@@ -137,11 +137,11 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
 
         $c = Set-ExcelColumn -PassThru -Worksheet $ws -Heading "Total" -Value "=Quantity*Price" -NumberFormat "£#,###.00" -FontColor Blue -Bold -HorizontalAlignment Right -VerticalAlignment Top
         $r = Set-ExcelRow    -PassThru -Worksheet $ws -StartColumn 3 -BorderAround Thin -Italic -Underline -FontSize 14 -Value {"=sum($columnName`2:$columnName$endrow)" } -VerticalAlignment Bottom
-        Set-ExcelRange -Address   $excel.Workbook.Worksheets["Sheet1"].cells["b3"] -HorizontalAlignment Right -VerticalAlignment Center -BorderAround Thick -BorderColor Red -StrikeThru
-        Set-ExcelRange -Address   $excel.Workbook.Worksheets["Sheet1"].cells["c3"] -BorderColor Red -BorderTop DashDot -BorderLeft DashDotDot -BorderBottom Dashed -BorderRight Dotted
+        Set-ExcelRange -Address   $excel.Workbook.Worksheets["Sheet1"].Cells["b3"] -HorizontalAlignment Right -VerticalAlignment Center -BorderAround Thick -BorderColor Red -StrikeThru
+        Set-ExcelRange -Address   $excel.Workbook.Worksheets["Sheet1"].Cells["c3"] -BorderColor Red -BorderTop DashDot -BorderLeft DashDotDot -BorderBottom Dashed -BorderRight Dotted
         Set-ExcelRange -WorkSheet $ws -Range "E3"  -Bold:$false -FontShift Superscript -HorizontalAlignment Left
-        Set-ExcelRange -WorkSheet $ws -Range "E1"  -ResetFont -HorizontalAlignment General
-        Set-ExcelRange -Address   $ws.cells["E7"]  -ResetFont -WrapText -BackgroundColor AliceBlue -BackgroundPattern DarkTrellis -PatternColor Red  -NumberFormat "£#,###.00"
+        Set-ExcelRange -WorkSheet $ws -Range "E1"  -ResetFont -HorizontalAlignment General -FontName "Courier New" -fontSize 9
+        Set-ExcelRange -Address   $ws.Cells["E7"]  -ResetFont -WrapText -BackgroundColor AliceBlue -BackgroundPattern DarkTrellis -PatternColor Red  -NumberFormat "£#,###.00"
         Set-ExcelRange -Address   $ws.Column(1)    -Width  0
         Set-ExcelRange -Address   $ws.Column(2)    -AutoFit
         Set-ExcelRange -Address   $ws.Cells["E:E"] -AutoFit
@@ -167,50 +167,52 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
             $ws.Row(5).height                                           | Should be  0
         }
         it "Set a column formula, with numberformat, color, bold face and alignment                " {
-            $ws.cells["e2"].Formula                                     | Should     be "Quantity*Price"
-            $ws.cells["e2"].Value                                       | Should     be 147.63
-            $ws.cells["e2"].Style.Font.Color.rgb                        | Should     be "FF0000FF"
-            $ws.cells["e2"].Style.Font.Bold                             | Should     be $true
-            $ws.cells["e2"].Style.Font.VerticalAlign                    | Should     be "None"
-            $ws.cells["e2"].Style.Numberformat.format                   | Should     be "£#,###.00"
-            $ws.cells["e2"].Style.HorizontalAlignment                   | Should     be "Right"
+            $ws.Cells["e2"].Formula                                     | Should     be "Quantity*Price"
+            $ws.Cells["e2"].Value                                       | Should     be 147.63
+            $ws.Cells["e2"].Style.Font.Color.rgb                        | Should     be "FF0000FF"
+            $ws.Cells["e2"].Style.Font.Bold                             | Should     be $true
+            $ws.Cells["e2"].Style.Font.VerticalAlign                    | Should     be "None"
+            $ws.Cells["e2"].Style.Numberformat.format                   | Should     be "£#,###.00"
+            $ws.Cells["e2"].Style.HorizontalAlignment                   | Should     be "Right"
         }
     }
     Context "Other formatting" {
         it "Trapped an attempt to hide a range instead of a Row/Column                             " {
             $BadHideWarnvar                                             | Should not beNullOrEmpty
         }
-        it "Set a row formula with border font size and underline                                  " {
-            $ws.cells["b7"].style.Border.Top.Style                      | Should     be "None"
-            $ws.cells["F7"].style.Border.Top.Style                      | Should     be "None"
-            $ws.cells["C7"].style.Border.Top.Style                      | Should     be "Thin"
-            $ws.cells["C7"].style.Border.Bottom.Style                   | Should     be "Thin"
-            $ws.cells["C7"].style.Border.Right.Style                    | Should     be "None"
-            $ws.cells["C7"].style.Border.Left.Style                     | Should     be "Thin"
-            $ws.cells["E7"].style.Border.Left.Style                     | Should     be "None"
-            $ws.cells["E7"].style.Border.Right.Style                    | Should     be "Thin"
-            $ws.cells["C7"].style.Font.size                             | Should     be 14
-            $ws.cells["C7"].Formula                                     | Should     be "sum(C2:C6)"
-            $ws.cells["C7"].value                                       | Should     be 81
-            $ws.cells["C7"].style.Font.UnderLine                        | Should     be $true
-            $ws.cells["C6"].style.Font.UnderLine                        | Should     be $false
+        it "Set and calculated a row formula with border font size and underline                   " {
+            $ws.Cells["b7"].Style.Border.Top.Style                      | Should     be "None"
+            $ws.Cells["F7"].Style.Border.Top.Style                      | Should     be "None"
+            $ws.Cells["C7"].Style.Border.Top.Style                      | Should     be "Thin"
+            $ws.Cells["C7"].Style.Border.Bottom.Style                   | Should     be "Thin"
+            $ws.Cells["C7"].Style.Border.Right.Style                    | Should     be "None"
+            $ws.Cells["C7"].Style.Border.Left.Style                     | Should     be "Thin"
+            $ws.Cells["E7"].Style.Border.Left.Style                     | Should     be "None"
+            $ws.Cells["E7"].Style.Border.Right.Style                    | Should     be "Thin"
+            $ws.Cells["C7"].Style.Font.size                             | Should     be 14
+            $ws.Cells["C7"].Formula                                     | Should     be "sum(C2:C6)"
+            $ws.Cells["C7"].value                                       | Should     be 81
+            $ws.Cells["C7"].Style.Font.UnderLine                        | Should     be $true
+            $ws.Cells["C6"].Style.Font.UnderLine                        | Should     be $false
         }
-        it "Set custom text wrapping, alignment, superscript, border and Fill                      " {
-            $ws.cells["e3"].Style.HorizontalAlignment                   | Should     be "Left"
-            $ws.cells["e3"].Style.Font.VerticalAlign                    | Should     be "Superscript"
-            $ws.cells["b3"].style.Border.Left.Color.Rgb                 | Should     be "FFFF0000"
-            $ws.cells["b3"].style.Border.Left.Style                     | Should     be "Thick"
-            $ws.cells["b3"].style.Border.Right.Style                    | Should     be "Thick"
-            $ws.cells["b3"].style.Border.Top.Style                      | Should     be "Thick"
-            $ws.cells["b3"].style.Border.Bottom.Style                   | Should     be "Thick"
-            $ws.cells["b3"].style.Font.Strike                           | Should     be $true
-            $ws.cells["e1"].Style.Font.Color.rgb                        | Should     be "ff000000"
-            $ws.cells["e1"].Style.Font.Bold                             | Should     be $false
-            $ws.cells["C6"].style.WrapText                              | Should     be $false
-            $ws.cells["e7"].style.WrapText                              | Should     be $true
-            $ws.cells["e7"].Style.Fill.BackgroundColor.Rgb              | Should     be "FFF0F8FF"
-            $ws.cells["e7"].Style.Fill.PatternColor.Rgb                 | Should     be "FFFF0000"
-            $ws.cells["e7"].Style.Fill.PatternType                      | Should     be "DarkTrellis"
+        it "Set custom font, size, text-wrapping, alignment, superscript, border and Fill          " {
+            $ws.Cells["b3"].Style.Border.Left.Color.Rgb                 | Should     be "FFFF0000"
+            $ws.Cells["b3"].Style.Border.Left.Style                     | Should     be "Thick"
+            $ws.Cells["b3"].Style.Border.Right.Style                    | Should     be "Thick"
+            $ws.Cells["b3"].Style.Border.Top.Style                      | Should     be "Thick"
+            $ws.Cells["b3"].Style.Border.Bottom.Style                   | Should     be "Thick"
+            $ws.Cells["b3"].Style.Font.Strike                           | Should     be $true
+            $ws.Cells["e1"].Style.Font.Color.Rgb                        | Should     be "ff000000"
+            $ws.Cells["e1"].Style.Font.Bold                             | Should     be $false
+            $ws.Cells["e1"].Style.Font.Name                             | Should     be "Courier New"
+            $ws.Cells["e1"].Style.Font.Size                             | Should     be 9
+            $ws.Cells["e3"].Style.Font.VerticalAlign                    | Should     be "Superscript"
+            $ws.Cells["e3"].Style.HorizontalAlignment                   | Should     be "Left"
+            $ws.Cells["C6"].Style.WrapText                              | Should     be $false
+            $ws.Cells["e7"].Style.WrapText                              | Should     be $true
+            $ws.Cells["e7"].Style.Fill.BackgroundColor.Rgb              | Should     be "FFF0F8FF"
+            $ws.Cells["e7"].Style.Fill.PatternColor.Rgb                 | Should     be "FFFF0000"
+            $ws.Cells["e7"].Style.Fill.PatternType                      | Should     be "DarkTrellis"
         }
     }
 
@@ -233,9 +235,9 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
             $excel = $DriverData | Export-Excel -PassThru -Path $path -AutoSize -AutoNameRange
             $ws = $excel.Workbook.Worksheets[1]
 
-            Set-ExcelColumn -Worksheet $ws -Heading "Link"         -AutoSize -Value {"https://en.wikipedia.org" + $worksheet.cells["B$Row"].value  }
+            Set-ExcelColumn -Worksheet $ws -Heading "Link"         -AutoSize -Value {"https://en.wikipedia.org" + $worksheet.Cells["B$Row"].value  }
             $c = Set-ExcelColumn -PassThru -Worksheet $ws -Heading "NextBirthday" -Value {
-                $bmonth = $worksheet.cells["C$Row"].value.month ; $bDay = $worksheet.cells["C$Row"].value.day
+                $bmonth = $worksheet.Cells["C$Row"].value.month ; $bDay = $worksheet.Cells["C$Row"].value.day
                 $cMonth = [datetime]::Now.Month ; $cday = [datetime]::Now.day ; $cyear = [datetime]::Now.Year
                 if (($cmonth -gt $bmonth) -or (($cMonth -eq $bmonth) -and ($cday -ge $bDay))){
                        [datetime]::new($cyear+1, $bmonth, $bDay)
@@ -322,7 +324,7 @@ Describe "Table Formatting"  {
         $excel = $data2 | Export-excel -path $path -WorksheetName Hardware -AutoNameRange -AutoSize -BoldTopRow -FreezeTopRow -PassThru
         $ws = $excel.Workbook.Worksheets[1]
         #test showfilter & TotalSettings
-        $Table = Add-ExcelTable -PassThru -Range $ws.cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -TotalSettings @{"Total"="Sum"} -ShowFirstColumn -ShowFilter:$false
+        $Table = Add-ExcelTable -PassThru -Range $ws.Cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -TotalSettings @{"Total"="Sum"} -ShowFirstColumn -ShowFilter:$false
         #test expnading named number formats
         Set-ExcelColumn -Worksheet $ws -Column 4 -NumberFormat 'Currency'
         Set-ExcelColumn -Worksheet $ws -Column 5 -NumberFormat 'Currency'

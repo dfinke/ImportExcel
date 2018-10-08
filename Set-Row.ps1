@@ -156,7 +156,7 @@
         }}
         #region Apply formatting
         $params = @{}
-        foreach ($p in @('Underline','Bold','Italic','StrikeThru','FontSize', 'FontShift','NumberFormat','TextRotation',
+        foreach ($p in @('Underline','Bold','Italic','StrikeThru', 'FontName', 'FontSize', 'FontShift','NumberFormat','TextRotation',
                         'WrapText', 'HorizontalAlignment','VerticalAlignment', 'Height', 'FontColor'
                         'BorderAround', 'BorderBottom', 'BorderTop', 'BorderLeft', 'BorderRight', 'BorderColor',
                         'BackgroundColor', 'BackgroundPattern', 'PatternColor')) {
