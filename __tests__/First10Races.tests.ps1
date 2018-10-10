@@ -34,10 +34,10 @@ Describe "Creating small named ranges with hyperlinks" {
         $cf.Icon2.Type = $cf.Icon3.Type = "Num"
         $cf.Icon2.Value = 0
         $cf.Icon3.Value = 1
-        Add-ConditionalFormatting -Address $worksheet.cells["FinishPosition"] -RuleType Equal    -ConditionValue 1 -ForeGroundColor Purple -Bold -Priority 1 -StopIfTrue   #Test Priority and stopIfTrue and using range name
+        Add-ConditionalFormatting -Address $worksheet.cells["FinishPosition"] -RuleType Equal    -ConditionValue 1 -ForeGroundColor  ([System.Drawing.Color]::Purple) -Bold -Priority 1 -StopIfTrue   #Test Priority and stopIfTrue and using range name
         Add-ConditionalFormatting -Address $worksheet.Cells["GridPosition"]   -RuleType ThreeColorScale -Reverse                                                           #Test Reverse
         $ct = New-ConditionalText -Text "Ferrari"
-        $ct2 =  New-ConditionalText -Range $worksheet.Names["FinishPosition"].Address -ConditionalType LessThanOrEqual -Text 3 -ConditionalText Red -Background White      #Test new-conditionalText in shortest and longest forms.
+        $ct2 =  New-ConditionalText -Range $worksheet.Names["FinishPosition"].Address -ConditionalType LessThanOrEqual -Text 3 -ConditionalText ([System.Drawing.Color]::Red) -Background ([System.Drawing.Color]::White)      #Test new-conditionalText in shortest and longest forms.
         #Create links for each group name (race) and Export them so they start at Cell A1; create a pivot table with definition just created, save the file and open in Excel
         $results | ForEach-Object {(New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList "Sheet1!$($_.Name)" , "$($_.name) GP")} |                                     #Test Exporting Hyperlinks with display property.
             Export-Excel -ExcelPackage $excel -AutoSize -PivotTableDefinition $pt -Calculate   -ConditionalFormat $ct,$ct2                                                 #Test conditional text rules in conditional format (orignally icon sets only )

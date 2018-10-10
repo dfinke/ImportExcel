@@ -19,7 +19,7 @@ describe "Consistent passing of ranges." {
             $warnvar                                                                                                                   | should     beNullOrEmpty
             $excel.Services.ConditionalFormatting.Count                                                                                | Should     be 3
             {Add-ConditionalFormatting "Status"  -WorkSheet $excel.Services `
-                -ForeGroundColor Green -RuleType ContainsText -ConditionValue "Running"}                                               | Should not throw
+                -ForeGroundColor ([System.Drawing.Color]::Green) -RuleType ContainsText -ConditionValue "Running"}                     | Should not throw
             $excel.Services.ConditionalFormatting.Count                                                                                | Should     be 4
         }
         Close-ExcelPackage -NoSave $excel
@@ -32,7 +32,7 @@ describe "Consistent passing of ranges." {
                 -Bold -RuleType ContainsText -ConditionValue "windows"                                                               } | Should not throw
             $excel.Services.ConditionalFormatting.Count                                                                                | Should     be 2
             {Add-ConditionalFormatting -WorkSheet $excel.Services -Address "a:a" `
-                -RuleType ContainsText -ConditionValue "stopped" -ForeGroundColor Red                                                } | Should not throw
+                -RuleType ContainsText -ConditionValue "stopped" -ForeGroundColor ([System.Drawing.Color]::Red)                      } | Should not throw
             $excel.Services.ConditionalFormatting.Count                                                                                | Should     be 3
         }
         Close-ExcelPackage -NoSave $excel
@@ -62,7 +62,7 @@ describe "Consistent passing of ranges." {
             $excel.Services.cells["C3"].Style.Font.UnderLine                                                                           | Should     be $true
             {Set-ExcelRange -WorkSheet $excel.Services -Range "Name" -Bold                                                           } | Should not throw
             $excel.Services.cells["B4"].Style.Font.Bold                                                                                | Should     be $true
-           {$excel.Services.Column(3) | Set-ExcelRange -FontColor red                                                                } | Should not throw
+           {$excel.Services.Column(3) | Set-ExcelRange -FontColor ([System.Drawing.Color]::Red)                                      } | Should not throw
             $excel.Services.cells["C4"].Style.Font.Color.Rgb                                                                           | Should     be "FFFF0000"
         }
         Close-ExcelPackage -NoSave $excel

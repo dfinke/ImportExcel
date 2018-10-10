@@ -355,13 +355,7 @@ Describe ExportExcel {
 
     Context "#Example 5      # Adding a single conditional format " {
         #Test  New-ConditionalText builds correctly
-        $ct = New-ConditionalText -ConditionalType GreaterThan 525 -ConditionalTextColor DarkRed -BackgroundColor LightPink
-        it "Created a Conditional format description                                               " {
-            $ct.BackgroundColor -is [System.Drawing.Color]              | Should     be $true
-            $ct.ConditionalTextColor -is [System.Drawing.Color]         | Should     be $true
-            $ct.ConditionalType -in [enum]::GetNames( [OfficeOpenXml.ConditionalFormatting.eExcelConditionalFormattingRuleType] ) |
-                                                                          Should     be $true
-        }
+        $ct = New-ConditionalText -ConditionalType GreaterThan 525 -ConditionalTextColor ([System.Drawing.Color]::DarkRed) -BackgroundColor ([System.Drawing.Color]::LightPink)
 
         $path = "$env:TEMP\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
@@ -398,8 +392,8 @@ Describe ExportExcel {
         #Testing -Passthrough
         $Excel = Get-Service | Select-Object Name, Status, DisplayName, ServiceName |
             Export-Excel $path -PassThru  -ConditionalText $(
-            New-ConditionalText Stop DarkRed LightPink
-            New-ConditionalText Running Blue Cyan
+            New-ConditionalText Stop ([System.Drawing.Color]::DarkRed) ([System.Drawing.Color]::LightPink)
+            New-ConditionalText Running ([System.Drawing.Color]::Blue) ([System.Drawing.Color]::Cyan)
         )
         $ws = $Excel.Workbook.Worksheets[1]
         it "Added two blocks of conditional formating for the data range                           " {
@@ -649,7 +643,7 @@ Describe ExportExcel {
         $warnvar = $null
         #Test create two data pages; as part of adding the second give both their own pivot table, test -autosize switch
         Get-Service | Select-Object    -Property Status, Name, DisplayName, StartType, CanPauseAndContinue | Export-Excel -Path $path  -AutoSize                         -TableName "All Services"  -TableStyle Medium1 -WarningAction SilentlyContinue -WarningVariable warnvar
-        Get-Process | Select-Object    -Property Name, Company, Handles, CPU, VM      | Export-Excel -Path $path  -AutoSize -WorkSheetname 'sheet2' -TableName "Processes"     -TableStyle Light1 -Title "Processes" -TitleFillPattern Solid -TitleBackgroundColor AliceBlue -TitleBold -TitleSize 22 -PivotTableDefinition $ptDef
+        Get-Process | Select-Object    -Property Name, Company, Handles, CPU, VM      | Export-Excel -Path $path  -AutoSize -WorkSheetname 'sheet2' -TableName "Processes"     -TableStyle Light1 -Title "Processes" -TitleFillPattern Solid -TitleBackgroundColor ([System.Drawing.Color]::AliceBlue) -TitleBold -TitleSize 22 -PivotTableDefinition $ptDef
         $Excel = Open-ExcelPackage   $path
         $ws1 = $Excel.Workbook.Worksheets["Sheet1"]
         $ws2 = $Excel.Workbook.Worksheets["Sheet2"]
@@ -722,10 +716,10 @@ Describe ExportExcel {
         Set-ExcelRange -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NFormat "#,###"
         Set-ExcelRange -Address $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#,##0.0" -Bold
         Set-ExcelRange -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
-        Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor Red
+        Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor ([System.Drawing.Color]::Red)
         #test Add-ConditionalFormatting -passthru and using a range (and no worksheet)
         $rule = Add-ConditionalFormatting -passthru -Address $sheet.cells["C:C"] -RuleType TopPercent -ConditionValue 20 -Bold -StrikeThru
-        Add-ConditionalFormatting -WorkSheet $sheet -Range "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600" -ForeGroundColor Red -Bold -Italic -Underline -BackgroundColor Beige -BackgroundPattern LightUp -PatternColor Gray
+        Add-ConditionalFormatting -WorkSheet $sheet -Range "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600" -ForeGroundColor ([System.Drawing.Color]::Red) -Bold -Italic -Underline -BackgroundColor  ([System.Drawing.Color]::Beige) -BackgroundPattern LightUp -PatternColor  ([System.Drawing.Color]::Gray)
         #Test Set-ExcelRange with a column
         foreach ($c in 5..9) {Set-ExcelRange $sheet.Column($c)  -AutoFit }
         Add-PivotTable -PivotTableName "PT_Procs" -ExcelPackage $excel -SourceWorkSheet 1 -PivotRows Company -PivotData  @{'Name' = 'Count'} -IncludePivotChart -ChartType ColumnClustered -NoLegend
@@ -857,7 +851,7 @@ Describe ExportExcel {
                        -Column 2 -ColumnOffSetPixels 35 -Width 800 -XAxisTitleText "Degrees" -XAxisTitleBold -XAxisTitleSize 12 -XMajorUnit 30 -XMinorUnit 10 -XMinValue 0 -XMaxValue 361  -XAxisNumberformat "000" `
                        -YMinValue -1.25 -YMaxValue 1.25 -YMajorUnit 0.25 -YAxisNumberformat "0.00" -YAxisTitleText "Sine" -YAxisTitleBold -YAxisTitleSize 12 `
                        -LegendSize 8 -legendBold  -LegendPosition Bottom
-        Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets["Sinx"] -Range "B2:B362" -RuleType LessThan -ConditionValue "=B1" -ForeGroundColor Red
+        Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets["Sinx"] -Range "B2:B362" -RuleType LessThan -ConditionValue "=B1" -ForeGroundColor ([System.Drawing.Color]::Red)
         $ws = $Excel.Workbook.Worksheets["Sinx"]
         $d  = $ws.Drawings[0]
         It "Controled the axes and title and legend of the chart                                   " {
@@ -916,7 +910,7 @@ Describe ExportExcel {
              Select-Object -Property Name, @{n="TotalPm";e={($_.group | Measure-Object -sum -Property pm).sum }} |
                  Export-Excel -NoHeader -AutoNameRange -path $path -ReturnRange  -PieChart -ShowPercent
         $Cf = New-ConditionalFormattingIconSet -Range ($range -replace "^.*:","B2:") -ConditionalFormat ThreeIconSet -Reverse -IconType Flags
-        $ct = New-ConditionalText -Text "Microsoft" -ConditionalTextColor red -BackgroundColor AliceBlue -ConditionalType ContainsText
+        $ct = New-ConditionalText -Text "Microsoft" -ConditionalTextColor ([System.Drawing.Color]::Red) -BackgroundColor([System.Drawing.Color]::AliceBlue) -ConditionalType ContainsText
         it "Created the Conditional formatting rules                                               " {
             $cf.Formatter                                               | Should     be "ThreeIconSet"
             $cf.IconType                                                | Should     be "Flags"

@@ -51,7 +51,7 @@ Describe "Compare Worksheet" {
 
     Context "Setting the background to highlight different rows, use of grid view." {
         BeforeAll {
-            Compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -BackgroundColor LightGreen -GridView
+            Compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView
             Start-Sleep -sec 5; [System.Windows.Forms.SendKeys]::Sendwait("%{F4}")
             $xl1  = Open-ExcelPackage -Path "$env:temp\Server1.xlsx"
             $xl2  = Open-ExcelPackage -Path "$env:temp\Server2.xlsx"
@@ -78,7 +78,7 @@ Describe "Compare Worksheet" {
 
     Context "Setting the forgound to highlight changed properties" {
         BeforeAll {
-            $null = compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -AllDataBackgroundColor white -BackgroundColor LightGreen  -FontColor DarkRed
+            $null = compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -AllDataBackgroundColor([System.Drawing.Color]::white) -BackgroundColor ([System.Drawing.Color]::LightGreen)  -FontColor ([System.Drawing.Color]::DarkRed)
             $xl1  = Open-ExcelPackage -Path "$env:temp\Server1.xlsx"
             $xl2  = Open-ExcelPackage -Path "$env:temp\Server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets[1]
@@ -121,7 +121,7 @@ Describe "Compare Worksheet" {
             $s[10].ServiceType = "Changed should not matter"
             $s | Select-Object -Property ServiceName, DisplayName, StartType, ServiceType | Export-Excel -Path $env:temp\server2.xlsx -WorkSheetname server2
             #Assume default worksheet name, (sheet1) and column header for key ("name")
-            $comp = compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -WorkSheetName Server1,Server2 -Key ServiceName -Property DisplayName,StartType -AllDataBackgroundColor AliceBlue -BackgroundColor White -FontColor Red   | Sort-Object _row,_file
+            $comp = compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -WorkSheetName Server1,Server2 -Key ServiceName -Property DisplayName,StartType -AllDataBackgroundColor ([System.Drawing.Color]::AliceBlue) -BackgroundColor ([System.Drawing.Color]::White) -FontColor ([System.Drawing.Color]::Red)   | Sort-Object _row,_file
             $xl1  = Open-ExcelPackage -Path "$env:temp\Server1.xlsx"
             $xl2  = Open-ExcelPackage -Path "$env:temp\Server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets["server1"]

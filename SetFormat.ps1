@@ -113,7 +113,7 @@
             elseif ($Range -is [string]) {Write-Warning -Message "The range pararameter you have specified also needs a worksheet parameter."}
 
             if ($ResetFont) {
-                $Range.Style.Font.Color.SetColor("Black")
+                $Range.Style.Font.Color.SetColor( ([System.Drawing.Color]::Black))
                 $Range.Style.Font.Bold          = $false
                 $Range.Style.Font.Italic        = $false
                 $Range.Style.Font.UnderLine     = $false

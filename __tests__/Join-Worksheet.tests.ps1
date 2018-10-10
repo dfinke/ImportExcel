@@ -30,7 +30,7 @@ Describe "Join Worksheet" {
         $data2 | Export-Excel -Path $path -WorkSheetname Abingdon
         $data3 | Export-Excel -Path $path -WorkSheetname Banbury
         $ptdef = New-PivotTableDefinition -PivotTableName "SummaryPivot" -PivotRows "Store" -PivotColumns "Product" -PivotData @{"Total"="SUM"} -IncludePivotChart -ChartTitle "Sales Breakdown" -ChartType ColumnStacked -ChartColumn 10
-        Join-Worksheet -Path $path -WorkSheetName "Total" -Clearsheet -FromLabel "Store" -TableName "SummaryTable" -TableStyle Light1 -AutoSize -BoldTopRow -FreezePane 2,1 -Title "Store Sales Summary" -TitleBold -TitleSize 14  -TitleBackgroundColor AliceBlue -PivotTableDefinition $ptdef
+        Join-Worksheet -Path $path -WorkSheetName "Total" -Clearsheet -FromLabel "Store" -TableName "SummaryTable" -TableStyle Light1 -AutoSize -BoldTopRow -FreezePane 2,1 -Title "Store Sales Summary" -TitleBold -TitleSize 14  -TitleBackgroundColor  ([System.Drawing.Color]::AliceBlue) -PivotTableDefinition $ptdef
 
        $excel = Export-Excel -path $path -WorkSheetname SummaryPivot -Activate -NoTotalsInPivot -PivotDataToColumn -HideSheet * -UnHideSheet "Total","SummaryPivot" -PassThru
         # Open-ExcelPackage -Path $path
