@@ -729,7 +729,7 @@
 
                     foreach ($Name in $script:Header) {
                         try   {Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData.$Name}
-                        catch {Write-Warning -Message "Could not insert the $Name property at Row $Row, Column $Column"}
+                        catch {Write-Warning -Message "Could not insert the '$Name' property at Row $Row, Column $ColumnIndex"}
                         $ColumnIndex += 1
                     }
                     $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false

@@ -21,6 +21,9 @@ function New-ConditionalFormattingIconSet {
         The first line creates a range - one column wide in the column $column, running from $topRow to $lastDataRow.
         The second creates a definition object using this range
         and the third uses Export-Excel with an open package to apply the format and save and open the file.
+      .Link
+        Add-Add-ConditionalFormatting
+        New-ConditionalText
     #>
     param(
         [Parameter(Mandatory=$true)]

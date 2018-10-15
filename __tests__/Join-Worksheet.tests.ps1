@@ -22,7 +22,7 @@ ID,Product,Quantity,Price,Total
 12012,Pliers,3,14.99,44.97
 "@
 
-Describe "Join Worksheet" {
+Describe "Join Worksheet part 1" {
     BeforeAll {
         $path = "$Env:TEMP\test.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
@@ -88,8 +88,11 @@ Describe "Join Worksheet" {
             $pc.Title.text                                              | Should     be "Sales Breakdown"
         }
     }
+}
     $path = "$env:TEMP\Test.xlsx"
     Remove-item -Path $path -ErrorAction SilentlyContinue
+IF ($PSVersionTable.PSVersion.Major -gt 5) {Write-warning -message "Part 2 Does not run on V6"; return}
+Describe "Join Worksheet part 2" {
      Get-WmiObject -Class win32_logicaldisk |
         Select-Object -Property DeviceId,VolumeName, Size,Freespace |
             Export-Excel -Path $path -WorkSheetname Volumes -NumberFormat "0,000"
@@ -119,6 +122,6 @@ Describe "Join Worksheet" {
             $ws.Cells["A$NextRow"].Value                                | Should     be $excel.Workbook.Worksheets[2].Cells["A2"].value
             $ws.Cells["B$NextRow"].Value                                | Should     be $excel.Workbook.Worksheets[2].Cells["B2"].value
         }
-    }
-}
+    } 
+} 
 

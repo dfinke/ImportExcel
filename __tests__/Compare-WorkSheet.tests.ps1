@@ -1,8 +1,7 @@
 ﻿#Requires -Modules Pester
 Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-
-Add-Type -AssemblyName System.Windows.Forms
-
+if ($PSVersionTable.PSVersion.Major -gt 5) { Write-Warning "Can't test grid view on V6" }
+else                                       {Add-Type -AssemblyName System.Windows.Forms }
 Describe "Compare Worksheet" {
     Context "Simple comparison output" {
         BeforeAll {
@@ -51,8 +50,9 @@ Describe "Compare Worksheet" {
 
     Context "Setting the background to highlight different rows, use of grid view." {
         BeforeAll {
-            Compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView
-            Start-Sleep -sec 5; [System.Windows.Forms.SendKeys]::Sendwait("%{F4}")
+            $useGrid =  ($PSVersionTable.PSVersion.Major -LE 5)
+            $null = Compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView:$useGrid
+            if ($useGrid) {Start-Sleep -sec 5; [System.Windows.Forms.SendKeys]::Sendwait("%{F4}") }
             $xl1  = Open-ExcelPackage -Path "$env:temp\Server1.xlsx"
             $xl2  = Open-ExcelPackage -Path "$env:temp\Server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets[1]

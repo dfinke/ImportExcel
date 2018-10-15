@@ -1,46 +1,82 @@
 ﻿Function Add-ConditionalFormatting {
     <#
       .Synopsis
-        Adds conditional formatting to worksheet.
+        Adds conditional formatting to all or part of a worksheet.
       .Description
-        Conditional formatting allows excel to
-        * Mark cells with Icons depending on their value
-        * Show a databar whose length indicates the value or a 2 or 3 color scale where the color indicate the relative value
+        Conditional formatting allows Excel to:
+        * Mark cells with icons depending on their value
+        * Show a databar whose length indicates the value or a 2 or 3 color scale where the color indicates the relative value
         * Change the color, font, or number format of cells which meet given criteria
-        Add-ConditionalFormatting allows these to be set; for fine tuning of the rules you can use the -PassThru switch,
-        which will return the rule so that you can modify things which are specific to that type of rule,
-        for example the values which correspond to each icon in an Icon set.
+        Add-ConditionalFormatting allows these parameters to be set; for fine tuning of the rules the -PassThru switch,
+        will return the rule so that you can modify things which are specific to that type of rule,
+        for example the values which correspond to each icon in an Icon-Set.
       .Example
         >
-        PS> $excel = $avdata | Export-Excel -Path (Join-path $FilePath "\Machines.XLSX" ) -WorksheetName "Server Anti-Virus" -AutoSize -FreezeTopRow -AutoFilter -PassThru
+        $excel = $avdata | Export-Excel -Path (Join-path $FilePath "\Machines.XLSX" ) -WorksheetName "Server Anti-Virus" -AutoSize -FreezeTopRow -AutoFilter -PassThru
         Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "b2:b1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "2003"
         Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Address "i2:i1048576" -ForeGroundColor "RED"     -RuleType ContainsText -ConditionValue "Disabled"
         $excel.Workbook.Worksheets[1].Cells["D1:G1048576"].Style.Numberformat.Format = [cultureinfo]::CurrentCulture.DateTimeFormat.ShortDatePattern
         $excel.Workbook.Worksheets[1].Row(1).style.font.bold = $true
         $excel.Save() ; $excel.Dispose()
 
-        Here Export-Excel is called with the -passThru parameter so the Excel Package object is stored in $Excel
-        The desired worksheet is selected and the then columns" B" and "I" are conditionally formatted (excluding the top row) to show red text if
-        the columns contain "2003" or "Disabled respectively. A fixed date format is then applied to columns D..G, and the top row is formatted.
-        Finally the workbook is saved and the Excel object closed.
+        Here Export-Excel is called with the -PassThru parameter so the Excel Package object representing Machines.XLSX is stored in $Excel.
+        The desired worksheet is selected and then columns" B" and "I" are conditionally formatted (excluding the top row) to show red text if
+        they contain "2003" or "Disabled" respectively. A fixed date format is then applied to columns D..G, and the top row is formatted.
+        Finally the workbook is saved and the Excel package object is closed.
       .Example
         >
-        >PS  $r = Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Range "B1:B100" -ThreeIconsSet Flags -Passthru
+        $r = Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets[1] -Range "B1:B100" -ThreeIconsSet Flags -Passthru
         $r.Reverse = $true ;   $r.Icon1.Type = "Num"; $r.Icon2.Type = "Num" ; $r.Icon2.value = 100 ; $r.Icon3.type = "Num" ;$r.Icon3.value = 1000
 
-        Again Export-Excel has been called with -passthru leaving a package object in $Excel
-        This time B1:B100 has been conditionally formatted with 3 icons, using the flags icon set.
+        Again Export-Excel has been called with -Passthru leaving a package object in $Excel
+        This time B1:B100 has been conditionally formatted with 3 icons, using the "Flags" Icon-Set.
         Add-ConditionalFormatting does not provide access to every option in the formatting rule, so passthru has been used and the
-        rule is modified to apply the flags in reverse order, and boundaries for the number which will set the split are set to 100 and 1000
+        rule is modified to apply the flags in reverse order, and transitions between flags are set to 100 and 1000
       .Example
         Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor Red
 
-        This time $sheet holds an ExcelWorkseet object and databars are add to all of column D except for the tip row.
+        This time $sheet holds an ExcelWorkseet object and databars are added to column D excluding the top row.
       .Example
         Add-ConditionalFormatting -Address $worksheet.cells["FinishPosition"] -RuleType Equal    -ConditionValue 1 -ForeGroundColor Purple -Bold -Priority 1 -StopIfTrue
 
-        In this example a named range is used to select the cells where the formula should apply. If a cell in the "FinishPosition" range is 1, then the text is turned to Bold & Purple.
+        In this example a named range is used to select the cells where the condition should apply,
+        and instead of specifying a sheet and range within the sheet as separate paramters,
+        the cells where the format should apply are specified directly.
+        If a cell in the "FinishPosition" range is 1, then the text is turned to Bold & Purple.
         This rule is moved to first in the priority list, and where cells have a value of 1, no other rules will be processed.
+      .Example
+        >
+        $excel = Get-ChildItem | Select-Object -Property Name,Length,LastWriteTime,CreationTime | Export-Excel "$env:temp\test43.xlsx" -PassThru -AutoSize
+        $ws = $excel.Workbook.Worksheets["Sheet1"]
+        $ws.Cells["E1"].Value = "SavedAt"
+        $ws.Cells["F1"].Value = [datetime]::Now
+        $ws.Cells["F1"].Style.Numberformat.Format = (Expand-NumberFormat -NumberFormat 'Date-Time')
+        $lastRow = $ws.Dimension.End.Row
+
+        Add-ConditionalFormatting -WorkSheet $ws -address "A2:A$Lastrow" -RuleType LessThan    -ConditionValue "A"  -ForeGroundColor Gray
+        Add-ConditionalFormatting -WorkSheet $ws -address "B2:B$Lastrow" -RuleType GreaterThan -ConditionValue  1000000         -NumberFormat '#,###,,.00"M"'
+        Add-ConditionalFormatting -WorkSheet $ws -address "C2:C$Lastrow" -RuleType GreaterThan -ConditionValue "=INT($F$1-7)"  -ForeGroundColor Green  -StopIfTrue
+        Add-ConditionalFormatting -WorkSheet $ws -address "D2:D$Lastrow" -RuleType Equal       -ConditionValue "=C2"           -ForeGroundColor Blue   -StopIfTrue
+
+        Close-ExcelPackage -Show $excel
+
+        The first few lines of code export a list of file and directory names, sizes and dates to a spreadsheet. It puts the date of the export in Cell F1.
+        The first Conditional format changes the color of files and folders that begin with a ".", "_" or anything else which sorts before "A"
+        The second Conditional format changes the Number format of numbers bigger than 1 million for example 1,234,567,890 will dispay as "1,234.57M"
+        The third looks highlights datestamps of files less than a week old when the export was run.
+        The = is necessary in the condition value to otherwise the rule will look for the the text INT($F$1-7).
+        The cell address for the date is fixed using the standard Excel $ notation.
+        The final Conditional format looks for files which have not changed since they were created. Here the condition value is "=C2". The = Sign means C2 is
+        treated as a formula, not literal text. Unlike the file age, we want the cell used to change for each cell where the conditional format applies.
+        The first cell in the conditional format range is D2, which is compared against C2, then D3 is compared against C3 and so on.
+        A common mistake is to include the title row in the range and accidentally apply conditional formatting to it,
+        or to begin the range at row 2 but use row 1 as the starting point for comparisons.
+      .Example
+        Add-ConditionalFormatting  $ws.Cells["B:B"] GreaterThan 10000000 -Fore  Red -Stop -Pri 1
+
+        This version shows the shortest syntax - the Address, Ruletype, and Conditionvalue can be identified from their position,
+        and ForegroundColor, StopIfTrue and Priority can all be shortend.
+
     #>
     Param (
         #A block of cells to format - you can use a named range with -Address $ws.names[1] or  $ws.cells["RangeName"]
@@ -54,8 +90,8 @@
         [OfficeOpenXml.ConditionalFormatting.eExcelConditionalFormattingRuleType]$RuleType ,
         #Text colour for matching objects
         [Parameter(ParameterSetName = "NamedRule")]
-        [Alias("ForeGroundColour")]
-        [System.Drawing.Color]$ForeGroundColor,
+        [Alias("ForegroundColour")]
+        [System.Drawing.Color]$ForegroundColor,
         #Colour for databar type charts
         [Parameter(Mandatory = $true, ParameterSetName = "DataBar")]
         [Alias("DataBarColour")]
@@ -69,17 +105,17 @@
         #A five-icon set name
         [Parameter(Mandatory = $true, ParameterSetName = "FiveIconSet")]
         [OfficeOpenXml.ConditionalFormatting.eExcelconditionalFormatting5IconsSetType]$FiveIconsSet,
-        #Use the icon set in reverse order, or reverse the orders of Two- & Three-Color Scales
+        #Use the Icon-Set in reverse order, or reverse the orders of Two- & Three-Color Scales
         [Parameter(ParameterSetName = "NamedRule")]
         [Parameter(ParameterSetName = "ThreeIconSet")]
         [Parameter(ParameterSetName = "FourIconSet")]
         [Parameter(ParameterSetName = "FiveIconSet")]
         [switch]$Reverse,
         #A value for the condition (for example 2000 if the test is 'lessthan 2000'; Formulas should begin with "=" )
-        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRule",Position = 2)]
         $ConditionValue,
         #A second value for the conditions like "between x and Y"
-        [Parameter(ParameterSetName = "NamedRule")]
+        [Parameter(ParameterSetName = "NamedRule",Position = 3)]
         $ConditionValue2,
         #Background colour for matching items
         [Parameter(ParameterSetName = "NamedRule")]
@@ -111,7 +147,7 @@
         #Set the sequence for rule processing
         [int]$Priority,
         #If specified pass the rule back to the caller to allow additional customization.
-        [switch]$Passthru
+        [switch]$PassThru
     )
 
     #Allow conditional formatting to work like Set-ExcelRange (with single ADDRESS parameter), split it to get worksheet and range of cells.
@@ -141,7 +177,7 @@
     #By this point we should have a worksheet object whose ConditionalFormatting collection we will add to. If not, bail.
     if (-not $worksheet -or $WorkSheet -isnot [OfficeOpenXml.ExcelWorksheet]) {write-warning "You need to provide a worksheet object." ; return}
     #region create a rule of the right type
-    if     ($RuleType -match 'IconSet$') {Write-warning -Message "You cannot configure a IconSet rule in this way; please use -$RuleType <SetName>." ; return}
+    if     ($RuleType -match 'IconSet$') {Write-warning -Message "You cannot configure a Icon-Set rule in this way; please use -$RuleType <SetName>." ; return}
     if     ($PSBoundParameters.ContainsKey("ThreeIconsSet" )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddThreeIconSet($Address , $ThreeIconsSet)}
     elseif ($PSBoundParameters.ContainsKey("FourIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFourIconSet( $Address , $FourIconsSet )}
     elseif ($PSBoundParameters.ContainsKey("FiveIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Address , $FiveIconsSet )}

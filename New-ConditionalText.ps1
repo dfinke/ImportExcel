@@ -33,7 +33,11 @@ function New-ConditionalText {
 
         This builds on the previous example, and specifies a condition of <=3 with a format of Red text on a white background; this applies to a named range "Finish Position"
         the range could be written "C:C" to specify a named column, or "C2:C102" to specify certain cells in the column.
+      .Link
+        Add-Add-ConditionalFormatting
+        New-ConditionalFormattingIconSet
     #>
+
     [cmdletbinding()]
     param(
         #[Parameter(Mandatory=$true)]
