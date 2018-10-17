@@ -1,21 +1,25 @@
 ﻿function Export-Excel {
     <#
         .SYNOPSIS
-            Export data to an Excel worksheet.
+            Exports data to an Excel worksheet.
         .DESCRIPTION
-            Export data to an Excel file and where possible try to convert numbers so Excel recognizes them as numbers instead of text. After all. Excel is a spreadsheet program used for number manipulation and calculations. In case the number conversion is not desired, use the parameter '-NoNumberConversion *'.
+            Exports data to an Excel file and where possible tries to convert numbers
+            in text fields so Excel recognizes them as numbers instead of text.
+             After all: Excel is a spreadsheet program used for number manipulation
+             and calculations. If number conversion is not desired, use the
+             parameter -NoNumberConversion *.
         .PARAMETER Path
             Path to a new or existing .XLSX file.
         .PARAMETER  ExcelPackage
-            An object representing an Excel Package - usually this is returned by specifying -Passthru allowing multiple commands to work on the same Workbook without saving and reloading each time.
+            An object representing an Excel Package - usually this is returned by specifying -PassThru allowing multiple commands to work on the same workbook without saving and reloading each time.
         .PARAMETER WorksheetName
             The name of a sheet within the workbook - "Sheet1" by default.
         .PARAMETER ClearSheet
             If specified Export-Excel will remove any existing worksheet with the selected name. The Default behaviour is to overwrite cells in this sheet as needed (but leaving non-overwritten ones in place).
         .PARAMETER Append
-            If specified data will be added to the end of an existing sheet, using the same column headings.
+            If specified dat,a will be added to the end of an existing sheet, using the same column headings.
         .PARAMETER TargetData
-            Data to insert onto the worksheet - this is often provided from the pipeline.
+            Data to insert onto the worksheet - this is usually provided from the pipeline.
         .PARAMETER DisplayPropertySet
             Many (but not all) objects have a hidden property named psStandardmembers with a child property DefaultDisplayPropertySet ; this parameter reduces the properties exported to those in this set.
         .PARAMETER NoAliasOrScriptPropeties
@@ -37,36 +41,36 @@
         .PARAMETER Password
             Sets password protection on the workbook.
         .PARAMETER IncludePivotTable
-            Adds a Pivot table using the data in the worksheet.
+            Adds a PivotTable using the data in the worksheet.
         .PARAMETER PivotTableName
-            If a Pivot table is created from command line parameters, specifies the name of the new sheet holding the pivot. Defaults to "WorksheetName-PivotTable"
+            If a PivotTable is created from command line parameters, specifies the name of the new sheet holding the pivot. Defaults to "WorksheetName-PivotTable".
         .PARAMETER PivotRows
-            Name(s) columns from the spreadsheet which will provide the Row name(s) in a pivot table created from command line parameters.
+            Name(s) of column(s) from the spreadsheet which will provide the Row name(s) in a PivotTable created from command line parameters.
         .PARAMETER PivotColumns
-            Name(s) columns from the spreadsheet which will provide the Column name(s) in a pivot table created from command line parameters.
+            Name(s) of columns from the spreadsheet which will provide the Column name(s) in a PivotTable created from command line parameters.
         .PARAMETER PivotFilter
-            Name(s) columns from the spreadsheet which will provide the Filter name(s) in a pivot table created from command line parameters.
+            Name(s) columns from the spreadsheet which will provide the Filter name(s) in a PivotTable created from command line parameters.
         .PARAMETER PivotData
-            In a pivot table created from command line parameters, the fields to use in the table body are given as a Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP.
+            In a PivotTable created from command line parameters, the fields to use in the table body are given as a Hash table in the form ColumnName = Average|Count|CountNums|Max|Min|Product|None|StdDev|StdDevP|Sum|Var|VarP.
         .PARAMETER PivotDataToColumn
             If there are multiple datasets in a PivotTable, by default they are shown as separate rows under the given row heading; this switch makes them separate columns.
         .PARAMETER NoTotalsInPivot
-            In a pivot table created from command line parameters, prevents the addition of totals to rows and columns.
+            In a PivotTable created from command line parameters, prevents the addition of totals to rows and columns.
         .PARAMETER PivotTotals
-            By default, Pivot tables have totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
+            By default, PivotTables have totals for each row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
         .PARAMETER PivotTableDefinition
-            Instead of describing a single pivot table with multiple commandline parameters; you can use a hashTable in the form PivotTableName = Definition;
-            Definition is itself a hashtable with Sheet, PivotRows, PivotColumns, PivotData, IncludePivotChart and ChartType values.
+            Instead of describing a single PivotTable with multiple command-line parameters; you can use a HashTable in the form PivotTableName = Definition;
+            Definition is itself a Hashtable with Sheet, PivotRows, PivotColumns, PivotData, IncludePivotChart and ChartType values.
         .PARAMETER IncludePivotChart
-            Include a chart with the Pivot table - implies -IncludePivotTable.
+            Include a chart with the PivotTable - implies -IncludePivotTable.
         .PARAMETER ChartType
-            The type for Pivot chart (one of Excel's defined chart types)
+            The type for PivotChart (one of Excel's defined chart types).
         .PARAMETER NoLegend
-            Exclude the legend from the pivot chart.
+            Exclude the legend from the PivotChart.
         .PARAMETER ShowCategory
-            Add category labels to the pivot chart.
+            Add category labels to the PivotChart.
         .PARAMETER ShowPercent
-            Add Percentage labels to the pivot chart.
+            Add percentage labels to the PivotChart.
         .PARAMETER ConditionalFormat
             One or more conditional formatting rules defined with New-ConditionalFormattingIconSet.
         .PARAMETER ConditionalText
@@ -74,13 +78,13 @@
         .PARAMETER NoNumberConversion
             By default we convert all values to numbers if possible, but this isn't always desirable. NoNumberConversion allows you to add exceptions for the conversion. Wildcards (like '*') are allowed.
         .PARAMETER BoldTopRow
-            Makes the top Row boldface.
+            Makes the top row boldface.
         .PARAMETER NoHeader
             Does not put field names at the top of columns.
         .PARAMETER RangeName
             Makes the data in the worksheet a named range.
         .PARAMETER TableName
-            Makes the data in the worksheet a table with a name applies a style to it. Name must not contain spaces.
+            Makes the data in the worksheet a table with a name, and applies a style to it. Name must not contain spaces.
         .PARAMETER TableStyle
             Selects the style for the named table - defaults to 'Medium6'.
         .PARAMETER BarChart
@@ -92,11 +96,11 @@
         .PARAMETER PieChart
             Creates a "quick" pie chart using the first text column as labels and the first numeric column as values
         .PARAMETER ExcelChartDefinition
-            A hash table containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts.
+            A hash table containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-Pivot] charts.
         .PARAMETER HideSheet
-            Name(s) of Sheet(s) to hide in the workbook, supports wildcards. If all sheets would be hidden, the sheet being worked on will be revealed.
+            Name(s) of Sheet(s) to hide in the workbook, supports wildcards. If the selection would cause all sheets to be hidden, the sheet being worked on will be revealed.
         .PARAMETER UnHideSheet
-            Name(s) of Sheet(s) to Reveal in the workbook, supports wildcards.
+            Name(s) of Sheet(s) to reveal in the workbook, supports wildcards.
         .PARAMETER MoveToStart
             If specified, the worksheet will be moved to the start of the workbook.
             -MoveToStart takes precedence over -MoveToEnd, -Movebefore and -MoveAfter if more than one is specified.
@@ -126,13 +130,13 @@
         .PARAMETER FreezePane
              Freezes panes at specified coordinates (in the form  RowNumber, ColumnNumber).
         .PARAMETER AutoFilter
-            Enables the 'Filter' in Excel on the complete header row, so users can easily sort, filter and/or search the data in the selected column from within Excel.
+            Enables the Excel filter on the complete header row, so users can easily sort, filter and/or search the data in the selected column.
         .PARAMETER AutoSize
             Sizes the width of the Excel column to the maximum width needed to display all the containing data in that cell.
         .PARAMETER Activate
-            If there is already content in the workbook, a new sheet will not be active UNLESS Activate is specified; if a Pivot table is included it will be the active sheet
+            If there is already content in the workbook, a new sheet will not be active UNLESS Activate is specified; if a PivotTable is included it will be the active sheet
         .PARAMETER Now
-            The 'Now' switch is a shortcut that creates automatically a temporary file, enables 'AutoSize', 'AutoFiler' and 'Show', and opens the file immediately.
+            The -Now switch is a shortcut that automatically creates a temporary file, enables "AutoSize", "AutoFiler" and "Show", and opens the file immediately.
         .PARAMETER NumberFormat
             Formats all values that can be converted to a number to the format specified.
 
@@ -162,7 +166,7 @@
             '[Blue]$#,##0.00;[Red]-$#,##0.00'
 
         .PARAMETER ReZip
-            If specified, Export-Excel will expand the contents of the .XLSX file (which is multiple files in a zip archive) and rebuilt it.
+            If specified, Export-Excel will expand the contents of the .XLSX file (which is multiple files in a zip archive) and rebuild it.
         .PARAMETER NoClobber
             Not used. Left in to avoid problems with older scripts, it may be removed in future versions.
         .PARAMETER CellStyleSB
@@ -171,7 +175,7 @@
         .PARAMETER Show
             Opens the Excel file immediately after creation. Convenient for viewing the results instantly without having to search for the file first.
         .PARAMETER ReturnRange
-            If specified, Export-Excel returns the range of added cells in the format "A1:Z100"
+            If specified, Export-Excel returns the range of added cells in the format "A1:Z100".
         .PARAMETER PassThru
             If specified, Export-Excel returns an object representing the Excel package without saving the package first.
             To save, you need to call Close-ExcelPackage or send the object back to Export-Excel, or use its .Save() or SaveAs() method.
@@ -190,7 +194,9 @@
             Write-Output -1 668 34 777 860 -0.5 119 -0.1 234 788 |
                 Export-Excel @ExcelParams -NumberFormat '[Blue]$#,##0.00;[Red]-$#,##0.00'
 
-            Exports all data to the Excel file 'Excel.xslx' and colors the negative values in 'Red' and the positive values in 'Blue'. It will also add a dollar sign '$' in front of the rounded numbers to two decimal characters behind the comma.
+            Exports all data to the Excel file 'Excel.xslx' and colors the negative values
+            in Red and the positive values in Blue. It will also add a dollar sign in front
+            of the numbers which use a thousand seperator and display to two decimal places.
 
         .EXAMPLE
         >
@@ -216,7 +222,9 @@
                 PhoneNr3  =  '+3244444444'
             } | Export-Excel @ExcelParams -NoNumberConversion IPAddress, Number1
 
-            Exports all data to the Excel file 'Excel.xslx' and tries to convert all values to numbers where possible except for 'IPAddress' and 'Number1'. These are stored in the sheet 'as is', without being converted to a number.
+            Exports all data to the Excel file "Excel.xlsx" and tries to convert all values
+            to numbers where possible except for "IPAddress" and "Number1", which are
+            stored in the sheet 'as is', without being converted to a number.
 
         .EXAMPLE
         >
@@ -242,7 +250,9 @@
                 PhoneNr3  =  '+3244444444'
             } | Export-Excel @ExcelParams -NoNumberConversion *
 
-            Exports all data to the Excel file 'Excel.xslx' as is, no number conversion will take place. This means that Excel will show the exact same data that you handed over to the 'Export-Excel' function.
+            Exports all data to the Excel file 'Excel.xslx' as is, no number conversion
+            will take place. This means that Excel will show the exact same data that
+            you handed over to the 'Export-Excel' function.
 
         .EXAMPLE
         >
@@ -257,9 +267,11 @@
                     New-ConditionalText -ConditionalType GreaterThan 525 -ConditionalTextColor DarkRed -BackgroundColor LightPink
                 )
 
-            Exports data that will have a 'Conditional formatting rule' in Excel on these cells that will show the background fill color in
-            'LightPink' and the text color in 'DarkRed' when the value is greater than '525'. In case this condition is not met the color will
-            be the default, black text on a white background.
+            Exports data that will have a Conditional Formatting rule in Excel
+            that will show cells with a value is greater than 525, whith a
+            background fill color of "LightPink" and the text in "DarkRed".
+            Where condition is not met the color willbe the default, black
+            text on a white background.
 
         .EXAMPLE
         >
@@ -275,7 +287,12 @@
                     New-ConditionalText Running Blue Cyan
                 )
 
-            Export all services to an Excel sheet where all cells have a 'Conditional formatting rule' in Excel that will show the background fill color in 'LightPink' and the text color in 'DarkRed' when the value contains the word 'Stop'. If the value contains the word 'Running' it will have a background fill color in 'Cyan' and a text color 'Blue'. In case none of these conditions are met the color will be the default, black text on a white background.
+            Exports all services to an Excel sheet, setting a Conditional formatting rule
+            that will set the background fill color to "LightPink" and the text color
+            to "DarkRed" when the value contains the word "Stop".
+            If the value contains the word "Running" it will have a background fill
+            color of "Cyan" and text colored 'Blue'. If neither condition is met, the
+            color will be the default, black text on a white background.
 
         .EXAMPLE
         >
@@ -310,7 +327,8 @@
             $Array | Out-GridView -Title 'Not showing Member3 and Member4'
             $Array | Update-FirstObjectProperties | Export-Excel @ExcelParams -WorksheetName Numbers
 
-            Updates the first object of the array by adding property 'Member3' and 'Member4'. Afterwards. all objects are exported to an Excel file and all column headers are visible.
+            Updates the first object of the array by adding property 'Member3' and 'Member4'.
+            Afterwards. all objects are exported to an Excel file and all column headers are visible.
 
         .EXAMPLE
             Get-Process | Export-Excel .\test.xlsx -WorksheetName Processes -IncludePivotTable -Show -PivotRows Company -PivotData PM
@@ -341,10 +359,10 @@
             Get-Process | Select-Object    -Property Name,Company,Handles,CPU,VM       | Export-Excel -Path .\test.xlsx -AutoSize -WorksheetName 'sheet2'
             Export-Excel -Path .\test.xlsx -PivotTableDefinition $pt -Show
 
-            This example defines two pivot tables. Then it puts Service data on Sheet1 with one call to Export-Excel and Process Data on sheet2 with a second call to Export-Excel.
-            The third and final call adds the two pivot tables and opens the spreadsheet in Excel.
-
-
+            This example defines two PivotTables. Then it puts Service data on Sheet1
+            with one call to Export-Excel and Process Data on sheet2 with a second
+            call to Export-Excel. The third and final call adds the two PivotTables
+            and opens the spreadsheet in Excel.
         .EXAMPLE
         >
         PS> Remove-Item  -Path .\test.xlsx
@@ -356,8 +374,11 @@
             $excel.Dispose()
             Start-Process .\test.xlsx
 
-            This example uses -passthrough. It puts service information into sheet1 of the workbook and saves the ExcelPackageObject in $Excel.
-            It then uses the package object to apply formatting, and then saves the workbook and disposes of the object before loading the document in Excel.
+            This example uses -PassThru. It puts service information into sheet1 of the
+            workbook and saves the ExcelPackage object in $Excel. It then uses the package
+            object to apply formatting, and then saves the workbook and disposes of the object
+            before loading the document in Excel. Other commands in the module remove the need
+            to work directly with the package object in this way.
 
         .EXAMPLE
         >
@@ -375,12 +396,13 @@
             foreach ($c in 5..9) {Set-ExcelRange -Address $sheet.Column($c)  -AutoFit }
             Export-Excel -ExcelPackage $excel -WorksheetName "Processes" -IncludePivotChart -ChartType ColumnClustered -NoLegend -PivotRows company  -PivotData @{'Name'='Count'}  -Show
 
-            This a more sophisticated version of the previous example showing different ways of using Set-ExcelRange, and also adding conditional formatting.
-            In the final command a Pivot chart is added and the workbook is opened in Excel.
+            This a more sophisticated version of the previous example showing different
+            ways of using Set-ExcelRange, and also adding conditional formatting.
+            In the final command a PivotChart is added and the workbook is opened in Excel.
         .EXAMPLE
              0..360 | ForEach-Object {[pscustomobject][ordered]@{X=$_; Sinx="=Sin(Radians(x)) "} } | Export-Excel -now -LineChart -AutoNameRange
 
-             Creates a line chart showing the value of Sine(x) for values of X between 0 and 360 degrees.
+             Creates a line chart showing the value of Sine(x) for values of x between 0 and 360 degrees.
         .LINK
             https://github.com/dfinke/ImportExcel
     #>
@@ -472,12 +494,12 @@
         [Object[]]$ConditionalFormat,
         [Object[]]$ConditionalText,
         [ScriptBlock]$CellStyleSB,
-        #If there is already content in the workbook the sheet with the Pivot table will not be active UNLESS Activate is specified
+        #If there is already content in the workbook the sheet with the PivotTable will not be active UNLESS Activate is specified
         [switch]$Activate,
         [Parameter(ParameterSetName = 'Now')]
         [Switch]$Now,
         [Switch]$ReturnRange,
-        #By default Pivot tables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
+        #By default PivotTables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
         [ValidateSet("Both","Columns","Rows","None")]
         [String]$PivotTotals = "Both",
         #Included for compatibility - equivalent to -PivotTotals "None"
@@ -823,7 +845,7 @@
                 'SourceRange' = $dataRange
             }
             if ($PivotTableName -and ($pkg.workbook.worksheets.tables.name -contains $PivotTableName)) {
-                Write-Warning -Message "The selected Pivot table name '$PivotTableName' is already used as a table name. Adding a suffix of 'Pivot'."
+                Write-Warning -Message "The selected PivotTable name '$PivotTableName' is already used as a table name. Adding a suffix of 'Pivot'."
                 $PivotTableName += 'Pivot'
             }
 
@@ -991,7 +1013,7 @@
                     Write-Verbose -Message "Added conditional formatting to range $($c.range)"
                 }
                 elseif ($c -is [hashtable] -or  $c -is[System.Collections.Specialized.OrderedDictionary]) {
-                    if (-not $c.Range) {$c.Range = $ws.Dimension.Address }
+                    if (-not $c.Range -or $c.Address) {$c.Address = $ws.Dimension.Address }
                     Add-ConditionalFormatting -WorkSheet $ws @c
                 }
             }
@@ -1173,7 +1195,7 @@ function Select-Worksheet {
         Sets the selected tab in an Excel workbook to be the chosen sheet and unselects all the others.
       .DESCRIPTION
         Sometimes when a sheet is added we want it to be the active sheet, sometimes we want the active sheet to be left as it was.
-        Select-Worksheet exists to change the which sheet is the selected tab when Excel opens the file.
+        Select-Worksheet exists to change which sheet is the selected tab when Excel opens the file.
       .EXAMPLE
         Select-Worksheet -ExcelWorkbook $ExcelWorkbook -WorksheetName "NewSheet"
         $ExcelWorkbook holds a workbook object containing a sheet named "NewSheet";
@@ -1184,10 +1206,11 @@ function Select-Worksheet {
         This sheet will become the [only] active sheet in the workbook.
       .EXAMPLE
         Select-Worksheet -ExcelWorksheet $ws
-        $ws holds an Excel worksheet which will become the [only] active sheet in the workbook.
+        $ws holds an Excel worksheet which will become the [only] active sheet
+        in its workbook.
     #>
     param (
-        #An object representing an Excel Package.
+        #An object representing an ExcelPackage.
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Package', Position = 0)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         #An Excel workbook to which the Worksheet will be added - a package contains one Workbook so you can use workbook or package as it suits.
@@ -1195,7 +1218,7 @@ function Select-Worksheet {
         [OfficeOpenXml.ExcelWorkbook]$ExcelWorkbook,
         [Parameter(ParameterSetName='Package')]
         [Parameter(ParameterSetName='Workbook')]
-        #The name of the worksheet 'Sheet1' by default.
+        #The name of the worksheet "Sheet1" by default.
         [string]$WorksheetName,
         #An object representing an Excel worksheet.
         [Parameter(ParameterSetName='Sheet',Mandatory=$true)]

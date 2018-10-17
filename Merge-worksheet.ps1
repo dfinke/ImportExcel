@@ -4,29 +4,36 @@
          Merges two Worksheets (or other objects) into a single Worksheet with differences marked up.
        .Description
          The Compare-Worksheet command takes two Worksheets and marks differences in the source document, and optionally outputs a grid showing the changes.
-         By contrast the Merge-Worksheet command takes the Worksheets and combines them into a single sheet showing the old and new data side by side .
-         Although it is designed to work with Excel data it can work with arrays of any kind of object; so it can be a merge *of* Worksheets, or a merge *to* Worksheet.
+         By contrast the Merge-Worksheet command takes the Worksheets and combines them into a single sheet showing the old and new data side by side.
+         Although it is designed to work with Excel data it can work with arrays of any kind of object; so it can be a merge *of* Worksheets, or a merge *to* a Worksheet.
        .Example
-         merge-Worksheet "Server54.xlsx" "Server55.xlsx" -WorksheetName services -OutputFile Services.xlsx -OutputSheetName 54-55 -show
-         The workbooks contain audit information for two servers, one page contains a list of services. This command creates a Worksheet named 54-55
-         in a workbook named services which shows all the services and their differences, and opens it in Excel.
+         Merge-Worksheet "Server54.xlsx" "Server55.xlsx" -WorksheetName services -OutputFile Services.xlsx -OutputSheetName 54-55 -show
+         The workbooks contain audit information for two servers, one sheet contains
+         a list of services. This command creates a worksheet named "54-55" in a
+         workbook named "services.xlsx" which shows all the services and their
+         differences, and opens the new workbook in Excel.
        .Example
-         merge-Worksheet "Server54.xlsx" "Server55.xlsx" -WorksheetName services -OutputFile Services.xlsx -OutputSheetName 54-55 -HideEqual -AddBackgroundColor LightBlue -show
-         This modifies the previous command to hide the equal rows in the output sheet and changes the color used to mark rows added to the second file.
+         Merge-Worksheet "Server54.xlsx" "Server55.xlsx" -WorksheetName services -OutputFile Services.xlsx -OutputSheetName 54-55 -HideEqual -AddBackgroundColor LightBlue -show
+         This modifies the previous command to hide the equal rows in the output
+         sheet and changes the color used to mark rows added to the second file.
        .Example
-         merge-Worksheet -OutputFile .\j1.xlsx -OutputSheetName test11 -ReferenceObject (dir .\ImportExcel\4.0.7) -DifferenceObject (dir .\ImportExcel\4.0.8) -Property Length -Show
+         Merge-Worksheet -OutputFile .\j1.xlsx -OutputSheetName test11 -ReferenceObject (dir .\ImportExcel\4.0.7) -DifferenceObject (dir .\ImportExcel\4.0.8) -Property Length -Show
          This version compares two directories, and marks what has changed.
-         Because no "Key" property is given, "Name" is assumed to be the key and the only other property examined is length.
-         Files which are added or deleted or have changed size will be highlighed in the output sheet. Changes to dates or other attributes will be ignored.
+         Because no "Key" property is given, "Name" is assumed to be the key
+         and the only other property examined is length. Files which are added
+         or deleted or have changed size will be highlighed in the output sheet.
+         Changes to dates or other attributes will be ignored.
        .Example
-         merge-Worksheet   -RefO (dir .\ImportExcel\4.0.7) -DiffO (dir .\ImportExcel\4.0.8) -Pr Length  | Out-GridView
-         This time no file is written and the results -which include all properties, not just length, are output and sent to Out-Gridview.
-         This version uses aliases to shorten the parameters,
-         (OutputFileName can be "outFile" and the sheet "OutSheet" :  DifferenceObject & ReferenceObject can be DiffObject & RefObject).
+         Merge-Worksheet   -RefO (dir .\ImportExcel\4.0.7) -DiffO (dir .\ImportExcel\4.0.8) -Pr Length  | Out-GridView
+         This time no file is written and the results - which include all properties,
+         not just length, are output and sent to Out-Gridview. This version uses
+         aliases to shorten the parameters, (OutputFileName can be "outFile" and
+         the Sheet can be"OutSheet"; DifferenceObject & ReferenceObject can be
+         DiffObject & RefObject respectively).
     #>
     [cmdletbinding(SupportsShouldProcess=$true)]
     Param(
-         #First Excel file to compare. You can compare two Excel files or two other objects but not one of each.
+         #First Excel file to compare. You can compare two Excel files or two other objects or a reference obhct against a difference file, but not a reference file against an object.
          [parameter(ParameterSetName='A',Mandatory=$true,Position=0)]  #A = Compare two files default headers
          [parameter(ParameterSetName='B',Mandatory=$true,Position=0)]  #B = Compare two files user supplied headers
          [parameter(ParameterSetName='C',Mandatory=$true,Position=0)]  #C = Compare two files headers P1, P2, P3 etc
@@ -36,12 +43,12 @@
          [parameter(ParameterSetName='A',Mandatory=$true,Position=1)]
          [parameter(ParameterSetName='B',Mandatory=$true,Position=1)]
          [parameter(ParameterSetName='C',Mandatory=$true,Position=1)]
-         [parameter(ParameterSetName='E',Mandatory=$true,Position=1)] #D Compat two objects; E = Compare one object one file that uses default headers
+         [parameter(ParameterSetName='E',Mandatory=$true,Position=1)] #D Compare two objects; E = Compare one object one file that uses default headers
          [parameter(ParameterSetName='F',Mandatory=$true,Position=1)] #F = Compare one object one file that uses user supplied headers
          [parameter(ParameterSetName='G',Mandatory=$true,Position=1)] #G   Compare one object one file that uses headers P1, P2, P3 etc
          $Differencefile ,
 
-         #Name(s) of Worksheets to compare,
+         #Name(s) of Worksheets to compare.
          [parameter(ParameterSetName='A',Position=2)]  #Applies to all sets EXCEPT D which is two objects (no sheets)
          [parameter(ParameterSetName='B',Position=2)]
          [parameter(ParameterSetName='C',Position=2)]
@@ -59,12 +66,12 @@
          [parameter(ParameterSetName='G')]
          [int]$Startrow = 1,
 
-         #Specifies custom property names to use, instead of the values defined in the column headers of the TopRow.
+         #Specifies custom property names to use, instead of the values defined in the column headers of the Start ROw.
          [Parameter(ParameterSetName='B',Mandatory=$true)]  #Compare  object + sheet or 2 sheets with user supplied headers
          [Parameter(ParameterSetName='F',Mandatory=$true)]
          [String[]]$Headername,
 
-         #Automatically generate property names (P1, P2, P3, ..) instead of the using the values the top row of the sheet.
+         #Automatically generate property names (P1, P2, P3, ..) instead of using the values the top row of the sheet.
          [Parameter(ParameterSetName='C',Mandatory=$true)]  #Compare  object + sheet or 2 sheets with headers of P1, P2, P3 ...
          [Parameter(ParameterSetName='G',Mandatory=$true)]
          [switch]$NoHeader,
@@ -108,9 +115,9 @@
          [System.Drawing.Color]$DeleteBackgroundColor = [System.Drawing.Color]::LightPink,
          #Sets the background color for rows not in the reference but added to the difference sheet.
          [System.Drawing.Color]$AddBackgroundColor    = [System.Drawing.Color]::PaleGreen,
-         #if Specified hides the rows in the spreadsheet that are equal and only shows changes, added or deleted rows.
+         #if specified, hides the rows in the spreadsheet that are equal and only shows changes, added or deleted rows.
          [switch]$HideEqual ,
-         #If specified outputs the data to the pipeline (you can add -whatif so it the command only outputs to the pipeline).
+         #If specified, outputs the data to the pipeline (you can add -WhatIf so the command only outputs to the pipeline).
          [switch]$Passthru  ,
          #If specified, opens the output workbook.
          [Switch]$Show
@@ -311,39 +318,59 @@ Function Merge-MultipleSheets {
     .Synopsis
         Merges Worksheets into a single Worksheet with differences marked up.
     .Description
-        The Merge Worksheet command combines 2 sheets. Merge-MultipleSheets is designed to merge more than 2.
-        So if asked to merge sheets A,B,C  which contain Services, with a Name, Displayname and Start mode, where "name" is treated as the key
-        Merge-MultipleSheets calls Merge-Worksheet to merge Name, Displayname and Start mode, from sheets A and C
-        the result has column headings  -Row, Name, DisplayName, Startmode, C-DisplayName, C-StartMode C-Is, C-Row
-        Merge-MultipleSheets then calls Merge-Worsheet with this result and sheet B, comparing 'Name', 'Displayname' and 'Start mode' columns on each side
-        which outputs  _Row, Name, DisplayName, Startmode, B-DisplayName, B-StartMode B-Is, B-Row, C-DisplayName, C-StartMode C-Is, C-Row
-        Any columns in the "reference" side which are not used in the comparison are appended on the right, which is we compare the sheets in reverse order.
+        The Merge Worksheet command combines two sheets. Merge-MultipleSheets is
+        designed to merge more than two. So if asked to merge sheets A,B,C  which
+        contain Services, with a Name, Displayname and Start mode, where "Name" is
+        treated as the key, Merge-MultipleSheets calls Merge-Worksheet to merge
+        "Name", "Displayname" and "Startmode" from sheets A and C;  the result has
+        column headings  "_Row", "Name", "DisplayName", "Startmode", "C-DisplayName",
+        "C-StartMode", "C-Is" and "C-Row".
+        Merge-MultipleSheets then calls Merge-Worksheet again passing it the
+        intermediate result and sheet B, comparing "Name", "Displayname" and
+        "Start mode" columns on each side, and gets a result with columns "_Row",
+        "Name", "DisplayName", "Startmode", "B-DisplayName",  "B-StartMode", "B-Is",
+        "B-Row", "C-DisplayName", "C-StartMode", "C-Is" and "C-Row". Any columns on
+        the "reference" side which are not used in the comparison are added on the
+        right, which is why we compare the sheets in reverse order.
 
-        The "Is" column holds "Same", "Added", "Removed" or "Changed" and is used for conditional formatting in the output sheet (this is hidden by default),
-        and when the data is written to Excel the "reference" columns, in this case "DisplayName" and "Start" are renamed to reflect their source,
-        so become  "A-DisplayName" and "A-Start".
+        The "Is" columns hold "Same", "Added", "Removed" or "Changed" and is used for
+        conditional formatting in the output sheet (these columns are hidden by default),
+        and when the data is written to Excel the "reference" columns, in this case
+        "DisplayName" and "Start" are renamed to reflect their source, so become
+        "A-DisplayName" and "A-Start".
 
-        Conditional formatting is also applied to the "key" column (name in this case) so the view can be filtered to rows with changes by filtering this column on color.
+        Conditional formatting is also applied to the Key column ("Name" in this
+        case) so the view can be filtered to rows with changes by filtering this
+        column on color.
 
-        Note: the processing order can affect what is seen as a change. For example if there is an extra item in sheet B in the example above,
-        Sheet C will be processed and that row and will not be seen to be missing. When sheet B is processed it is marked as an addition, and the conditional formatting marks
-        the entries from sheet A to show that a values were added in at least one sheet.
-        However if Sheet B is the reference sheet, A and C will be seen to have an item removed;
-        and if B is processed before C, the extra item is known when C is processed and so C is considered to be missing that item.
+        Note: the processing order can affect what is seen as a change. For example
+        if there is an extra item in sheet B in the example above, Sheet C will be
+        processed and that row and will not be seen to be missing. When sheet B is
+        processed it is marked as an addition, and the conditional formatting marks
+        the entries from sheet A to show that a values were added in at least one
+        sheet.   However if Sheet B is the reference sheet, A and C will be seen to
+        have an item removed; and if B is processed before C, the extra item is
+        known when C is processed and so C is considered to be missing that item.
     .Example
         dir Server*.xlsx | Merge-MulipleSheets   -WorksheetName Services -OutputFile Test2.xlsx -OutputSheetName Services -Show
-        We are auditing servers and each one has a workbook in the current directory which contains a "Services" Worksheet (the result of
-        Get-WmiObject -Class win32_service  | Select-Object -Property Name, Displayname, Startmode
-        No key is specified so the key is assumed to be the "Name" column. The files are merged and the result is opened on completion.
+        Here we are auditing servers and each one has a workbook in the current
+        directory which contains a "Services" Worksheet (the result of
+        Get-WmiObject -Class win32_service  | Select-Object -Property Name, Displayname, Startmode)
+        No key is specified so the key is assumed to be the "Name" column.
+        The files are merged and the result is opened on completion.
     .Example
         dir Serv*.xlsx |  Merge-MulipleSheets  -WorksheetName Software -Key "*" -ExcludeProperty Install* -OutputFile Test2.xlsx -OutputSheetName Software -Show
-        The server audit files in the previous example also have "Software" Worksheet, but no single field on that sheet works as a key.
-        Specifying "*" for the key produces a compound key using all non-excluded fields (and the installation date and file location are excluded).
+        The server audit files in the previous example also have "Software" worksheet,
+        but no single field on that sheet works as a key. Specifying "*" for the key
+        produces a compound key using all non-excluded fields (and the installation
+        date and file location are excluded).
     .Example
         Merge-MulipleSheets -Path hotfixes.xlsx -WorksheetName Serv* -Key hotfixid -OutputFile test2.xlsx -OutputSheetName hotfixes  -HideRowNumbers -Show
-        This time all the servers have written their hofix information to their own Worksheets in a shared Excel workbook named "Hotfixes"
-        (the information was obtained by running Get-Hotfix | Sort-Object -Property description,hotfixid  | Select-Object -Property Description,HotfixID)
-        This ignores any sheets which are not named "Serv*", and uses the HotfixID as the key ; in this version the row numbers are hidden.
+        This time all the servers have written their hotfix information to their own
+        worksheets in a shared Excel workbook named "Hotfixes.xlsx" (the information was
+        obtained by running Get-Hotfix | Sort-Object -Property description,hotfixid  | Select-Object -Property Description,HotfixID)
+        This ignores any sheets which are not named "Serv*", and uses the HotfixID as
+        the key; in this version the row numbers are hidden.
   #>
   [cmdletbinding()]
   #[Alias("Merge-MulipleSheets")] #There was a spelling error in the first release. This was there to ensure things didn't break but intelisense gave the alias first.
@@ -351,30 +378,30 @@ Function Merge-MultipleSheets {
         #Paths to the files to be merged.
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [string[]]$Path  ,
-        #The row from where we start to import data, all rows above the StartRow are disregarded. By default this is the first row.
+        #The row from where we start to import data, all rows above the Start row are disregarded. By default this is the first row.
         [int]$Startrow = 1,
 
-        #Specifies custom property names to use, instead of the values defined in the column headers of the TopRow.
+        #Specifies custom property names to use, instead of the values defined in the column headers of the Start row.
         [String[]]$Headername,
 
-        #Automatically generate property names (P1, P2, P3, ..) instead of the using the values the top row of the sheet.
+        #If specified, property names will be automatically generated (P1, P2, P3, ..) instead of using the values from the start row.
         [switch]$NoHeader,
 
-        #Name(s) of Worksheets to compare,
+        #Name(s) of Worksheets to compare.
         $WorksheetName   = "Sheet1",
-        #File to write output to
+        #File to write output to.
         [Alias('OutFile')]
         $OutputFile = ".\temp.xlsx",
         #Name of Worksheet to output - if none specified will use the reference Worksheet name.
         [Alias('OutSheet')]
         $OutputSheetName = "Sheet1",
-        #Properties to include in the DIFF - supports wildcards, default is "*".
+        #Properties to include in the comparison - supports wildcards, default is "*".
         $Property        = "*"    ,
-        #Properties to exclude from the the search - supports wildcards.
+        #Properties to exclude from the the comparison - supports wildcards.
         $ExcludeProperty ,
-        #Name of a column which is unique used to pair up rows from the refence and difference side, default is "Name".
+        #Name of a column which is unique used to pair up rows from the reference and difference sides, default is "Name".
         $Key           = "Name" ,
-        #Sets the font color for the "key" field; this means you can filter by color to get only changed rows.
+        #Sets the font color for the Key field; this means you can filter by color to get only changed rows.
         [System.Drawing.Color]$KeyFontColor          = [System.Drawing.Color]::Red,
         #Sets the background color for changed rows.
         [System.Drawing.Color]$ChangeBackgroundColor = [System.Drawing.Color]::Orange,
@@ -382,9 +409,9 @@ Function Merge-MultipleSheets {
         [System.Drawing.Color]$DeleteBackgroundColor = [System.Drawing.Color]::LightPink,
         #Sets the background color for rows not in the reference but added to the difference sheet.
         [System.Drawing.Color]$AddBackgroundColor    = [System.Drawing.Color]::Orange,
-        #if Specified hides the columns in the spreadsheet that contain the row numbers
+        #If specified, hides the columns in the spreadsheet that contain the row numbers.
         [switch]$HideRowNumbers ,
-        #If specified outputs the data to the pipeline (you can add -whatif so it the command only outputs to the command)
+        #If specified, outputs the data to the pipeline (you can add -whatif so it the command only outputs to the pipeline).
         [switch]$Passthru  ,
         #If specified, opens the output workbook.
         [Switch]$Show

@@ -131,15 +131,26 @@
 
         Connects to the local SQL server and selects 3 columns from [Sys].[all_objects] and exports then to a sheet named master with some basic header management
       .EXAMPLE
+        C:\> $SQL="SELECT top 25 Name,Length  From TestData ORDER BY Length DESC"
+        C:\> $Connection = ' Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=C:\Users\James\Documents\Database1.accdb;'
+
+        C:\> Send-SQLDataToExcel -Connection  $connection -SQL $sql -path .\demo1.xlsx -WorkSheetname "Sizes" -AutoSize
+
+         This declares a SQL statement and creates an  ODBC connection string to read from an Access file and extracts data from it and sends it to a new worksheet
+
+      .EXAMPLE
         C:\> $SQL="SELECT top 25 DriverName, Count(RaceDate) as Races, Count(Win) as Wins, Count(Pole) as Poles, Count(FastestLap) as Fastlaps FROM Results GROUP BY DriverName ORDER BY (count(win)) DESC"
-        C:\> $Connection = 'Driver={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};DriverId=790;ReadOnly=0;Dbq=C:\users\James\Documents\f1Results.xlsx;'
-        C:\> Send-SQLDataToExcel -Connection  $connection -SQL $sql -path .\demo1.xlsx -WorkSheetname "Winners" -AutoSize -AutoNameRange
+        C:\> $Connection = 'Driver={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};Dbq=C:\users\James\Documents\f1Results.xlsx;'
+
+        C:\> Send-SQLDataToExcel -Connection  $connection -SQL $sql -path .\demo1.xlsx -WorkSheetname "Winners" -AutoSize -AutoNameRange -ConditionalFormat @{DataBarColor="Blue"; Range="Wins"}
 
         This declares a SQL statement and creates an  ODBC connection string to read from an Excel file, it then runs the statement and outputs the resulting data to a new spreadsheet.
+        The spreadsheet is formatted and a data bar added to show make the drivers' wins clearer.
         (the F1 results database is available from https://1drv.ms/x/s!AhfYu7-CJv4ehNdZWxJE9LMAX_N5sg )
       .EXAMPLE
         C:\> $SQL = "SELECT top 25 DriverName, Count(RaceDate) as Races, Count(Win) as Wins, Count(Pole) as Poles, Count(FastestLap) as Fastlaps FROM Results GROUP BY DriverName ORDER BY (count(win)) DESC"
         C:\> Get-SQL -Session F1 -excel -Connection "C:\Users\mcp\OneDrive\public\f1\f1Results.xlsx" -sql $sql -OutputVariable Table | out-null
+
         C:\> Send-SQLDataToExcel -DataTable $Table -Path ".\demo3.xlsx" -WorkSheetname Gpwinners -autosize  -TableName winners -TableStyle Light6 -show
 
         This uses Get-SQL (at least V1.1 - download from the gallery with Install-Module -Name GetSQL - note the function is Get-SQL the module is GetSQL without the "-" )

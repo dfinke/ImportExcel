@@ -3,29 +3,37 @@
     .Synopsis
         Compares two worksheets and shows the differences.
     .Description
-        This command takes two file names, one or two worksheet name and a name for a key column.
-        It reads the worksheet from each file and decides the column names.
-        It builds a hashtable of the key-column values and the rows in which they appear.
-        It then uses PowerShell's compare object command to compare the sheets (explicity checking
-        all the column names which have not been excluded).  For the difference rows it adds the
-        row number for the key of that row - we have to add the key after doing the comparison,
-        otherwise identical rows at diffeent positions in the file will not will be considered to match.
+        This command takes two file names, one or two worksheet names and a name
+        for a "key" column. It reads the worksheet from each file and decides the
+        column names and builds a hashtable of the key-column values and the
+        rows in which they appear.
+        It then uses PowerShell's Compare-Object command to compare the sheets
+        (explicitly checkingall the column names which have not been excluded).
+        For the difference rows it adds the row number for the key of that row -
+        we have to add the key after doing the comparison, otherwise identical
+        rows at different positions in the file will not be considered a match.
         We also add the name of the file and sheet in which the difference occurs.
-        If -BackgroundColor is specified the difference rows will be changed to that background in the orginal file.
+        If -BackgroundColor is specified the difference rows will be changed to
+        that background in the orginal file.
     .Example
         Compare-WorkSheet -Referencefile 'Server56.xlsx' -Differencefile 'Server57.xlsx'  -WorkSheetName Products -key IdentifyingNumber -ExcludeProperty Install* | Format-Table
 
-        The two workbooks in this example contain the result of redirecting a subset of properties from Get-WmiObject -Class win32_product to Export-Excel.
-        The command compares the "Products" pages in the two workbooks, but we don't want to register a difference if the software was installed on a
-        different date or from a different place,  and excluding Install* removes InstallDate and InstallSource.
-        This data doesn't have a "Name" column" so we specify the "IdentifyingNumber" column as the key.
+        The two workbooks in this example contain the result of redirecting a subset
+        of properties from Get-WmiObject -Class win32_product to Export-Excel.
+        The command compares the "Products" pages in the two workbooks, but we
+        don't want to register a difference if the software was installed on a
+        different date or from a different place,  and excluding Install* removes
+        InstallDate and InstallSource. This data doesn't have a "Name" column, so
+        we specify the "IdentifyingNumber" column as the key.
         The results will be presented as a table.
     .Example
-        compare-WorkSheet "Server54.xlsx" "Server55.xlsx" -WorkSheetName Services -GridView
+        Compare-WorkSheet "Server54.xlsx" "Server55.xlsx" -WorkSheetName Services -GridView
 
-        This time two workbooks contain the result of redirecting Get-WmiObject -Class win32_service to Export-Excel.
-        Here the -Differencefile and -Referencefile parameter switches are assumed , and the default setting for -key ("Name") works for services
-        This will display the differences between the "Services" sheets using a grid view
+        This time two workbooks contain the result of redirecting the command
+        Get-WmiObject -Class win32_service to Export-Excel. Here the -Differencefile
+        and -Referencefile parameter switches are assumed and the default setting for
+        -Key ("Name") works for services. This will display the differences between
+        the "Services" sheets using a grid view
     .Example
         Compare-WorkSheet  'Server54.xlsx' 'Server55.xlsx'  -WorkSheetName Services -BackgroundColor lightGreen
 
@@ -33,25 +41,32 @@
     .Example
         Compare-WorkSheet 'Server54.xlsx' 'Server55.xlsx'  -WorkSheetName Services -BackgroundColor lightGreen -FontColor Red -Show
 
-        This example builds on the previous one: this time where two changed rows have the value in the "Name" column (the default value for -Key),
-        this version adds highlighting of the changed cells in red; and then opens the Excel file.
+        This example builds on the previous one: this time where two changed rows have
+        the value in the "Name" column (the default value for -Key), this version adds
+        highlighting of the changed cells in red; and then opens the Excel file.
     .Example
         Compare-WorkSheet 'Pester-tests.xlsx' 'Pester-tests.xlsx' -WorkSheetName 'Server1','Server2' -Property "full Description","Executed","Result" -Key "full Description"
 
-        This time the reference file and the difference file are the same file and two different sheets are used. Because the tests include the
-        machine name and time the test was run the command specifies that a limited set of columns should be used.
+        This time the reference file and the difference file are the same file and
+        two different sheets are used. Because the tests include the  machine name
+        and time the test was run, the command specifies that a limited set of
+        columns should be used.
     .Example
         Compare-WorkSheet  'Server54.xlsx' 'Server55.xlsx' -WorkSheetName general -Startrow 2 -Headername Label,value -Key Label -GridView -ExcludeDifferent
 
-        The "General" page in the two workbooks has a title and two unlabelled columns with a row each for CPU, Memory, Domain, Disk and so on;
-        so the command is instructed to start at row 2 in order to skip the title and given names for the columns: the first is "label" and the Second "Value";
-        the label acts as the key. This time we interested the rows which are the same in both sheets,
-        and the result is displayed using grid view. Note that grid view works best when the number of columns is small.
+        The "General" page in the two workbooks has a title and two unlabelled columns
+        with a row each for CPU, Memory, Domain, Disk and so on. So the command is
+        told to start at row 2 in order to skip the title and given names for the
+        columns: the first is "label" and the second "Value"; the label acts as the key.
+        This time we are interested in those rows which are the same in both sheets,
+        and the result is displayed using grid view.
+        Note that grid view works best when the number of columns is small.
     .Example
         Compare-WorkSheet 'Server1.xlsx' 'Server2.xlsx' -WorkSheetName general -Startrow 2 -Headername Label,value -Key Label -BackgroundColor White -Show -AllDataBackgroundColor LightGray
 
-        This version of the previous command highlights all the cells in lightgray and then sets the changed rows back to white;
-        only the unchanged rows are highlighted
+        This version of the previous command highlights all the cells in LightGray
+        and then sets the changed rows back to white.
+        Only the unchanged rows are highlighted.
 #>
     [cmdletbinding(DefaultParameterSetName)]
     Param(
@@ -63,9 +78,9 @@
         $Differencefile   ,
         #Name(s) of worksheets to compare.
         $WorkSheetName   = "Sheet1",
-        #Properties to include in the DIFF - supports wildcards, default is "*".
+        #Properties to include in the comparison - supports wildcards, default is "*".
         $Property        = "*"    ,
-        #Properties to exclude from the  search - supports wildcards.
+        #Properties to exclude from the comparison - supports wildcards.
         $ExcludeProperty ,
         #Specifies custom property names to use, instead of the values defined in the starting row of the sheet.
         [Parameter(ParameterSetName='B', Mandatory)]
@@ -75,25 +90,25 @@
         [switch]$NoHeader,
         #The row from where we start to import data: all rows above the start row are disregarded. By default, this is the first row.
         [int]$Startrow = 1,
-        #If specified, highlights all the cells - so you can make Equal cells one colour, and Diff cells another.
+        #If specified, highlights all the cells - so you can make Equal cells one color, and Different cells another.
         [System.Drawing.Color]$AllDataBackgroundColor,
-        #If specified, highlights the DIFF rows.
+        #If specified, highlights the rows with differences.
         [System.Drawing.Color]$BackgroundColor,
-        #If specified identifies the tabs which contain DIFF rows  (ignored if -BackgroundColor is omitted).
+        #If specified identifies the tabs which contain difference rows  (ignored if -BackgroundColor is omitted).
         [System.Drawing.Color]$TabColor,
         #Name of a column which is unique and will be used to add a row to the DIFF object, defaults to "Name".
         $Key             = "Name" ,
         #If specified, highlights the DIFF columns in rows which have the same key.
         [System.Drawing.Color]$FontColor,
-        #If specified opens the Excel workbooks instead of outputting the diff to the console (unless -Passthru is also specified).
+        #If specified, opens the Excel workbooks instead of outputting the diff to the console (unless -PassThru is also specified).
         [Switch]$Show,
-        #If specified, the command tries to the show the DIFF in a Grid-View and not on the console. (unless-Passthru is also specified). This Works best with few columns selected, and requires a key.
+        #If specified, the command tries to the show the DIFF in a Grid-View and not on the console. (unless-PassThru is also specified). This works best with few columns selected, and requires a key.
         [switch]$GridView,
-        #If specified -Passthrough a full set of diff data is returned without filtering to the specified properties.
+        #If specifieda full set of DIFF data is returned without filtering to the specified properties.
         [Switch]$PassThru,
-        #If specified the result will include Equal rows as well. By default only Different rows are returned.
+        #If specified the result will include equal rows as well. By default only different rows are returned.
         [Switch]$IncludeEqual,
-        #If Specified the result includes only the rows where both are equal.
+        #If specified, the result includes only the rows where both are equal.
         [Switch]$ExcludeDifferent
     )
 
@@ -174,7 +189,7 @@
             $xl.save()  ; $xl.Stream.Close() ; $xl.Dispose()
         }
     }
-    #if font colour was specified, set it on changed properties where the same key appears in both sheets.
+    #if font color was specified, set it on changed properties where the same key appears in both sheets.
     if      ($diff -and $FontColor -and ($propList -contains $Key)  ) {
         $updates = $diff.where({$_.SideIndicator -ne "=="})  | Group-object -Property $Key | Where-Object {$_.count -eq 2}
         if ($updates) {
