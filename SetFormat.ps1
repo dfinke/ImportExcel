@@ -1,27 +1,34 @@
 ﻿Function Set-ExcelRange {
     <#
       .SYNOPSIS
-        Applies Number, font, alignment and color formatting, values or formulas to a range of Excel Cells.
+        Applies number, font, alignment and/or color formatting, values or formulas to a range of Excel cells.
       .DESCRIPTION
-        Set-ExcelRange was created to set the style elements for a range of cells, this includes
-        auto-sizing and hiding, setting font elements (Name, Size, Bold, Italic, Underline & UnderlineStyle and Subscript & SuperScript),
-        font and background colors, borders, text wrapping, rotation, aliginment within cells, and number format.
-        It was orignally named "Set-Format",but it has been extended to set Values, Formulas and
-        ArrayFormulas (sometimes called Ctrl-shift-Enter [CSE] formulas); because of this
-        The name has become Set-ExcelRange - but the old name of Set-Format is preserved as an alias name.
+        Set-ExcelRange was created to set the style elements for a range of cells,
+        this includes auto-sizing and hiding, setting font elements (Name, Size,
+        Bold, Italic, Underline & UnderlineStyle and Subscript & SuperScript),
+        font and background colors, borders, text wrapping, rotation, alignment
+        within cells, and number format.
+        It was orignally named "Set-Format", but it has been extended to set
+        Values, Formulas and ArrayFormulas (sometimes called Ctrl-shift-Enter
+        [CSE] formulas); because of this, the name has become Set-ExcelRange
+        but the old name of Set-Format is preserved as an alias.
       .EXAMPLE
         $sheet.Column(3) | Set-ExcelRange -HorizontalAlignment Right -NumberFormat "#,###" -AutoFit
 
-        Selects column 3 from a sheet object (within a workbook object, which is a child of the ExcelPackage object) and passes it to Set-ExcelRange
-         which formats as an integer with comma-separated groups, aligns it right, and auto-fits the column to the contents.
+        Selects column 3 from a sheet object (within a workbook object, which
+        is a child of the ExcelPackage object) and passes it to Set-ExcelRange
+        which formats numbers as a integers with comma-separated groups,
+        aligns it right, and auto-fits the column to the contents.
       .EXAMPLE
         Set-ExcelRange -Range $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NumberFormat "#,###"
 
-        Instead of piping the address, this version specifies a block of cells and applies similar formatting.
+        Instead of piping the address, this version specifies a block of cells
+        and applies similar formatting.
       .EXAMPLE
         Set-ExcelRange $excel.Workbook.Worksheets[1].Tables["Processes"] -Italic
 
-        This time instead of specifying a range of cells, a table is selected by name and formatted as italic.
+        This time instead of specifying a range of cells, a table is selected
+        by name and formatted as italic.
     #>
     [cmdletbinding()]
     [Alias("Set-Format")]
@@ -55,16 +62,16 @@
         $Formula,
         #Specifies formula should be an array formula (a.k.a CSE [ctrl-shift-enter] formula).
         [Switch]$ArrayFormula,
-        #Clear Bold, Italic, StrikeThrough and Underline and set colour to black.
+        #Clear Bold, Italic, StrikeThrough and Underline and set color to Black.
         [Switch]$ResetFont,
         #Make text bold; use -Bold:$false to remove bold.
         [Switch]$Bold,
         #Make text italic;  use -Italic:$false to remove italic.
         [Switch]$Italic,
-        #Underline the text using the underline style in -underline type;  use -Underline:$false to remove underlining.
+        #Underline the text using the underline style in -UnderlineType;  use -Underline:$false to remove underlining.
         [Switch]$Underline,
-        #Should Underline use single or double, normal or accounting mode: the default is single normal.
-        [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
+         #Specifies whether underlining should be single or double, normal or accounting mode. The default is "Single".
+       [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
         #Strike through text; use -Strikethru:$false to remove Strike through
         [Switch]$StrikeThru,
         #Subscript or Superscript (or none).
@@ -80,11 +87,11 @@
         #Secondary color for background pattern.
         [Alias("PatternColour")]
         [System.Drawing.Color]$PatternColor,
-        #Turn on text wrapping; use -WrapText:$false to turn off word wrapping.
+        #Turn on Text-Wrapping; use -WrapText:$false to turn off wrapping.
         [Switch]$WrapText,
         #Position cell contents to Left, Right, Center etc. default is 'General'.
         [OfficeOpenXml.Style.ExcelHorizontalAlignment]$HorizontalAlignment,
-        #Position cell contents to Top Bottom or Center.
+        #Position cell contents to Top, Bottom or Center.
         [OfficeOpenXml.Style.ExcelVerticalAlignment]$VerticalAlignment,
         #Degrees to rotate text. Up to +90 for anti-clockwise ("upwards"), or to -90 for clockwise.
         [ValidateRange(-90, 90)]
@@ -94,7 +101,7 @@
         [Switch]$AutoSize,
         #Set cells to a fixed width (columns or ranges only), ignored if Autosize is specified.
         [float]$Width,
-        #Set cells to a fixed hieght  (rows or ranges only).
+        #Set cells to a fixed height  (rows or ranges only).
         [float]$Height,
         #Hide a row or column  (not a range); use -Hidden:$false to unhide.
         [Switch]$Hidden
