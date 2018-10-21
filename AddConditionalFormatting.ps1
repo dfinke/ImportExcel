@@ -99,7 +99,7 @@
         [Alias("Range")]
         $Address ,
         #The worksheet where the format is to be applied
-        [OfficeOpenX1ml.ExcelWorksheet]$WorkSheet ,
+        [OfficeOpenXml.ExcelWorksheet]$WorkSheet ,
         #A standard named-rule - Top / Bottom / Less than / Greater than / Contains etc.
         [Parameter(Mandatory = $true, ParameterSetName = "NamedRule", Position = 1)]
         [OfficeOpenXml.ConditionalFormatting.eExcelConditionalFormattingRuleType]$RuleType ,
