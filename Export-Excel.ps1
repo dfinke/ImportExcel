@@ -428,7 +428,7 @@
         [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern = 'Solid',
         [Switch]$TitleBold,
         [Int]$TitleSize = 22,
-        [System.Drawing.Color]$TitleBackgroundColor,
+        $TitleBackgroundColor,
         [Switch]$IncludePivotTable,
         [String]$PivotTableName,
         [String[]]$PivotRows,
@@ -677,6 +677,7 @@
                     $ws.Cells[$Row, $StartColumn].Style.Font.Bold = $True
                 }
                 if ($TitleBackgroundColor ) {
+                    if ($TitleBackgroundColor -is [string])         {$TitleBackgroundColor = [System.Drawing.Color]::$TitleBackgroundColor }
                     $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
                     $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
                 }

@@ -49,8 +49,8 @@ function New-ConditionalText {
         [Alias("ConditionValue")]
         $Text,
         [Alias("ForeGroundColor")]
-        [System.Drawing.Color]$ConditionalTextColor=[System.Drawing.Color]::DarkRed,
-        [System.Drawing.Color]$BackgroundColor=[System.Drawing.Color]::LightPink,
+        $ConditionalTextColor=[System.Drawing.Color]::DarkRed,
+        $BackgroundColor=[System.Drawing.Color]::LightPink,
         [String]$Range,
         [OfficeOpenXml.Style.ExcelFillStyle]$PatternType=[OfficeOpenXml.Style.ExcelFillStyle]::Solid,
         [ValidateSet(

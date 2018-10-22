@@ -196,7 +196,7 @@
         [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern = 'None',
         [Switch]$TitleBold,
         [Int]$TitleSize = 22,
-        [System.Drawing.Color]$TitleBackgroundColor,
+        $TitleBackgroundColor,
         [String]$Password,
         [Hashtable]$PivotTableDefinition,
         [Switch]$IncludePivotTable,

@@ -71,7 +71,7 @@
         #Style of border to draw around the row.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderAround,
         #Colour for the text - if none specified it will be left as it it is.
-        [System.Drawing.Color]$FontColor,
+        $FontColor,
         #Make text bold; use -Bold:$false to remove bold.
         [Switch]$Bold,
         #Make text italic;  use -Italic:$false to remove italic.
@@ -89,12 +89,12 @@
         #Point size for the text.
         [float]$FontSize,
         #Change background color.
-        [System.Drawing.Color]$BackgroundColor,
+        $BackgroundColor,
         #Background pattern - "Solid" by default.
         [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern = [OfficeOpenXml.Style.ExcelFillStyle]::Solid ,
         #Secondary color for background pattern.
         [Alias("PatternColour")]
-        [System.Drawing.Color]$PatternColor,
+        $PatternColor,
         #Turn on Text-Wrapping; use -WrapText:$false to turn off wrapping.
         [Switch]$WrapText,
         #Position cell contents to Left, Right, Center etc. Default is "General".

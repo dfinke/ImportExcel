@@ -91,15 +91,15 @@
         #The row from where we start to import data: all rows above the start row are disregarded. By default, this is the first row.
         [int]$Startrow = 1,
         #If specified, highlights all the cells - so you can make Equal cells one color, and Different cells another.
-        [System.Drawing.Color]$AllDataBackgroundColor,
+        $AllDataBackgroundColor,
         #If specified, highlights the rows with differences.
-        [System.Drawing.Color]$BackgroundColor,
+        $BackgroundColor,
         #If specified identifies the tabs which contain difference rows  (ignored if -BackgroundColor is omitted).
-        [System.Drawing.Color]$TabColor,
+        $TabColor,
         #Name of a column which is unique and will be used to add a row to the DIFF object, defaults to "Name".
         $Key             = "Name" ,
         #If specified, highlights the DIFF columns in rows which have the same key.
-        [System.Drawing.Color]$FontColor,
+        $FontColor,
         #If specified, opens the Excel workbooks instead of outputting the diff to the console (unless -PassThru is also specified).
         [Switch]$Show,
         #If specified, the command tries to the show the DIFF in a Grid-View and not on the console. (unless-PassThru is also specified). This works best with few columns selected, and requires a key.
@@ -182,6 +182,7 @@
                 Set-Format -WorkSheet $ws -Range $range -BackgroundColor $BackgroundColor
             }
             if ($TabColor) {
+                if ($TabColor -is [string])         {$TabColor = [System.Drawing.Color]::$TabColor }
                 foreach ($tab in ($file.group._sheet | Select-Object -Unique)) {
                     $xl.Workbook.Worksheets[$tab].TabColor = $TabColor
                  }

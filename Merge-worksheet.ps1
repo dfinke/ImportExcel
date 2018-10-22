@@ -108,13 +108,13 @@
          #Name of a column which is unique used to pair up rows from the refence and difference side, default is "Name".
          $Key           = "Name" ,
          #Sets the font color for the "key" field; this means you can filter by color to get only changed rows.
-         [System.Drawing.Color]$KeyFontColor          = [System.Drawing.Color]::DarkRed ,
+         $KeyFontColor          = [System.Drawing.Color]::DarkRed ,
          #Sets the background color for changed rows.
-         [System.Drawing.Color]$ChangeBackgroundColor = [System.Drawing.Color]::Orange,
+         $ChangeBackgroundColor = [System.Drawing.Color]::Orange,
          #Sets the background color for rows in the reference but deleted from the difference sheet.
-         [System.Drawing.Color]$DeleteBackgroundColor = [System.Drawing.Color]::LightPink,
+         $DeleteBackgroundColor = [System.Drawing.Color]::LightPink,
          #Sets the background color for rows not in the reference but added to the difference sheet.
-         [System.Drawing.Color]$AddBackgroundColor    = [System.Drawing.Color]::PaleGreen,
+         $AddBackgroundColor    = [System.Drawing.Color]::PaleGreen,
          #if specified, hides the rows in the spreadsheet that are equal and only shows changes, added or deleted rows.
          [switch]$HideEqual ,
          #If specified, outputs the data to the pipeline (you can add -WhatIf so the command only outputs to the pipeline).
@@ -402,13 +402,13 @@ Function Merge-MultipleSheets {
         #Name of a column which is unique used to pair up rows from the reference and difference sides, default is "Name".
         $Key           = "Name" ,
         #Sets the font color for the Key field; this means you can filter by color to get only changed rows.
-        [System.Drawing.Color]$KeyFontColor          = [System.Drawing.Color]::Red,
+        $KeyFontColor          = [System.Drawing.Color]::Red,
         #Sets the background color for changed rows.
-        [System.Drawing.Color]$ChangeBackgroundColor = [System.Drawing.Color]::Orange,
+        $ChangeBackgroundColor = [System.Drawing.Color]::Orange,
         #Sets the background color for rows in the reference but deleted from the difference sheet.
-        [System.Drawing.Color]$DeleteBackgroundColor = [System.Drawing.Color]::LightPink,
+        $DeleteBackgroundColor = [System.Drawing.Color]::LightPink,
         #Sets the background color for rows not in the reference but added to the difference sheet.
-        [System.Drawing.Color]$AddBackgroundColor    = [System.Drawing.Color]::Orange,
+        $AddBackgroundColor    = [System.Drawing.Color]::Orange,
         #If specified, hides the columns in the spreadsheet that contain the row numbers.
         [switch]$HideRowNumbers ,
         #If specified, outputs the data to the pipeline (you can add -whatif so it the command only outputs to the pipeline).

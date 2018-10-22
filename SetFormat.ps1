@@ -45,7 +45,7 @@
         #Style of border to draw around the range.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderAround,
         #Color of the border.
-        [System.Drawing.Color]$BorderColor=[System.Drawing.Color]::Black,
+        $BorderColor=[System.Drawing.Color]::Black,
         #Style for the bottom border.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderBottom,
         #Style for the top border.
@@ -55,7 +55,7 @@
         #Style for the right border.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderRight,
         #Colour for the text - if none is specified it will be left as it is.
-        [System.Drawing.Color]$FontColor,
+        $FontColor,
         #Value for the cell.
         $Value,
         #Formula for the cell.
@@ -71,7 +71,7 @@
         #Underline the text using the underline style in -UnderlineType;  use -Underline:$false to remove underlining.
         [Switch]$Underline,
          #Specifies whether underlining should be single or double, normal or accounting mode. The default is "Single".
-       [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
+        [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
         #Strike through text; use -Strikethru:$false to remove Strike through
         [Switch]$StrikeThru,
         #Subscript or Superscript (or none).
@@ -81,12 +81,12 @@
         #Point size for the text.
         [float]$FontSize,
         #Change background color.
-        [System.Drawing.Color]$BackgroundColor,
+        $BackgroundColor,
         #Background pattern - Solid by default.
         [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern = [OfficeOpenXml.Style.ExcelFillStyle]::Solid ,
         #Secondary color for background pattern.
         [Alias("PatternColour")]
-        [System.Drawing.Color]$PatternColor,
+        $PatternColor,
         #Turn on Text-Wrapping; use -WrapText:$false to turn off wrapping.
         [Switch]$WrapText,
         #Position cell contents to Left, Right, Center etc. default is 'General'.
@@ -150,6 +150,7 @@
                 $Range.Style.Font.VerticalAlign  = $FontShift
             }
             if ($PSBoundParameters.ContainsKey('FontColor')){
+                if ($FontColor -is [string]) {$FontColor = [System.Drawing.Color]::$FontColor }
                 $Range.Style.Font.Color.SetColor(  $FontColor)
             }
             if ($PSBoundParameters.ContainsKey('TextRotation')) {
@@ -179,6 +180,7 @@
             if ($PSBoundParameters.ContainsKey('NumberFormat')) {
                 $Range.Style.Numberformat.Format = (Expand-NumberFormat $NumberFormat)
             }
+            if ($BorderColor -is [string]) {$BorderColor = [System.Drawing.Color]::$BorderColor }
             if ($PSBoundParameters.ContainsKey('BorderAround')) {
                 $Range.Style.Border.BorderAround($BorderAround, $BorderColor)
             }
@@ -200,8 +202,10 @@
             }
             if ($PSBoundParameters.ContainsKey('BackgroundColor')) {
                 $Range.Style.Fill.PatternType = $BackgroundPattern
+                if ($BackgroundColor -is [string]) {$BackgroundColor = [System.Drawing.Color]::$BackgroundColor }
                 $Range.Style.Fill.BackgroundColor.SetColor($BackgroundColor)
                 if ($PatternColor) {
+                    if ($PatternColor -is [string]) {$PatternColor = [System.Drawing.Color]::$PatternColor }
                     $Range.Style.Fill.PatternColor.SetColor( $PatternColor)
                 }
             }

@@ -89,7 +89,7 @@
         #Sets the fill pattern for the title cell.
         [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern = 'Solid',
         #Sets the cell background color for the title cell.
-        [System.Drawing.Color]$TitleBackgroundColor,
+        $TitleBackgroundColor,
         #Sets the title in boldface type.
         [Switch]$TitleBold,
         #Sets the point size for the title.
@@ -149,6 +149,7 @@
         if ($TitleBold) {$destinationSheet.Cells[1, 1].Style.Font.Bold = $True }
         #Can only set TitleBackgroundColor if TitleFillPattern is something other than None.
         if ($TitleBackgroundColor -AND ($TitleFillPattern -ne 'None')) {
+            if ($TitleBackgroundColor -is [string])         {$TitleBackgroundColor = [System.Drawing.Color]::$TitleBackgroundColor }
             $destinationSheet.Cells[1, 1].Style.Fill.PatternType = $TitleFillPattern
             $destinationSheet.Cells[1, 1].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
         }
