@@ -2,6 +2,8 @@
 Thumbs.db
 ehthumbs.db
 
+*.gitignore
+
 # Folder config file
 Desktop.ini
 
@@ -13,6 +15,8 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+
+*.dll
 
 # Windows shortcuts
 *.lnk
