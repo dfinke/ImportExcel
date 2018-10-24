@@ -131,7 +131,6 @@
         $endRow                            = $Worksheet.Dimension.End.Row
     }
     process {
-        if ($null -eq $workSheet.Dimension) {Write-Warning "Can't format an empty worksheet."; return}
         if ($Column  -eq 0 )  {$Column     = $endColumn    + 1 }
         $columnName = [OfficeOpenXml.ExcelCellAddress]::new(1,$column).Address -replace "1",""
         Write-Verbose -Message "Updating Column $columnName"

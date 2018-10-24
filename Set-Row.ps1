@@ -126,7 +126,6 @@
         $endRow                              = $Worksheet.Dimension.End.Row
     }
     process {
-        if      ($null -eq $workSheet.Dimension) {Write-Warning "Can't format an empty worksheet."; return}
         if      ($Row  -eq 0 ) {$Row         = $endRow + 1 }
         Write-Verbose -Message "Updating Row $Row"
         #Add a row label
