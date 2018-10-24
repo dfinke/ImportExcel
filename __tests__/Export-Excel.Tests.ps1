@@ -9,7 +9,7 @@ Describe ExportExcel {
         $path = "$env:TEMP\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
         #Test with a maximum of 100 processes for speed; export all properties, then export smaller subsets.
-        $processes = Get-Process | select-object -first 100
+        $processes = Get-Process | select-object -first 100 -Property * -excludeProperty  Parent
         $propertyNames = $Processes[0].psobject.properties.name
         $rowcount = $Processes.Count
         $Processes | Export-Excel $path  #-show
