@@ -6,7 +6,7 @@ Describe "Compare Worksheet" {
     Context "Simple comparison output" {
         BeforeAll {
             Remove-Item -Path  "$env:temp\server*.xlsx"
-            [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property *
+            [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property Name, RequiredServices, CanPauseAndContinue, CanShutdown, CanStop, DisplayName, DependentServices, MachineName
             $s | Export-Excel -Path $env:temp\server1.xlsx
             #$s is a zero based array, excel rows are 1 based and excel has a header row so Excel rows will be 2 + index in $s
             $row4Displayname  = $s[2].DisplayName
@@ -107,7 +107,8 @@ Describe "Compare Worksheet" {
 
     Context "More complex comparison: output check and different worksheet names " {
         BeforeAll {
-            [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property * -ExcludeProperty Name
+            [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property RequiredServices, CanPauseAndContinue, CanShutdown, CanStop, 
+            DisplayName, DependentServices, MachineName, ServiceName, ServicesDependedOn, ServiceHandle, Status, ServiceType, StartType  -ExcludeProperty Name
             $s | Export-Excel -Path $env:temp\server1.xlsx  -WorkSheetname Server1
             #$s is a zero based array, excel rows are 1 based and excel has a header row so Excel rows will be 2 + index in $s
             $row4Displayname  = $s[2].DisplayName
@@ -119,6 +120,7 @@ Describe "Compare Worksheet" {
             $row6Name = $s[5].ServiceName
             $s.RemoveAt(5)
             $s[10].ServiceType = "Changed should not matter"
+
             $s | Select-Object -Property ServiceName, DisplayName, StartType, ServiceType | Export-Excel -Path $env:temp\server2.xlsx -WorkSheetname server2
             #Assume default worksheet name, (sheet1) and column header for key ("name")
             $comp = compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -WorkSheetName Server1,Server2 -Key ServiceName -Property DisplayName,StartType -AllDataBackgroundColor ([System.Drawing.Color]::AliceBlue) -BackgroundColor ([System.Drawing.Color]::White) -FontColor ([System.Drawing.Color]::Red)   | Sort-Object _row,_file
@@ -170,8 +172,8 @@ Describe "Compare Worksheet" {
             $s2Sheet.Cells["F4"].Style.Font.Color.Rgb                     | Should     beNullOrEmpty
         }
         AfterAll {
-            Close-ExcelPackage -ExcelPackage $xl1 -NoSave -Show
-            Close-ExcelPackage -ExcelPackage $xl2 -NoSave -Show
+          #  Close-ExcelPackage -ExcelPackage $xl1 -NoSave -Show
+          #  Close-ExcelPackage -ExcelPackage $xl2 -NoSave -Show
         }
     }
 }
