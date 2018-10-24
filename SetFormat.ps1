@@ -1,27 +1,34 @@
 ﻿Function Set-ExcelRange {
     <#
       .SYNOPSIS
-        Applies Number, font, alignment and color formatting, values or formulas to a range of Excel Cells.
+        Applies number, font, alignment and/or color formatting, values or formulas to a range of Excel cells.
       .DESCRIPTION
-        Set-ExcelRange was created to set the style elements for a range of cells, this includes
-        auto-sizing and hiding, setting font elements (Name, Size, Bold, Italic, Underline & UnderlineStyle and Subscript & SuperScript),
-        font and background colors, borders, text wrapping, rotation, aliginment within cells, and number format.
-        It was orignally named "Set-Format",but it has been extended to set Values, Formulas and
-        ArrayFormulas (sometimes called Ctrl-shift-Enter [CSE] formulas); because of this
-        The name has become Set-ExcelRange - but the old name of Set-Format is preserved as an alias name.
+        Set-ExcelRange was created to set the style elements for a range of cells,
+        this includes auto-sizing and hiding, setting font elements (Name, Size,
+        Bold, Italic, Underline & UnderlineStyle and Subscript & SuperScript),
+        font and background colors, borders, text wrapping, rotation, alignment
+        within cells, and number format.
+        It was orignally named "Set-Format", but it has been extended to set
+        Values, Formulas and ArrayFormulas (sometimes called Ctrl-shift-Enter
+        [CSE] formulas); because of this, the name has become Set-ExcelRange
+        but the old name of Set-Format is preserved as an alias.
       .EXAMPLE
         $sheet.Column(3) | Set-ExcelRange -HorizontalAlignment Right -NumberFormat "#,###" -AutoFit
 
-        Selects column 3 from a sheet object (within a workbook object, which is a child of the ExcelPackage object) and passes it to Set-ExcelRange
-         which formats as an integer with comma-separated groups, aligns it right, and auto-fits the column to the contents.
+        Selects column 3 from a sheet object (within a workbook object, which
+        is a child of the ExcelPackage object) and passes it to Set-ExcelRange
+        which formats numbers as a integers with comma-separated groups,
+        aligns it right, and auto-fits the column to the contents.
       .EXAMPLE
         Set-ExcelRange -Range $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NumberFormat "#,###"
 
-        Instead of piping the address, this version specifies a block of cells and applies similar formatting.
+        Instead of piping the address, this version specifies a block of cells
+        and applies similar formatting.
       .EXAMPLE
         Set-ExcelRange $excel.Workbook.Worksheets[1].Tables["Processes"] -Italic
 
-        This time instead of specifying a range of cells, a table is selected by name and formatted as italic.
+        This time instead of specifying a range of cells, a table is selected
+        by name and formatted as italic.
     #>
     [cmdletbinding()]
     [Alias("Set-Format")]
@@ -38,7 +45,7 @@
         #Style of border to draw around the range.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderAround,
         #Color of the border.
-        [System.Drawing.Color]$BorderColor=[System.Drawing.Color]::Black,
+        $BorderColor=[System.Drawing.Color]::Black,
         #Style for the bottom border.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderBottom,
         #Style for the top border.
@@ -48,22 +55,22 @@
         #Style for the right border.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderRight,
         #Colour for the text - if none is specified it will be left as it is.
-        [System.Drawing.Color]$FontColor,
+        $FontColor,
         #Value for the cell.
         $Value,
         #Formula for the cell.
         $Formula,
         #Specifies formula should be an array formula (a.k.a CSE [ctrl-shift-enter] formula).
         [Switch]$ArrayFormula,
-        #Clear Bold, Italic, StrikeThrough and Underline and set colour to black.
+        #Clear Bold, Italic, StrikeThrough and Underline and set color to Black.
         [Switch]$ResetFont,
         #Make text bold; use -Bold:$false to remove bold.
         [Switch]$Bold,
         #Make text italic;  use -Italic:$false to remove italic.
         [Switch]$Italic,
-        #Underline the text using the underline style in -underline type;  use -Underline:$false to remove underlining.
+        #Underline the text using the underline style in -UnderlineType;  use -Underline:$false to remove underlining.
         [Switch]$Underline,
-        #Should Underline use single or double, normal or accounting mode: the default is single normal.
+         #Specifies whether underlining should be single or double, normal or accounting mode. The default is "Single".
         [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
         #Strike through text; use -Strikethru:$false to remove Strike through
         [Switch]$StrikeThru,
@@ -74,17 +81,17 @@
         #Point size for the text.
         [float]$FontSize,
         #Change background color.
-        [System.Drawing.Color]$BackgroundColor,
+        $BackgroundColor,
         #Background pattern - Solid by default.
         [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern = [OfficeOpenXml.Style.ExcelFillStyle]::Solid ,
         #Secondary color for background pattern.
         [Alias("PatternColour")]
-        [System.Drawing.Color]$PatternColor,
-        #Turn on text wrapping; use -WrapText:$false to turn off word wrapping.
+        $PatternColor,
+        #Turn on Text-Wrapping; use -WrapText:$false to turn off wrapping.
         [Switch]$WrapText,
         #Position cell contents to Left, Right, Center etc. default is 'General'.
         [OfficeOpenXml.Style.ExcelHorizontalAlignment]$HorizontalAlignment,
-        #Position cell contents to Top Bottom or Center.
+        #Position cell contents to Top, Bottom or Center.
         [OfficeOpenXml.Style.ExcelVerticalAlignment]$VerticalAlignment,
         #Degrees to rotate text. Up to +90 for anti-clockwise ("upwards"), or to -90 for clockwise.
         [ValidateRange(-90, 90)]
@@ -94,7 +101,7 @@
         [Switch]$AutoSize,
         #Set cells to a fixed width (columns or ranges only), ignored if Autosize is specified.
         [float]$Width,
-        #Set cells to a fixed hieght  (rows or ranges only).
+        #Set cells to a fixed height  (rows or ranges only).
         [float]$Height,
         #Hide a row or column  (not a range); use -Hidden:$false to unhide.
         [Switch]$Hidden
@@ -113,7 +120,7 @@
             elseif ($Range -is [string]) {Write-Warning -Message "The range pararameter you have specified also needs a worksheet parameter."}
 
             if ($ResetFont) {
-                $Range.Style.Font.Color.SetColor("Black")
+                $Range.Style.Font.Color.SetColor( ([System.Drawing.Color]::Black))
                 $Range.Style.Font.Bold          = $false
                 $Range.Style.Font.Italic        = $false
                 $Range.Style.Font.UnderLine     = $false
@@ -143,6 +150,7 @@
                 $Range.Style.Font.VerticalAlign  = $FontShift
             }
             if ($PSBoundParameters.ContainsKey('FontColor')){
+                if ($FontColor -is [string]) {$FontColor = [System.Drawing.Color]::$FontColor }
                 $Range.Style.Font.Color.SetColor(  $FontColor)
             }
             if ($PSBoundParameters.ContainsKey('TextRotation')) {
@@ -172,6 +180,7 @@
             if ($PSBoundParameters.ContainsKey('NumberFormat')) {
                 $Range.Style.Numberformat.Format = (Expand-NumberFormat $NumberFormat)
             }
+            if ($BorderColor -is [string]) {$BorderColor = [System.Drawing.Color]::$BorderColor }
             if ($PSBoundParameters.ContainsKey('BorderAround')) {
                 $Range.Style.Border.BorderAround($BorderAround, $BorderColor)
             }
@@ -193,8 +202,10 @@
             }
             if ($PSBoundParameters.ContainsKey('BackgroundColor')) {
                 $Range.Style.Fill.PatternType = $BackgroundPattern
+                if ($BackgroundColor -is [string]) {$BackgroundColor = [System.Drawing.Color]::$BackgroundColor }
                 $Range.Style.Fill.BackgroundColor.SetColor($BackgroundColor)
                 if ($PatternColor) {
+                    if ($PatternColor -is [string]) {$PatternColor = [System.Drawing.Color]::$PatternColor }
                     $Range.Style.Fill.PatternColor.SetColor( $PatternColor)
                 }
             }
@@ -291,12 +302,15 @@ if (Get-Command -ErrorAction SilentlyContinue -name Register-ArgumentCompleter) 
 Function Expand-NumberFormat {
     <#
       .SYNOPSIS
-        Converts short names for Number formats to the formatting strings used in Excel
+        Converts short names for number formats to the formatting strings used in Excel
       .DESCRIPTION
-        Where you can type a number format you can write, for example 'Short-Date' and the module will translate it into the format string used by excel
-        Some formats, like Short-Date change how they are presented when Excel loads. (So date will use the local ordering of year, month and Day)
-        Other formats change how they appear when loaded with different cultures (depending on the country "," or "." or " " may be the thousand seperator
-        although excel always stores it as ",")
+        Where you can type a number format you can write, for example, 'Short-Date'
+        and the module will translate it into the format string used by Excel.
+        Some formats, like Short-Date change how they are presented when Excel
+        loads (so date will use the local ordering of year, month and Day). Other
+        formats change how they appear when loaded with different cultures
+        (depending on the country "," or "." or " " may be the thousand seperator
+        although Excel always stores it as ",")
       .EXAMPLE
         Expand-NumberFormat percentage
 
@@ -304,11 +318,15 @@ Function Expand-NumberFormat {
       .EXAMPLE
         Expand-NumberFormat Currency
 
-        Returns the currency format specified in the local regional settings. This may not be the same as Excel uses
-        The regional settings set the currency symbol and then whether it is before or after the number and seperated with a space or not;
-        for negative numbers the number by wrapped in parentheses or a - sign might appear before or after the number and symbol.
-        So this returns $#,##0.00;($#,##0.00) for English US, #,##0.00 €;€#,##0.00- for French. (Note some Eurozone countries write €1,23 and others 1,23€ )
-        In French the decimal point will be rendered as a "," and the thousand seperator as a space.
+        Returns the currency format specified in the local regional settings. This
+        may not be the same as Excel uses.  The regional settings set the currency
+        symbol and then whether it is before or after the number and separated with
+        a space or not; for negative numbers the number may be wrapped in parentheses
+        or a - sign might appear before or after the number and symbol.
+        So this returns $#,##0.00;($#,##0.00) for English US, #,##0.00 €;€#,##0.00-
+        for French. (Note some Eurozone countries write €1,23 and others 1,23€ )
+        In French the decimal point will be rendered as a "," and the thousand
+        separator as a space.
     #>
     [cmdletbinding()]
     [OutputType([String])]

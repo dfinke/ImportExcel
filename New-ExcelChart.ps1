@@ -4,8 +4,8 @@
         Creates a Definition of a chart which can be added using Export-Excel, or Add-PivotTable
       .DESCRIPTION
         All the parameters which are passed to Add-ExcelChart can be added to an object and
-        passed to Export-Excel with the -ExcelChartDefinition parameter, 
-        or to Add-PivotTable with the -PivotChartDefinition parameter. 
+        passed to Export-Excel with the -ExcelChartDefinition parameter,
+        or to Add-PivotTable with the -PivotChartDefinition parameter.
         This command sets up those definitions.
       .PARAMETER Title
         The title for the chart.
@@ -20,23 +20,23 @@
       .PARAMETER YRange
         The range(s) of cells holding values for the Y-Axis - usually "data".
       .PARAMETER Width
-        Width of the chart in Pixels. Defaults to 500.
+        Width of the chart in pixels. Defaults to 500.
       .PARAMETER Height
-        Height of the chart in Pixels. Defaults to 350.
+        Height of the chart in pixels. Defaults to 350.
       .PARAMETER Row
         Row position of the top left corner of the chart. 0 places at the top of the sheet, 1 below row 1 and so on.
       .PARAMETER RowOffSetPixels
-        Offset to position the chart by a fraction of of a row.
+        Offset to position the chart by a fraction of a row.
       .PARAMETER Column
         Column position of the top left corner of the chart. 0 places at the edge of the sheet 1 to the right of column A and so on.
       .PARAMETER ColumnOffSetPixels
-        Offset to position the chart by a fraction of of a column.
+        Offset to position the chart by a fraction of a column.
       .PARAMETER NoLegend
-        If specified, turns of display of the key. If you only have one data series it may be preferable to use the title to say what the chart is.
+        If specified, turns off display of the key. If you only have one data series it may be preferable to use the title to say what the chart is.
       .PARAMETER SeriesHeader
-        Specify explicit name(s) for the data series, which will appear in the legend/key
+        Specifies explicit name(s) for the data series, which will appear in the legend/key
       .PARAMETER LegendPosition
-        Location of the key, either left, right, top, bottom or TopRight.
+        Location of the key, either "Left", "Right", "Top", "Bottom" or "TopRight".
       .PARAMETER LegendSize
         Font size for the key.
       .PARAMETER LegendBold
@@ -62,7 +62,7 @@
       .PARAMETER XMinValue
         Minimum value for the scale along the X-axis.
       .PARAMETER xAxisPosition
-        Postion for the X-axis (Top or Bottom).
+        Position for the X-axis ("Top" or" Bottom").
       .PARAMETER YAxisTitleText
         Specifies a title for the Y-axis.
       .PARAMETER YAxisTitleBold
@@ -80,7 +80,7 @@
       .PARAMETER YMinValue
         Minimum value on the Y-axis.
       .PARAMETER YAxisPosition
-        Postion for the Y-axis (Left or Right).
+        Position for the Y-axis ("Left" or "Right").
       .PARAMETER Header
         No longer used. This may be removed in future versions.
       .Example
@@ -92,7 +92,8 @@
 
         0..360 | ForEach-Object {[pscustomobject][ordered]@{x = $_; Sinx = "=Sin(Radians(x)) "}} | Export-Excel -AutoNameRange -now -WorkSheetname SinX -ExcelChartDefinition $cDef -Show
 
-        This reworks an example from Add-Excel-Chart but here the chart definition is defined and then it is used in a call to Export-Excel.
+        This reworks an example from Add-Excel-Chart but here the chart is defined
+        and the defintion stored in $cDef and then Export-Excel uses $cDef .
     #>
     [Alias("New-ExcelChart")] #This was the former name. The new name reflects that we are defining a chart, not making one in the workbook.
     [cmdletbinding()]
@@ -312,15 +313,15 @@ function Add-ExcelChart {
                        -SeriesHeader "Sin(x)" -LegendSize 8 -legendBold  -LegendPosition Bottom
         Close-ExcelPackage $Excel -Show
 
-        The first line puts numbers from 0 to 360 into a sheet, as the first column, and 
+        The first line puts numbers from 0 to 360 into a sheet, as the first column, and
         a formula to calculate the Sine of that number of number of degrees in the second column.
         It creates named-ranges for the two columns - "X" and "SinX" respectively
-        The Add-ExcelChart command adds a chart to that worksheet, specifying a line chart 
+        The Add-ExcelChart command adds a chart to that worksheet, specifying a line chart
         with the X values coming from named-range "X" and the Y values coming from named-range "SinX".
         The chart has a title, and is positioned to the right of column 2 and sized 800 pixels wide
-        The X-axis is labelled "Degrees", in bold 12 point type and runs from 0 to 361 with labels every 30, 
+        The X-axis is labelled "Degrees", in bold 12 point type and runs from 0 to 361 with labels every 30,
         and minor tick marks every 10. Degrees are shown padded to 3 digits.
-        The Y-axis is labelled "Sine" and to allow some room above and below its scale runs from -1.25 to 1.25, 
+        The Y-axis is labelled "Sine" and to allow some room above and below its scale runs from -1.25 to 1.25,
         and is marked off in units of 0.25 shown to two decimal places.
         The key will for the chart will be at the bottom in 8 point bold type and the line will be named "Sin(x)".
     #>

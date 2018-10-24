@@ -1,32 +1,40 @@
 ﻿Function  Set-ExcelRow {
     <#
       .Synopsis
-        Fills values into a [new] row in an Excel spreadsheet. And sets row formats.
+        Fills values into a [new] row in an Excel spreadsheet, and sets row formats.
       .Description
-        Set-ExcelRow accepts either a Worksheet object or an Excel Package object returned by Export-Excel and the name of a sheet,
-        and inserts the chosen contents into a row of the sheet.
-        The contents can be a constant e.g. "42", a formula or a script block which is converted into a constant or a formula.
+        Set-ExcelRow accepts either a Worksheet object or an ExcelPackage object
+        returned by Export-Excel and the name of a sheet, and inserts the chosen
+        contents into a row of the sheet. The contents can be a constant,
+        like "42", a formula or a script block which is converted into a
+        constant or a formula.
         The first cell of the row can optionally be given a heading.
       .Example
-         Set-ExcelRow -Worksheet $ws -Heading Total -Value {"=sum($columnName`2:$columnName$endrow)" }
+        Set-ExcelRow -Worksheet $ws -Heading Total -Value {"=sum($columnName`2:$columnName$endrow)" }
 
-        $Ws contains a worksheet object, and no Row number is specified so  Set-ExcelRow will select the next row after the end
-        of the data in the sheet. The first cell in the row will contain "Total", and each other cell will contain
-            =Sum(xx2:xx99)  - where xx is the column name, and 99 is the last row of data.
-            Note the use of `2 to Prevent 2 becoming part of the variable "ColumnName"
-        The script block can use $Worksheet, $Row, $Column (number), $ColumnName (letter), $StartRow/Column and $EndRow/Column
+        $Ws contains a worksheet object, and no Row number is specified so
+        Set-ExcelRow will select the next row after the endof the data in
+        the sheet. The first cell in the row will contain "Total", and
+        each of the other cells will contain
+            =Sum(xx2:xx99)
+        where xx is the column name, and 99 is the last row of data.
+        Note the use of `2 to Prevent 2 becoming part of the variable "ColumnName"
+        The script block can use $Worksheet, $Row, $Column (number),
+        $ColumnName (letter), $StartRow/Column and $EndRow/Column.
       .Example
         Set-ExcelRow -Worksheet $ws -Heading Total -HeadingBold -Value {"=sum($columnName`2:$columnName$endrow)" } -NumberFormat 'Currency' -StartColumn 2 -Bold -BorderTop Double -BorderBottom Thin
 
-        This builds on the previous example, but this time the label "Total" appears in column 2 and the formula fills from column 3 onwards;
-        the formula and heading are set in bold face, and the formula is formatted for the local currency,
-        and given a double line border above and single line border below.
+        This builds on the previous example, but this time the label "Total"
+        appears in column 2 and the formula fills from column 3 onwards.
+        The formula and heading are set in bold face, and the formula is
+        formatted for the local currency, and given a double line border
+        above and single line border below.
     #>
     [cmdletbinding()]
     [Alias("Set-Row")]
     [OutputType([OfficeOpenXml.ExcelRow],[String])]
     Param (
-        #An Excel package object - e.g. from Export-Excel -passthru - requires a sheet name.
+        #An Excel package object - e.g. from Export-Excel -PassThru - requires a sheet name.
         [Parameter(ParameterSetName="Package",Mandatory=$true)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         #The name of the sheet to update in the package.
@@ -40,21 +48,21 @@
         $Row = 0 ,
         #Position in the row to start from.
         [int]$StartColumn,
-        #Value, formula or script block to fill in. Script block can use $worksheet,  $row, $Column [number], $ColumnName [letter(s)], $startRow, $startColumn, $endRow, $endColumn
+        #Value, Formula or ScriptBlock to fill in. A ScriptBlock can use $worksheet,  $row, $Column [number], $ColumnName [letter(s)], $startRow, $startColumn, $endRow, $endColumn.
         $Value,
-        #Optional Row heading.
+        #Optional row-heading.
         $Heading ,
         #Set the heading in bold type.
         [Switch]$HeadingBold,
-        #Change the size of the heading type.
+        #Change the font-size of the heading.
         [Int]$HeadingSize ,
         #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "£#,##0.00;[Red]-£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc.
         [Alias("NFormat")]
         $NumberFormat,
         #Style of border to draw around the row.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderAround,
-        #Color of the border
-        [System.Drawing.Color]$BorderColor=[System.Drawing.Color]::Black,
+        #Color of the border.
+        $BorderColor=[System.Drawing.Color]::Black,
         #Style for the bottom border.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderBottom,
         #Style for the top border.
@@ -63,17 +71,17 @@
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderLeft,
         #Style for the right border.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderRight,
-        #Colour for the text - if none specified it will be left as it it is.
-        [System.Drawing.Color]$FontColor,
+        #Color for the text - if none specified it will be left as it it is.
+        $FontColor,
         #Make text bold; use -Bold:$false to remove bold.
         [Switch]$Bold,
         #Make text italic;  use -Italic:$false to remove italic.
         [Switch]$Italic,
         #Underline the text using the underline style in -UnderlineType;  use -Underline:$false to remove underlining.
         [Switch]$Underline,
-        #Should Underline use single or double, normal or accounting mode : default is single normal.
+        #Specifies whether underlining should be single or double, normal or accounting mode. The default is "Single".
         [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
-        #Strike through text; use -Strikethru:$false to remove Strike through.
+        #Strike through text; use -StrikeThru:$false to remove strike through.
         [Switch]$StrikeThru,
         #Subscript or Superscript (or none).
         [OfficeOpenXml.Style.ExcelVerticalAlignmentFont]$FontShift,
@@ -82,26 +90,26 @@
         #Point size for the text.
         [float]$FontSize,
         #Change background color.
-        [System.Drawing.Color]$BackgroundColor,
+        $BackgroundColor,
         #Background pattern - solid by default.
         [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern = [OfficeOpenXml.Style.ExcelFillStyle]::Solid ,
         #Secondary color for background pattern.
         [Alias("PatternColour")]
-        [System.Drawing.Color]$PatternColor,
-        #Turn on text wrapping; use -WrapText:$false to turn off word wrapping.
+        $PatternColor,
+        #Turn on Text-Wrapping; use -WrapText:$false to turn off wrapping.
         [Switch]$WrapText,
         #Position cell contents to Left, Right, Center etc. default is 'General'.
         [OfficeOpenXml.Style.ExcelHorizontalAlignment]$HorizontalAlignment,
-        #Position cell contents to Top Bottom or Center.
+        #Position cell contents to Top, Bottom or Center.
         [OfficeOpenXml.Style.ExcelVerticalAlignment]$VerticalAlignment,
         #Degrees to rotate text. Up to +90 for anti-clockwise ("upwards"), or to -90 for clockwise.
         [ValidateRange(-90, 90)]
         [int]$TextRotation ,
-        #Set cells to a fixed hieght.
+        #Set cells to a fixed height.
         [float]$Height,
-        #Hide the Row.
+        #Hide the row.
         [Switch]$Hide,
-        #If Sepecified returns the range of cells which were affected.
+        #If sepecified, returns the range of cells which were affected.
         [Switch]$ReturnRange,
         #If Specified, return a row object to allow further work to be done.
         [Switch]$PassThru
@@ -118,6 +126,7 @@
         $endRow                              = $Worksheet.Dimension.End.Row
     }
     process {
+        if ($null -eq $workSheet.Dimension) {Write-Warning "Can't format an empty worksheet."; return}
         if      ($Row  -eq 0 ) {$Row         = $endRow + 1 }
         Write-Verbose -Message "Updating Row $Row"
         #Add a row label

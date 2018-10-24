@@ -3,10 +3,13 @@
       .SYNOPSIS
         Combines data on all the sheets in an Excel worksheet onto a single sheet.
       .DESCRIPTION
-        Join worksheet can work in two main ways:
-        Either Combining data which has the same layout from many pages into one, or combining pages which have nothing in common.
-        In the former case the header row is copied from the first sheet and, by default, each row of data is labelled with the name of the sheet it came from.
-        In the latter case -NoHeader is specified, and each copied block can have the sheet it came from placed above it as a title.
+        Join-Worksheet can work in two main ways, either
+        Combining data which has the same layout from many pages into one, or
+        combining pages which have nothing in common.
+        In the former case the header row is copied from the first sheet and,
+        by default, each row of data is labelled with the name of the sheet it came from.
+        In the latter case -NoHeader is specified, and each copied block can have the
+        sheet it came from placed above it as a title.
       .EXAMPLE
       >
       PS> foreach ($computerName in @('Server1', 'Server2', 'Server3', 'Server4')) {
@@ -16,11 +19,15 @@
       PS> $ptDef =New-PivotTableDefinition -PivotTableName "Pivot1" -SourceWorkSheet "Combined" -PivotRows "Status" -PivotFilter "MachineName" -PivotData @{Status='Count'} -IncludePivotChart -ChartType BarClustered3D
       PS> Join-Worksheet -Path .\test.xlsx -WorkSheetName combined -FromLabel "MachineName" -HideSource  -AutoSize -FreezeTopRow -BoldTopRow  -PivotTableDefinition $pt -Show
 
-      The foreach command gets the services running on four servers and exports each to its own page in Test.xlsx.
-      $PtDef=  creates a defintion for a PivotTable.
-      The Join-Worksheet command uses the same file and merges the results onto a sheet named "Combined". It sets a column header of "Machinename",
-      this column will contain the name of the sheet the data was copied from; after copying the data to the sheet "combined", the other sheets will be hidden.
-      Join-Worksheet finishes by calling Export-Excel to AutoSize cells, freeze the top row and make it bold and add the Pivot table.
+      The foreach command gets the services running on four servers and exports each
+      to its own page in Test.xlsx.
+      $PtDef=  creates a definition for a PivotTable.
+      The Join-Worksheet command uses the same file and merges the results into a sheet
+      named "Combined". It sets a column header of "Machinename", this column will
+      contain the name of the sheet the data was copied from; after copying the data
+      to the sheet "Combined", the other sheets will be hidden.
+      Join-Worksheet finishes by calling Export-Excel to AutoSize cells, freeze the
+      top row and make it bold and add thePivotTable.
 
       .EXAMPLE
       >
@@ -30,10 +37,14 @@
                 Export-Excel -Path "$env:COMPUTERNAME.xlsx" -WorkSheetname NetAdapter
       PS> Join-Worksheet -Path "$env:COMPUTERNAME.xlsx"  -WorkSheetName Summary -Title "Summary" -TitleBold -TitleSize 22 -NoHeader -LabelBlocks -AutoSize -HideSource -show
 
-      The first two commands get logical disk and network card information; each type is exported to its own sheet in a workbook.
-      The Join-Worksheet command copies both onto a page named "Summary". Because the data is disimilar -NoHeader is specified, ensuring the whole of each page is copied.
-      Specifying -LabelBlocks causes each sheet's name to become a title on the summary page above the copied data.
-      The source data is hidden, a title is added in 22 point boldface and the columns are sized to fit the data.
+      The first two commands get logical-disk and network-card information; each type
+      is exported to its own sheet in a workbook.
+      The Join-Worksheet command copies both onto a page named "Summary". Because
+      the data is dissimilar, -NoHeader is specified, ensuring the whole of each
+      page is copied. Specifying -LabelBlocks causes each sheet's name to become
+      a title on the summary page above the copied data. The source data is
+      hidden, a title is added in 22 point boldface and the columns are sized
+      to fit the data.
     #>
     [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
@@ -41,21 +52,21 @@
         [Parameter(ParameterSetName = "Default", Position = 0)]
         [Parameter(ParameterSetName = "Table"  , Position = 0)]
         [String]$Path  ,
-        # An object representing an Excel Package - usually this is returned by specifying -Passthru allowing multiple commands to work on the same Workbook without saving and reloading each time.
+        # An object representing an Excel Package - either from Open-Excel Package or  specifying -PassThru to Export-Excel.
         [Parameter(Mandatory = $true, ParameterSetName = "PackageDefault")]
         [Parameter(Mandatory = $true, ParameterSetName = "PackageTable")]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         # The name of a sheet within the workbook where the other sheets will be joined together - "Combined" by default.
         $WorkSheetName = 'Combined',
-        # If specified any pre-existing target for the joined data will be deleted and re-created; otherwise data will be appended on this sheet.
+        # If specified ,any pre-existing target for the joined data will be deleted and re-created; otherwise data will be appended on this sheet.
         [switch]$Clearsheet,
         #Join-Worksheet assumes each sheet has identical headers and the headers should be copied to the target sheet, unless -NoHeader is specified.
         [switch]$NoHeader,
-        #If -NoHeader is NOT specified, then rows of data will be labeled with the name of the sheet they came, FromLabel is the header for this column. If it is null or empty, the labels will be omitted.
+        #If -NoHeader is NOT specified, then rows of data will be labeled with the name of the sheet they came from. FromLabel is the header for this column. If it is null or empty, the labels will be omitted.
         $FromLabel = "From" ,
         #If specified, the copied blocks of data will have the name of the sheet they were copied from inserted above them as a title.
         [switch]$LabelBlocks,
-        #Sizes the width of the Excel column to the maximum width needed to display all the containing data in that cell.
+        #Sets the width of the Excel columns to display all the data in their cells.
         [Switch]$AutoSize,
         #Freezes headers etc. in the top row.
         [Switch]$FreezeTopRow,
@@ -65,25 +76,25 @@
         [Switch]$FreezeTopRowFirstColumn,
         # Freezes panes at specified coordinates (in the form  RowNumber , ColumnNumber).
         [Int[]]$FreezePane,
-        #Enables the 'Filter' in Excel on the complete header row. So users can easily sort, filter and/or search the data in the select column from within Excel.
+        #Enables the Excel filter on the headers of the combined sheet.
         [Parameter(ParameterSetName = 'Default')]
         [Parameter(ParameterSetName = 'PackageDefault')]
         [Switch]$AutoFilter,
-        #Makes the top Row boldface.
+        #Makes the top row boldface.
         [Switch]$BoldTopRow,
-        #If Specified hides the sheets that the data is copied from.
+        #If specified, hides the sheets that the data is copied from.
         [switch]$HideSource,
         #Text of a title to be placed in Cell A1.
         [String]$Title,
         #Sets the fill pattern for the title cell.
         [OfficeOpenXml.Style.ExcelFillStyle]$TitleFillPattern = 'Solid',
         #Sets the cell background color for the title cell.
-        [System.Drawing.Color]$TitleBackgroundColor,
+        $TitleBackgroundColor,
         #Sets the title in boldface type.
         [Switch]$TitleBold,
         #Sets the point size for the title.
         [Int]$TitleSize = 22,
-        #Hashtable(s) with Sheet PivotRows, PivotColumns, PivotData, IncludePivotChart and ChartType values to specify a definition for one or more pivot table(s).
+        #Hashtable(s) with Sheet PivotRows, PivotColumns, PivotData, IncludePivotChart and ChartType values to specify a definition for one or morePivotTable(s).
         [Hashtable]$PivotTableDefinition,
         #A hashtable containing ChartType, Title, NoLegend, ShowCategory, ShowPercent, Yrange, Xrange and SeriesHeader for one or more [non-pivot] charts.
         [Object[]]$ExcelChartDefinition,
@@ -107,13 +118,13 @@
             })]
         [Parameter(ParameterSetName = 'Table'        , Mandatory = $true)]
         [Parameter(ParameterSetName = 'PackageTable' , Mandatory = $true)]
-        # Makes the data in the worksheet a table with a name applies a style to it. Name must not contain spaces.
+        # Makes the data in the worksheet a table with a name and applies a style to it. Name must not contain spaces.
         [String]$TableName,
         [Parameter(ParameterSetName = 'Table')]
         [Parameter(ParameterSetName = 'PackageTable')]
-        #Selects the style for the named table - defaults to 'Medium6'.
+        #Selects the style for the named table - defaults to "Medium6".
         [OfficeOpenXml.Table.TableStyles]$TableStyle = 'Medium6',
-        #Selects the style for the named table - defaults to 'Medium6'.
+        #If specified, returns the range of cells in the combined sheet, in the format "A1:Z100".
         [switch]$ReturnRange,
         #Opens the Excel file immediately after creation. Convenient for viewing the results instantly without having to search for the file first.
         [switch]$Show,
@@ -138,6 +149,7 @@
         if ($TitleBold) {$destinationSheet.Cells[1, 1].Style.Font.Bold = $True }
         #Can only set TitleBackgroundColor if TitleFillPattern is something other than None.
         if ($TitleBackgroundColor -AND ($TitleFillPattern -ne 'None')) {
+            if ($TitleBackgroundColor -is [string])         {$TitleBackgroundColor = [System.Drawing.Color]::$TitleBackgroundColor }
             $destinationSheet.Cells[1, 1].Style.Fill.PatternType = $TitleFillPattern
             $destinationSheet.Cells[1, 1].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
         }

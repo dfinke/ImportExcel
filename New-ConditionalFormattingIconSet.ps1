@@ -1,16 +1,16 @@
 function New-ConditionalFormattingIconSet {
     <#
       .SYNOPSIS
-        Creates an object which describes a conditional formatting rule a for 3,4 or 5 icon set
+        Creates an object which describes a conditional formatting rule a for 3,4 or 5 icon set.
       .DESCRIPTION
         Export-Excel takes a -ConditionalFormat parameter which can hold one or more descriptions for conditional formats;
-        this command builds the
+        this command builds the defintion of a Conditional formatting rule for an icon set.
       .PARAMETER Range
-        The range of cells that the conditional format applies to
+        The range of cells that the conditional format applies to.
       .PARAMETER ConditionalFormat
         The type of rule: one of "ThreeIconSet","FourIconSet" or "FiveIconSet"
       .PARAMETER IconType
-        The name of an iconSet - different icons are available depending on whether 3,4 or 5 icon set is selected
+        The name of an iconSet - different icons are available depending on whether 3,4 or 5 icon set is selected.
       .PARAMETER Reverse
         Use the icons in the reverse order.
       .Example
@@ -18,9 +18,14 @@ function New-ConditionalFormattingIconSet {
         $cfdef = New-ConditionalFormattingIconSet -Range $cfrange -ConditionalFormat ThreeIconSet -IconType Arrows
         Export-Excel -ExcelPackage $excel -ConditionalFormat $cfdef -show
 
-        The first line creates a range - one column wide in the column $column, running from $topRow to $lastDataRow.
-        The second creates a definition object using this range
-        and the third uses Export-Excel with an open package to apply the format and save and open the file.
+        The first line creates a range - one column wide in the column $column, running
+        from $topRow to $lastDataRow.
+        The second line creates a definition object using this range
+        and the third uses Export-Excel with an open package to apply the format and
+        save and open the file.
+      .Link
+        Add-Add-ConditionalFormatting
+        New-ConditionalText
     #>
     param(
         [Parameter(Mandatory=$true)]
