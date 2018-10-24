@@ -63,7 +63,7 @@ function Import-Excel {
    .DESCRIPTION
        The Import-Excel cmdlet creates custom objects from the rows in an Excel worksheet. Each row represents one object. All of this is possible without installing Microsoft Excel and by using the .NET library ‘EPPLus.dll’.
 
-       By default, the property names of the objects are retrieved from the column headers. Because an object cannot have a blanc property name, only columns with column headers will be imported.
+       By default, the property names of the objects are retrieved from the column headers. Because an object cannot have a blank property name, only columns with column headers will be imported.
 
        If the default behavior is not desired and you want to import the complete worksheet ‘as is’, the parameter ‘-NoHeader’ can be used. In case you want to provide your own property names, you can use the parameter ‘-HeaderName’.
 
@@ -221,7 +221,7 @@ function Import-Excel {
 
        Notice that empty rows and empty columns are not imported.
 
-.EXAMPLE
+    .EXAMPLE
        Import data from an Excel worksheet. One object is created for each row. The property names are provided with the ‘-HeaderName’ parameter. The import will start from row 2 and empty columns and rows are not imported.
 
        ----------------------------------------------------------
@@ -240,6 +240,16 @@ function Import-Excel {
        City      : Brussels
 
        Notice that only 1 object is imported with only 3 properties. Column B and row 2 are empty and have been disregarded by using the switch '-DataOnly'. The property names have been named with the values provided with the parameter '-HeaderName'. Row number 1 with ‘Chuck Norris’ has not been imported, because we started the import from row 2 with the parameter ‘-StartRow 2’.
+
+    .EXAMPLE
+        >
+        PS> ,(Import-Excel -Path .\SysTables_AdventureWorks2014.xlsx) |
+            Write-SqlTableData -ServerInstance localhost\DEFAULT -Database BlankDB -SchemaName dbo -TableName MyNewTable_fromExcel -Force
+
+            Imports data from an Excel file and pipe the data to the Write-SqlTableData to be INSERTed into a table in a SQL Server database.
+            The ",( ... )" around the Import-Excel command allows all rows to be imported from the Excel file, prior to pipelining to the Write-SqlTableData cmdlet.  This helps prevent a RBAR scenario and is important when trying to import thousands of rows. 
+            The -Force parameter will be ignored if the table already exists.  However, if a table is not found that matches the values provided by -SchemaName and -TableName parameters, it will create a new table in SQL Server database.  The Write-SqlTableData cmdlet will inherit the column names & datatypes for the new table from the object being piped in.
+            NOTE: You need to install the SqlServer module from the PowerShell Gallery in oder to get the Write-SqlTableData cmdlet.
 
    .LINK
        https://github.com/dfinke/ImportExcel

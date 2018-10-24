@@ -53,16 +53,26 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
- # What's new
+# What's new 5.3.4
+
+- HotFix for parameter PivotTableSyle should be PivotTableStyle https://github.com/dfinke/ImportExcel/issues/453
+
+# What's new 5.3.3
+
+- Thank you to (lazywinadmin)[https://github.com/lazywinadmin] - Expand aliases in examples and elsewhere
 - In Export-Excel fixed a bug where -AutoNameRange on pre-existing data included the header in the range.
 - In Export-Excel fixed a bug which caused a zero, null, or empty string in a list of simple objects to be skipped.
 - In Export-Excel improved the behaviour when a new worksheet is created without data, and Tables etc are added to it.
 - In Join-Worksheet: added argument completer to  -TitleBackgroundColor and set default for -TitleBackgroundStyle to 'Solid'.
-- In Add-Excel chart fixed mis-spelling of "Position"
+- In Add-Excel chart, New-ExcelChart, tests and Examples fixed mis-spelling of "Position"
 - In Send-SqlDataToExcel: improved robustness of check for no data returned.
 - In Set-ExcelColumn: -column can come from the pipeline (supporting an array introduces complications for supporting script blocks); -AutoNameRange no longer requires heading to specified (so you can do 1..10 | Set-ExcelColumn -AutoNameRange );  In Set-ExcelRow: -Row can come from the pipeline
-- Improved test coverage (back over 80%). 
-- Help and example improvements. In "Index - music.ps1" the module for querying the index can be downloaded from PowerShell gallery #requires set to demand it. In SQL+FillColumns+Pivot\example2.ps1 the GetSQL module can be downloaded and #Requires has been set. The F1 results spreadsheet is available from one drive and a link is provided. 
+- Improved test coverage (back over 80%).
+- Help and example improvements. In "Index - music.ps1" the module for querying the index can be downloaded from PowerShell gallery #requires set to demand it. In SQL+FillColumns+Pivot\example2.ps1 the GetSQL module can be downloaded and #Requires has been set. The F1 results spreadsheet is available from one drive and a link is provided.
+
+- Added Azure DevOps continuous integration and badges <a href="https://dougfinke.visualstudio.com/ImportExcel/_build?definitionId=10"><img src="https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/ImportExcel-CI?branchName=master"></a>
+
+
 
 # What's new in Release 5.3
 
