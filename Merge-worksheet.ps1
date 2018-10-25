@@ -124,6 +124,8 @@
     )
 
  #region Read Excel data
+    if ($Differencefile -is [System.IO.FileInfo]) {$Differencefile = $Differencefile.FullName}
+    if ($Referencefile  -is [System.IO.FileInfo]) {$Referencefile  = $Referencefile.FullName}
     if ($Referencefile -and $Differencefile) {
          #if the filenames don't resolve, give up now.
          try     { $oneFile = ((Resolve-Path -Path $Referencefile -ErrorAction Stop).path -eq (Resolve-Path -Path $Differencefile  -ErrorAction Stop).path)}
@@ -375,9 +377,9 @@ Function Merge-MultipleSheets {
   [cmdletbinding()]
   #[Alias("Merge-MulipleSheets")] #There was a spelling error in the first release. This was there to ensure things didn't break but intelisense gave the alias first.
    param   (
-        #Paths to the files to be merged.
+        #Paths to the files to be merged. Files are also accepted
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
-        [string[]]$Path  ,
+        $Path  ,
         #The row from where we start to import data, all rows above the Start row are disregarded. By default this is the first row.
         [int]$Startrow = 1,
 
