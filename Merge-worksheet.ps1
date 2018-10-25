@@ -527,8 +527,8 @@ Function Merge-MultipleSheets {
                $sheet.Column($cell.start.Column).HIDDEN = $true
            }
         }
-
-        Close-ExcelPackage -ExcelPackage $excel -Show:$Show
+        if ($Passthru) {$excel}
+        else {Close-ExcelPackage -ExcelPackage $excel -Show:$Show}
         Write-Progress -Activity "Merging sheets" -Completed
    }
 }
