@@ -53,6 +53,10 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
+# What's new 5.4
+
+- Thank you to Conrad Agramont, Twitter: [@AGramont](https://twitter.com/@AGramont) for the `AddMultiWorkSheet.ps1` example. Much appreciated!
+
 # What's new 5.3.4
 
 - HotFix for parameter PivotTableSyle should be PivotTableStyle https://github.com/dfinke/ImportExcel/issues/453
