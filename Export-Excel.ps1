@@ -412,7 +412,7 @@
             Runs a query against a SQL Server database and outputs the resulting rows DataRows using the -OutputAs parameter.
             The results are then piped to the Export-Excel function.
             NOTE: You need to install the SqlServer module from the PowerShell Gallery in oder to get the -OutputAs parameter for the Invoke-Sqlcmd cmdlet.
-            
+
         .LINK
             https://github.com/dfinke/ImportExcel
     #>
@@ -681,10 +681,10 @@
                 $ws.Cells[$Row, $StartColumn].Value = $Title
                 $ws.Cells[$Row, $StartColumn].Style.Font.Size = $TitleSize
 
-                if ($TitleBold) {
+                if  ($PSBoundParameters.ContainsKey("TitleBold")) {
                     #Set title to Bold face font if -TitleBold was specified.
                     #Otherwise the default will be unbolded.
-                    $ws.Cells[$Row, $StartColumn].Style.Font.Bold = $True
+                    $ws.Cells[$Row, $StartColumn].Style.Font.Bold = [boolean]$TitleBold
                 }
                 if ($TitleBackgroundColor ) {
                     if ($TitleBackgroundColor -is [string])         {$TitleBackgroundColor = [System.Drawing.Color]::$TitleBackgroundColor }
@@ -820,6 +820,7 @@
             }
             catch {Write-Warning -Message "Failed adding named ranges to worksheet '$WorksheetName': $_"  }
         }
+        #Empty string is not allowed as a name for ranges or tables.
         if ($RangeName) { Add-ExcelName  -Range $ws.Cells[$dataRange] -RangeName $RangeName}
 
         if ($TableName) {
@@ -894,22 +895,22 @@
                 $ws.View.FreezePanes(1, 2)
                 Write-Verbose -Message "Froze first column"
             }
-
+            #Must be 1..maxrows or and array of 1..maxRows,1..MaxCols
             if ($FreezePane) {
                 $freezeRow, $freezeColumn = $FreezePane
                 if (-not $freezeColumn -or $freezeColumn -eq 0) {
                     $freezeColumn = 1
                 }
 
-                if ($freezeRow -gt 1) {
+                if ($freezeRow -ge 1) {
                     $ws.View.FreezePanes($freezeRow, $freezeColumn)
-                    Write-Verbose -Message "Froze pandes at row $freezeRow and column $FreezeColumn"
+                    Write-Verbose -Message "Froze panes at row $freezeRow and column $FreezeColumn"
                 }
             }
         }
         catch {Write-Warning -Message "Failed adding Freezing the panes in worksheet '$WorksheetName': $_"}
 
-        if ($BoldTopRow) { #it sets bold as far as there are populated cells: for whole row could do $ws.row($x).style.font.bold = $true
+        if  ($PSBoundParameters.ContainsKey("BoldTopRow")) { #it sets bold as far as there are populated cells: for whole row could do $ws.row($x).style.font.bold = $true
             try {
                 if ($Title) {
                     $range = $ws.Dimension.Address -replace '\d+', ($StartRow + 1)
@@ -917,7 +918,7 @@
                 else {
                     $range = $ws.Dimension.Address -replace '\d+', $StartRow
                 }
-                $ws.Cells[$range].Style.Font.Bold = $true
+                $ws.Cells[$range].Style.Font.Bold = [boolean]$BoldTopRow
                 Write-Verbose -Message "Set $range font style to bold."
             }
             catch {Write-Warning -Message "Failed setting the top row to bold in worksheet '$WorksheetName': $_"}
@@ -1040,6 +1041,7 @@
             catch {Write-Warning -Message "Failed processing CellStyleSB in worksheet '$WorksheetName': $_"}
         }
 
+        #Can only add password, may want to support -password $Null removing password.
         if ($Password) {
             try {
                 $ws.Protection.SetPassword($Password)

@@ -63,7 +63,7 @@
         #Join-Worksheet assumes each sheet has identical headers and the headers should be copied to the target sheet, unless -NoHeader is specified.
         [switch]$NoHeader,
         #If -NoHeader is NOT specified, then rows of data will be labeled with the name of the sheet they came from. FromLabel is the header for this column. If it is null or empty, the labels will be omitted.
-        $FromLabel = "From" ,
+        [string]$FromLabel = "From" ,
         #If specified, the copied blocks of data will have the name of the sheet they were copied from inserted above them as a title.
         [switch]$LabelBlocks,
         #Sets the width of the Excel columns to display all the data in their cells.
@@ -161,6 +161,7 @@
         #Assume every row has titles in row 1, copy row 1 from first sheet to new sheet.
         $destinationSheet.Select("A$row")
         $ExcelPackage.Workbook.Worksheets[1].cells["1:1"].Copy($destinationSheet.SelectedRange)
+        #fromlabel can't be an empty string
         if ($FromLabel ) {
             #Add a column which says where the data comes from.
             $fromColumn = ($destinationSheet.Dimension.Columns + 1)

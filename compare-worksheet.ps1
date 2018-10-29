@@ -168,7 +168,7 @@
         foreach   ($file in $updates) {
             try   {$xl  = Open-ExcelPackage -Path $file.name }
             catch {Write-warning -Message "Can't open $($file.Name) for writing." ; return}
-            if ($AllDataBackgroundColor) {
+            if  ($PSBoundParameters.ContainsKey("AllDataBackgroundColor")) {
                 $file.Group._sheet | Sort-Object -Unique | ForEach-Object {
                     $ws =  $xl.Workbook.Worksheets[$_]
                     if ($headerName) {$range = "A" +  $startrow      + ":" + $ws.dimension.end.address}
@@ -181,7 +181,7 @@
                 $range = $ws.Dimension -replace "\d+",$row._row
                 Set-Format -WorkSheet $ws -Range $range -BackgroundColor $BackgroundColor
             }
-            if ($TabColor) {
+            if  ($PSBoundParameters.ContainsKey("TabColor")) {
                 if ($TabColor -is [string])         {$TabColor = [System.Drawing.Color]::$TabColor }
                 foreach ($tab in ($file.group._sheet | Select-Object -Unique)) {
                     $xl.Workbook.Worksheets[$tab].TabColor = $TabColor
