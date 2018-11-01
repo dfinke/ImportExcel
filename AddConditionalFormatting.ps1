@@ -219,7 +219,7 @@
                          $ConditionValue  = '"' + $ConditionValue +'"'
                 }
         }
-        if  ($PSBoundParameters.ContainsKey("$ConditionValue2")) {
+        if  ($PSBoundParameters.ContainsKey("ConditionValue2")) {
                 $number = $Null
                 if ($ConditionValue -isnot [System.ValueType] -and [Double]::TryParse($ConditionValue2, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number) ) {
                          $ConditionValue2 = $number
