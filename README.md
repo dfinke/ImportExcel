@@ -56,6 +56,10 @@ Install-Module ImportExcel
 # What's new 5.4
 
 - Thank you to Conrad Agramont, Twitter: [@AGramont](https://twitter.com/@AGramont) for the `AddMultiWorkSheet.ps1` example. Much appreciated!
+- Fixed several more bugs where parametrs were ignored if passed a zero value 
+- Merge-MultipleSheets is more robust. 
+- Set-ExcelRow and Set-ExcelColumn trap attempts to process a sheet with no rows/columns.
+- Help has been proof-read . 
 
 # What's new 5.3.4
 

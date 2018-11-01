@@ -401,14 +401,16 @@ function Add-ExcelChart {
         }
         if ($NoLegend) { $chart.Legend.Remove() }
         else {
-            if ($LegendPosition) {$Chart.Legend.Position    = $LegendPosition}
-            if ($LegendSize)    {$chart.Legend.Font.Size   = $LegendSize}
-            if ($legendBold)    {$chart.Legend.Font.Bold   = $true}
+            if ($PSBoundParameters.ContainsKey('LegendPosition')) {$chart.Legend.Position  = $LegendPosition}
+            if ($PSBoundParameters.ContainsKey('LegendBold'))     {$chart.Legend.Font.Bold = [boolean]$LegendBold}
+            if ($LegendSize)                                      {$chart.Legend.Font.Size = $LegendSize}
         }
 
         if ($XAxisTitleText)      {
             $chart.XAxis.Title.Text = $XAxisTitleText
-            if ($XAxisTitleBold)  {$chart.XAxis.Title.Font.Bold = $true}
+            if ($PSBoundParameters.ContainsKey('XAxisTitleBold'))  {
+                                   $chart.XAxis.Title.Font.Bold = [boolean]$XAxisTitleBold
+            }
             if ($XAxisTitleSize)  {$chart.XAxis.Title.Font.Size = $XAxisTitleSize}
         }
         if ($XAxisPosition)       {Write-Warning "X-axis position is not being set propertly at the moment, parameter ignored" }
@@ -421,7 +423,9 @@ function Add-ExcelChart {
 
        if ($YAxisTitleText)     {
             $chart.YAxis.Title.Text = $YAxisTitleText
-            if ($YAxisTitleBold) {$chart.YAxis.Title.Font.Bold = $true}
+            if ($PSBoundParameters.ContainsKey('YAxisTitleBold')) {
+                                  $chart.YAxis.Title.Font.Bold = [boolean]$YAxisTitleBold
+            }
             if ($YAxisTitleSize) {$chart.YAxis.Title.Font.Size = $YAxisTitleSize}
         }
         if ($YAxisPosition)      {Write-Warning "Y-axis position is not being set propertly at the moment, parameter ignored" }

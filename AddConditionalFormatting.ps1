@@ -209,7 +209,7 @@
     #region set the rule conditions
     #for lessThan/GreaterThan/Equal/Between conditions make sure that strings are wrapped in quotes. Formulas should be passed with = which will be stripped.
     if     ($RuleType -match "Than|Equal|Between" ) {
-        if ($ConditionValue) {
+        if  ($PSBoundParameters.ContainsKey("ConditionValue" )) {
                 $number = $Null
                 #if the condition type is not a value type, but parses as a number, make it the number
                 if ($ConditionValue -isnot [System.ValueType] -and [Double]::TryParse($ConditionValue, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number) ) {
@@ -219,7 +219,7 @@
                          $ConditionValue  = '"' + $ConditionValue +'"'
                 }
         }
-        if ($ConditionValue2) {
+        if  ($PSBoundParameters.ContainsKey("ConditionValue2")) {
                 $number = $Null
                 if ($ConditionValue -isnot [System.ValueType] -and [Double]::TryParse($ConditionValue2, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number) ) {
                          $ConditionValue2 = $number

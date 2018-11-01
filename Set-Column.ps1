@@ -147,7 +147,7 @@
             Add-ExcelName -Range $Worksheet.Cells[($StartRow+1), $Column, $endRow, $Column] -RangeName $Worksheet.Cells[$StartRow, $Column].Value
         }
 
-        #Fill in the data
+        #Fill in the data -it can be zero null or and empty string.
         if      ($PSBoundParameters.ContainsKey('Value')) { foreach ($row in ($StartRow..$endRow)) {
             if  ($Value -is [scriptblock]) { #re-create the script block otherwise variables from this function are out of scope.
                  $cellData = & ([scriptblock]::create( $Value ))
