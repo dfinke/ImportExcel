@@ -219,7 +219,7 @@ function Add-ExcelChart {
       .PARAMETER NoLegend
         If specified, turns of display of the key. If you only have one data series it may be preferable to use the title to say what the chart is.
       .PARAMETER SeriesHeader
-        Specify explicit name(s) for the data series, which will appear in the legend/key
+        Specify explicit name(s) for the data series, which will appear in the legend/key. The contents of a cell can be specified in the from =Sheet9!Z10 .
        .PARAMETER LegendPosition
         Location of the key, either left, right, top, bottom or TopRight.
       .PARAMETER LegendSize
@@ -349,7 +349,7 @@ function Add-ExcelChart {
         [Switch]$NoLegend,
         [Switch]$ShowCategory,
         [Switch]$ShowPercent,
-        $SeriesHeader,
+        [String[]]$SeriesHeader,
         [Switch]$TitleBold,
         [Int]$TitleSize ,
         [String]$XAxisTitleText,
@@ -388,8 +388,16 @@ function Add-ExcelChart {
             }
             else {
                 for ($idx = 0; $idx -lt $chartDefCount; $idx += 1) {
-                    $Series = $chart.Series.Add($YRange[$idx], $XRange)
-                    if ($SeriesHeader.Count -gt 0) { $Series.Header = $SeriesHeader[$idx] }
+                    if ($Yrange.count -eq $xrange.count) {
+                      $Series = $chart.Series.Add($YRange[$idx], $XRange[$idx])
+                    }
+                    else {
+                      $Series = $chart.Series.Add($YRange[$idx], $XRange)
+                    }
+                    if ($SeriesHeader.Count -gt 0) {
+                      if ($SeriesHeader[$idx] -match '^=') {$Series.HeaderAddress = $SeriesHeader[$idx] -replace '^=',''}
+                      else                                 {$Series.Header        = $SeriesHeader[$idx] }
+                    }
                     else { $Series.Header = "Series $($idx)"}
                 }
             }
