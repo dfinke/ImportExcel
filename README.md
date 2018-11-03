@@ -57,9 +57,11 @@ Install-Module ImportExcel
 
 - Thank you to Conrad Agramont, Twitter: [@AGramont](https://twitter.com/@AGramont) for the `AddMultiWorkSheet.ps1` example. Much appreciated!
 - Fixed several more bugs where parametrs were ignored if passed a zero value 
+- Fixed bug where chart series headers could not come form a cell refernce (=Sheet1!Z10 now works as a header reference)
+- Add-Chart will now allow a single X range, or as many X ranges as there are Y ranges.
 - Merge-MultipleSheets is more robust. 
 - Set-ExcelRow and Set-ExcelColumn trap attempts to process a sheet with no rows/columns.
-- Help has been proof-read . 
+- Help has been proof-read (thanks to Mrs @Jhoneill !). 
 
 # What's new 5.3.4
 
