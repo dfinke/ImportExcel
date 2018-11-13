@@ -121,7 +121,12 @@
 
     begin {
         #if we were passed a package object and a worksheet name , get the worksheet.
-        if ($ExcelPackage)   {$Worksheet   = $ExcelPackage.Workbook.Worksheets[$Worksheetname] }
+        if ($ExcelPackage)  {
+            if ($ExcelPackage.Workbook.Worksheets.Name -notcontains $Worksheetname) {
+                throw "The Workbook does not contain a sheet named '$Worksheetname'"
+            }
+            else {$Worksheet   = $ExcelPackage.Workbook.Worksheets[$Worksheetname] }
+        }
 
         #In a script block to build a formula, we may want any of corners or the column name,
         #if Column and Startrow aren't specified, assume first unused column, and first row
