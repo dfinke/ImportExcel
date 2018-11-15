@@ -1339,6 +1339,14 @@ function Add-ExcelTable {
         [Switch]$PassThru
     )
     try {
+        if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress($TableName)) {
+            Write-Warning -Message "$tableName reads as an Excel address, and so is not allowed as a table name."
+            return
+        }
+        if ($tableName -notMatch '^[A-Z]') {
+            Write-Warning -Message "$tableName is not allowed as a table name because it does not begin with a letter."
+            return
+        }
         if ($TableName -match "\W") {
             Write-Warning -Message "At least one character in $TableName is illegal in a table name and will be replaced with '_' . "
             $TableName = $TableName -replace '\W', '_'
