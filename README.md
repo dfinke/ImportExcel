@@ -53,6 +53,9 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
+# What's new
+- Set-ExcelRow and Set-ExcelColumn now check that the worksheet name they passed exists in the workbook.      
+
 # What's new 5.4
 
 - Thank you to Conrad Agramont, Twitter: [@AGramont](https://twitter.com/@AGramont) for the `AddMultiWorkSheet.ps1` example. Much appreciated!

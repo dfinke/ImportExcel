@@ -36,8 +36,8 @@ function New-ConditionalText {
 
         This builds on the previous example, and specifies a condition of <=3 with
         a format of red text on a white background; this applies to a named range
-        "Finish Position". The range could be written "C:C" to specify a named
-        column, or "C2:C102" to specify certain cells in the column.
+        "Finish Position". The range could be written -Range "C:C" to specify a
+        named column, or -Range "C2:C102" to specify certain cells in the column.
       .Link
         Add-Add-ConditionalFormatting
         New-ConditionalFormattingIconSet
