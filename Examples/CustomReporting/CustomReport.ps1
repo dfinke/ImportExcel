@@ -51,7 +51,7 @@ Set-Format -Address $sheet1.Cells["E2:G2"] -BorderBottom $BorderBottom -BorderCo
 Set-Format -Address $sheet1.Cells["I2:K2"] -BorderBottom $BorderBottom -BorderColor $BorderColor
 Set-Format -Address $sheet1.Cells["M2:O2"] -BorderBottom $BorderBottom -BorderColor $BorderColor
 
-Set-Format -Address $sheet1.Cells["A2:C8"] -FontColor GrayText
+Set-Format -Address $sheet1.Cells["A2:C8"] -FontColor Gray
 
 $HorizontalAlignment = "Center"
 Set-Format -Address $sheet1.Cells["F1"] -HorizontalAlignment $HorizontalAlignment -Bold -Value Revenue
