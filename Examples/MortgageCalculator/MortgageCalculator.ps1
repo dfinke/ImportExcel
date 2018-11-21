@@ -2,27 +2,54 @@
   Fixed Rate Loan/Mortgage Calculator in Excel
 #>
 
+param(
+    $Amount = 400000,
+    $InterestRate = .065,
+    $Term = 30
+)
+
+function New-CellData {
+    param(
+        $Range,
+        $Value,
+        $Format
+    )
+
+    $setFormatParams = @{
+        WorkSheet    = $ws
+        Range        = $Range
+        NumberFormat = $Format
+    }
+
+    if ($Value -is [string] -and $Value.StartsWith('=')) {
+        $setFormatParams.Formula = $Value
+    }
+    else {
+        $setFormatParams.Value = $Value
+    }
+
+    Set-Format @setFormatParams
+}
+
 $f = "$PSScriptRoot\mortgage.xlsx"
-rm $f -ErrorAction SilentlyContinue
+Remove-Item $f -ErrorAction SilentlyContinue
 
 $pkg = "" | Export-Excel $f -Title 'Fixed Rate Loan Payments' -PassThru -AutoSize
-
 $ws = $pkg.Workbook.Worksheets["Sheet1"]
 
-Set-Format -WorkSheet $ws -Range "A3" -Value "Amount"
-Set-Format -WorkSheet $ws -Range "B3" -Value 400000 -NumberFormat '$#,##0'
+New-CellData A3 'Amount'
+New-CellData B3 $Amount '$#,##0'
 
-Set-Format -WorkSheet $ws -Range "A4" -Value "Interest Rate"
-Set-Format -WorkSheet $ws -Range "B4" -Value .065 -NumberFormat 'Percentage'
+New-CellData A4 "Interest Rate"
+New-CellData B4 $InterestRate 'Percentage'
 
-Set-Format -WorkSheet $ws -Range "A5" -Value "Term (Years)"
-Set-Format -WorkSheet $ws -Range "B5" -Value 30 
+New-CellData A5 "Term (Years)"
+New-CellData B5 $Term
 
-Set-Format -WorkSheet $ws -Range "D3" -Value "Monthly Payment" 
-Set-Format -WorkSheet $ws -Range "F3" -Formula "=-PMT(F4, B5*12, B3)" -NumberFormat '$#,##0.#0'
+New-CellData D3 "Monthly Payment"
+New-CellData F3 "=-PMT(F4, B5*12, B3)" '$#,##0.#0'
 
-Set-Format -WorkSheet $ws -Range "D4" -Value "Monthly Rate"
-Set-Format -WorkSheet $ws -Range "F4" -Formula "=((1+B4)^(1/12))-1" -NumberFormat 'Percentage'
+New-CellData D4 "Monthly Rate"
+New-CellData F4 "=((1+B4)^(1/12))-1" 'Percentage'
 
 Close-ExcelPackage $pkg -Show
-
