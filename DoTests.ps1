@@ -3,7 +3,7 @@ param(
 )
 
 ##
-#   Used in Appveyor.yml
+#   Called by Azure Devops 
 ##
 
 $PSVersionTable.PSVersion
