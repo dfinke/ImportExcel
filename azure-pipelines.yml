@@ -6,9 +6,6 @@ steps:
 - powershell: ./ '.\DoTests.ps1'
   displayName: 'PowerShell Script'
 
-- task: ArchiveFiles@2
-  displayName: 'Archive $(Build.BinariesDirectory)'
-
 trigger:
   paths:
     exclude:
