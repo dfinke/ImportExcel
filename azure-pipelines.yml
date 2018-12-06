@@ -6,11 +6,6 @@ steps:
 - powershell: '.\DoTests.ps1'
   displayName: 'PowerShell Script'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    artifactName: drop1
-    
 trigger:
   paths:
     exclude:
