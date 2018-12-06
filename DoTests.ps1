@@ -15,7 +15,6 @@ $ModuleVersion = (Get-Content -Raw .\ImportExcel.psd1)  | Invoke-Expression | Fo
 
 if (!$DontCreateZip) {
     if ($null -eq $env:BUILD_ARTIFACTSTAGINGDIRECTORY) {$env:BUILD_ARTIFACTSTAGINGDIRECTORY = '.'}
-    elseif (-not (test-path -Path $env:BUILD_ARTIFACTSTAGINGDIRECTORY -PathType Container)) {mkdir -path $env:BUILD_ARTIFACTSTAGINGDIRECTORY -Verbose}
     $dest = Join-Path -Path $env:BUILD_ARTIFACTSTAGINGDIRECTORY -ChildPath ("ImportExcel-{0}-{1}.zip" -f $ModuleVersion, (Get-Date).ToString("yyyyMMddHHmmss"))
     Compress-Archive -Path . -DestinationPath $dest  -Verbose
 }
