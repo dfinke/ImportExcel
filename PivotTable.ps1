@@ -38,7 +38,51 @@
         but here -Address is specified to place it beside the data. The Add-Pivot table is given the chart definition and told to create a tale
         using the City field to create rows, the Product field to create columns and the data should be the sum of the gross field and the sum of the net field;
         grand totals for both gross and net are included for rows (Cities) and columns (product) and the data is explicitly formatted as a currency.
-        Not that in the chart definition the number format for the axis does not include any fraction part.
+        Note that in the chart definition the number format for the axis does not include any fraction part.
+      .Example
+        >
+        $excel = Convertfrom-csv @"
+        Location,OrderDate,quantity
+        Boston,1/1/2017,100
+        New York,1/21/2017,200
+        Boston,1/11/2017,300
+        New York,1/9/2017,400
+        Boston,1/18/2017,500
+        Boston,2/1/2017,600
+        New York,2/21/2017,700
+        New York,2/11/2017,800
+        Boston,2/9/2017,900
+        Boston,2/18/2017,1000
+        New York,1/1/2018,100
+        Boston,1/21/2018,200
+        New York,1/11/2018,300
+        Boston,1/9/2018,400
+        New York,1/18/2018,500
+        Boston,2/1/2018,600
+        Boston,2/21/2018,700
+        New York,2/11/2018,800
+        New York,2/9/2018,900
+        Boston,2/18/2018,1000
+        "@ | Select-Object -Property @{n="OrderDate";e={[datetime]::ParseExact($_.OrderDate,"M/d/yyyy",(Get-Culture))}},
+                Location, Quantity |  Export-Excel "test2.xlsx" -PassThru -AutoSize
+
+        Set-ExcelColumn -Worksheet $excel.sheet1 -Column 1 -NumberFormat 'Short Date'
+
+        $pt = Add-PivotTable -PassThru -PivotTableName "ByDate" -Address $excel.Sheet1.cells["F1"] -SourceWorkSheet $excel.Sheet1  -PivotRows location,orderdate -PivotData @{'quantity'='sum'}  -GroupDateRow orderdate -GroupDatePart 'Months,Years' -PivotTotals None
+        $pt.RowFields[0].SubtotalTop=$false
+        $pt.RowFields[0].Compact=$false
+        Close-ExcelPackage $excel -Show
+
+        Here the data contains dates formatted as strings using US format. These
+        are converted to DateTime objects before being exported to Excel; the
+        "OrderDate" column is formatted with the local short-date style. Then
+        the PivotTable is added; it groups information by date and location, the
+        date is split into years and then months. No grand totals are displayed.
+        The Pivot table object is caught in a variable, and the "Location"
+        column has its subtotal moved from the top to the bottom of each location
+        section, and the "Compact" option is disabled to prevent "Year" moving
+        into the same column as location.
+        Finally the workbook is saved and shown in Excel.
     #>
     [cmdletbinding(defaultParameterSetName='ChartbyParams')]
     [OutputType([OfficeOpenXml.Table.PivotTable.ExcelPivotTable])]
@@ -71,6 +115,18 @@
         [String]$PivotTotals = "Both",
         #Included for compatibility - equivalent to -PivotTotals "None".
         [Switch]$NoTotalsInPivot,
+        #The name of a row field which should be grouped by parts of the date/time (ignored if GroupDateRow is not specified)
+        [String]$GroupDateRow,
+        #The Part(s) of the date to use in the grouping (ignored if GroupDateRow is not specified)
+        [OfficeOpenXml.Table.PivotTable.eDateGroupBy[]]$GroupDatePart,
+        #The name of a row field which should be grouped by Number (e.g 0-99, 100-199, 200-299 )
+        [String]$GroupNumericRow,
+        #The starting point for grouping
+        [double]$GroupNumbericMin = 0 ,
+        #The endpoint for grouping
+        [double]$GroupNumbericMax = [Double]::MaxValue  ,
+        #The interval for grouping
+        [double]$GroupNumbericInterval = 100  ,
         #Number format to apply to the data cells in the PivotTable.
         [string]$PivotNumberFormat,
         #Apply a table style to the PivotTable.
@@ -198,7 +254,17 @@
             if     ($PivotTotals -eq "None" -or $PivotTotals -eq "Rows")    { $pivotTable.ColumGrandTotals = $false }   # Epplus spelling mistake, not mine!
             elseif ($PivotTotals -eq "Both" -or $PivotTotals -eq "Columns") { $pivotTable.ColumGrandTotals = $true  }
             if     ($PivotDataToColumn ) { $pivotTable.DataOnRows = $false }
-            if     ($PivotTableStyle)     { $pivotTable.TableStyle = $PivotTableStyle}
+            if     ($PivotTableStyle)    { $pivotTable.TableStyle = $PivotTableStyle}
+            if     ($GroupNumericRow)    {
+                    $r =$pivotTable.RowFields.Where({$_.name -eq $GroupNumericRow })
+                    if (-not $r ) {Write-Warning -Message "Could not find a Row field named '$GroupNumericRow'; no numeric grouping will be done."}
+                    else {$r.AddNumericGrouping($GroupNumbericMin,$GroupNumbericMax,$GroupNumbericInterval)}
+            }
+            if     ($GroupDateRow -and  $PSBoundParameters.ContainsKey("GroupDatePart")) {
+                    $r =$pivotTable.RowFields.Where({$_.name -eq $GroupDateRow })
+                    if (-not $r ) {Write-Warning -Message "Could not find a Row field named '$GroupDateRow'; no date grouping will be done."}
+                    else {$r.AddDateGrouping($GroupDatePart)}
+            }
         }
         catch {Write-Warning -Message "Failed adding PivotTable '$pivotTableName': $_"}
     }
@@ -271,6 +337,18 @@ function New-PivotTableDefinition {
         [String]$PivotTotals = "Both",
         #Included for compatibility - equivalent to -PivotTotals "None"
         [Switch]$NoTotalsInPivot,
+        #The name of a row field which should be grouped by parts of the date/time (ignored if GroupDateRow is not specified)
+        [String]$GroupDateRow,
+        #The Part(s) of the date to use in the grouping (ignored if GroupDateRow is not specified)
+        [OfficeOpenXml.Table.PivotTable.eDateGroupBy[]]$GroupDatePart,
+        #The name of a row field which should be grouped by Number (e.g 0-99, 100-199, 200-299 )
+        [String]$GroupNumericRow,
+        #The starting point for grouping
+        [double]$GroupNumbericMin = 0 ,
+        #The endpoint for grouping
+        [double]$GroupNumbericMax = [Double]::MaxValue  ,
+        #The interval for grouping
+        [double]$GroupNumbericInterval = 100  ,
         #Number format to apply to the data cells in the PivotTable
         [string]$PivotNumberFormat,
         #Apply a table style to the PivotTable
