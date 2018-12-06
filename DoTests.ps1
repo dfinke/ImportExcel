@@ -7,21 +7,18 @@ param(
 ##
 
 $PSVersionTable.PSVersion
-$env:BUILD_ARTIFACTSTAGINGDIRECTORY
 
-$VerbosePreference = "Continue"
 ## Create the zip before the tests run
 ## Otherwise the EPPlus.dll is in use after the Pester run
 $ModuleVersion = (Get-Content -Raw .\ImportExcel.psd1)  | Invoke-Expression | ForEach-Object ModuleVersion
 
 if (!$DontCreateZip) {
-    if ($null -eq $env:BUILD_ARTIFACTSTAGINGDIRECTORY) {$env:BUILD_ARTIFACTSTAGINGDIRECTORY = '.'}
-    $dest = Join-Path -Path $env:BUILD_ARTIFACTSTAGINGDIRECTORY -ChildPath ("ImportExcel-{0}-{1}.zip" -f $ModuleVersion, (Get-Date).ToString("yyyyMMddHHmmss"))
-    Compress-Archive -Path . -DestinationPath .\$dest  -Verbose
+    $dest = "ImportExcel-{0}-{1}.zip" -f $ModuleVersion, (Get-Date).ToString("yyyyMMddHHmmss")
+    Compress-Archive -Path . -DestinationPath .\$dest
 }
 
 if ($null -eq (Get-Module -ListAvailable pester)) {
-    Install-Module -Name Pester -Repository PSGallery -Force -Scope CurrentUser -Verbose
+    Install-Module -Name Pester -Repository PSGallery -Force -Scope CurrentUser
 }
 
 $result = Invoke-Pester -Script $PSScriptRoot\__tests__ -Verbose -PassThru
