@@ -1,55 +1,55 @@
-﻿$scriptPath      = Split-Path -Path $MyInvocation.MyCommand.path -Parent
-$dataPath        = Join-Path  -Path $scriptPath -ChildPath "First10Races.csv"
+﻿$scriptPath = Split-Path -Path $MyInvocation.MyCommand.path -Parent
+$dataPath = Join-Path  -Path $scriptPath -ChildPath "First10Races.csv"
 
 Describe "Creating small named ranges with hyperlinks" {
     BeforeAll {
-        $path    = "$env:TEMP\Results.xlsx"
+        $path = "$env:TEMP\Results.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         #Read race results, and group by race name : export 1 row to get headers, leaving enough rows aboce to put in a link for each race
         $results = Import-Csv -Path $dataPath |
-                        Select-Object  Race,@{n="Date";e={[datetime]::ParseExact($_.date,"dd/MM/yyyy",(Get-Culture))}}, FinishPosition, Driver, GridPosition, Team,Points |
-                        Group-Object -Property RACE
-        $topRow  = $lastDataRow = 1 + $results.Count
-        $excel   = $results[0].Group[0] | Export-Excel -Path $path -StartRow $TopRow  -BoldTopRow -PassThru
+            Select-Object  Race, @{n = "Date"; e = {[datetime]::ParseExact($_.date, "dd/MM/yyyy", (Get-Culture))}}, FinishPosition, Driver, GridPosition, Team, Points |
+            Group-Object -Property RACE
+        $topRow = $lastDataRow = 1 + $results.Count
+        $excel = $results[0].Group[0] | Export-Excel -Path $path -StartRow $TopRow  -BoldTopRow -PassThru
 
         #export each group (race) below the last one, without headers, and create a range for each using the group name (Race)
         foreach ($r in $results) {
-            $excel        = $R.Group | Export-Excel -ExcelPackage $excel -NoHeader -StartRow ($lastDataRow +1) -RangeName $R.Name -PassThru -AutoSize
+            $excel = $R.Group | Export-Excel -ExcelPackage $excel -NoHeader -StartRow ($lastDataRow + 1) -RangeName $R.Name -PassThru -AutoSize
             $lastDataRow += $R.Group.Count
         }
         $worksheet = $excel.Workbook.Worksheets[1]
-        $columns   = $worksheet.Dimension.Columns
+        $columns = $worksheet.Dimension.Columns
 
-        1..$columns | ForEach-Object {Add-ExcelName -Range $worksheet.cells[$topRow,$_,$lastDataRow,$_]}                                                                        #Test Add-Excel Name on its own (outside Export-Excel)
+        1..$columns | ForEach-Object {Add-ExcelName -Range $worksheet.cells[$topRow, $_, $lastDataRow, $_]}                                                                        #Test Add-Excel Name on its own (outside Export-Excel)
 
         $scwarnVar = $null
         Set-ExcelColumn -Worksheet $worksheet -StartRow $topRow -Heading "PlacesGained/Lost" `
-                                        -Value "=GridPosition-FinishPosition" -AutoNameRange -WarningVariable scWarnVar -WarningAction SilentlyContinue                 #Test as many set column options as possible.
+            -Value "=GridPosition-FinishPosition" -AutoNameRange -WarningVariable scWarnVar -WarningAction SilentlyContinue                 #Test as many set column options as possible.
         $columns ++
 
         #create a table which covers all the data. And define a pivot table which uses the same address range.
-        $table = Add-ExcelTable -PassThru  -Range  $worksheet.cells[$topRow,1,$lastDataRow,$columns]  -TableName "AllResults" -TableStyle Light4 `
-                                    -ShowHeader -ShowFilter -ShowColumnStripes -ShowRowStripes:$false -ShowFirstColumn:$false -ShowLastColumn:$false -ShowTotal:$false   #Test Add-ExcelTable outside export-Excel with as many options as possible.
-        $pt = New-PivotTableDefinition -PivotTableName Analysis -SourceWorkSheet   $worksheet -SourceRange $table.address.address -PivotRows Driver -PivotData @{Points="SUM"} -PivotTotals None
+        $table = Add-ExcelTable -PassThru  -Range  $worksheet.cells[$topRow, 1, $lastDataRow, $columns]  -TableName "AllResults" -TableStyle Light4 `
+            -ShowHeader -ShowFilter -ShowColumnStripes -ShowRowStripes:$false -ShowFirstColumn:$false -ShowLastColumn:$false -ShowTotal:$false   #Test Add-ExcelTable outside export-Excel with as many options as possible.
+        $pt = New-PivotTableDefinition -PivotTableName Analysis -SourceWorkSheet   $worksheet -SourceRange $table.address.address -PivotRows Driver -PivotData @{Points = "SUM"} -PivotTotals None
 
-        $cf = Add-ConditionalFormatting -Address  $worksheet.cells[$topRow,$columns,$lastDataRow,$columns] -ThreeIconsSet Arrows  -Passthru                               #Test using cells[r1,c1,r2,c2]
+        $cf = Add-ConditionalFormatting -Address  $worksheet.cells[$topRow, $columns, $lastDataRow, $columns] -ThreeIconsSet Arrows  -Passthru                               #Test using cells[r1,c1,r2,c2]
         $cf.Icon2.Type = $cf.Icon3.Type = "Num"
         $cf.Icon2.Value = 0
         $cf.Icon3.Value = 1
         Add-ConditionalFormatting -Address $worksheet.cells["FinishPosition"] -RuleType Equal    -ConditionValue 1 -ForeGroundColor  ([System.Drawing.Color]::Purple) -Bold -Priority 1 -StopIfTrue   #Test Priority and stopIfTrue and using range name
         Add-ConditionalFormatting -Address $worksheet.Cells["GridPosition"]   -RuleType ThreeColorScale -Reverse                                                           #Test Reverse
         $ct = New-ConditionalText -Text "Ferrari"
-        $ct2 =  New-ConditionalText -Range $worksheet.Names["FinishPosition"].Address -ConditionalType LessThanOrEqual -Text 3 -ConditionalText ([System.Drawing.Color]::Red) -Background ([System.Drawing.Color]::White)      #Test new-conditionalText in shortest and longest forms.
+        $ct2 = New-ConditionalText -Range $worksheet.Names["FinishPosition"].Address -ConditionalType LessThanOrEqual -Text 3 -ConditionalText ([System.Drawing.Color]::Red) -Background ([System.Drawing.Color]::White)      #Test new-conditionalText in shortest and longest forms.
         #Create links for each group name (race) and Export them so they start at Cell A1; create a pivot table with definition just created, save the file and open in Excel
         $excel = $results | ForEach-Object {(New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList "Sheet1!$($_.Name)" , "$($_.name) GP")} |                                     #Test Exporting Hyperlinks with display property.
-            Export-Excel -ExcelPackage $excel -AutoSize -PivotTableDefinition $pt -Calculate   -ConditionalFormat $ct,$ct2  -PassThru                                        #Test conditional text rules in conditional format (orignally icon sets only )
+            Export-Excel -ExcelPackage $excel -AutoSize -PivotTableDefinition $pt -Calculate   -ConditionalFormat $ct, $ct2  -PassThru                                        #Test conditional text rules in conditional format (orignally icon sets only )
 
         $null = Add-WorkSheet -ExcelPackage $excel -WorksheetName "Points1"
-        Add-PivotTable -PivotTableName "Points1" -Address $excel.Points1.Cells["A1"] -ExcelPackage $excel -SourceWorkSheet sheet1 -SourceRange $excel.Sheet1.Tables[0].Address.Address -PivotRows Driver,Date -PivotData @{Points="SUM"}  -GroupDateRow Date -GroupDatePart Years, Months
+        Add-PivotTable -PivotTableName "Points1" -Address $excel.Points1.Cells["A1"] -ExcelPackage $excel -SourceWorkSheet sheet1 -SourceRange $excel.Sheet1.Tables[0].Address.Address -PivotRows Driver, Date -PivotData @{Points = "SUM"}  -GroupDateRow Date -GroupDatePart Years, Months
 
         $null = Add-WorkSheet -ExcelPackage $excel -WorksheetName "Places1"
-        $newpt = Add-PivotTable -PivotTableName "Places1" -Address $excel.Places1.Cells["A1"] -ExcelPackage $excel -SourceWorkSheet sheet1 -SourceRange $excel.Sheet1.Tables[0].Address.Address -PivotRows Driver,FinishPosition -PivotData @{Date="Count"}  -GroupNumericRow FinishPosition -GroupNumbericMin 1 -GroupNumbericMax 25 -GroupNumbericInterval 3 -PassThru
-        $newpt.RowFields[0].SubTotalFunctions =  [OfficeOpenXml.Table.PivotTable.eSubTotalFunctions]::None
+        $newpt = Add-PivotTable -PivotTableName "Places1" -Address $excel.Places1.Cells["A1"] -ExcelPackage $excel -SourceWorkSheet sheet1 -SourceRange $excel.Sheet1.Tables[0].Address.Address -PivotRows Driver, FinishPosition -PivotData @{Date = "Count"}  -GroupNumericRow FinishPosition -GroupNumericMin 1 -GroupNumericMax 25 -GroupNumericInterval 3 -PassThru
+        $newpt.RowFields[0].SubTotalFunctions = [OfficeOpenXml.Table.PivotTable.eSubTotalFunctions]::None
         Close-ExcelPackage -ExcelPackage $excel
 
         $excel = Open-ExcelPackage $path
@@ -72,14 +72,14 @@ Describe "Creating small named ranges with hyperlinks" {
     }
     Context "Adding calculated column" {
         It "Populated the cells with the right heading and formulas                                " {
-            $sheet.Cells[(  $results.Count),$columns]                   | Should     benullorEmpty
-            $sheet.Cells[(1+$results.Count),$columns].Value             | Should     be "PlacesGained/Lost"
-            $sheet.Cells[(2+$results.Count),$columns].Formula           | should     be "GridPosition-FinishPosition"
+            $sheet.Cells[(  $results.Count), $columns]                   | Should     benullorEmpty
+            $sheet.Cells[(1 + $results.Count), $columns].Value             | Should     be "PlacesGained/Lost"
+            $sheet.Cells[(2 + $results.Count), $columns].Formula           | should     be "GridPosition-FinishPosition"
             $sheet.Names["PlacesGained_Lost"]                           | should not benullorEmpty
         }
         It "Performed the calculation                                                              " {
-            $placesMade = $Sheet.Cells[(2+$results.Count),5].value - $Sheet.Cells[(2+$results.Count),3].value
-            $sheet.Cells[(2+$results.Count),$columns].value             | Should be $placesmade
+            $placesMade = $Sheet.Cells[(2 + $results.Count), 5].value - $Sheet.Cells[(2 + $results.Count), 3].value
+            $sheet.Cells[(2 + $results.Count), $columns].value             | Should be $placesmade
         }
         It "Applied ConditionalFormatting, including StopIfTrue, Priority and Reverse              " {
             $sheet.ConditionalFormatting[0].Address.Start.Column        | should     be $columns
