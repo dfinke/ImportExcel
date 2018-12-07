@@ -1,0 +1,101 @@
+﻿Race,Date,FinishPosition,Driver,GridPosition,Team,Points
+Australian,25/03/2018,1,Sebastian Vettel,3,Ferrari,25
+Australian,25/03/2018,2,Lewis Hamilton,1,Mercedes,18
+Australian,25/03/2018,3,Kimi Räikkönen,2,Ferrari,15
+Australian,25/03/2018,4,Daniel Ricciardo,8,Red Bull Racing-TAG Heuer,12
+Australian,25/03/2018,5,Fernando Alonso,10,McLaren-Renault,10
+Australian,25/03/2018,6,Max Verstappen,4,Red Bull Racing-TAG Heuer,8
+Australian,25/03/2018,7,Nico Hülkenberg,7,Renault,6
+Australian,25/03/2018,8,Valtteri Bottas,15,Mercedes,4
+Australian,25/03/2018,9,Stoffel Vandoorne,11,McLaren-Renault,2
+Australian,25/03/2018,10,Carlos Sainz,9,Renault,1
+Bahrain,08/04/2018,1,Sebastian Vettel,1,Ferrari,25
+Bahrain,08/04/2018,2,Valtteri Bottas,3,Mercedes,18
+Bahrain,08/04/2018,3,Lewis Hamilton,9,Mercedes,15
+Bahrain,08/04/2018,4,Pierre Gasly,5,STR-Honda,12
+Bahrain,08/04/2018,5,Kevin Magnussen,6,Haas-Ferrari,10
+Bahrain,08/04/2018,6,Nico Hülkenberg,7,Renault,8
+Bahrain,08/04/2018,7,Fernando Alonso,13,McLaren-Renault,6
+Bahrain,08/04/2018,8,Stoffel Vandoorne,14,McLaren-Renault,4
+Bahrain,08/04/2018,9,Marcus Ericsson,17,Sauber-Ferrari,2
+Bahrain,08/04/2018,10,Esteban Ocon,8,Force India-Mercedes,1
+Chinese,15/04/2018,1,Daniel Ricciardo,6,Red Bull Racing-TAG Heuer,25
+Chinese,15/04/2018,2,Valtteri Bottas,3,Mercedes,18
+Chinese,15/04/2018,3,Kimi Räikkönen,2,Ferrari,15
+Chinese,15/04/2018,4,Lewis Hamilton,4,Mercedes,12
+Chinese,15/04/2018,5,Max Verstappen,5,Red Bull Racing-TAG Heuer,10
+Chinese,15/04/2018,6,Nico Hülkenberg,7,Renault,8
+Chinese,15/04/2018,7,Fernando Alonso,13,McLaren-Renault,6
+Chinese,15/04/2018,8,Sebastian Vettel,1,Ferrari,4
+Chinese,15/04/2018,9,Carlos Sainz,9,Renault,2
+Chinese,15/04/2018,10,Kevin Magnussen,11,Haas-Ferrari,1
+Azerbaijan,29/04/2018,1,Lewis Hamilton,2,Mercedes,25
+Azerbaijan,29/04/2018,2,Kimi Räikkönen,6,Ferrari,18
+Azerbaijan,29/04/2018,3,Sergio Pérez,8,Force India-Mercedes,15
+Azerbaijan,29/04/2018,4,Sebastian Vettel,1,Ferrari,12
+Azerbaijan,29/04/2018,5,Carlos Sainz,9,Renault,10
+Azerbaijan,29/04/2018,6,Charles Leclerc,13,Sauber-Ferrari,8
+Azerbaijan,29/04/2018,7,Fernando Alonso,12,McLaren-Renault,6
+Azerbaijan,29/04/2018,8,Lance Stroll,10,Williams-Mercedes,4
+Azerbaijan,29/04/2018,9,Stoffel Vandoorne,16,McLaren-Renault,2
+Azerbaijan,29/04/2018,10,Brendon Hartley,19,STR-Honda,1
+Spanish,13/05/2018,1,Lewis Hamilton,1,Mercedes,25
+Spanish,13/05/2018,2,Valtteri Bottas,2,Mercedes,18
+Spanish,13/05/2018,3,Max Verstappen,5,Red Bull Racing-TAG Heuer,15
+Spanish,13/05/2018,4,Sebastian Vettel,3,Ferrari,12
+Spanish,13/05/2018,5,Daniel Ricciardo,6,Red Bull Racing-TAG Heuer,10
+Spanish,13/05/2018,6,Kevin Magnussen,7,Haas-Ferrari,8
+Spanish,13/05/2018,7,Carlos Sainz,9,Renault,6
+Spanish,13/05/2018,8,Fernando Alonso,8,McLaren-Renault,4
+Spanish,13/05/2018,9,Sergio Pérez,15,Force India-Mercedes,2
+Spanish,13/05/2018,10,Charles Leclerc,14,Sauber-Ferrari,1
+Monaco,27/05/2018,1,Daniel Ricciardo,1,Red Bull Racing-TAG Heuer,25
+Monaco,27/05/2018,2,Sebastian Vettel,2,Ferrari,18
+Monaco,27/05/2018,3,Lewis Hamilton,3,Mercedes,15
+Monaco,27/05/2018,4,Kimi Räikkönen,4,Ferrari,12
+Monaco,27/05/2018,5,Valtteri Bottas,5,Mercedes,10
+Monaco,27/05/2018,6,Esteban Ocon,6,Force India-Mercedes,8
+Monaco,27/05/2018,7,Pierre Gasly,10,STR-Honda,6
+Monaco,27/05/2018,8,Nico Hülkenberg,11,Renault,4
+Monaco,27/05/2018,9,Max Verstappen,20,Red Bull Racing-TAG Heuer,2
+Monaco,27/05/2018,10,Carlos Sainz,8,Renault,1
+Canadian,10/06/2018,1,Sebastian Vettel,1,Ferrari,25
+Canadian,10/06/2018,2,Valtteri Bottas,2,Mercedes,18
+Canadian,10/06/2018,3,Max Verstappen,3,Red Bull Racing-TAG Heuer,15
+Canadian,10/06/2018,4,Daniel Ricciardo,6,Red Bull Racing-TAG Heuer,12
+Canadian,10/06/2018,5,Lewis Hamilton,4,Mercedes,10
+Canadian,10/06/2018,6,Kimi Räikkönen,5,Ferrari,8
+Canadian,10/06/2018,7,Nico Hülkenberg,7,Renault,6
+Canadian,10/06/2018,8,Carlos Sainz,9,Renault,4
+Canadian,10/06/2018,9,Esteban Ocon,8,Force India-Mercedes,2
+Canadian,10/06/2018,10,Charles Leclerc,13,Sauber-Ferrari,1
+French,24/06/2018,1,Lewis Hamilton,1,Mercedes,25
+French,24/06/2018,2,Max Verstappen,4,Red Bull Racing-TAG Heuer,18
+French,24/06/2018,3,Kimi Räikkönen,6,Ferrari,15
+French,24/06/2018,4,Daniel Ricciardo,5,Red Bull Racing-TAG Heuer,12
+French,24/06/2018,5,Sebastian Vettel,3,Ferrari,10
+French,24/06/2018,6,Kevin Magnussen,9,Haas-Ferrari,8
+French,24/06/2018,7,Valtteri Bottas,2,Mercedes,6
+French,24/06/2018,8,Carlos Sainz,7,Renault,4
+French,24/06/2018,9,Nico Hülkenberg,12,Renault,2
+French,24/06/2018,10,Charles Leclerc,8,Sauber-Ferrari,1
+Austrian,01/07/2018,1,Max Verstappen,4,Red Bull Racing-TAG Heuer,25
+Austrian,01/07/2018,2,Kimi Räikkönen,3,Ferrari,18
+Austrian,01/07/2018,3,Sebastian Vettel,6,Ferrari,15
+Austrian,01/07/2018,4,Romain Grosjean,5,Haas-Ferrari,12
+Austrian,01/07/2018,5,Kevin Magnussen,8,Haas-Ferrari,10
+Austrian,01/07/2018,6,Esteban Ocon,11,Force India-Mercedes,8
+Austrian,01/07/2018,7,Sergio Pérez,15,Force India-Mercedes,6
+Austrian,01/07/2018,8,Fernando Alonso,20,McLaren-Renault,4
+Austrian,01/07/2018,9,Charles Leclerc,17,Sauber-Ferrari,2
+Austrian,01/07/2018,10,Marcus Ericsson,18,Sauber-Ferrari,1
+British,08/07/2018,1,Sebastian Vettel,2,Ferrari,25
+British,08/07/2018,2,Lewis Hamilton,1,Mercedes,18
+British,08/07/2018,3,Kimi Räikkönen,3,Ferrari,15
+British,08/07/2018,4,Valtteri Bottas,4,Mercedes,12
+British,08/07/2018,5,Daniel Ricciardo,6,Red Bull Racing-TAG Heuer,10
+British,08/07/2018,6,Nico Hülkenberg,11,Renault,8
+British,08/07/2018,7,Esteban Ocon,10,Force India-Mercedes,6
+British,08/07/2018,8,Fernando Alonso,13,McLaren-Renault,4
+British,08/07/2018,9,Kevin Magnussen,7,Haas-Ferrari,2
+British,08/07/2018,10,Sergio Pérez,12,Force India-Mercedes,1
