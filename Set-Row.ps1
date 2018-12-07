@@ -147,7 +147,8 @@
             if  ($Value -is [scriptblock] ) {
                 #re-create the script block otherwise variables from this function are out of scope.
                 $cellData = & ([scriptblock]::create( $Value ))
-                Write-Verbose -Message $cellData
+                if ($null -eq $cellData) {Write-Verbose -Message "Script block evaluates to null."}
+                else                     {Write-Verbose -Message "Script block evaluates to '$cellData'"}
             }
             else{$cellData = $Value}
             if  ($cellData -match "^=")      { $Worksheet.Cells[$Row, $column].Formula                    = ($cellData -replace '^=','') } #EPPlus likes formulas with no = sign; Excel doesn't care

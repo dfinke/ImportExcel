@@ -156,10 +156,11 @@
         if      ($PSBoundParameters.ContainsKey('Value')) { foreach ($row in ($StartRow..$endRow)) {
             if  ($Value -is [scriptblock]) { #re-create the script block otherwise variables from this function are out of scope.
                  $cellData = & ([scriptblock]::create( $Value ))
-                 Write-Verbose  -Message     $cellData
+                 if ($null -eq $cellData) {Write-Verbose -Message "Script block evaluates to null."}
+                 else                     {Write-Verbose -Message "Script block evaluates to '$cellData'"}
             }
             else                           { $cellData = $Value}
-            if  ($cellData -match "^=")    { $Worksheet.Cells[$Row, $Column].Formula                           = ($cellData -replace '^=','') } #EPPlus likes formulas with no = sign; Excel doesn't care
+            if  ($cellData -match "^=")    { $Worksheet.Cells[$Row, $Column].Formula = ($cellData -replace '^=','') } #EPPlus likes formulas with no = sign; Excel doesn't care
             elseif ( [System.Uri]::IsWellFormedUriString($cellData , [System.UriKind]::Absolute)) {
                 # Save a hyperlink : internal links can be in the form xl://sheet!E419 (use A1 as goto sheet), or xl://RangeName
                 if ($cellData -match "^xl://internal/") {
@@ -168,13 +169,13 @@
                       $h = New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList $referenceAddress , $display
                       $Worksheet.Cells[$Row, $Column].HyperLink = $h
                 }
-                else {$Worksheet.Cells[$Row, $Column].HyperLink = $cellData }
-                $Worksheet.Cells[$Row, $Column].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
+                else {$Worksheet.Cells[$Row, $Column].HyperLink      = $cellData }
                 $Worksheet.Cells[$Row, $Column].Style.Font.UnderLine = $true
+                $Worksheet.Cells[$Row, $Column].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
             }
-            else                           { $Worksheet.Cells[$Row, $Column].Value                             = $cellData                   }
-            if  ($cellData -is [datetime]) { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format         = 'm/d/yy h:mm'               } # This is not a custom format, but a preset recognized as date and localized.
-            if  ($cellData -is [timespan]) { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format         = '[h]:mm:ss'                 }
+            else                           { $Worksheet.Cells[$Row, $Column].Value                     = $cellData     }
+            if  ($cellData -is [datetime]) { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format = 'm/d/yy h:mm' } # This is not a custom format, but a preset recognized as date and localized.
+            if  ($cellData -is [timespan]) { $Worksheet.Cells[$Row, $Column].Style.Numberformat.Format = '[h]:mm:ss'   }
         }}
 
         #region Apply formatting

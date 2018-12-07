@@ -674,6 +674,7 @@
 
                 $row = $ws.Dimension.End.Row
                 Write-Debug -Message ("Appending: headers are " + ($script:Header -join ", ") + " Start row is $row")
+                if ($Title) {Write-Warning -Message "-Title Parameter is ignored when appending."}
             }
             elseif ($Title) {
                 #Can only add a title if not appending!
