@@ -54,10 +54,10 @@ Install-Module ImportExcel
 ```
 
 # What's new
-- Set-ExcelRow and Set-ExcelColumn now check that the worksheet name they passed exists in the workbook.      
-- Added parameters -GroupDateRow and -GroupDatePart  &  -GroupNumericRow, -GroupNumbericMin, -GroupNumbericMax and -GroupNumbericInterval
-  to Add-PivotTable and New-PivotTableDefinition. The date ones gather dates of the same year and/or quarter and/or month and/or day etc. 
+- Added parameters -GroupDateRow and -GroupDatePart & -GroupNumericRow, -GroupNumericMin, -GroupNumericMax and -GroupNumericInterval
+  to Add-PivotTable and New-PivotTableDefinition. The date ones gather dates of the same year and/or quarter and/or month and/or day etc.
   the number ones group numbers into bands, starting at Min, and going up steps specified by Interval. Added tests and help for these.
+- Set-ExcelRow and Set-ExcelColumn now check that the worksheet name they passed exists in the workbook.
 
 # What's new 5.4
 
