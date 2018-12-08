@@ -53,13 +53,16 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
-# What's new
+# What's new 5.4.2
+
 - Added parameters -GroupDateRow and -GroupDatePart & -GroupNumericRow, -GroupNumericMin, -GroupNumericMax and -GroupNumericInterval
   to Add-PivotTable and New-PivotTableDefinition. The date ones gather dates of the same year and/or quarter and/or month and/or day etc.
   the number ones group numbers into bands, starting at Min, and going up steps specified by Interval. Added tests and help for these.
 - Set-ExcelRow and Set-ExcelColumn now check that the worksheet name they passed exists in the workbook.
 
-# What's new 5.4
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/cf964e3e4f761ca4058c4a4b809e2206b16709da/images/GroupingNumeric.png)
+
+# What's new 5.4.0
 
 - Thank you to Conrad Agramont, Twitter: [@AGramont](https://twitter.com/@AGramont) for the `AddMultiWorkSheet.ps1` example. Much appreciated!
 - Fixed several more bugs where parameters were ignored if passed a zero value
