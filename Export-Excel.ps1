@@ -40,6 +40,8 @@
             Sets the fill pattern for the title cell.
         .PARAMETER Password
             Sets password protection on the workbook.
+        .PARAMETER ReadOnlyRecommended
+            Flag that signals to Excel to ask if workbook should be opened Read-Only. Useful for shared workbooks.
         .PARAMETER IncludePivotTable
             Adds a PivotTable using the data in the worksheet.
         .PARAMETER PivotTableName
@@ -133,6 +135,10 @@
             Enables the Excel filter on the complete header row, so users can easily sort, filter and/or search the data in the selected column.
         .PARAMETER AutoSize
             Sizes the width of the Excel column to the maximum width needed to display all the containing data in that cell.
+        .PARAMETER AutoSizeMinWidth
+            When -AutoSize is chosen, allow minimum width to avoid columns that 'disappear' if the width is 0
+        .PARAMETER AutoSizeMaxWidth
+            When -AutoSize is chosen, allow maximum width to avoid columns that stretch across even a large screen
         .PARAMETER Activate
             If there is already content in the workbook, a new sheet will not be active UNLESS Activate is specified; if a PivotTable is included it will be the active sheet
         .PARAMETER Now
@@ -164,7 +170,6 @@
 
             # Blue color for positive numbers and a red color for negative numbers. All numbers will be proceeded by a dollar sign '$'.
             '[Blue]$#,##0.00;[Red]-$#,##0.00'
-
         .PARAMETER ReZip
             If specified, Export-Excel will expand the contents of the .XLSX file (which is multiple files in a zip archive) and rebuild it.
         .PARAMETER NoClobber
@@ -432,6 +437,7 @@
         [Switch]$Show,
         [String]$WorksheetName = 'Sheet1',
         [String]$Password,
+        [switch]$ReadOnlyRecommended,
         [switch]$ClearSheet,
         [switch]$Append,
         [String]$Title,
@@ -453,6 +459,8 @@
         [Switch]$ShowCategory,
         [Switch]$ShowPercent,
         [Switch]$AutoSize,
+        [int]$AutoSizeMinWidth=1,
+        [int]$AutoSizeMaxWidth=100,
         [Switch]$NoClobber,
         [Switch]$FreezeTopRow,
         [Switch]$FreezeFirstColumn,
@@ -514,7 +522,8 @@
         [String]$PivotTotals = "Both",
         #Included for compatibility - equivalent to -PivotTotals "None"
         [Switch]$NoTotalsInPivot,
-        [Switch]$ReZip
+        [Switch]$ReZip,
+
     )
 
     Begin {
@@ -926,7 +935,7 @@
         }
         if ($AutoSize) {
             try {
-                $ws.Cells.AutoFitColumns()
+                $ws.Cells.AutoFitColumns($AutoSizeMinWidth,$AutoSizeMaxWidth) # allow setting min and max width of column
                 Write-Verbose -Message "Auto-sized columns"
             }
             catch {  Write-Warning -Message "Failed autosizing columns of worksheet '$WorksheetName': $_"}
@@ -1050,6 +1059,20 @@
             }
 
             catch {throw "Failed setting password for worksheet '$WorksheetName': $_"}
+        }
+        
+        if ($ReadOnlyRecommended) {
+            if (-not $pkg.Workbook.WorkbookXml.workbook.fileSharing) { # if the XML-element <fileSharing> *doesn't* already exist
+                # create XML-element <fileSharing>
+                $fileSharing = $pkg.Workbook.WorkbookXml.CreateElement('fileSharing', $pkg.Workbook.WorkbookXml.workbook.GetNamespaceOfPrefix(''))
+                # add attribute readonlyRecommended="1"
+                $fileSharing.SetAttribute("readOnlyRecommended", "1")
+                # add elementet to XML before the <bookViews> element
+                $pkg.Workbook.WorkbookXml.workbook.InsertBefore($fileSharing, $pkg.Workbook.WorkbookXml.workbook.bookViews) | out-null
+            } else {
+                # if the fileSharing element exists, just set attribute readonlyRecommended="1"
+                $pkg.Workbook.WorkbookXml.workbook.fileSharing.SetAttribute("readOnlyRecommended", "1")               
+            }
         }
 
         if ($PassThru) {       $pkg   }
