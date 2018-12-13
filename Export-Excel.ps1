@@ -522,7 +522,7 @@
         [String]$PivotTotals = "Both",
         #Included for compatibility - equivalent to -PivotTotals "None"
         [Switch]$NoTotalsInPivot,
-        [Switch]$ReZip,
+        [Switch]$ReZip
 
     )
 
