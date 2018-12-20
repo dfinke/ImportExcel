@@ -1,5 +1,3 @@
-﻿cls
-
 $data = ConvertFrom-Csv @"
 Region,Date,Fruit,Sold
 North,1/1/2017,Pears,50
@@ -32,8 +30,6 @@ $pivotTableParams = @{
 $pt = Add-PivotTable @pivotTableParams -PassThru
 #$pt.RowHeaderCaption ="By Region,Fruit,Date"
 $pt.RowHeaderCaption = "By " + ($pivotTableParams.PivotRows -join ",")
-#$pt.ColumnHeaderCaption = "By " + ($pivotTableParams.PivotRows -join ",")
-#$pt.FieldPrintTitles = "By " + ($pivotTableParams.PivotRows -join ",")
 
 $pivotTableParams.PivotTableName="ByFruit"
 $pivotTableParams.Address = $excel.Sheet1.cells["J1"] 
