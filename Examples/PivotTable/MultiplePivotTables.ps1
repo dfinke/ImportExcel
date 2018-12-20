@@ -45,14 +45,11 @@ $pivotTableParams.PivotRows = echo Date Region Fruit
 $pt = Add-PivotTable @pivotTableParams -PassThru
 $pt.RowHeaderCaption = "By Date,Region,Fruit"
 
-$pivotTableParams.PivotTableName = "ByX"
+$pivotTableParams.PivotTableName = "ByYears"
 $pivotTableParams.Address = $excel.Sheet1.cells["S1"]
 $pivotTableParams.GroupDatePart = echo Years
 
 $pt = Add-PivotTable @pivotTableParams -PassThru
 $pt.RowHeaderCaption = "By Years,Region"
-
-
-Set-ExcelColumn -Worksheet $excel.Sheet1 -Column 2 -AutoSize
 
 Close-ExcelPackage $excel -Show
