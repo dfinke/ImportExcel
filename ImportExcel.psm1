@@ -30,6 +30,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Open-ExcelPackage.ps1
 . $PSScriptRoot\Pivot.ps1
 . $PSScriptRoot\PivotTable.ps1
+. $PSScriptRoot\RemoveWorksheet.ps1
 . $PSScriptRoot\Send-SQLDataToExcel.ps1
 . $PSScriptRoot\Set-CellStyle.ps1
 . $PSScriptRoot\Set-Column.ps1
