@@ -53,6 +53,11 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
+# What's new 5.4.3
+
+- Added Remove-Worksheet: Removes one or more worksheets from one or more workbooks
+
+
 # What's new 5.4.2
 
 - Added parameters -GroupDateRow and -GroupDatePart & -GroupNumericRow, -GroupNumericMin, -GroupNumericMax and -GroupNumericInterval
