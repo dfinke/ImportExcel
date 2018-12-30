@@ -1,19 +1,43 @@
 ﻿Function Remove-WorkSheet {
+    <#
+      .SYNOPSIS
+        Removes one or more worksheets from one or more workbooks
+      .EXAMPLE
+        C:\> Remove-WorkSheet -Path Test1.xlsx -WorksheetName Sheet1
+        Removes the worksheet named 'Sheet1' from 'Test1.xlsx'
+
+        C:\> Remove-WorkSheet -Path Test1.xlsx -WorksheetName Sheet1,Target1
+        Removes the worksheet named 'Sheet1' and 'Target1' from 'Test1.xlsx'
+
+        C:\> Remove-WorkSheet -Path Test1.xlsx -WorksheetName Sheet1,Target1 -Show
+        Removes the worksheets and then launches the xlsx in Excel
+
+        C:\> dir c:\reports\*.xlsx | Remove-WorkSheet
+        Removes 'Sheet1' from all the xlsx files in the c:\reports directory
+
+#>
     param(
-        [Parameter(Mandatory)]
-        $Path,
-        [Parameter(Mandatory)]
-        [String[]]$WorksheetName,
+        #    [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [Alias('Path')]
+        $FullName,
+        [String[]]$WorksheetName = "Sheet1",
         [Switch]$Show
     )
 
-    $pkg = Open-ExcelPackage -Path $Path
-
-    if ($pkg) {
-        foreach ($wsn in $WorksheetName) {
-            $pkg.Workbook.Worksheets.Delete($wsn)
+    Process {
+        if (!$FullName) {
+            throw "Remove-WorkSheet requires the and Excel file"
         }
 
-        Close-ExcelPackage -ExcelPackage $pkg -Show:$Show
+        $pkg = Open-ExcelPackage -Path $FullName
+
+        if ($pkg) {
+            foreach ($wsn in $WorksheetName) {
+                $pkg.Workbook.Worksheets.Delete($wsn)
+            }
+
+            Close-ExcelPackage -ExcelPackage $pkg -Show:$Show
+        }
     }
 }
