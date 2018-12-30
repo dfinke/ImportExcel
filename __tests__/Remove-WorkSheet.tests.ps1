@@ -18,9 +18,11 @@ Describe "Remove Worksheet" {
         it "Should delete Target2" {
             Remove-WorkSheet -Path $xlFile -WorksheetName Target2
 
-            $actual = (Get-ExcelSheetInfo -Path $xlFile).count
+            $actual = Get-ExcelSheetInfo -Path $xlFile
 
-            $actual | Should Be 2
+            $actual.Count   | Should Be 2
+            $actual[0].Name | Should Be "Target1"
+            $actual[1].Name | Should Be "Target3"
         }
     }
 }
