@@ -810,7 +810,7 @@
                 # if we have 5 columns from 3 to 8, headers are numbered 0..4, so that is in the for loop and used for getting the name...
                 # but we have to add the start column on when referencing positions
                 foreach ($c in 0..($LastCol - $StartColumn)) {
-                    $targetRangeName = $script:Header[$c]  #Let Add-ExcelName fix (and warn about) bad names
+                    $targetRangeName = @($script:Header)[$c]  #Let Add-ExcelName fix (and warn about) bad names
                     Add-ExcelName  -RangeName $targetRangeName -Range $ws.Cells[$targetRow, ($StartColumn + $c ), $LastRow, ($StartColumn + $c )]
                     try {#this test can throw with some names, surpress any error
                         if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress(($targetRangeName -replace '\W' , '_' ))) {
