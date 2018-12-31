@@ -53,6 +53,10 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
+# What's new 5.4.4
+
+- Fix issue when only a single property is piped into Export-Excel
+
 # What's new 5.4.3
 
 - Added Remove-Worksheet: Removes one or more worksheets from one or more workbooks
