@@ -29,12 +29,12 @@
     [CmdletBinding()]
     param(
         #An ExcelWorkbook or ExcelPackage object or the path to an XLSx file where the data is found.
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         $SourceWorkbook,
         #Name or number (starting from 1) of the worksheet in the source workbook (defaults to 1).
         $SourceWorkSheet = 1 ,
         #An ExcelWorkbook or ExcelPackage object or the path to an XLSx file where the data should be copied.
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         $DestinationWorkbook,
         #Name of the worksheet in the destination workbook; by default the same as the source worksheet's name. If the sheet exists it will be deleted and re-copied.
         $DestinationWorkSheet,
@@ -65,46 +65,47 @@
         }
     }
     else {
-        if     ($SourceWorkbook -is [OfficeOpenXml.ExcelWorkbook]) {$sourcews=$SourceWorkbook.Worksheets[$SourceWorkSheet]}
-        elseif ($SourceWorkbook -is [OfficeOpenXml.ExcelPackage] ) {$sourcews=$SourceWorkbook.Workbook.Worksheets[$SourceWorkSheet]}
+        if ($SourceWorkbook -is [OfficeOpenXml.ExcelWorkbook]) {$sourcews = $SourceWorkbook.Worksheets[$SourceWorkSheet]}
+        elseif ($SourceWorkbook -is [OfficeOpenXml.ExcelPackage] ) {$sourcews = $SourceWorkbook.Workbook.Worksheets[$SourceWorkSheet]}
         else {
-                $SourceWorkbook = (Resolve-Path $SourceWorkbook).ProviderPath
-                try {
-                    Write-Verbose "Opening worksheet '$Worksheetname' in Excel workbook '$SourceWorkbook'."
-                    $Stream    = New-Object -TypeName System.IO.FileStream -ArgumentList $SourceWorkbook, 'Open', 'Read' ,'ReadWrite'
-                    $Package1  = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
-                    $sourceWs = $Package1.Workbook.Worksheets[$SourceWorkSheet]
-                }
-                catch           {Write-Warning -Message "Could not open $SourceWorkbook" ; return}
+            $SourceWorkbook = (Resolve-Path $SourceWorkbook).ProviderPath
+            try {
+                Write-Verbose "Opening worksheet '$Worksheetname' in Excel workbook '$SourceWorkbook'."
+                $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $SourceWorkbook, 'Open', 'Read' , 'ReadWrite'
+                $Package1 = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
+                $sourceWs = $Package1.Workbook.Worksheets[$SourceWorkSheet]
+            }
+            catch {Write-Warning -Message "Could not open $SourceWorkbook" ; return}
         }
-        if     (-not $sourceWs) {Write-Warning -Message "Could not find worksheet '$Sourceworksheet' in the source workbook." ; return}
+        if (-not $sourceWs) {Write-Warning -Message "Could not find worksheet '$Sourceworksheet' in the source workbook." ; return}
         else {
-                try {
-                    if     ($DestinationWorkbook -is [OfficeOpenXml.ExcelWorkbook]) {
-                            $wb = $DestinationWorkbook
-                    }
-                    elseif ($DestinationWorkbook -is [OfficeOpenXml.ExcelPackage] ) {
-                            $wb = $DestinationWorkbook.workbook
-                            if ($show) {$package2 =$DestinationWorkbook}
-                    }
-                    else   {
-                            $package2 = Open-ExcelPackage -Create  -Path $DestinationWorkbook
-                            $wb = $package2.Workbook
-                    }
-                    if (-not  $DestinationWorkSheet) {$DestinationWorkSheet = $SourceWs.Name}
-                    if ($wb.Worksheets[$DestinationWorkSheet]) {
-                            Write-Verbose "Destination workbook already has a sheet named '$DestinationWorkSheet', deleting it."
-                            $wb.Worksheets.Delete($DestinationWorkSheet)
-                    }
-                    Write-Verbose "Copying $($SourceWorkSheet) from $($SourceWorkbook) to $($DestinationWorkSheet) in $($DestinationWorkbook)"
-                    $null = Add-WorkSheet -ExcelWorkbook $wb -WorkSheetname $DestinationWorkSheet -CopySource  $sourceWs
-                    if ($package1) {Close-ExcelPackage -ExcelPackage $Package1 -NoSave     }
-                    if ($package2) {Close-ExcelPackage -ExcelPackage $Package2 -Show:$show }
-                    if ($show -and $DestinationWorkbook -is  [OfficeOpenXml.ExcelWorkbook]) {
-                                 Write-Warning -Message "-Show only works if the Destination workbook is given as a file path or an ExcelPackage object."
-                    }
+            try {
+                if ($DestinationWorkbook -is [OfficeOpenXml.ExcelWorkbook]) {
+                    $wb = $DestinationWorkbook
                 }
-                catch           {Write-Warning -Message "Could not write to sheet '$DestinationWorkSheet' in the destination workbook" ; return}
+                elseif ($DestinationWorkbook -is [OfficeOpenXml.ExcelPackage] ) {
+                    $wb = $DestinationWorkbook.workbook
+                    if ($show) {$package2 = $DestinationWorkbook}
+                }
+                else {
+                    $package2 = Open-ExcelPackage -Create  -Path $DestinationWorkbook
+                    $wb = $package2.Workbook
+                }
+                if (-not  $DestinationWorkSheet) {$DestinationWorkSheet = $SourceWs.Name}
+                if ($wb.Worksheets[$DestinationWorkSheet]) {
+                    Write-Verbose "Destination workbook already has a sheet named '$DestinationWorkSheet', deleting it."
+                    $wb.Worksheets.Delete($DestinationWorkSheet)
+                }
+                Write-Verbose "Copying $($SourceWorkSheet) from $($SourceWorkbook) to $($DestinationWorkSheet) in $($DestinationWorkbook)"
+                $null = Add-WorkSheet -ExcelWorkbook $wb -WorkSheetname $DestinationWorkSheet -CopySource  $sourceWs
+                if ($Stream) {$Stream.Close()                                          }
+                if ($package1) {Close-ExcelPackage -ExcelPackage $Package1 -NoSave     }
+                if ($package2) {Close-ExcelPackage -ExcelPackage $Package2 -Show:$show }
+                if ($show -and $DestinationWorkbook -is [OfficeOpenXml.ExcelWorkbook]) {
+                    Write-Warning -Message "-Show only works if the Destination workbook is given as a file path or an ExcelPackage object."
+                }
+            }
+            catch {Write-Warning -Message "Could not write to sheet '$DestinationWorkSheet' in the destination workbook" ; return}
         }
     }
 }
