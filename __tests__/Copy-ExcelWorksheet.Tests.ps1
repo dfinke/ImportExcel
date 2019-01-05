@@ -109,6 +109,8 @@ Describe "Copy-Worksheet" {
             }
 
             $targetSheets | ForEach-Object { Remove-WorkSheet -FullName $xlfile -WorksheetName $_ }
+
+            (Get-ExcelSheetInfo -Path $xlfile ).Count | Should Be 3
         }
     }
 }
