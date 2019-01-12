@@ -17,7 +17,7 @@
         .PARAMETER ClearSheet
             If specified Export-Excel will remove any existing worksheet with the selected name. The Default behaviour is to overwrite cells in this sheet as needed (but leaving non-overwritten ones in place).
         .PARAMETER Append
-            If specified dat,a will be added to the end of an existing sheet, using the same column headings.
+            If specified data will be added to the end of an existing sheet, using the same column headings.
         .PARAMETER TargetData
             Data to insert onto the worksheet - this is usually provided from the pipeline.
         .PARAMETER DisplayPropertySet
