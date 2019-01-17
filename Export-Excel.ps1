@@ -1036,7 +1036,7 @@
         if ($CellStyleSB) {
             try {
                 $TotalRows = $ws.Dimension.Rows
-                $LastColumn = $ws.Dimension.Address -replace "^.*:(\w*)\d+$" , '$1'
+                $LastColumn = $ws.Dimension.Address -replace "^.*:([a-zA-Z]*)\d+$" , '$1'
                 & $CellStyleSB $ws $TotalRows $LastColumn
             }
             catch {Write-Warning -Message "Failed processing CellStyleSB in worksheet '$WorksheetName': $_"}
