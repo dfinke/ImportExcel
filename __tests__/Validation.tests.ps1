@@ -53,8 +53,6 @@ Describe "Data validation and protection" {
             $ws.DataValidations[1].Error                                | Should not benullorempty
         }
     }
-    AfterAll {
-        Close-ExcelPackage -NoSave $excelPackage
-    }
+
 
 }
