@@ -52,6 +52,11 @@ Install-Module ImportExcel -scope CurrentUser
 ```PowerShell
 Install-Module ImportExcel
 ```
+# What's new
+- Changed the behavior of AutoSize in export excel so it only applies to the exported columns. Previously if something was exported next to pre-existing data, AutoSize would resize the whole sheet, potentially undoing things which had been set on the earlier data. If anyone relied on this behavior they will need to explictly tell the sheet to auto size with $sheet.cells.autofitColumns. (where $sheet points to the sheet, it might be $ExcelPackage.Workbook.Worksheets['Name'])
+- In Compare-Worksheet,the Key for comparing the sheets can now be written as a hash table with an expression - it is used with a Group-Object command so if it is valid in Group-Object it should be accepted; this allows the creation of composite keys when data being compared doesn't have a column which uniquely identifies rows. 
+-  In Set-ExcelRange , added a 'Locked' option eqivalent to the checkbox on the Protection Tab of the format cells dialog box in Excel.
+- Created a Set-WorksheetProtection function. This gives the same options the protection dialog in Excel but is 0.9 release at the moment. 
 
 # What's new 5.4.2
 

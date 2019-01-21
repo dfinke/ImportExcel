@@ -54,7 +54,7 @@ Describe "Number format expansion and setting" {
             Remove-Item -Path $path -ErrorAction SilentlyContinue
             $n = [datetime]::Now.ToOADate()
 
-            $excel = 1..32 | ForEach-Object {$n} | Export-Excel -Path $path -show -WorksheetName s2 -PassThru
+            $excel = 1..32 | ForEach-Object {$n} | Export-Excel -Path $path  -WorksheetName s2 -PassThru
             $ws    = $excel.Workbook.Worksheets[1]
             Set-ExcelRange -WorkSheet $ws -Range "A1"   -numberFormat 'General'
             Set-ExcelRange -WorkSheet $ws -Range "A2"   -numberFormat 'Number'

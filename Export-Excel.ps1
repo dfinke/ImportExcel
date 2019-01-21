@@ -926,7 +926,8 @@
         }
         if ($AutoSize) {
             try {
-                $ws.Cells.AutoFitColumns()
+                #Don't fit the all the columns in the sheet; if we are adding cells beside things with hidden columns, that unhides them
+                $ws.Cells[($startAddress+':'+$endAddress)].AutoFitColumns()
                 Write-Verbose -Message "Auto-sized columns"
             }
             catch {  Write-Warning -Message "Failed autosizing columns of worksheet '$WorksheetName': $_"}
