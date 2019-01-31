@@ -413,6 +413,12 @@ function Import-Excel {
                     $NewRow = [Ordered]@{}
 
                     foreach ($P in $PropertyNames) {
+                        # Handle Excel conversions from decimal to scientific notation.  
+                        # Identify rows where the value does not match the text and the value matches a regex pattern for scientific notation.
+                        if ( ($Worksheet.Cells[$R, $P.Column].Value -ne $Worksheet.Cells[$R, $P.Column].Text) -and ($Worksheet.Cells[$R, $P.Column].Value -match '([0-9]e)((\+|-)[0-9])') ) {      
+                            # Convert the value to a decimal
+                            $Worksheet.Cells[$R, $P.Column].Value = $Worksheet.Cells[2,5].Value -as [decimal]
+                        }                        
                         $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value
                         #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
                     }
