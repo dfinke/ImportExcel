@@ -1,25 +1,24 @@
-<#
-    Revisit I think yahoo deprecated their service
-#>
-
 function Get-StockInfo {
     param(
-        $stock,
-        [datetime]$startDate,
-        [datetime]$endDate
+        [Parameter(Mandatory)]
+        $symbols,
+        [ValidateSet('open', 'close', 'high', 'low', 'avgTotalVolume')]
+        $dataPlot = "close"
     )
 
-    Process {
+    $xlfile = "$env:TEMP\stocks.xlsx"
+    rm $xlfile -ErrorAction Ignore
 
-        if (!$endDate) { $endDate = $startDate}
+    $result = Invoke-RestMethod "https://api.iextrading.com/1.0/stock/market/batch?symbols=$($symbols)&types=quote&last=1"
 
-        $baseUrl = "http://query.yahooapis.com/v1/public/yql?q="
-        $q = @"
-select * from yahoo.finance.historicaldata where symbol = "$($stock)" and startDate = "$($startDate.ToString('yyyy-MM-dd'))" and endDate = "$($endDate.ToString('yyyy-MM-dd'))"
-"@
-        $suffix = "&env=store://datatables.org/alltableswithkeys&format=json"
-        $r = Invoke-RestMethod ($baseUrl + $q + $suffix)
-        $r.query.results.quote
+    $symbolCount = $symbols.Split(",").count
 
-    }
+
+    $ecd = New-ExcelChartDefinition -Row 1 -Column 1 -SeriesHeader $dataPlot `
+        -XRange symbol -YRange $dataPlot `
+        -Title "$($dataPlot)`r`n As Of $((Get-Date).ToShortDateString())"
+
+    $(foreach ($name in $result.psobject.Properties.name) {
+            $result.$name.quote
+        }) | Export-Excel $xlfile -AutoNameRange -AutoSize -Show -ExcelChartDefinition $ecd -StartRow 21 -StartColumn 2
 }
