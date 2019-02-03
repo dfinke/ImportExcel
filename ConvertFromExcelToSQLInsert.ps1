@@ -15,7 +15,7 @@ function ConvertFrom-ExcelToSQLInsert {
       .PARAMETER StartRow
         The row from where we start to import data, all rows above the StartRow are disregarded. By default this is the first row.
         When the parameters ‘-NoHeader’ and ‘-HeaderName’ are not provided, this row will contain the column headers that will be used as property names. When one of both parameters are provided, the property names are automatically created and this row will be treated as a regular row containing data.
-      .PARAMETER Header
+      .PARAMETER HeaderName
         Specifies custom property names to use, instead of the values defined in the column headers of the TopRow.
         If you provide fewr header names than there is data in the worksheet, then only the data with a corresponding header name will be imported and the data without header name will be disregarded.
         If you provide more header names than there is data in the worksheet, then all data will be imported and all objects will have all the property names you defined in the header names. As such, the last properties will be blank as there is no data for them.
@@ -82,7 +82,7 @@ function ConvertFrom-ExcelToSQLInsert {
         [Alias('HeaderRow', 'TopRow')]
         [ValidateRange(1, 9999)]
         [Int]$StartRow,
-        [string[]]$Header,
+        [string[]]$HeaderName,
         [switch]$NoHeader,
         [switch]$DataOnly,
         [switch]$ConvertEmptyStringsToNull,

@@ -31,4 +31,9 @@ Describe "ConvertFrom-ExcelToSQLInsert" {
 
         $actual | should be $expected
     }
+    It "Columnnames parameterized" {
+        $expected="INSERT INTO Sheet1 ('Col1', 'Col2') Values('John', '');"
+        $actual = ConvertFrom-ExcelToSQLInsert -Path $xlFile Sheet1 -HeaderName "Col1","Col2"
+        $actual | should be $expected
+    }
 }

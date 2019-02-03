@@ -30,7 +30,7 @@ function ConvertFrom-ExcelData {
         [Alias("Sheet")]
         $WorkSheetname = 1,
         [int]$HeaderRow = 1,
-        [string[]]$Header,
+        [string[]]$HeaderName,
         [switch]$NoHeader,
         [switch]$DataOnly
     )
