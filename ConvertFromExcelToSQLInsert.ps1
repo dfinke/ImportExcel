@@ -42,7 +42,7 @@ function ConvertFrom-ExcelToSQLInsert {
         |5     The Avengers    2012                              |
         ----------------------------------------------------------
 
-        PS C:\> Import-Excel -TableName "Movies" -Path 'C:\Movies.xlsx'
+        PS C:\> ConvertFrom-ExcelToSQLInsert -TableName "Movies" -Path 'C:\Movies.xlsx'
         INSERT INTO Movies ('Movie Name', 'Year', 'Rating') Values('The Bodyguard', '1992', '9');
         INSERT INTO Movies ('Movie Name', 'Year', 'Rating') Values('The Matrix', '1999', '8');
         INSERT INTO Movies ('Movie Name', 'Year', 'Rating') Values('Skyfall', '2012', '9');
