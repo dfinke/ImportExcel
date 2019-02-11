@@ -2,6 +2,8 @@ function DoChart {
     param(
         $targetData,
         $title,
+        $xlfile,
+        $worksheet,
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType,
         [Switch]$NoLegend,
         [Switch]$ShowCategory,
@@ -23,8 +25,16 @@ function DoChart {
             -NoLegend:$NoLegend -ShowCategory:$ShowCategory -ShowPercent:$ShowPercent
      }
 
-     $xlFile = [System.IO.Path]::GetTempFileName() -replace "tmp","xlsx"
-     $targetData | Export-Excel $xlFile -ExcelChartDefinition $chart -Show -AutoSize
+     if ($xlfile -eq $null) {$xlFile = [System.IO.Path]::GetTempFileName() -replace "tmp","xlsx"
+     
+                          $targetData | Export-Excel $xlFile -ExcelChartDefinition $chart -worksheetname $worksheet -Show -AutoSize                        
+                         }
+                         Else {
+                                $targetData | Export-Excel $xlFile  -WorksheetName $worksheet -ExcelChartDefinition $chart -AutoSize 
+
+                              }
+     
+     
 }
 
 function BarChart {
@@ -32,6 +42,8 @@ function BarChart {
         [Parameter(ValueFromPipeline=$true)]
         $targetData,
         $title,
+        $xlfile,
+        $worksheet,
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="BarStacked",
         [Switch]$NoLegend,
         [Switch]$ShowCategory,
@@ -42,7 +54,7 @@ function BarChart {
     Process { $data += $targetData}
 
     End {
-        DoChart $data $title -ChartType $ChartType `
+        DoChart $data $title $xlfile $worksheet  -ChartType $ChartType `
             -NoLegend:$NoLegend -ShowCategory:$ShowCategory -ShowPercent:$ShowPercent
     }
 }
@@ -52,6 +64,8 @@ function PieChart {
         [Parameter(ValueFromPipeline=$true)]
         $targetData,
         $title,
+        $xlfile,
+        $worksheet,
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="PieExploded3D",
         [Switch]$NoLegend,
         [Switch]$ShowCategory,
@@ -62,7 +76,7 @@ function PieChart {
     Process { $data += $targetData}
 
     End {
-        DoChart $data $title -ChartType $ChartType `
+        DoChart $data $title $xlfile $worksheet -ChartType $ChartType `
             -NoLegend:$NoLegend -ShowCategory:$ShowCategory -ShowPercent:$ShowPercent
     }
  }
@@ -72,6 +86,8 @@ function LineChart {
         [Parameter(ValueFromPipeline=$true)]
         $targetData,
         $title,
+        $xlfile,
+        $worksheet,
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="Line",
         [Switch]$NoLegend,
         [Switch]$ShowCategory,
@@ -82,7 +98,7 @@ function LineChart {
     Process { $data += $targetData}
 
     End {
-        DoChart $data $title -ChartType $ChartType `
+        DoChart $data $title $xlfile $worksheet -ChartType $ChartType `
             -NoLegend:$NoLegend -ShowCategory:$ShowCategory -ShowPercent:$ShowPercent
     }
 }
@@ -92,6 +108,8 @@ function ColumnChart {
         [Parameter(ValueFromPipeline=$true)]
         $targetData,
         $title,
+        $xlfile,
+        $worksheet,
         [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType="ColumnStacked",
         [Switch]$NoLegend,
         [Switch]$ShowCategory,
@@ -102,7 +120,7 @@ function ColumnChart {
     Process { $data += $targetData}
 
     End {
-        DoChart $data $title -ChartType $ChartType `
+        DoChart $data $title $xlfile $worksheet -ChartType $ChartType `
             -NoLegend:$NoLegend -ShowCategory:$ShowCategory -ShowPercent:$ShowPercent
     }
 }
