@@ -1,0 +1,23 @@
+# ConvertFrom-Excel
+''
+
+.\test.xlsx
+
+Import-Excel .\test.xlsx | ft
+
+ConvertFrom-Excel -ExcelFile .\test.xlsx -outFile .\targetout.html
+
+# Create a column definition
+$columnOptions = @()
+
+$columnOptions += New-ColumnOption -ColumnName Progress -formatter progress
+ConvertFrom-Excel -ExcelFile .\test.xlsx -outFile .\targetout.html -columnOptions $columnOptions
+
+$columnOptions += New-ColumnOption Activity -formatter lineFormatter
+ConvertFrom-Excel -ExcelFile .\test.xlsx -outFile .\targetout.html -columnOptions $columnOptions
+
+$columnOptions += New-ColumnOption -ColumnName Rating -formatter star
+$columnOptions += New-ColumnOption Driver -formatter tickCross
+ConvertFrom-Excel -ExcelFile .\test.xlsx -outFile .\targetout.html -columnOptions $columnOptions
+
+ConvertFrom-Excel -ExcelFile .\test.xlsx -outFile .\targetout.html -columnOptions $columnOptions -groupBy Gender
