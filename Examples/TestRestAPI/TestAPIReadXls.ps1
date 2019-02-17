@@ -7,6 +7,8 @@ function Test-APIReadXls {
         $WorksheetName = 'Sheet1'
     )
 
+    $testFileName = "{0}.tests.ps1" -f (get-date).ToString("yyyyMMddHHmmss.fff")
+
     $records = Import-Excel $XlFilename
 
     $params = @{}
@@ -35,7 +37,6 @@ function Test-APIReadXls {
 "@
         })
 
-    $testFileName = "{0}.tests.ps1" -f (get-date).ToString("yyyyMMddHHmmss.fff")
 
     @"
 Describe "Tests from $($XlFilename) in $($WorksheetName)" {
@@ -43,7 +44,5 @@ $($blocks)
 }
 "@ | Set-Content -Encoding Ascii $testFileName
 
-    #Invoke-Pester -Script (Get-ChildItem $testFileName)
-    Get-ChildItem $testFileName
+    (Get-ChildItem $testFileName).FullName
 }
-
