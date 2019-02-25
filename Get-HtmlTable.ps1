@@ -1,3 +1,5 @@
+# https://www.leeholmes.com/blog/2015/01/05/extracting-tables-from-powershells-invoke-webrequest/
+# tweaked from the above code
 function Get-HtmlTable {
     param(
         [Parameter(Mandatory=$true)]

@@ -1,11 +1,11 @@
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
-
 function Test-APIReadXls {
     param(
         [parameter(Mandatory)]
         $XlFilename,
         $WorksheetName = 'Sheet1'
     )
+
+    $testFileName = "{0}.tests.ps1" -f (get-date).ToString("yyyyMMddHHmmss")
 
     $records = Import-Excel $XlFilename
 
@@ -35,15 +35,11 @@ function Test-APIReadXls {
 "@
         })
 
-    $testFileName = "{0}.tests.ps1" -f (get-date).ToString("yyyyMMddHHmmss.fff")
-
     @"
 Describe "Tests from $($XlFilename) in $($WorksheetName)" {
 $($blocks)
 }
 "@ | Set-Content -Encoding Ascii $testFileName
 
-    #Invoke-Pester -Script (Get-ChildItem $testFileName)
-    Get-ChildItem $testFileName
+    (Get-ChildItem $testFileName).FullName
 }
-
