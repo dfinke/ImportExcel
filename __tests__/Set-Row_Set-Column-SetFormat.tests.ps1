@@ -34,7 +34,7 @@ Describe "Number format expansion and setting" {
             $x.ListItemText                                             | Should     be "Percentage"
         }
     }
-    Context "Expand-NumberFormat function"  {
+    Context "Expand-NumberFormat function" {
         It "Expanded named number formats as expected                                              " {
             $r = [regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol)
             Expand-NumberFormat 'Currency'                              | Should  match "^[$r\(\)\[\] RED0#\?\-;,.]+$"
@@ -54,8 +54,8 @@ Describe "Number format expansion and setting" {
             Remove-Item -Path $path -ErrorAction SilentlyContinue
             $n = [datetime]::Now.ToOADate()
 
-            $excel = 1..32 | ForEach-Object {$n} | Export-Excel -Path $path  -WorksheetName s2 -PassThru
-            $ws    = $excel.Workbook.Worksheets[1]
+            $excel = 1..32 | ForEach-Object {$n} | Export-Excel -Path $path -show -WorksheetName s2 -PassThru
+            $ws = $excel.Workbook.Worksheets[1]
             Set-ExcelRange -WorkSheet $ws -Range "A1"   -numberFormat 'General'
             Set-ExcelRange -WorkSheet $ws -Range "A2"   -numberFormat 'Number'
             Set-ExcelRange -WorkSheet $ws -Range "A3"   -numberFormat 'Percentage'
@@ -91,40 +91,40 @@ Describe "Number format expansion and setting" {
             Close-ExcelPackage -ExcelPackage $excel
 
             $excel = Open-ExcelPackage -Path $path
-            $ws    = $excel.Workbook.Worksheets[1]
+            $ws = $excel.Workbook.Worksheets[1]
         }
 
         It "Set formats which translate to the correct format ID                                   " {
-            $ws.Cells[ 1,1].Style.Numberformat.NumFmtID                 | Should     be 0       # Set as General
-            $ws.Cells[20,1].Style.Numberformat.NumFmtID                 | Should     be 1       # Set as 0
-            $ws.Cells[ 2,1].Style.Numberformat.NumFmtID                 | Should     be 2       # Set as "Number"
-            $ws.Cells[21,1].Style.Numberformat.NumFmtID                 | Should     be 2       # Set as 0.00
-            $ws.Cells[22,1].Style.Numberformat.NumFmtID                 | Should     be 3       # Set as #,##0
-            $ws.Cells[23,1].Style.Numberformat.NumFmtID                 | Should     be 4       # Set as #,##0.00
-            $ws.Cells[26,1].Style.Numberformat.NumFmtID                 | Should     be 9       # Set as 0%
-            $ws.Cells[27,1].Style.Numberformat.NumFmtID                 | Should     be 10      # Set as 0.00%
-            $ws.Cells[ 3,1].Style.Numberformat.NumFmtID                 | Should     be 10      # Set as "Percentage"
-            $ws.Cells[28,1].Style.Numberformat.NumFmtID                 | Should     be 11      # Set as 0.00E+00
-            $ws.Cells[ 4,1].Style.Numberformat.NumFmtID                 | Should     be 11      # Set as "Scientific"
-            $ws.Cells[ 5,1].Style.Numberformat.NumFmtID                 | Should     be 12      # Set as "Fraction"
-            $ws.Cells[29,1].Style.Numberformat.NumFmtID                 | Should     be 12      # Set as # ?/?
-            $ws.Cells[30,1].Style.Numberformat.NumFmtID                 | Should     be 13      # Set as # ??/?
-            $ws.Cells[ 6,1].Style.Numberformat.NumFmtID                 | Should     be 14      # Set as "Short date"
-            $ws.Cells[17,1].Style.Numberformat.NumFmtID                 | Should     be 15      # Set as d-mmm-yy
-            $ws.Cells[18,1].Style.Numberformat.NumFmtID                 | Should     be 16      # Set as d-mmm
-            $ws.Cells[19,1].Style.Numberformat.NumFmtID                 | Should     be 17      # Set as mmm-yy
-            $ws.Cells[12,1].Style.Numberformat.NumFmtID                 | Should     be 18      # Set as h:mm AM/PM
-            $ws.Cells[13,1].Style.Numberformat.NumFmtID                 | Should     be 19      # Set as h:mm:ss AM/PM
-            $ws.Cells[ 7,1].Style.Numberformat.NumFmtID                 | Should     be 20      # Set as "Short time"
-            $ws.Cells[ 8,1].Style.Numberformat.NumFmtID                 | Should     be 21      # Set as "Long time"
-            $ws.Cells[ 9,1].Style.Numberformat.NumFmtID                 | Should     be 22      # Set as "Date-time"
-            $ws.Cells[14,1].Style.Numberformat.NumFmtID                 | Should     be 45      # Set as mm:ss
-            $ws.Cells[15,1].Style.Numberformat.NumFmtID                 | Should     be 46      # Set as [h]:mm:ss
-            $ws.Cells[16,1].Style.Numberformat.NumFmtID                 | Should     be 47      # Set as mmss.0
-            $ws.Cells[11,1].Style.Numberformat.NumFmtID                 | Should     be 49      # Set as "Text"
-            $ws.Cells[31,1].Style.Numberformat.NumFmtID                 | Should     be 49      # Set as @
-            $ws.Cells[24,1].Style.Numberformat.Format                   | Should     be '#,'    # Whole thousands
-            $ws.Cells[25,1].Style.Numberformat.Format                   | Should     be '#.0,,' # Millions
+            $ws.Cells[ 1, 1].Style.Numberformat.NumFmtID                 | Should     be 0       # Set as General
+            $ws.Cells[20, 1].Style.Numberformat.NumFmtID                 | Should     be 1       # Set as 0
+            $ws.Cells[ 2, 1].Style.Numberformat.NumFmtID                 | Should     be 2       # Set as "Number"
+            $ws.Cells[21, 1].Style.Numberformat.NumFmtID                 | Should     be 2       # Set as 0.00
+            $ws.Cells[22, 1].Style.Numberformat.NumFmtID                 | Should     be 3       # Set as #,##0
+            $ws.Cells[23, 1].Style.Numberformat.NumFmtID                 | Should     be 4       # Set as #,##0.00
+            $ws.Cells[26, 1].Style.Numberformat.NumFmtID                 | Should     be 9       # Set as 0%
+            $ws.Cells[27, 1].Style.Numberformat.NumFmtID                 | Should     be 10      # Set as 0.00%
+            $ws.Cells[ 3, 1].Style.Numberformat.NumFmtID                 | Should     be 10      # Set as "Percentage"
+            $ws.Cells[28, 1].Style.Numberformat.NumFmtID                 | Should     be 11      # Set as 0.00E+00
+            $ws.Cells[ 4, 1].Style.Numberformat.NumFmtID                 | Should     be 11      # Set as "Scientific"
+            $ws.Cells[ 5, 1].Style.Numberformat.NumFmtID                 | Should     be 12      # Set as "Fraction"
+            $ws.Cells[29, 1].Style.Numberformat.NumFmtID                 | Should     be 12      # Set as # ?/?
+            $ws.Cells[30, 1].Style.Numberformat.NumFmtID                 | Should     be 13      # Set as # ??/?
+            $ws.Cells[ 6, 1].Style.Numberformat.NumFmtID                 | Should     be 14      # Set as "Short date"
+            $ws.Cells[17, 1].Style.Numberformat.NumFmtID                 | Should     be 15      # Set as d-mmm-yy
+            $ws.Cells[18, 1].Style.Numberformat.NumFmtID                 | Should     be 16      # Set as d-mmm
+            $ws.Cells[19, 1].Style.Numberformat.NumFmtID                 | Should     be 17      # Set as mmm-yy
+            $ws.Cells[12, 1].Style.Numberformat.NumFmtID                 | Should     be 18      # Set as h:mm AM/PM
+            $ws.Cells[13, 1].Style.Numberformat.NumFmtID                 | Should     be 19      # Set as h:mm:ss AM/PM
+            $ws.Cells[ 7, 1].Style.Numberformat.NumFmtID                 | Should     be 20      # Set as "Short time"
+            $ws.Cells[ 8, 1].Style.Numberformat.NumFmtID                 | Should     be 21      # Set as "Long time"
+            $ws.Cells[ 9, 1].Style.Numberformat.NumFmtID                 | Should     be 22      # Set as "Date-time"
+            $ws.Cells[14, 1].Style.Numberformat.NumFmtID                 | Should     be 45      # Set as mm:ss
+            $ws.Cells[15, 1].Style.Numberformat.NumFmtID                 | Should     be 46      # Set as [h]:mm:ss
+            $ws.Cells[16, 1].Style.Numberformat.NumFmtID                 | Should     be 47      # Set as mmss.0
+            $ws.Cells[11, 1].Style.Numberformat.NumFmtID                 | Should     be 49      # Set as "Text"
+            $ws.Cells[31, 1].Style.Numberformat.NumFmtID                 | Should     be 49      # Set as @
+            $ws.Cells[24, 1].Style.Numberformat.Format                   | Should     be '#,'    # Whole thousands
+            $ws.Cells[25, 1].Style.Numberformat.Format                   | Should     be '#.0,,' # Millions
         }
     }
 }
@@ -162,7 +162,7 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
     Context "Set-ExcelRow and Set-ExcelColumn" {
         it "Set a row and a column to have zero width/height                                       " {
             $r                                                          | Should not beNullorEmpty
-         #  $c                                                          | Should not beNullorEmpty  ## can't see why but this test breaks in appveyor
+            #  $c                                                          | Should not beNullorEmpty  ## can't see why but this test breaks in appveyor
             $ws.Column(1).width                                         | Should be  0
             $ws.Row(5).height                                           | Should be  0
         }
@@ -239,10 +239,10 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
             $c = Set-ExcelColumn -PassThru -Worksheet $ws -Heading "NextBirthday" -Value {
                 $bmonth = $worksheet.Cells["C$Row"].value.month ; $bDay = $worksheet.Cells["C$Row"].value.day
                 $cMonth = [datetime]::Now.Month ; $cday = [datetime]::Now.day ; $cyear = [datetime]::Now.Year
-                if (($cmonth -gt $bmonth) -or (($cMonth -eq $bmonth) -and ($cday -ge $bDay))){
-                       [datetime]::new($cyear+1, $bmonth, $bDay)
+                if (($cmonth -gt $bmonth) -or (($cMonth -eq $bmonth) -and ($cday -ge $bDay))) {
+                    [datetime]::new($cyear + 1, $bmonth, $bDay)
                 }
-                else  {[datetime]::new($cyear, $bmonth, $bday)  }
+                else {[datetime]::new($cyear, $bmonth, $bday)  }
             }
             Set-ExcelColumn -Worksheet $ws -Heading "Age" -Value "=INT((NOW()-DateOfBirth)/365)"
             # Test Piping column Numbers into Set excelColumn
@@ -253,7 +253,7 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
             Close-ExcelPackage -ExcelPackage $excel -Calculate
             $excel = Open-ExcelPackage $path
             $ws = $excel.Workbook.Worksheets["Sheet1"]
-          }
+        }
         It "Inserted Hyperlinks                                                                    " {
             $ws.Cells["D2"].Hyperlink                                   | Should not beNullorEmpty
             $ws.Cells["D2"].Style.Font.UnderLine                        | Should     be $true
@@ -281,14 +281,14 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
     }
 }
 
-Describe "Conditional Formatting"  {
+Describe "Conditional Formatting" {
     BeforeAll {
-    Remove-Item $path
-    $data = Get-Process | Where-Object company | Select-Object company,name,pm,handles,*mem*
-    $cfmt = New-ConditionalFormattingIconSet -Range "c:c" -ConditionalFormat ThreeIconSet -IconType Arrows
-    $data | Export-Excel -path $Path  -AutoSize -ConditionalFormat $cfmt
-    $excel = Open-ExcelPackage -Path $path
-    $ws = $excel.Workbook.Worksheets[1]
+        Remove-Item $path
+        $data = Get-Process | Where-Object company | Select-Object company, name, pm, handles, *mem*
+        $cfmt = New-ConditionalFormattingIconSet -Range "c:c" -ConditionalFormat ThreeIconSet -IconType Arrows
+        $data | Export-Excel -path $Path  -AutoSize -ConditionalFormat $cfmt
+        $excel = Open-ExcelPackage -Path $path
+        $ws = $excel.Workbook.Worksheets[1]
     }
     Context "Using a pre-prepared 3 Arrows rule" {
         it "Set the right type, IconSet and range                                                  " {
@@ -318,23 +318,61 @@ ID,Product,Quantity,Price,Total
 12012,Pliers,3,14.99,44.97
 "@
 
-Describe "Table Formatting"  {
+Describe "AutoNameRange data with a single property name" {
+    BeforeEach {
+        $xlfile = "$Env:TEMP\testNamedRange.xlsx"
+        rm $xlfile -ErrorAction SilentlyContinue
+    }
+
+    it "Should have a single item as a named range" {
+        $excel = ConvertFrom-Csv @"
+Sold
+1
+2
+3
+4
+"@ | Export-Excel $xlfile -PassThru -AutoNameRange
+
+        $ws = $excel.Workbook.Worksheets["Sheet1"]
+
+        $ws.Names.Count | Should Be 1
+        $ws.Names[0].Name | Should Be 'Sold'
+    }
+
+    it "Should have a more than a single item as a named range" {
+        $excel = ConvertFrom-Csv @"
+Sold,ID
+1,a
+2,b
+3,c
+4,d
+"@ | Export-Excel $xlfile -PassThru -AutoNameRange
+
+        $ws = $excel.Workbook.Worksheets["Sheet1"]
+
+        $ws.Names.Count | Should Be 2
+        $ws.Names[0].Name | Should Be 'Sold'
+        $ws.Names[1].Name | Should Be 'ID'
+    }
+}
+
+Describe "Table Formatting" {
     BeforeAll {
         Remove-Item $path
         $excel = $data2 | Export-excel -path $path -WorksheetName Hardware -AutoNameRange -AutoSize -BoldTopRow -FreezeTopRow -PassThru
         $ws = $excel.Workbook.Worksheets[1]
         #test showfilter & TotalSettings
-        $Table = Add-ExcelTable -PassThru -Range $ws.Cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -TotalSettings @{"Total"="Sum"} -ShowFirstColumn -ShowFilter:$false
+        $Table = Add-ExcelTable -PassThru -Range $ws.Cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -TotalSettings @{"Total" = "Sum"} -ShowFirstColumn -ShowFilter:$false
         #test expnading named number formats
         Set-ExcelColumn -Worksheet $ws -Column 4 -NumberFormat 'Currency'
         Set-ExcelColumn -Worksheet $ws -Column 5 -NumberFormat 'Currency'
-        $PtDef =New-PivotTableDefinition -PivotTableName Totals -PivotRows Product -PivotData @{"Total"="Sum"} -PivotNumberFormat Currency -PivotTotals None -PivotTableStyle Dark2
+        $PtDef = New-PivotTableDefinition -PivotTableName Totals -PivotRows Product -PivotData @{"Total" = "Sum"} -PivotNumberFormat Currency -PivotTotals None -PivotTableStyle Dark2
         Export-excel -ExcelPackage $excel -WorksheetName Hardware -PivotTableDefinition $PtDef
-        $excel= Open-ExcelPackage -Path $path
-        $ws1   = $excel.Workbook.Worksheets["Hardware"]
-        $ws2   = $excel.Workbook.Worksheets["Totals"]
+        $excel = Open-ExcelPackage -Path $path
+        $ws1 = $excel.Workbook.Worksheets["Hardware"]
+        $ws2 = $excel.Workbook.Worksheets["Totals"]
     }
-    Context "Setting and not clearing when Export-Excel touches the file again."{
+    Context "Setting and not clearing when Export-Excel touches the file again." {
         it "Set the Table Options                                                                  " {
             $ws1.Tables[0].Address.Address                              | should     be "A1:E16"
             $ws1.Tables[0].Name                                         | should     be "HardwareTable"
@@ -353,7 +391,3 @@ Describe "Table Formatting"  {
         }
     }
 }
-
-
-
-

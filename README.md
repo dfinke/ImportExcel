@@ -58,6 +58,15 @@ Install-Module ImportExcel
 -  In Set-ExcelRange , added a 'Locked' option eqivalent to the checkbox on the Protection Tab of the format cells dialog box in Excel.
 - Created a Set-WorksheetProtection function. This gives the same options the protection dialog in Excel but is 0.9 release at the moment. 
 
+# What's new 5.4.4
+
+- Fix issue when only a single property is piped into Export-Excel
+- Fix issue in `Copy-ExcelWorksheet`, close the `$Stream`
+
+# What's new 5.4.3
+
+- Added Remove-Worksheet: Removes one or more worksheets from one or more workbooks
+
 # What's new 5.4.2
 
 - Added parameters -GroupDateRow and -GroupDatePart & -GroupNumericRow, -GroupNumericMin, -GroupNumericMax and -GroupNumericInterval
