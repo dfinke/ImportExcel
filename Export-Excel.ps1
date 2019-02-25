@@ -539,6 +539,9 @@
             )
             #The write-verbose commands have been commented out below - even if verbose is silenced they cause a significiant performance impact and if it's on they will cause a flood of messages.
             Switch ($CellValue) {
+                { $null -eq $_     } { 
+                    break
+                }
                 { $_ -is [DateTime]} {
                     # Save a date with one of Excel's built in formats format
                     $TargetCell.Value = $_
