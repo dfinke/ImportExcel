@@ -150,7 +150,7 @@
                 $Range.Style.Font.VerticalAlign  = $FontShift
             }
             if ($PSBoundParameters.ContainsKey('FontColor')){
-                if ($FontColor -is [string]) {$FontColor = [System.Drawing.Color] $FontColor }
+                if ($FontColor -is [string]) {$FontColor = [System.Drawing.ColorTranslator]::FromHtml($FontColor) }
                 $Range.Style.Font.Color.SetColor(  $FontColor)
             }
             if ($PSBoundParameters.ContainsKey('TextRotation')) {
@@ -180,7 +180,7 @@
             if ($PSBoundParameters.ContainsKey('NumberFormat')) {
                 $Range.Style.Numberformat.Format = (Expand-NumberFormat $NumberFormat)
             }
-            if ($BorderColor -is [string]) {$BorderColor = [System.Drawing.Color] $BorderColor }
+            if ($BorderColor -is [string]) {$BorderColor = [System.Drawing.ColorTranslator]::FromHtml($BorderColor) }
             if ($PSBoundParameters.ContainsKey('BorderAround')) {
                 $Range.Style.Border.BorderAround($BorderAround, $BorderColor)
             }
@@ -202,10 +202,10 @@
             }
             if ($PSBoundParameters.ContainsKey('BackgroundColor')) {
                 $Range.Style.Fill.PatternType = $BackgroundPattern
-                if ($BackgroundColor -is [string]) {$BackgroundColor = [System.Drawing.Color] $BackgroundColor }
+                if ($BackgroundColor -is [string]) {$BackgroundColor = [System.Drawing.ColorTranslator]::FromHtml($BackgroundColor) }
                 $Range.Style.Fill.BackgroundColor.SetColor($BackgroundColor)
                 if ($PatternColor) {
-                    if ($PatternColor -is [string]) {$PatternColor = [System.Drawing.Color] $PatternColor }
+                    if ($PatternColor -is [string]) {$PatternColor = [System.Drawing.ColorTranslator]::FromHtml($PatternColor) }
                     $Range.Style.Fill.PatternColor.SetColor( $PatternColor)
                 }
             }
