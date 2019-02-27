@@ -149,7 +149,7 @@
         if ($TitleBold) {$destinationSheet.Cells[1, 1].Style.Font.Bold = $True }
         #Can only set TitleBackgroundColor if TitleFillPattern is something other than None.
         if ($TitleBackgroundColor -AND ($TitleFillPattern -ne 'None')) {
-            if ($TitleBackgroundColor -is [string])         {$TitleBackgroundColor = [System.Drawing.Color]::$TitleBackgroundColor }
+            if ($TitleBackgroundColor -is [string])         {$TitleBackgroundColor = [System.Drawing.Color] $TitleBackgroundColor }
             $destinationSheet.Cells[1, 1].Style.Fill.PatternType = $TitleFillPattern
             $destinationSheet.Cells[1, 1].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
         }

@@ -193,7 +193,7 @@
     if (-not $worksheet -or $WorkSheet -isnot [OfficeOpenXml.ExcelWorksheet]) {write-warning "You need to provide a worksheet object." ; return}
     #region create a rule of the right type
     if     ($RuleType -match 'IconSet$') {Write-warning -Message "You cannot configure a Icon-Set rule in this way; please use -$RuleType <SetName>." ; return}
-    if ($PSBoundParameters.ContainsKey("DataBarColor"  )      ) {if ($DataBarColor -is [string]) {$DataBarColor = [System.Drawing.Color]::$DataBarColor }
+    if ($PSBoundParameters.ContainsKey("DataBarColor"  )      ) {if ($DataBarColor -is [string]) {$DataBarColor = [System.Drawing.Color] $DataBarColor }
                                                                      $rule =  $WorkSheet.ConditionalFormatting.AddDatabar(     $Address , $DataBarColor )
     }
     elseif ($PSBoundParameters.ContainsKey("ThreeIconsSet" )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddThreeIconSet($Address , $ThreeIconsSet)}
@@ -257,12 +257,12 @@
     if     ($PSBoundParameters.ContainsKey("Bold"             )   ) {$rule.Style.Font.Bold                  = [boolean]$Bold       }
     if     ($PSBoundParameters.ContainsKey("Italic"           )   ) {$rule.Style.Font.Italic                = [boolean]$Italic     }
     if     ($PSBoundParameters.ContainsKey("StrikeThru"       )   ) {$rule.Style.Font.Strike                = [boolean]$StrikeThru }
-    if     ($PSBoundParameters.ContainsKey("ForeGroundColor"  )   ) {if ($ForeGroundColor -is [string])      {$ForeGroundColor = [System.Drawing.Color]::$ForeGroundColor }
+    if     ($PSBoundParameters.ContainsKey("ForeGroundColor"  )   ) {if ($ForeGroundColor -is [string])      {$ForeGroundColor = [System.Drawing.Color] $ForeGroundColor }
                                                                      $rule.Style.Font.Color.color           = $ForeGroundColor     }
-    if     ($PSBoundParameters.ContainsKey("BackgroundColor"  )   ) {if ($BackgroundColor -is [string])      {$BackgroundColor = [System.Drawing.Color]::$BackgroundColor }
+    if     ($PSBoundParameters.ContainsKey("BackgroundColor"  )   ) {if ($BackgroundColor -is [string])      {$BackgroundColor = [System.Drawing.Color] $BackgroundColor }
                                                                      $rule.Style.Fill.BackgroundColor.color = $BackgroundColor     }
     if     ($PSBoundParameters.ContainsKey("BackgroundPattern")   ) {$rule.Style.Fill.PatternType           = $BackgroundPattern   }
-    if     ($PSBoundParameters.ContainsKey("PatternColor"     )   ) {if ($PatternColor -is [string])         {$PatternColor = [System.Drawing.Color]::$PatternColor }
+    if     ($PSBoundParameters.ContainsKey("PatternColor"     )   ) {if ($PatternColor -is [string])         {$PatternColor = [System.Drawing.Color] $PatternColor }
                                                                      $rule.Style.Fill.PatternColor.color    = $PatternColor        }
     #endregion
     #Allow further tweaking by returning the rule, if passthru specified

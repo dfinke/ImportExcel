@@ -182,7 +182,7 @@
                 Set-Format -WorkSheet $ws -Range $range -BackgroundColor $BackgroundColor
             }
             if  ($PSBoundParameters.ContainsKey("TabColor")) {
-                if ($TabColor -is [string])         {$TabColor = [System.Drawing.Color]::$TabColor }
+                if ($TabColor -is [string])         {$TabColor = [System.Drawing.Color] $TabColor }
                 foreach ($tab in ($file.group._sheet | Select-Object -Unique)) {
                     $xl.Workbook.Worksheets[$tab].TabColor = $TabColor
                  }

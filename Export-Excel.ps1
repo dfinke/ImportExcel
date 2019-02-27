@@ -688,7 +688,7 @@
                     $ws.Cells[$Row, $StartColumn].Style.Font.Bold = [boolean]$TitleBold
                 }
                 if ($TitleBackgroundColor ) {
-                    if ($TitleBackgroundColor -is [string])         {$TitleBackgroundColor = [System.Drawing.Color]::$TitleBackgroundColor }
+                    if ($TitleBackgroundColor -is [string])         {$TitleBackgroundColor = [System.Drawing.Color] $TitleBackgroundColor }
                     $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
                     $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
                 }
