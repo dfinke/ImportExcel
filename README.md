@@ -53,6 +53,7 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 # What's new
+- Modified Send-SQLDataToExcel so it creates tables and ranges itself; previously it relied on export-excel to do this which cause problems when adding data to an existing sheet (#555)
 - Added new command Add-ExcelDataValidation which will apply different data-validation rules to ranges of cells
 - Changed the export behavior so that (1) attempts to convert to a number only apply if the the value was a string; (2) Nulls are no longer converted to an empty string (3) there is a specific check for URIs and not just text which is a valid URI. Using UNC names in hyperlinks remains problematic.   
 - Changed the behavior of AutoSize in export excel so it only applies to the exported columns. Previously if something was exported next to pre-existing data, AutoSize would resize the whole sheet, potentially undoing things which had been set on the earlier data. If anyone relied on this behavior they will need to explictly tell the sheet to auto size with $sheet.cells.autofitColumns. (where $sheet points to the sheet, it might be $ExcelPackage.Workbook.Worksheets['Name'])
