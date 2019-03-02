@@ -36,7 +36,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Set-CellStyle.ps1
 . $PSScriptRoot\Set-Column.ps1
 . $PSScriptRoot\Set-Row.ps1
-. $PSScriptRoot\Set-WorkSheetProtection
+. $PSScriptRoot\Set-WorkSheetProtection.ps1
 . $PSScriptRoot\SetFormat.ps1
 . $PSScriptRoot\TrackingUtils.ps1
 . $PSScriptRoot\Update-FirstObjectProperties.ps1
