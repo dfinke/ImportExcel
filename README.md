@@ -54,6 +54,8 @@ Install-Module ImportExcel
 ```
 # What's new 5.4.5
 
+Thank you to [James O'Neill](https://github.com/jhoneill) for the great additions.
+
 - Modified Send-SQLDataToExcel so it creates tables and ranges itself; previously it relied on export-excel to do this which cause problems when adding data to an existing sheet (#555)
 - Added new command Add-ExcelDataValidation which will apply different data-validation rules to ranges of cells
 - Changed the export behavior so that (1) attempts to convert to a number only apply if the the value was a string; (2) Nulls are no longer converted to an empty string (3) there is a specific check for URIs and not just text which is a valid URI. Using UNC names in hyperlinks remains problematic.
@@ -61,6 +63,9 @@ Install-Module ImportExcel
 - In Compare-Worksheet,the Key for comparing the sheets can now be written as a hash table with an expression - it is used with a Group-Object command so if it is valid in Group-Object it should be accepted; this allows the creation of composite keys when data being compared doesn't have a column which uniquely identifies rows.
 -  In Set-ExcelRange , added a 'Locked' option equivalent to the checkbox on the Protection Tab of the format cells dialog box in Excel.
 - Created a Set-WorksheetProtection function. This gives the same options the protection dialog in Excel but is 0.9 release at the moment.
+
+## New Example
+    Added Examples\ExcelDataValidation\MutipleValidations.ps1. Culled from the `tests`.
 
 # What's new 5.4.4
 
