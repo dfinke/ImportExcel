@@ -65,7 +65,8 @@ Thank you to [James O'Neill](https://github.com/jhoneill) for the great addition
 - Created a Set-WorksheetProtection function. This gives the same options the protection dialog in Excel but is 0.9 release at the moment.
 
 ## New Example
-    Added Examples\ExcelDataValidation\MutipleValidations.ps1. Culled from the `tests`.
+
+- Added [MutipleValidations.ps1](https://github.com/dfinke/ImportExcel/blob/master/Examples/ExcelDataValidation/MutipleValidations.ps1). Culled from the `tests`.
 
 # What's new 5.4.4
 
