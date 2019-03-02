@@ -278,17 +278,42 @@
         else         {$r = $StartRow}
         #Get our Excel sheet and fill it with the data
         $excelPackage    = Export-Excel -Path $Path -WorkSheetname $WorkSheetname  -PassThru
-        $excelPackage.Workbook.Worksheets[$WorkSheetname].Cells[$r,$StartColumn].LoadFromDataTable($dataTable, $printHeaders )  | Out-Null
+        $ws              = $excelPackage.Workbook.Worksheets[$WorkSheetname]
+        $ws.Cells[$r,$StartColumn].LoadFromDataTable($dataTable, $printHeaders )  | Out-Null
 
-        #Apply date format
+        $LastRow       = $StartRow    + $DataTable.Rows.Count # if start row is 1, row 1 will be the header, row 2 will be data, so don't need to subtract 1
+        $LastCol       = $StartColumn + $DataTable.Columns.Count - 1
+        $endAddress    = [OfficeOpenXml.ExcelAddress]::GetAddress($LastRow , $LastCol)
+        $startAddress  = [OfficeOpenXml.ExcelAddress]::GetAddress($StartRow, $StartColumn)
+        $dataRange     = "{0}:{1}" -f $startAddress, $endAddress
+
+        #Apply date format and range names
         for ($c=0 ; $c -lt $DataTable.Columns.Count ; $c++) {
             if ($DataTable.Columns[$c].DataType -eq [datetime]) {
-                Set-ExcelColumn -Worksheet $excelPackage.Workbook.Worksheets[$WorkSheetname] -Column ($c +1) -NumberFormat 'Date-Time'
+                Set-ExcelColumn -Worksheet $ws -Column ($c + $StartColumn) -NumberFormat 'Date-Time'
+            }
+            if ($AutoNameRange) {
+                Add-ExcelName  -RangeName $DataTable.Columns[$c].ColumnName -Range $ws.Cells[($StartRow+1), ($StartColumn + $c ), $LastRow, ($StartColumn + $c )]
             }
         }
 
+        #Apply range or table to whole - we can't leave this to Export-Excel if we are inserting onto a sheet where there is already data
+        if ($RangeName) {
+             Add-ExcelName  -Range $ws.Cells[$dataRange] -RangeName $RangeName
+             $null = $PSBoundParameters.Remove('RangeName')
+        }
+
+        if ($TableName) {
+            if ($PSBoundParameters.ContainsKey('TableStyle')) {
+                  Add-ExcelTable -Range  $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
+                  $null = $PSBoundParameters.Remove('TableStyle')
+            }
+            else {Add-ExcelTable -Range  $excelPackage.Workbook.Worksheets[$WorkSheetname].Cells[$dataRange] -TableName $TableName}
+            $null = $PSBoundParameters.Remove('TableName')
+        }
+
         #Call export-excel with any parameters which don't relate to the SQL query
-        "Connection", "Database" , "Session", "MsSQLserver", "Destination" , "SQL" , "DataTable", "Path" | ForEach-Object {$null = $PSBoundParameters.Remove($_) }
+        "AutoNameRange", "Connection", "Database" , "Session", "MsSQLserver", "Destination" , "SQL" , "DataTable", "Path" | ForEach-Object {$null = $PSBoundParameters.Remove($_) }
         Export-Excel -ExcelPackage $excelPackage   @PSBoundParameters
     }
     else {Write-Warning -Message "No Data to insert."}

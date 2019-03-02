@@ -539,6 +539,9 @@
             )
             #The write-verbose commands have been commented out below - even if verbose is silenced they cause a significiant performance impact and if it's on they will cause a flood of messages.
             Switch ($CellValue) {
+                { $null -eq $_     } { 
+                    break
+                }
                 { $_ -is [DateTime]} {
                     # Save a date with one of Excel's built in formats format
                     $TargetCell.Value = $_
@@ -560,7 +563,19 @@
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as value"
                     break
                 }
-                {($_ -is [String]) -and ($_[0] -eq '=')} {
+                { $_ -is [uri] } {
+                    $targetCell.HyperLink = $_ 
+                    $TargetCell.Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
+                    $TargetCell.Style.Font.UnderLine = $true
+                    #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($_.AbsoluteUri)' as Hyperlink"
+                    break
+                }
+                { $_ -isnot [String]} {
+                    $TargetCell.Value = $_.toString() 
+                    break
+                } 
+                #All the remaining options are string as ... only strings get checked for formulas, URIs or being numbers
+                { $_[0] -eq '='} {
                     #region Save an Excel formula - we need = to spot the formula but the EPPLUS won't like it if we include it (Excel doesn't care if is there or not)
                     $TargetCell.Formula = ($_ -replace '^=','')
                     if ($setNumformat) {$targetCell.Style.Numberformat.Format = $Numberformat }
@@ -568,9 +583,7 @@
                     break
                 }
                 { [System.Uri]::IsWellFormedUriString($_ , [System.UriKind]::Absolute) } {
-                    # Save a hyperlink : internal links can be in the form xl://sheet!E419 (use A1 as goto sheet), or xl://RangeName
-                    if ($_ -is [uri]) {$targetCell.HyperLink = $_ }
-                    elseif ($_ -match "^xl://internal/") {
+                    if ($_ -match "^xl://internal/") {
                           $referenceAddress = $_ -replace "^xl://internal/" , ""
                           $display          = $referenceAddress -replace "!A1$"   , ""
                           $h = New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList $referenceAddress , $display
@@ -579,24 +592,28 @@
                     else {$TargetCell.HyperLink = $_ }   #$TargetCell.Value = $_.AbsoluteUri
                     $TargetCell.Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
                     $TargetCell.Style.Font.UnderLine = $true
-                    #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($_.AbsoluteUri)' as Hyperlink"
+                    #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as Hyperlink"
                     break
                 }
+              <# Logic for no-number conversion has been moved into default and only checked if value has digits.   
                 {( $NoNumberConversion -and (
                   ($NoNumberConversion -contains $Name) -or ($NoNumberConversion -eq '*'))) } {
                     #Save text without it to converting to number
                     $TargetCell.Value = $_
                     #Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' unconverted"
                     break
-                }
+                } #>
                 Default {
                     #Save a value as a number if possible
                     $number = $null
-                    if ($numberRegex.IsMatch($_) -and [Double]::TryParse($_, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)) {
-                        # as simpler version using [Double]::TryParse( $_ , [ref]$number)) was found to cause problems reverted back to the longer version
-                        $TargetCell.Value = $number
-                        if ($setNumformat) {$targetCell.Style.Numberformat.Format = $Numberformat }
-                        #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' as number converted from '$_' with format '$Numberformat'"
+                    if ( $numberRegex.IsMatch($_) -and  # if it contains digit(s) - this syntax is quicker than -match for many items and cuts out slow checks for non numbers 
+                         $NoNumberConversion -ne '*'  -and  # and NoNumberConversion isn't specified            
+                         $NoNumberConversion -notcontains $Name -and 
+                         [Double]::TryParse($_, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)
+                       ) {
+                         $TargetCell.Value = $number
+                         if ($setNumformat) {$targetCell.Style.Numberformat.Format = $Numberformat }
+                         #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' as number converted from '$_' with format '$Numberformat'"
                     }
                     else {
                         $TargetCell.Value = $_
@@ -926,7 +943,8 @@
         }
         if ($AutoSize) {
             try {
-                $ws.Cells.AutoFitColumns()
+                #Don't fit the all the columns in the sheet; if we are adding cells beside things with hidden columns, that unhides them
+                $ws.Cells[($startAddress+':'+$endAddress)].AutoFitColumns()
                 Write-Verbose -Message "Auto-sized columns"
             }
             catch {  Write-Warning -Message "Failed autosizing columns of worksheet '$WorksheetName': $_"}

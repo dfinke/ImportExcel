@@ -104,7 +104,9 @@
         #Set cells to a fixed height  (rows or ranges only).
         [float]$Height,
         #Hide a row or column  (not a range); use -Hidden:$false to unhide.
-        [Switch]$Hidden
+        [Switch]$Hidden,
+        #Locks cells. Cells are locked by default use -locked:$false on the whole sheet and then lock specific ones, and enable protection on the sheet.
+        [Switch]$Locked
     )
     process {
         if  ($Range -is [Array])  {
@@ -117,8 +119,8 @@
             elseif ($WorkSheet -and ($Range -is [string] -or $Range -is [OfficeOpenXml.ExcelAddress])) {
                 $Range = $WorkSheet.Cells[$Range]
             }
-            elseif ($Range -is [string]) {Write-Warning -Message "The range pararameter you have specified also needs a worksheet parameter."}
-
+            elseif ($Range -is [string]) {Write-Warning -Message "The range pararameter you have specified also needs a worksheet parameter." ;return}
+            #else we assume Range is a range.
             if ($ResetFont) {
                 $Range.Style.Font.Color.SetColor( ([System.Drawing.Color]::Black))
                 $Range.Style.Font.Bold          = $false
@@ -240,6 +242,9 @@
                 if ($Range -is [OfficeOpenXml.ExcelRow] -or
                     $Range -is [OfficeOpenXml.ExcelColumn]  ) {$Range.Hidden = [boolean]$Hidden}
                 else {Write-Warning -Message ("Can hide a row or a column but not a {0} object" -f ($Range.GetType().name)) }
+            }
+            if ($PSBoundParameters.ContainsKey('Locked')) {
+                $Range.Style.Locked=$Locked
             }
         }
     }

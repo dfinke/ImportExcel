@@ -1,6 +1,7 @@
 ﻿#region import everything we need
 Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\AddConditionalFormatting.ps1
+. $PSScriptRoot\AddDataValidation.ps1
 . $PSScriptRoot\Charting.ps1
 . $PSScriptRoot\ColorCompletion.ps1
 . $PSScriptRoot\ConvertExcelToImageFile.ps1
@@ -35,6 +36,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Set-CellStyle.ps1
 . $PSScriptRoot\Set-Column.ps1
 . $PSScriptRoot\Set-Row.ps1
+. $PSScriptRoot\Set-WorkSheetProtection
 . $PSScriptRoot\SetFormat.ps1
 . $PSScriptRoot\TrackingUtils.ps1
 . $PSScriptRoot\Update-FirstObjectProperties.ps1

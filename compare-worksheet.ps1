@@ -191,7 +191,7 @@
         }
     }
     #if font color was specified, set it on changed properties where the same key appears in both sheets.
-    if      ($diff -and $FontColor -and ($propList -contains $Key)  ) {
+    if      ($diff -and $FontColor -and (($propList -contains $Key) -or ($key -is [hashtable]))  ) {
         $updates = $diff.where({$_.SideIndicator -ne "=="})  | Group-object -Property $Key | Where-Object {$_.count -eq 2}
         if ($updates) {
             $XL1 = Open-ExcelPackage -path $Referencefile
