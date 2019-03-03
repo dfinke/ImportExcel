@@ -1,3 +1,4 @@
+#region Setup
 <#
     This examples demos three types of validation:
         * Creating a list using a PowerShell array
@@ -34,9 +35,17 @@ $excelPackage = $Data |
 $excelPackage = @('Chisel', 'Crowbar', 'Drill', 'Hammer', 'Nails', 'Saw', 'Screwdriver', 'Wrench') |
     Export-excel -ExcelPackage $excelPackage -WorksheetName Values -PassThru
 
-$ValidationParams = @{WorkSheet = $excelPackage.sales; ShowErrorMessage = $true; ErrorStyle = 'stop'; ErrorTitle = 'Invalid Data' }
+#endregion
 
-# Creating a list using a PowerShell array
+#region Creating a list using a PowerShell array
+$ValidationParams = @{
+    WorkSheet        = $excelPackage.sales
+    ShowErrorMessage = $true
+    ErrorStyle       = 'stop'
+    ErrorTitle       = 'Invalid Data'
+}
+
+
 $MoreValidationParams = @{
     Range          = 'B2:B1001'
     ValidationType = 'List'
@@ -45,8 +54,9 @@ $MoreValidationParams = @{
 }
 
 Add-ExcelDataValidationRule @ValidationParams @MoreValidationParams
+#endregion
 
-# Creating a list data from another Excel Worksheet
+#region Creating a list data from another Excel Worksheet
 $MoreValidationParams = @{
     Range          = 'C2:C1001'
     ValidationType = 'List'
@@ -55,8 +65,9 @@ $MoreValidationParams = @{
 }
 
 Add-ExcelDataValidationRule @ValidationParams @MoreValidationParams
+#endregion
 
-# Creating a rule for numbers to be between 0 an 10000
+#region Creating a rule for numbers to be between 0 an 10000
 $MoreValidationParams = @{
     Range          = 'F2:F1001'
     ValidationType = 'Integer'
@@ -67,5 +78,8 @@ $MoreValidationParams = @{
 }
 
 Add-ExcelDataValidationRule @ValidationParams @MoreValidationParams
+#endregion
 
+#region Close Package
 Close-ExcelPackage -ExcelPackage $excelPackage -Show
+#endregion
