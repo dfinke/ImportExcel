@@ -120,3 +120,12 @@ Describe "Get-ExcelTable Wild Cards" {
         $actual[0].Keys.Count | Should Be 1
     }
 }
+
+Describe "Get-ExcelTable alias gxlt" {
+    It "Should return 1 sheet and 1 table" {
+        $actual = gxlt -FullName "$PSScriptRoot\Book2.xlsx" -TableName *feed*
+
+        $actual.Keys.Count | Should Be 1
+        $actual[0].Keys.Count | Should Be 1
+    }
+}
