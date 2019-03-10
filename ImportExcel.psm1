@@ -40,7 +40,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\SetFormat.ps1
 . $PSScriptRoot\TrackingUtils.ps1
 . $PSScriptRoot\Update-FirstObjectProperties.ps1
-
+. $PSScriptRoot\GetExcelTable.ps1
 
 New-Alias -Name Use-ExcelData -Value "ConvertFrom-ExcelData" -Force
 
