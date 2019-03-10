@@ -1,5 +1,4 @@
 Describe "Get-ExcelTable" {
-
     BeforeAll {
         $script:actual = Get-ExcelTable -FullName "$PSScriptRoot\Book2.xlsx"
     }
@@ -83,5 +82,41 @@ Describe "Get-ExcelTable" {
     It "Cats FoodCosts should have 4 rows of data" {
         $actual.Cats.FoodCosts.Count | Should Be 4
     }
+}
 
+Describe "Get-ExcelTable Wild Cards" {
+    It "Should return 1 sheet" {
+        $actual = Get-ExcelTable -FullName "$PSScriptRoot\Book2.xlsx" -WorkSheetName *1
+        $actual.Keys.Count | Should Be 1
+    }
+
+    It "Should return 3 sheets" {
+        $actual = Get-ExcelTable -FullName "$PSScriptRoot\Book2.xlsx" -WorkSheetName Sheet*
+        $actual.Keys.Count | Should Be 3
+    }
+
+    It "Should return 1 sheet" {
+        $actual = Get-ExcelTable -FullName "$PSScriptRoot\Book2.xlsx" -WorkSheetName *cat*
+        $actual.Keys.Count | Should Be 1
+    }
+
+    It "Should return 1 sheet and 1 table" {
+        $actual = Get-ExcelTable -FullName "$PSScriptRoot\Book2.xlsx" -TableName *1
+        $actual.Keys.Count | Should Be 1
+        $actual[0].Keys.Count | Should Be 1
+    }
+
+    It "Should return 3 sheets and 5 tables" {
+        $actual = Get-ExcelTable -FullName "$PSScriptRoot\Book2.xlsx" -TableName table*
+
+        $actual.Keys.Count | Should Be 3
+        $actual[0].Keys.Count + $actual[1].Keys.Count + $actual[2].Keys.Count | Should Be 5
+    }
+
+    It "Should return 1 sheet and 1 table" {
+        $actual = Get-ExcelTable -FullName "$PSScriptRoot\Book2.xlsx" -TableName *feed*
+
+        $actual.Keys.Count | Should Be 1
+        $actual[0].Keys.Count | Should Be 1
+    }
 }
