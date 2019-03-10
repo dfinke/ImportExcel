@@ -1,11 +1,16 @@
 function Get-ExcelTable {
     <#
     .SYNOPSIS
-
     .DESCRIPTION
+    .PARAMETER Path
+        Path to a new or existing .XLSX file.
+    .PARAMETER WorkSheetName
+    .PARAMETER TableName
+    .EXAMPLE
     #>
     param(
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Alias("Path")]
         $FullName,
         $WorkSheetName,
         $TableName
