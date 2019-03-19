@@ -1106,7 +1106,7 @@
 function Add-WorkSheet  {
     <#
       .Synopsis
-        Adds a workshet to an existing workbook.
+        Adds a worksheet to an existing workbook.
       .Description
         If the named worksheet already exists, the -Clearsheet parameter decides whether it should be deleted and a new one returned,
         or if not specified the existing sheet will be returned. By default the sheet is created at the end of the work book, the
