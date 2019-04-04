@@ -133,6 +133,8 @@
             Enables the Excel filter on the complete header row, so users can easily sort, filter and/or search the data in the selected column.
         .PARAMETER AutoSize
             Sizes the width of the Excel column to the maximum width needed to display all the containing data in that cell.
+        .PARAMETER MaxAutoSizeRows
+            Autosizing can be time consuming, so this sets a maximum number of rows to look at for the Autosize operation. Default is 1000; If 0 is specified ALL rows will be checked
         .PARAMETER Activate
             If there is already content in the workbook, a new sheet will not be active UNLESS Activate is specified; if a PivotTable is included it will be the active sheet
         .PARAMETER Now
@@ -427,7 +429,8 @@
         [Parameter(Mandatory = $true, ParameterSetName = "PackageTable")]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [Parameter(ValueFromPipeline = $true)]
-        $TargetData,
+        [Alias('TargetData')]
+        $InputObject,
         [Switch]$Calculate,
         [Switch]$Show,
         [String]$WorksheetName = 'Sheet1',
@@ -453,6 +456,7 @@
         [Switch]$ShowCategory,
         [Switch]$ShowPercent,
         [Switch]$AutoSize,
+        $MaxAutoSizeRows = 1000,
         [Switch]$NoClobber,
         [Switch]$FreezeTopRow,
         [Switch]$FreezeFirstColumn,
@@ -517,7 +521,7 @@
         [Switch]$ReZip
     )
 
-    Begin {
+    begin {
         $numberRegex = [Regex]'\d'
         function Add-CellValue {
             <#
@@ -539,7 +543,7 @@
             )
             #The write-verbose commands have been commented out below - even if verbose is silenced they cause a significiant performance impact and if it's on they will cause a flood of messages.
             Switch ($CellValue) {
-                { $null -eq $_     } { 
+                { $null -eq $_     } {
                     break
                 }
                 { $_ -is [DateTime]} {
@@ -564,16 +568,16 @@
                     break
                 }
                 { $_ -is [uri] } {
-                    $targetCell.HyperLink = $_ 
+                    $targetCell.HyperLink = $_
                     $TargetCell.Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
                     $TargetCell.Style.Font.UnderLine = $true
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($_.AbsoluteUri)' as Hyperlink"
                     break
                 }
                 { $_ -isnot [String]} {
-                    $TargetCell.Value = $_.toString() 
+                    $TargetCell.Value = $_.toString()
                     break
-                } 
+                }
                 #All the remaining options are string as ... only strings get checked for formulas, URIs or being numbers
                 { $_[0] -eq '='} {
                     #region Save an Excel formula - we need = to spot the formula but the EPPLUS won't like it if we include it (Excel doesn't care if is there or not)
@@ -595,7 +599,7 @@
                     #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as Hyperlink"
                     break
                 }
-              <# Logic for no-number conversion has been moved into default and only checked if value has digits.   
+              <# Logic for no-number conversion has been moved into default and only checked if value has digits.
                 {( $NoNumberConversion -and (
                   ($NoNumberConversion -contains $Name) -or ($NoNumberConversion -eq '*'))) } {
                     #Save text without it to converting to number
@@ -606,9 +610,9 @@
                 Default {
                     #Save a value as a number if possible
                     $number = $null
-                    if ( $numberRegex.IsMatch($_) -and  # if it contains digit(s) - this syntax is quicker than -match for many items and cuts out slow checks for non numbers 
-                         $NoNumberConversion -ne '*'  -and  # and NoNumberConversion isn't specified            
-                         $NoNumberConversion -notcontains $Name -and 
+                    if ( $numberRegex.IsMatch($_) -and  # if it contains digit(s) - this syntax is quicker than -match for many items and cuts out slow checks for non numbers
+                         $NoNumberConversion -ne '*'  -and  # and NoNumberConversion isn't specified
+                         $NoNumberConversion -notcontains $Name -and
                          [Double]::TryParse($_, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)
                        ) {
                          $TargetCell.Value = $number
@@ -624,15 +628,14 @@
             }
         }
 
-        try {
+        try   {
             $script:Header = $null
             if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
-
-            if ($PSBoundParameters.Keys.Count -eq 0 -Or $Now) {
+            if ($PSBoundParameters.Keys.Count -eq 0 -Or $Now -or (-not $Path -and -not $ExcelPackage) ) {
                 $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx'
                 $Show = $true
                 $AutoSize = $true
-                if (!$TableName) {
+                if (-not $TableName) {
                     $AutoFilter = $true
                 }
             }
@@ -645,7 +648,7 @@
         }
         catch {throw "Could not open Excel Package $path"}
         if ($NoClobber) {Write-Warning -Message "-NoClobber parameter is no longer used" }
-        try {
+        try   {
             $params = @{WorksheetName=$WorksheetName}
             foreach ($p in @("ClearSheet", "MoveToStart", "MoveToEnd", "MoveBefore", "MoveAfter", "Activate")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
             $ws = $pkg | Add-WorkSheet @params
@@ -655,7 +658,7 @@
             }
         }
         catch {throw "Could not get worksheet $worksheetname"}
-        try {
+        try   {
             if ($Append -and $ws.Dimension) {
                 #if there is a title or anything else above the header row, append needs to be combined wih a suitable startrow parameter
                 $headerRange = $ws.Dimension.Address -replace "\d+$", $StartRow
@@ -722,7 +725,7 @@
 
             $firstTimeThru = $true
             $isDataTypeValueType = $false
-      }
+        }
         catch {
             if ($AlreadyExists) {
                 #Is this set anywhere ?
@@ -731,69 +734,137 @@
             else {
                 throw "Failed preparing to export to worksheet '$WorksheetName' to '$Path': $_"
             }
-      }
+        }
+        #region Special case -inputobject passed a dataTable object
+        <# If inputObject was passed via the pipeline it won't be visible until the process block, we will only see it here if it was passed as a parameter
+          if it was passed it is a data table don't do foreach on it (slow) put the whole table in and set dates on date columns,
+          set things up for the end block, and skip the process block #>
+        if ($InputObject -is  [System.Data.DataTable])  {
+            $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader) )  | Out-Null
+            foreach ($c in $InputObject.Columns.where({$_.datatype -eq [datetime]})) {
+                Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat 'Date-Time'
+            }
+            $row          += $InputObject.Rows.Count - 1
+            $ColumnIndex  += $InputObject.Columns.Count - 1
+            [void]$PSBoundParameters.Remove('InputObject')
+            $firstTimeThru = $false
+        }
+        #endregion
     }
 
-    Process {
-        if ($PSBoundParameters.ContainsKey("TargetData")) {
-            try {
+    process { if ($PSBoundParameters.ContainsKey("InputObject")) {
+        try {
+            if ($null -eq $InputObject) {$row += 1}
+            foreach ($TargetData in $InputObject) {
                 if ($firstTimeThru) {
                     $firstTimeThru = $false
                     $isDataTypeValueType = ($null -eq $TargetData) -or ($TargetData.GetType().name -match 'string|timespan|datetime|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort|URI|ExcelHyperLink')
-                    if ($isDataTypeValueType -and -not $Append) {$row -= 1} #row incremented before adding values, so it is set to the number of rows inserted at the end
-                    if ($null -ne  $TargetData) {Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'" }
+                    if ($isDataTypeValueType ) {
+                        $script:Header = @(".")       # dummy value to make sure we go through the "for each name in $header"
+                        if (-not $Append) {$row -= 1} # By default row will be 1, it is incremented before inserting values (so it ends pointing at final row.);  si first data row is 2 - move back up 1 if there is no header .
+                    }
+                    if ($null -ne $TargetData) {Write-Debug "DataTypeName is '$($TargetData.GetType().name)' isDataTypeValueType '$isDataTypeValueType'" }
                 }
-                if ($isDataTypeValueType) {
-                    $ColumnIndex = $StartColumn
-                    $Row += 1
-                    try    {Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData}
-                    catch  {Write-Warning "Could not insert value at Row $Row. "}
-                }
-                else {
-                    #region Add headers - if we are appending, or we have been through here once already we will have the headers
-                    if (-not $script:Header) {
+                #region Add headers - if we are appending, or we have been through here once already we will have the headers
+                if (-not $script:Header) {
+                    if ($DisplayPropertySet -and $TargetData.psStandardmembers.DefaultDisplayPropertySet.ReferencedPropertyNames) {
+                        $script:Header = $TargetData.psStandardmembers.DefaultDisplayPropertySet.ReferencedPropertyNames.Where( {$_ -notin $ExcludeProperty})
+                    }
+                    else {
+                        if ($NoAliasOrScriptPropeties) {$propType = "Property"} else {$propType = "*"}
+                        $script:Header = $TargetData.PSObject.Properties.where( {$_.MemberType -like $propType}).Name
+                    }
+                    foreach ($exclusion in $ExcludeProperty) {$script:Header = $script:Header -notlike $exclusion}
+                    if ($NoHeader) {
+                        # Don't push the headers to the spreadsheet
+                        $Row -= 1
+                    }
+                    else {
                         $ColumnIndex = $StartColumn
-                        if ($DisplayPropertySet -and $TargetData.psStandardmembers.DefaultDisplayPropertySet.ReferencedPropertyNames) {
-                            $script:Header = $TargetData.psStandardmembers.DefaultDisplayPropertySet.ReferencedPropertyNames.Where( {$_ -notin $ExcludeProperty})
-                        }
-                        else {
-                            if ($NoAliasOrScriptPropeties) {$propType = "Property"} else {$propType = "*"}
-                            $script:Header = $TargetData.PSObject.Properties.where( {$_.MemberType -like $propType}).Name
-                        }
-                        foreach ($exclusion in $ExcludeProperty) {$script:Header = $script:Header -notlike $exclusion}
-                        if ($NoHeader) {
-                            # Don't push the headers to the spreadsheet
-                            $Row -= 1
-                        }
-                        else {
-                            foreach ($Name in $script:Header) {
-                                $ws.Cells[$Row, $ColumnIndex].Value = $Name
-                                Write-Verbose "Cell '$Row`:$ColumnIndex' add header '$Name'"
-                                $ColumnIndex += 1
-                            }
+                        foreach ($Name in $script:Header) {
+                            $ws.Cells[$Row, $ColumnIndex].Value = $Name
+                            Write-Verbose "Cell '$Row`:$ColumnIndex' add header '$Name'"
+                            $ColumnIndex += 1
                         }
                     }
-                    #endregion
-                    #region Add non header values
-                    $Row += 1
-                    $ColumnIndex = $StartColumn
-
-                    foreach ($Name in $script:Header) {
-                        try   {Add-CellValue -TargetCell $ws.Cells[$Row, $ColumnIndex] -CellValue $TargetData.$Name}
-                        catch {Write-Warning -Message "Could not insert the '$Name' property at Row $Row, Column $ColumnIndex"}
-                        $ColumnIndex += 1
-                    }
-                    $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false
-                    #endregion
                 }
-            }
-            catch {
-                throw "Failed exporting data to worksheet '$WorksheetName' to '$Path': $_"
+                #endregion
+                #region Add non header values
+                $Row += 1
+                $ColumnIndex = $StartColumn
+                <#
+                 For each item in the header OR for the Data item if this is a simple Type or data table :
+                   If it is a date insert with one of Excel's built in formats - recognized as "Date and time to be localized"
+                   if it is a timespan insert with a built in format for elapsed hours, minutes and seconds
+                   if its  any other numeric insert as is , setting format if need be.
+                   Preserve URI, Insert a data table, convert non string objects to string.
+                   For strings, check for fomula, URI or Number, before inserting as a string  (ignore nulls) #>
+                foreach ($Name in $script:Header) {
+                    if   ($isDataTypeValueType) {$v = $TargetData}
+                    else {$v = $TargetData.$Name}
+                    try   {
+                        if     ($v -is    [DateTime]) {
+                            $ws.Cells[$Row, $ColumnIndex].Value = $v
+                            $ws.Cells[$Row, $ColumnIndex].Style.Numberformat.Format = 'm/d/yy h:mm' # This is not a custom format, but a preset recognized as date and localized.
+                        }
+                        elseif ($v -is    [TimeSpan]) {
+                            $ws.Cells[$Row, $ColumnIndex].Value = $v
+                            $ws.Cells[$Row, $ColumnIndex].Style.Numberformat.Format = '[h]:mm:ss'
+                        }
+                        elseif ($v -is    [System.ValueType]) {
+                            $ws.Cells[$Row, $ColumnIndex].Value = $v
+                            if ($setNumformat) {$ws.Cells[$Row, $ColumnIndex].Style.Numberformat.Format = $Numberformat }
+                        }
+                        elseif ($v -is    [uri] ) {
+                            $ws.Cells[$Row, $ColumnIndex].HyperLink = $v
+                            $ws.Cells[$Row, $ColumnIndex].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
+                            $ws.Cells[$Row, $ColumnIndex].Style.Font.UnderLine = $true
+                        }
+                        elseif ($v -isnot [String] ) {
+                            if ($null -ne $v) { $ws.Cells[$Row, $ColumnIndex].Value = $v.toString()}
+                        }
+                        elseif ($v[0] -eq '=') {
+                            $ws.Cells[$Row, $ColumnIndex].Formula = ($v -replace '^=','')
+                            if ($setNumformat) {$ws.Cells[$Row, $ColumnIndex].Style.Numberformat.Format = $Numberformat }
+                        }
+                        elseif ( [System.Uri]::IsWellFormedUriString($v , [System.UriKind]::Absolute) ) {
+                            if ($v -match "^xl://internal/") {
+                                  $referenceAddress = $v -replace "^xl://internal/" , ""
+                                  $display          = $referenceAddress -replace "!A1$"   , ""
+                                  $h = New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList $referenceAddress , $display
+                                  $ws.Cells[$Row, $ColumnIndex].HyperLink = $h
+                            }
+                            else {$ws.Cells[$Row, $ColumnIndex].HyperLink = $v }   #$ws.Cells[$Row, $ColumnIndex].Value = $v.AbsoluteUri
+                            $ws.Cells[$Row, $ColumnIndex].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
+                            $ws.Cells[$Row, $ColumnIndex].Style.Font.UnderLine = $true
+                        }
+                        else {
+                            $number = $null
+                            if ( $numberRegex.IsMatch($v)     -and  # if it contains digit(s) - this syntax is quicker than -match for many items and cuts out slow checks for non numbers
+                                 $NoNumberConversion -ne '*'  -and  # and NoNumberConversion isn't specified
+                                 $NoNumberConversion -notcontains $Name -and
+                                 [Double]::TryParse($v, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)
+                               ) {
+                                 $ws.Cells[$Row, $ColumnIndex].Value = $number
+                                 if ($setNumformat) {$ws.Cells[$Row, $ColumnIndex].Style.Numberformat.Format = $Numberformat }
+                            }
+                            else {
+                                $ws.Cells[$Row, $ColumnIndex].Value  = $v
+                            }
+
+                        }
+                    }
+                    catch {Write-Warning -Message "Could not insert the '$Name' property at Row $Row, Column $ColumnIndex"}
+                    $ColumnIndex += 1
+                }
+                #endregion
             }
         }
-    }
+        catch {throw "Failed exporting data to worksheet '$WorksheetName' to '$Path': $_" }
+        $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false
+    }}
 
-    End {
+    end {
         if ($firstTimeThru -and $ws.Dimension) {
               $LastRow        = $ws.Dimension.End.Row
               $LastCol        = $ws.Dimension.End.Column
@@ -944,7 +1015,11 @@
         if ($AutoSize) {
             try {
                 #Don't fit the all the columns in the sheet; if we are adding cells beside things with hidden columns, that unhides them
-                $ws.Cells[($startAddress+':'+$endAddress)].AutoFitColumns()
+                if ($MaxAutoSizeRows -and $MaxAutoSizeRows -lt $LastRow ) {
+                    $AutosizeRange = [OfficeOpenXml.ExcelAddress]::GetAddress($startRow,$StartColumn,   $MaxAutoSizeRows , $LastCol)
+                    $ws.Cells[$AutosizeRange].AutoFitColumns()
+                }
+                else {$ws.Cells[$dataRange].AutoFitColumns()  }
                 Write-Verbose -Message "Auto-sized columns"
             }
             catch {  Write-Warning -Message "Failed autosizing columns of worksheet '$WorksheetName': $_"}
