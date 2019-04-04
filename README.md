@@ -52,13 +52,6 @@ Install-Module ImportExcel -scope CurrentUser
 ```PowerShell
 Install-Module ImportExcel
 ```
-# What's new this time. 
-- Performance improvement to Export-Excel see #506 and #555. This has meant taking code in Add-CellValue back into process the body of Export-Excel, as the overhead of calling the function was greater than time executing the code inside it. [Blog post to follow](https://jamesone111.wordpress.com). Some tests are showing a ~10x speed increase. #572 was about a broken #region tag in this part of the code and that has been cleaned up in the process. 
-- Export-Excel now has an `-InputObject` parameter (this was previously `-TargetData` , which is now an alias for InputObject).
- If the `inputobject` is an array, each item will be inserted, so you can run `export-excel -inputobject $x` rather than `$x | Export-Excel`, and if it is a `system.data.datatable` object it will be inserted directly rather than cell-by-cell. Send-SQLDataToExcel takes advantage of this new functionality. 
-- Export-Excel previously assumed `-Now` if there were no other parameters, it will now assume `-Now` if there is no `-Path` or `-ExcelPackage`.     
-- The .PSD1 file now itemizes the items exported by the module (#557) 
-
 # What's new 5.4.5
 
 Thank you to [James O'Neill](https://github.com/jhoneill) for the great additions.
