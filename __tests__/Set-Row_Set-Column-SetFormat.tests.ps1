@@ -321,7 +321,7 @@ ID,Product,Quantity,Price,Total
 Describe "AutoNameRange data with a single property name" {
     BeforeEach {
         $xlfile = "$Env:TEMP\testNamedRange.xlsx"
-        rm $xlfile -ErrorAction SilentlyContinue
+        Remove-Item $xlfile -ErrorAction SilentlyContinue
     }
 
     it "Should have a single item as a named range" {

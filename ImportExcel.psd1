@@ -61,16 +61,83 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
     # NestedModules = @()
 
     # Functions to export from this module
-    FunctionsToExport = '*'
+    FunctionsToExport = @(
+        'BarChart',
+        'ColumnChart',
+        'DoChart',
+        'LineChart',
+        'PieChart',
+        'Pivot',
+        'Get-XYRange',
+        'Invoke-AllTests',
+        'Test-Boolean',
+        'Test-Date',
+        'Test-Integer',
+        'Test-Number',
+        'Test-String',
+        'New-PSItem',
+        'Import-Html',
+        'Import-UPS',
+        'Import-USPS',
+        'Add-ConditionalFormatting',
+        'Add-ExcelChart',
+        'Add-ExcelDataValidationRule',
+        'Add-ExcelName',
+        'Add-ExcelTable',
+        'Add-PivotTable',
+        'Add-WorkSheet',
+        'Close-ExcelPackage',
+        'Compare-WorkSheet',
+        'ConvertFrom-ExcelData',
+        'ConvertFrom-ExcelSheet',
+        'ConvertFrom-ExcelToSQLInsert',
+        'ConvertTo-ExcelXlsx',
+        'Convert-XlRangeToImage',
+        'Copy-ExcelWorkSheet',
+        'Expand-NumberFormat',
+        'Export-Excel',
+        'Export-ExcelSheet',
+        'Export-MultipleExcelSheets',
+        'Get-ExcelColumnName',
+        'Get-ExcelSheetInfo',
+        'Get-ExcelWorkbookInfo',
+        'Get-HtmlTable',
+        'Get-Range',
+        'Import-Excel',
+        'Invoke-Sum',
+        'Join-Worksheet',
+        'Merge-MultipleSheets',
+        'Merge-Worksheet',
+        'New-ConditionalFormattingIconSet',
+        'New-ConditionalText',
+        'New-ExcelChartDefinition',
+        'New-PivotTableDefinition',
+        'New-Plot',
+        'NumberFormatCompletion',
+        'Open-ExcelPackage',
+        'Remove-WorkSheet'
+        'Select-Worksheet',
+        'Send-SQLDataToExcel',
+        'Set-CellStyle',
+        'Set-ExcelColumn',
+        'Set-ExcelRange',
+        'Set-ExcelRow',
+        'Update-FirstObjectProperties'
+    )
 
     # Cmdlets to export from this module
-    CmdletsToExport   = '*'
+    #CmdletsToExport   = '*'
 
     # Variables to export from this module
-    VariablesToExport = '*'
+    #VariablesToExport = '*'
 
     # Aliases to export from this module
-    AliasesToExport   = '*'
+    AliasesToExport   = @('New-ExcelChart',
+                          'Set-Column',
+                          'Set-Format',
+                          'Set-Row',
+                          'Use-ExcelData'
+    )
 
     # List of all modules packaged with this module
     # ModuleList = @()

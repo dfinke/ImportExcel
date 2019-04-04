@@ -54,7 +54,7 @@ Describe "Creating small named ranges with hyperlinks" {
 
         $excel = Open-ExcelPackage $path
         $sheet = $excel.Workbook.Worksheets[1]
-        $m = $results | measure -sum -Property count
+        $m = $results | Measure-Object -sum -Property count
         $expectedRows = 1 + $m.count + $m.sum
     }
     Context "Creating hyperlinks" {

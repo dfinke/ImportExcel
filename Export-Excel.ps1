@@ -523,111 +523,9 @@
 
     begin {
         $numberRegex = [Regex]'\d'
-        function Add-CellValue {
-            <#
-              .SYNOPSIS
-                Save a value in an Excel cell.
-
-              .DESCRIPTION
-                DateTime objects are always converted to a short DateTime format in Excel. When Excel loads the file,
-                it applies the local format for dates. And formulas are always saved as formulas. URIs are set as hyperlinks in the file.
-
-                Numerical values will be converted to numbers as defined in the regional settings of the local
-                system. In case the parameter 'NoNumberConversion' is used, we don't convert to number and leave
-                the value 'as is'. In case of conversion failure, we also leave the value 'as is'.
-            #>
-
-            Param (
-                $TargetCell,
-                $CellValue
-            )
-            #The write-verbose commands have been commented out below - even if verbose is silenced they cause a significiant performance impact and if it's on they will cause a flood of messages.
-            Switch ($CellValue) {
-                { $null -eq $_     } {
-                    break
-                }
-                { $_ -is [DateTime]} {
-                    # Save a date with one of Excel's built in formats format
-                    $TargetCell.Value = $_
-                    $TargetCell.Style.Numberformat.Format = 'm/d/yy h:mm' # This is not a custom format, but a preset recognized as date and localized.
-                    #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as date"
-                    break
-
-                }
-                { $_ -is [TimeSpan]} {
-                    #Save a timespans with a built in format for elapsed hours, minutes and seconds
-                    $TargetCell.Value = $_
-                    $TargetCell.Style.Numberformat.Format = '[h]:mm:ss'
-                    break
-                }
-                { $_ -is [System.ValueType]} {
-                    # Save numerics, setting format if need be.
-                    $TargetCell.Value = $_
-                    if ($setNumformat) {$targetCell.Style.Numberformat.Format = $Numberformat }
-                    #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as value"
-                    break
-                }
-                { $_ -is [uri] } {
-                    $targetCell.HyperLink = $_
-                    $TargetCell.Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
-                    $TargetCell.Style.Font.UnderLine = $true
-                    #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($_.AbsoluteUri)' as Hyperlink"
-                    break
-                }
-                { $_ -isnot [String]} {
-                    $TargetCell.Value = $_.toString()
-                    break
-                }
-                #All the remaining options are string as ... only strings get checked for formulas, URIs or being numbers
-                { $_[0] -eq '='} {
-                    #region Save an Excel formula - we need = to spot the formula but the EPPLUS won't like it if we include it (Excel doesn't care if is there or not)
-                    $TargetCell.Formula = ($_ -replace '^=','')
-                    if ($setNumformat) {$targetCell.Style.Numberformat.Format = $Numberformat }
-                    #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as formula"
-                    break
-                }
-                { [System.Uri]::IsWellFormedUriString($_ , [System.UriKind]::Absolute) } {
-                    if ($_ -match "^xl://internal/") {
-                          $referenceAddress = $_ -replace "^xl://internal/" , ""
-                          $display          = $referenceAddress -replace "!A1$"   , ""
-                          $h = New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList $referenceAddress , $display
-                          $TargetCell.HyperLink = $h
-                    }
-                    else {$TargetCell.HyperLink = $_ }   #$TargetCell.Value = $_.AbsoluteUri
-                    $TargetCell.Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
-                    $TargetCell.Style.Font.UnderLine = $true
-                    #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$_' as Hyperlink"
-                    break
-                }
-              <# Logic for no-number conversion has been moved into default and only checked if value has digits.
-                {( $NoNumberConversion -and (
-                  ($NoNumberConversion -contains $Name) -or ($NoNumberConversion -eq '*'))) } {
-                    #Save text without it to converting to number
-                    $TargetCell.Value = $_
-                    #Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' unconverted"
-                    break
-                } #>
-                Default {
-                    #Save a value as a number if possible
-                    $number = $null
-                    if ( $numberRegex.IsMatch($_) -and  # if it contains digit(s) - this syntax is quicker than -match for many items and cuts out slow checks for non numbers
-                         $NoNumberConversion -ne '*'  -and  # and NoNumberConversion isn't specified
-                         $NoNumberConversion -notcontains $Name -and
-                         [Double]::TryParse($_, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)
-                       ) {
-                         $TargetCell.Value = $number
-                         if ($setNumformat) {$targetCell.Style.Numberformat.Format = $Numberformat }
-                         #Write-Verbose  "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' as number converted from '$_' with format '$Numberformat'"
-                    }
-                    else {
-                        $TargetCell.Value = $_
-                        #Write-Verbose "Cell '$Row`:$ColumnIndex' header '$Name' add value '$($TargetCell.Value)' as string"
-                    }
-                    break
-                }
-            }
-        }
-
+        $isDataTypeValueType = $false
+        if ($NoClobber) {Write-Warning -Message "-NoClobber parameter is no longer used" }
+        #Open the file, get the worksheet, and decide where in the sheet we are writing, and if there is a number format to apply.
         try   {
             $script:Header = $null
             if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
@@ -639,7 +537,6 @@
                     $AutoFilter = $true
                 }
             }
-
             if ($ExcelPackage) {
                 $pkg = $ExcelPackage
                 $Path = $pkg.File
@@ -647,7 +544,6 @@
             Else { $pkg = Open-ExcelPackage -Path $Path -Create -KillExcel:$KillExcel -Password:$Password}
         }
         catch {throw "Could not open Excel Package $path"}
-        if ($NoClobber) {Write-Warning -Message "-NoClobber parameter is no longer used" }
         try   {
             $params = @{WorksheetName=$WorksheetName}
             foreach ($p in @("ClearSheet", "MoveToStart", "MoveToEnd", "MoveBefore", "MoveAfter", "Activate")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
@@ -722,19 +618,8 @@
                     $setNumformat = $false
             }
             else {  $setNumformat = ($Numberformat -ne $ws.Cells.Style.Numberformat.Format) }
-
-            $firstTimeThru = $true
-            $isDataTypeValueType = $false
         }
-        catch {
-            if ($AlreadyExists) {
-                #Is this set anywhere ?
-                throw "Failed exporting worksheet '$WorksheetName' to '$Path': The worksheet '$WorksheetName' already exists."
-            }
-            else {
-                throw "Failed preparing to export to worksheet '$WorksheetName' to '$Path': $_"
-            }
-        }
+        catch {throw "Failed preparing to export to worksheet '$WorksheetName' to '$Path': $_"}
         #region Special case -inputobject passed a dataTable object
         <# If inputObject was passed via the pipeline it won't be visible until the process block, we will only see it here if it was passed as a parameter
           if it was passed it is a data table don't do foreach on it (slow) put the whole table in and set dates on date columns,
@@ -744,12 +629,17 @@
             foreach ($c in $InputObject.Columns.where({$_.datatype -eq [datetime]})) {
                 Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat 'Date-Time'
             }
-            $row          += $InputObject.Rows.Count - 1
-            $ColumnIndex  += $InputObject.Columns.Count - 1
+            foreach ($c in $InputObject.Columns.where({$_.datatype -eq [timespan]})) {
+                Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat '[h]:mm:ss'
+            }
+            $ColumnIndex         += $InputObject.Columns.Count - 1
+            if ($noHeader) {$row += $InputObject.Rows.Count -1 }
+            else           {$row += $InputObject.Rows.Count    }
             [void]$PSBoundParameters.Remove('InputObject')
             $firstTimeThru = $false
         }
         #endregion
+        else  {$firstTimeThru = $true}
     }
 
     process { if ($PSBoundParameters.ContainsKey("InputObject")) {
@@ -820,7 +710,7 @@
                             $ws.Cells[$Row, $ColumnIndex].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
                             $ws.Cells[$Row, $ColumnIndex].Style.Font.UnderLine = $true
                         }
-                        elseif ($v -isnot [String] ) {
+                        elseif ($v -isnot [String] ) { #Other objects or null.
                             if ($null -ne $v) { $ws.Cells[$Row, $ColumnIndex].Value = $v.toString()}
                         }
                         elseif ($v[0] -eq '=') {

@@ -237,11 +237,6 @@
         [Switch]$Passthru
     )
 
-    if ($KillExcel) {
-            Get-Process excel -ErrorAction Ignore | Stop-Process
-            while (Get-Process excel -ErrorAction Ignore) {Start-Sleep -Milliseconds 250}
-    }
-
     #We were either given a session object or a connection string (with, optionally a MSSQLServer parameter)
     # If we got -MSSQLServer, create a SQL connection, if we didn't but we got -Connection create an ODBC connection
     if     ($MsSQLserver -and $Connection) {
@@ -253,8 +248,7 @@
     elseif ($Connection)  {
             $Session     = New-Object -TypeName System.Data.Odbc.OdbcConnection      -ArgumentList $Connection ; $Session.ConnectionTimeout = 30
     }
-
-    If ($session) {
+    if ($Session) {
         #A session was either passed in or just created. If it's a SQL one make a SQL DataAdapter, otherwise make an ODBC one
         if ($Session.GetType().name -match "SqlConnection") {
             $dataAdapter = New-Object -TypeName System.Data.SqlClient.SqlDataAdapter -ArgumentList (
@@ -264,7 +258,7 @@
             $dataAdapter = New-Object -TypeName System.Data.Odbc.OdbcDataAdapter     -ArgumentList (
                            New-Object -TypeName System.Data.Odbc.OdbcCommand         -ArgumentList $SQL, $Session )
         }
-        if ($QueryTimeout) {$dataAdapter.SelectCommand.CommandTimeout = $ServerTimeout}
+        if ($QueryTimeout) {$dataAdapter.SelectCommand.CommandTimeout = $QueryTimeout}
 
         #Both adapter types output the same kind of table, create one and fill it from the adapter
         $DataTable       = New-Object -TypeName System.Data.DataTable
@@ -273,48 +267,11 @@
     }
     if ($DataTable.Rows.Count) {
         #ExportExcel user a -NoHeader parameter so that's what we use here, but needs to be the other way around.
-        $printHeaders    = -not $NoHeader
-        if ($Title)  {$r = $StartRow +1 }
-        else         {$r = $StartRow}
-        #Get our Excel sheet and fill it with the data
-        $excelPackage    = Export-Excel -Path $Path -WorkSheetname $WorkSheetname  -PassThru
-        $ws              = $excelPackage.Workbook.Worksheets[$WorkSheetname]
-        $ws.Cells[$r,$StartColumn].LoadFromDataTable($dataTable, $printHeaders )  | Out-Null
-
-        $LastRow       = $StartRow    + $DataTable.Rows.Count # if start row is 1, row 1 will be the header, row 2 will be data, so don't need to subtract 1
-        $LastCol       = $StartColumn + $DataTable.Columns.Count - 1
-        $endAddress    = [OfficeOpenXml.ExcelAddress]::GetAddress($LastRow , $LastCol)
-        $startAddress  = [OfficeOpenXml.ExcelAddress]::GetAddress($StartRow, $StartColumn)
-        $dataRange     = "{0}:{1}" -f $startAddress, $endAddress
-
-        #Apply date format and range names
-        for ($c=0 ; $c -lt $DataTable.Columns.Count ; $c++) {
-            if ($DataTable.Columns[$c].DataType -eq [datetime]) {
-                Set-ExcelColumn -Worksheet $ws -Column ($c + $StartColumn) -NumberFormat 'Date-Time'
-            }
-            if ($AutoNameRange) {
-                Add-ExcelName  -RangeName $DataTable.Columns[$c].ColumnName -Range $ws.Cells[($StartRow+1), ($StartColumn + $c ), $LastRow, ($StartColumn + $c )]
-            }
-        }
-
-        #Apply range or table to whole - we can't leave this to Export-Excel if we are inserting onto a sheet where there is already data
-        if ($RangeName) {
-             Add-ExcelName  -Range $ws.Cells[$dataRange] -RangeName $RangeName
-             $null = $PSBoundParameters.Remove('RangeName')
-        }
-
-        if ($TableName) {
-            if ($PSBoundParameters.ContainsKey('TableStyle')) {
-                  Add-ExcelTable -Range  $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
-                  $null = $PSBoundParameters.Remove('TableStyle')
-            }
-            else {Add-ExcelTable -Range  $excelPackage.Workbook.Worksheets[$WorkSheetname].Cells[$dataRange] -TableName $TableName}
-            $null = $PSBoundParameters.Remove('TableName')
-        }
 
         #Call export-excel with any parameters which don't relate to the SQL query
-        "AutoNameRange", "Connection", "Database" , "Session", "MsSQLserver", "Destination" , "SQL" , "DataTable", "Path" | ForEach-Object {$null = $PSBoundParameters.Remove($_) }
-        Export-Excel -ExcelPackage $excelPackage   @PSBoundParameters
+
+        "Connection", "Database" , "Session", "MsSQLserver", "SQL" , "DataTable" | ForEach-Object {$null = $PSBoundParameters.Remove($_) }
+        Export-Excel  @PSBoundParameters -InputObject $DataTable
     }
     else {Write-Warning -Message "No Data to insert."}
     #If we were passed a connection and opened a session,  close that session.
