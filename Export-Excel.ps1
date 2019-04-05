@@ -423,7 +423,7 @@
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
     Param(
         [Parameter(ParameterSetName = "Default", Position = 0)]
-        [Parameter(ParameterSetName = "Table"  , Position = 0)]
+        [Parameter(Mandatory = $true, ParameterSetName = "Table"  , Position = 0)]
         [String]$Path,
         [Parameter(Mandatory = $true, ParameterSetName = "PackageDefault")]
         [Parameter(Mandatory = $true, ParameterSetName = "PackageTable")]
@@ -747,11 +747,12 @@
                     catch {Write-Warning -Message "Could not insert the '$Name' property at Row $Row, Column $ColumnIndex"}
                     $ColumnIndex += 1
                 }
+                $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false
                 #endregion
             }
         }
         catch {throw "Failed exporting data to worksheet '$WorksheetName' to '$Path': $_" }
-        $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false
+
     }}
 
     end {
