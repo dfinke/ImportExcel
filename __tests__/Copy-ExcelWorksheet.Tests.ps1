@@ -4,8 +4,8 @@ Remove-item -Path $path1, $path2  -ErrorAction SilentlyContinue
 
 $ProcRange = Get-Process | Export-Excel $path1 -DisplayPropertySet -WorkSheetname Processes -ReturnRange
 
-if ((Get-Culture).NumberFormat.CurrencySymbol -eq "�") {$OtherCurrencySymbol = "$"}
-else {$OtherCurrencySymbol = "�"}
+if ((Get-Culture).NumberFormat.CurrencySymbol -eq "£") {$OtherCurrencySymbol = "$"}
+else {$OtherCurrencySymbol = "£"}
 [PSCustOmobject][Ordered]@{
     Date             = Get-Date
     Formula1         = '=SUM(F2:G2)'
