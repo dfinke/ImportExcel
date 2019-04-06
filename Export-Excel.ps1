@@ -423,7 +423,7 @@
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
     Param(
         [Parameter(ParameterSetName = "Default", Position = 0)]
-        [Parameter(Mandatory = $true, ParameterSetName = "Table"  , Position = 0)]
+        [Parameter(ParameterSetName = "Table"  , Position = 0)]
         [String]$Path,
         [Parameter(Mandatory = $true, ParameterSetName = "PackageDefault")]
         [Parameter(Mandatory = $true, ParameterSetName = "PackageTable")]
