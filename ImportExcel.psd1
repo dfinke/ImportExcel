@@ -4,7 +4,7 @@
     RootModule        = 'ImportExcel.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '5.4.5'
+    ModuleVersion     = '6.0.0'
 
     # ID used to uniquely identify this module
     GUID              = '60dd4136-feff-401a-ba27-a84458c57ede'
@@ -62,23 +62,6 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
 
     # Functions to export from this module
     FunctionsToExport = @(
-        'BarChart',
-        'ColumnChart',
-        'DoChart',
-        'LineChart',
-        'PieChart',
-        'Pivot',
-        'Get-XYRange',
-        'Invoke-AllTests',
-        'Test-Boolean',
-        'Test-Date',
-        'Test-Integer',
-        'Test-Number',
-        'Test-String',
-        'New-PSItem',
-        'Import-Html',
-        'Import-UPS',
-        'Import-USPS',
         'Add-ConditionalFormatting',
         'Add-ExcelChart',
         'Add-ExcelDataValidationRule',
@@ -86,14 +69,17 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Add-ExcelTable',
         'Add-PivotTable',
         'Add-WorkSheet',
+        'BarChart',
         'Close-ExcelPackage',
+        'ColumnChart',
         'Compare-WorkSheet',
+        'Convert-XlRangeToImage',
         'ConvertFrom-ExcelData',
         'ConvertFrom-ExcelSheet',
         'ConvertFrom-ExcelToSQLInsert',
         'ConvertTo-ExcelXlsx',
-        'Convert-XlRangeToImage',
         'Copy-ExcelWorkSheet',
+        'DoChart',
         'Expand-NumberFormat',
         'Export-Excel',
         'Export-ExcelSheet',
@@ -103,9 +89,15 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Get-ExcelWorkbookInfo',
         'Get-HtmlTable',
         'Get-Range',
+        'Get-XYRange',
         'Import-Excel',
+        'Import-Html',
+        'Import-UPS',
+        'Import-USPS',
+        'Invoke-AllTests',
         'Invoke-Sum',
         'Join-Worksheet',
+        'LineChart',
         'Merge-MultipleSheets',
         'Merge-Worksheet',
         'New-ConditionalFormattingIconSet',
@@ -113,8 +105,11 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'New-ExcelChartDefinition',
         'New-PivotTableDefinition',
         'New-Plot',
+        'New-PSItem',
         'NumberFormatCompletion',
         'Open-ExcelPackage',
+        'PieChart',
+        'Pivot',
         'Remove-WorkSheet'
         'Select-Worksheet',
         'Send-SQLDataToExcel',
@@ -122,6 +117,11 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Set-ExcelColumn',
         'Set-ExcelRange',
         'Set-ExcelRow',
+        'Test-Boolean',
+        'Test-Date',
+        'Test-Integer',
+        'Test-Number',
+        'Test-String',
         'Update-FirstObjectProperties'
     )
 
@@ -132,11 +132,12 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
     #VariablesToExport = '*'
 
     # Aliases to export from this module
-    AliasesToExport   = @('New-ExcelChart',
-                          'Set-Column',
-                          'Set-Format',
-                          'Set-Row',
-                          'Use-ExcelData'
+    AliasesToExport   = @(
+        'New-ExcelChart',
+        'Set-Column',
+        'Set-Format',
+        'Set-Row',
+        'Use-ExcelData'
     )
 
     # List of all modules packaged with this module
