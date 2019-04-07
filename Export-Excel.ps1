@@ -483,7 +483,7 @@
         [String]$TableName,
         [Parameter(ParameterSetName = 'Table')]
         [Parameter(ParameterSetName = 'PackageTable')]
-        [OfficeOpenXml.Table.TableStyles]$TableStyle = 'Medium6',
+        [OfficeOpenXml.Table.TableStyles]$TableStyle,
         [Switch]$Barchart,
         [Switch]$PieChart,
         [Switch]$LineChart ,
@@ -1369,7 +1369,7 @@ function Add-ExcelTable {
         if     ($PSBoundParameters.ContainsKey('ShowLastColumn'))    {$tbl.ShowLastColumn    = [bool]$ShowLastColumn}
         if     ($PSBoundParameters.ContainsKey('ShowRowStripes'))    {$tbl.ShowRowStripes    = [bool]$ShowRowStripes}
         if     ($PSBoundParameters.ContainsKey('ShowColumnStripes')) {$tbl.ShowColumnStripes = [bool]$ShowColumnStripes}
-        if     ($PSBoundParameters.ContainsKey('TableStyle'))        {$tbl.TableStyle        = $TableStyle}
+        $tbl.TableStyle = $TableStyle
 
         if ($PassThru) {return $tbl}
     }

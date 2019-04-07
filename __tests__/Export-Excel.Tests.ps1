@@ -966,8 +966,9 @@ Describe ExportExcel {
             $ws.Tables["FileSize"].Address.Address                      | Should     be "G2:H16" #Insert at row 2, Column 7, 14 rows x 2 columns of data
             $ws.Tables["FileSize"].StyleName                            | Should     be "TableStyleMedium2"
         }
-        it "Created the ExtSize  table in the right place with the right size                      " {
+        it "Created the ExtSize  table in the right place with the right size and style            " {
             $ws.Tables["ExtSize"].Address.Address                      | Should      be "A2:B14" #tile, then 12 rows x 2 columns of data
+            $ws.Tables["ExtSize"].StyleName                            | Should      be "TableStyleMedium6"
         }
         it "Created the ExtCount table in the right place with the right size                      " {
             $ws.Tables["ExtCount"].Address.Address                      | Should     be "D2:E12" #title, then 10 rows x 2 columns of data
