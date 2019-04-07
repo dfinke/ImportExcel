@@ -59,7 +59,7 @@
         C:\> $dbPath = 'C:\users\James\Documents\f1Results.xlsx'
         C:\> $SQL = "SELECT top 25 DriverName, Count(RaceDate) as Races, Count(Win) as Wins, Count(Pole) as Poles, Count(FastestLap) as Fastlaps " +
                      " FROM Results GROUP BY DriverName ORDER BY (count(win)) DESC"
-        C:\> Get-SQL -Session F1 -excel -Connection $dbPath -sql $sql -OutputVariable Table | out-null
+        C:\> $null = Get-SQL -Session F1 -excel -Connection $dbPath -sql $sql -OutputVariable Table
 
         C:\> Send-SQLDataToExcel -DataTable $Table -Path ".\demo3.xlsx" -WorkSheetname Gpwinners -autosize  -TableName winners -TableStyle Light6 -show
 

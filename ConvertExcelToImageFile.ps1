@@ -35,15 +35,15 @@
         Write-Progress -Activity "Exporting $range of $workSheetname in $Path" -Status "Opening Workbook and copying data"
         $xlWbk  = $xlApp.Workbooks.Open($Path)
         $xlWbk.Worksheets($workSheetname).Select()
-        $xlWbk.ActiveSheet.Range($range).Select() | Out-Null
-        $xlApp.Selection.Copy()                   | Out-Null
+        $null = $xlWbk.ActiveSheet.Range($range).Select()
+        $null = $xlApp.Selection.Copy()
         Write-Progress -Activity "Exporting $range of $workSheetname in $Path" -Status "Saving copied data"
         # Get-Clipboard came in with PS5. Older versions can use [System.Windows.Clipboard] but it is ugly.
         $image  = Get-Clipboard -Format Image
         $image.Save($destination, $Format)
         Write-Progress -Activity "Exporting $range of $workSheetname in $Path" -Status "Closing Excel"
-        $xlWbk.ActiveSheet.Range("a1").Select()   | Out-Null
-        $xlApp.Selection.Copy()                   | Out-Null
+        $null = $xlWbk.ActiveSheet.Range("a1").Select()
+        $null = $xlApp.Selection.Copy()
         $xlApp.Quit()
         Write-Progress -Activity "Exporting $range of $workSheetname in $Path" -Completed
         if ($show) {Start-Process -FilePath $destination}

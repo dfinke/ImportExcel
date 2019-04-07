@@ -1054,9 +1054,9 @@
                 }
                 try {
                     $TempZipPath = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath ([System.IO.Path]::GetRandomFileName())
-                    [io.compression.zipfile]::ExtractToDirectory($pkg.File, $TempZipPath)  | Out-Null
+                    $null = [io.compression.zipfile]::ExtractToDirectory($pkg.File, $TempZipPath)
                     Remove-Item $pkg.File -Force
-                    [io.compression.zipfile]::CreateFromDirectory($TempZipPath, $pkg.File) | Out-Null
+                    $null = [io.compression.zipfile]::CreateFromDirectory($TempZipPath, $pkg.File)
                 }
                 catch {throw "Error resizipping $path : $_"}
             }
@@ -1270,7 +1270,7 @@ Function Add-ExcelName {
         }
         else  {
             Write-verbose -Message "Creating Named range '$RangeName' as $($Range.FullAddressAbsolute)."
-            $ws.Names.Add($RangeName, $Range) | Out-Null
+            $null = $ws.Names.Add($RangeName, $Range)
         }
     }
     catch {Write-Warning -Message "Failed adding named range '$RangeName' to worksheet '$($ws.Name)': $_"  }
