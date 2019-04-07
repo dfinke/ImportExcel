@@ -625,7 +625,7 @@
           if it was passed it is a data table don't do foreach on it (slow) put the whole table in and set dates on date columns,
           set things up for the end block, and skip the process block #>
         if ($InputObject -is  [System.Data.DataTable])  {
-            $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader) )  | Out-Null
+            $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader) )
             foreach ($c in $InputObject.Columns.where({$_.datatype -eq [datetime]})) {
                 Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat 'Date-Time'
             }
