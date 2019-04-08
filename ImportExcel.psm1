@@ -281,7 +281,7 @@ function Import-Excel {
         [String]$WorksheetName,
         [Parameter(ParameterSetName = 'PathB'   , Mandatory)]
         [Parameter(ParameterSetName = 'PackageB', Mandatory)]
-        [String[]]$HeaderName ,
+        $HeaderName ,
         [Parameter(ParameterSetName = 'PathC'   , Mandatory)]
         [Parameter(ParameterSetName = 'PackageC', Mandatory)]
         [Switch]$NoHeader     ,
@@ -321,7 +321,7 @@ function Import-Excel {
                         $C | Select-Object @{N = 'Column'; E = {$_}}, @{N = 'Value'; E = {'P' + $i}}
                     }
                 }
-                elseif ($HeaderName) {
+                elseif ($HeaderName -and $HeaderName -isnot [Collections.Hashtable] -and $HeaderName -isnot [Collections.Specialized.OrderedDictionary]) {
                     $i = 0
                     foreach ($H in $HeaderName) {
                         $H | Select-Object @{N = 'Column'; E = {$Columns[$i]}}, @{N = 'Value'; E = {$H}}
@@ -333,8 +333,17 @@ function Import-Excel {
                         throw 'The top row can never be less than 1 when we need to retrieve headers from the worksheet.' ; return
                     }
 
-                    foreach ($C in $Columns) {
+                    $PropertyNames = foreach ($C in $Columns) {
                         $Worksheet.Cells[$StartRow, $C] | Where-Object {$_.Value} | Select-Object @{N = 'Column'; E = {$C}}, Value
+                    }
+
+                    if ($HeaderName) {
+                        foreach ($H in $HeaderName.GetEnumerator()) {
+                            $H | Select-Object @{N = 'Column'; E = {($PropertyNames | Where-Object {$_.Value -eq $H.Name}).Column}}, @{N = 'Value'; E = {$H.Value}}
+                        }
+                    }
+                    else {
+                        $PropertyNames
                     }
                 }
             }
