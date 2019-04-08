@@ -198,7 +198,7 @@
     #We accept a bunch of parameters work to pass on to Export-excel ( Autosize, Autofilter, boldtopRow Freeze ); if we have any of those call export-excel otherwise close the package here.
     $params = @{} + $PSBoundParameters
     'Path', 'Clearsheet', 'NoHeader', 'FromLabel', 'LabelBlocks', 'HideSource',
-    'Title', 'TitleFillPattern', 'TitleBackgroundColor', 'TitleBold', 'TitleSize' | ForEach-Object {[void]$params.Remove($_)}
+    'Title', 'TitleFillPattern', 'TitleBackgroundColor', 'TitleBold', 'TitleSize' | ForEach-Object {$null = $params.Remove($_)}
     if ($params.Keys.Count) {
         if ($Title) { $params.StartRow = 2}
         $params.WorkSheetName = $WorkSheetName

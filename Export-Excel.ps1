@@ -635,7 +635,7 @@
             $ColumnIndex         += $InputObject.Columns.Count - 1
             if ($noHeader) {$row += $InputObject.Rows.Count -1 }
             else           {$row += $InputObject.Rows.Count    }
-            [void]$PSBoundParameters.Remove('InputObject')
+            $null = $PSBoundParameters.Remove('InputObject')
             $firstTimeThru = $false
         }
         #endregion

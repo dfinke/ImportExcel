@@ -64,7 +64,7 @@
         [String]$NoBlank
     )
     if  ($Range -is [Array])  {
-        [void]$PSBoundParameters.Remove("Range")
+        $null = $PSBoundParameters.Remove("Range")
         $Range | Add-ExcelDataValidationRule @PSBoundParameters
     }
     else {

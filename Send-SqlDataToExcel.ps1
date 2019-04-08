@@ -130,7 +130,7 @@
         }
         if ($PSBoundParameters.AutoFilter -and ($PSBoundParameters.TableName -or $PSBoundParameters.TableStyle)) {
             Write-Warning "Tables are automatically auto-filtered, -AutoFilter will be ignored"
-            [void]$PSBoundParameters.Remove('AutoFilter')
+            $null = $PSBoundParameters.Remove('AutoFilter')
         }
         #We were either given a session object or a connection string (with, optionally a MSSQLServer parameter)
         #If we got -MSSQLServer, create a SQL connection, if we didn't but we got -Connection create an ODBC connection
