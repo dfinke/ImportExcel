@@ -110,7 +110,7 @@
     )
     process {
         if  ($Range -is [Array])  {
-            [void]$PSBoundParameters.Remove("Range")
+            $null = $PSBoundParameters.Remove("Range")
             $Range | Set-ExcelRange @PSBoundParameters
         }
         else {

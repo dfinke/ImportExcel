@@ -85,7 +85,7 @@ Process {
         }
 
         if (-not (Test-Path $InstallDirectory)) {
-            New-Item -Path $InstallDirectory -ItemType Directory -EA Stop | Out-Null
+            $null = New-Item -Path $InstallDirectory -ItemType Directory -EA Stop
             Write-Verbose "$ModuleName created module folder '$InstallDirectory'"
         }
 

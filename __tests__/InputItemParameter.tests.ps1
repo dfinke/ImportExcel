@@ -5,13 +5,13 @@ Describe "Exporting with -Inputobject" {
         #Read race results, and group by race name : export 1 row to get headers, leaving enough rows aboce to put in a link for each race
         $results = ((Get-Process) + (Get-Process -id $PID)) | Select-Object -last  10 -Property Name, cpu, pm, handles, StartTime
         $DataTable = [System.Data.DataTable]::new('Test')
-        [void]$DataTable.Columns.Add('Name')
-        [void]$DataTable.Columns.Add('CPU', [double])
-        [void]$DataTable.Columns.Add('PM',  [Long])
-        [void]$DataTable.Columns.Add('Handles',  [Int])
-        [void]$DataTable.Columns.Add('StartTime', [DateTime])
+        $null = $DataTable.Columns.Add('Name')
+        $null = $DataTable.Columns.Add('CPU', [double])
+        $null = $DataTable.Columns.Add('PM', [Long])
+        $null = $DataTable.Columns.Add('Handles', [Int])
+        $null = $DataTable.Columns.Add('StartTime', [DateTime])
         foreach ($r in $results) {
-            [void]$DataTable.Rows.Add($r.name, $r.CPU, $R.PM, $r.Handles, $r.StartTime)
+            $null = $DataTable.Rows.Add($r.name, $r.CPU, $R.PM, $r.Handles, $r.StartTime)
         }
         export-excel        -Path $path -InputObject $results   -WorksheetName Sheet1 -RangeName "Whole"
         export-excel        -Path $path -InputObject $DataTable -WorksheetName Sheet2 -AutoNameRange

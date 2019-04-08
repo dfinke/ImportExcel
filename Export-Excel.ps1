@@ -625,7 +625,7 @@
           if it was passed it is a data table don't do foreach on it (slow) put the whole table in and set dates on date columns,
           set things up for the end block, and skip the process block #>
         if ($InputObject -is  [System.Data.DataTable])  {
-            $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader) )  | Out-Null
+            $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader) )
             foreach ($c in $InputObject.Columns.where({$_.datatype -eq [datetime]})) {
                 Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat 'Date-Time'
             }
@@ -635,7 +635,7 @@
             $ColumnIndex         += $InputObject.Columns.Count - 1
             if ($noHeader) {$row += $InputObject.Rows.Count -1 }
             else           {$row += $InputObject.Rows.Count    }
-            [void]$PSBoundParameters.Remove('InputObject')
+            $null = $PSBoundParameters.Remove('InputObject')
             $firstTimeThru = $false
         }
         #endregion
@@ -1054,9 +1054,9 @@
                 }
                 try {
                     $TempZipPath = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath ([System.IO.Path]::GetRandomFileName())
-                    [io.compression.zipfile]::ExtractToDirectory($pkg.File, $TempZipPath)  | Out-Null
+                    $null = [io.compression.zipfile]::ExtractToDirectory($pkg.File, $TempZipPath)
                     Remove-Item $pkg.File -Force
-                    [io.compression.zipfile]::CreateFromDirectory($TempZipPath, $pkg.File) | Out-Null
+                    $null = [io.compression.zipfile]::CreateFromDirectory($TempZipPath, $pkg.File)
                 }
                 catch {throw "Error resizipping $path : $_"}
             }
@@ -1270,7 +1270,7 @@ Function Add-ExcelName {
         }
         else  {
             Write-verbose -Message "Creating Named range '$RangeName' as $($Range.FullAddressAbsolute)."
-            $ws.Names.Add($RangeName, $Range) | Out-Null
+            $null = $ws.Names.Add($RangeName, $Range)
         }
     }
     catch {Write-Warning -Message "Failed adding named range '$RangeName' to worksheet '$($ws.Name)': $_"  }
