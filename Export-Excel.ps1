@@ -422,11 +422,11 @@
     [OutputType([OfficeOpenXml.ExcelPackage])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
     Param(
-        [Parameter(Mandatory = $true, ParameterSetName = "Path", Position = 0)]
-        [Parameter(Mandatory = $true, ParameterSetName = "Path-Table"  , Position = 0)]
+        [Parameter(Mandatory = $true, ParameterSetName = "Path", Position = 0, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory = $true, ParameterSetName = "Path-Table"  , Position = 0, ValueFromPipelineByPropertyName)]
         [String]$Path,
-        [Parameter(Mandatory = $true, ParameterSetName = "Package")]
-        [Parameter(Mandatory = $true, ParameterSetName = "Package-Table")]
+        [Parameter(Mandatory = $true, ParameterSetName = "Package", ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory = $true, ParameterSetName = "Package-Table", ValueFromPipelineByPropertyName)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [Parameter(ValueFromPipeline = $true)]
         [Alias('TargetData')]
@@ -533,7 +533,7 @@
         try   {
             $script:Header = $null
             if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
-            if ($PSCmdlet.ParameterSetName -like 'Now*') {
+            if ($PSBoundParameters.Keys.Count -eq 0 -Or $Now -or (-not $Path -and -not $ExcelPackage) ) {
                 $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx'
                 if (-not $PSBoundParameters.ContainsKey("Show")) {$Show = $true}
                 if (-not $PSBoundParameters.ContainsKey("AutoSize")) {$AutoSize = $true}
