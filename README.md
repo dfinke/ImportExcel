@@ -55,7 +55,7 @@ Install-Module ImportExcel
 
 # What's new 6.0.0
 
-[Get the zipped preview here](https://ci.appveyor.com/project/dfinke/importexcel/builds/23647194/artifacts)
+Thank you to [James O'Neill](https://github.com/jhoneill) for the optimizations, and refactoring leading to a ***~10x*** speed increase. Thanks to [ili101](https://github.com/ili101) for earlier PRs that provided the ground work for this.
 
 * Performance improvement to `Export-Excel` see [#506](https://github.com/dfinke/ImportExcel/issues/506) and [#555](https://github.com/dfinke/ImportExcel/issues/555). This has meant taking code in Add-CellValue back into process block of `Export-Excel`, as the overhead of calling the function was a lot greater than time executing the code inside it. [Blog post to follow](https://jamesone111.wordpress.com/). Some tests are showing a ***~10x*** speed increase. [#572](https://github.com/dfinke/ImportExcel/issues/572) was about a broken #region tag in this part of the code and that has been cleaned up in the process.
 
