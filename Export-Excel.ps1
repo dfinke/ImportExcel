@@ -422,11 +422,9 @@
     [OutputType([OfficeOpenXml.ExcelPackage])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
     Param(
-        [Parameter(Mandatory = $true, ParameterSetName = "Path", Position = 0, ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory = $true, ParameterSetName = "Path-Table"  , Position = 0, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory = $true, ParameterSetName = "Path", Position = 0)]
         [String]$Path,
-        [Parameter(Mandatory = $true, ParameterSetName = "Package", ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory = $true, ParameterSetName = "Package-Table", ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory = $true, ParameterSetName = "Package")]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [Parameter(ValueFromPipeline = $true)]
         [Alias('TargetData')]
@@ -462,9 +460,6 @@
         [Switch]$FreezeFirstColumn,
         [Switch]$FreezeTopRowFirstColumn,
         [Int[]]$FreezePane,
-        [Parameter(ParameterSetName = 'Path')]
-        [Parameter(ParameterSetName = 'Package')]
-        [Parameter(ParameterSetName = 'Now')]
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
         [Switch]$NoHeader,
@@ -479,13 +474,7 @@
                 elseif ($_[0] -notmatch '[a-z]') { throw 'Tablename starts with an invalid character.'  }
                 else { $true }
             })]
-        [Parameter(ParameterSetName = 'Path-Table'    , Mandatory = $true, ValueFromPipelineByPropertyName)]
-        [Parameter(ParameterSetName = 'Package-Table' , Mandatory = $true, ValueFromPipelineByPropertyName)]
-        [Parameter(ParameterSetName = 'Now-Table'     , Mandatory = $true, ValueFromPipelineByPropertyName)]
         [String]$TableName,
-        [Parameter(ParameterSetName = 'Path-Table')]
-        [Parameter(ParameterSetName = 'Package-Table')]
-        [Parameter(ParameterSetName = 'Now-Table')]
         [OfficeOpenXml.Table.TableStyles]$TableStyle,
         [Switch]$Barchart,
         [Switch]$PieChart,
@@ -513,7 +502,6 @@
         [ScriptBlock]$CellStyleSB,
         #If there is already content in the workbook the sheet with the PivotTable will not be active UNLESS Activate is specified
         [switch]$Activate,
-        [Parameter(ParameterSetName = 'Now-Table')]
         [Parameter(ParameterSetName = 'Now')]
         [Switch]$Now,
         [Switch]$ReturnRange,
@@ -533,6 +521,7 @@
         try   {
             $script:Header = $null
             if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
+            if ($TableName -or $TableStyle) {$AutoFilter = $false}
             if ($PSBoundParameters.Keys.Count -eq 0 -Or $Now -or (-not $Path -and -not $ExcelPackage) ) {
                 $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx'
                 if (-not $PSBoundParameters.ContainsKey("Show")) {$Show = $true}
