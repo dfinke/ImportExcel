@@ -521,7 +521,7 @@
         try   {
             $script:Header = $null
             if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
-            if ($TableName -or $TableStyle) {$AutoFilter = $false}
+            if ($TableName -or $PSBoundParameters.ContainsKey($TableStyle)) {$AutoFilter = $false}
             if ($PSBoundParameters.Keys.Count -eq 0 -Or $Now -or (-not $Path -and -not $ExcelPackage) ) {
                 $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx'
                 if (-not $PSBoundParameters.ContainsKey("Show")) {$Show = $true}
