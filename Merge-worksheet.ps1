@@ -316,10 +316,10 @@
 }
 
 Function Merge-MultipleSheets {
-  <#
-    .Synopsis
+   <#
+      .Synopsis
         Merges Worksheets into a single Worksheet with differences marked up.
-    .Description
+      .Description
         The Merge Worksheet command combines two sheets. Merge-MultipleSheets is
         designed to merge more than two. So if asked to merge sheets A,B,C  which
         contain Services, with a Name, Displayname and Start mode, where "Name" is
@@ -353,30 +353,32 @@ Function Merge-MultipleSheets {
         sheet.   However if Sheet B is the reference sheet, A and C will be seen to
         have an item removed; and if B is processed before C, the extra item is
         known when C is processed and so C is considered to be missing that item.
-    .Example
+      .Example
         dir Server*.xlsx | Merge-MulipleSheets   -WorksheetName Services -OutputFile Test2.xlsx -OutputSheetName Services -Show
         Here we are auditing servers and each one has a workbook in the current
         directory which contains a "Services" Worksheet (the result of
         Get-WmiObject -Class win32_service  | Select-Object -Property Name, Displayname, Startmode)
         No key is specified so the key is assumed to be the "Name" column.
         The files are merged and the result is opened on completion.
-    .Example
+      .Example
         dir Serv*.xlsx |  Merge-MulipleSheets  -WorksheetName Software -Key "*" -ExcludeProperty Install* -OutputFile Test2.xlsx -OutputSheetName Software -Show
         The server audit files in the previous example also have "Software" worksheet,
         but no single field on that sheet works as a key. Specifying "*" for the key
         produces a compound key using all non-excluded fields (and the installation
         date and file location are excluded).
-    .Example
+      .Example
         Merge-MulipleSheets -Path hotfixes.xlsx -WorksheetName Serv* -Key hotfixid -OutputFile test2.xlsx -OutputSheetName hotfixes  -HideRowNumbers -Show
         This time all the servers have written their hotfix information to their own
         worksheets in a shared Excel workbook named "Hotfixes.xlsx" (the information was
         obtained by running Get-Hotfix | Sort-Object -Property description,hotfixid  | Select-Object -Property Description,HotfixID)
         This ignores any sheets which are not named "Serv*", and uses the HotfixID as
         the key; in this version the row numbers are hidden.
-  #>
-  [cmdletbinding()]
-  #[Alias("Merge-MulipleSheets")] #There was a spelling error in the first release. This was there to ensure things didn't break but intelisense gave the alias first.
-   param   (
+    #>
+    [cmdletbinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification="False positives when initializing variable in begin block")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification="MultipleSheet would be incorrect")]
+    #[Alias("Merge-MulipleSheets")] #There was a spelling error in the first release. This was there to ensure things didn't break but intelisense gave the alias first.
+    param   (
         #Paths to the files to be merged. Files are also accepted
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
         $Path  ,
@@ -418,9 +420,9 @@ Function Merge-MultipleSheets {
         #If specified, opens the output workbook.
         [Switch]$Show
    )
-   begin   {    $filestoProcess   = @()  }
-   process {    $filestoProcess  += $Path}
-   end     {
+    begin   {    $filestoProcess   = @()  }
+    process {    $filestoProcess  += $Path}
+    end     {
         if     ($filestoProcess.Count -eq 1 -and $WorksheetName -match '\*') {
             Write-Progress -Activity "Merging sheets" -CurrentOperation "Expanding * to names of sheets in $($filestoProcess[0]). "
             $excel = Open-ExcelPackage -Path $filestoProcess
@@ -532,5 +534,5 @@ Function Merge-MultipleSheets {
         if ($Passthru) {$excel}
         else {Close-ExcelPackage -ExcelPackage $excel -Show:$Show}
         Write-Progress -Activity "Merging sheets" -Completed
-   }
+    }
 }

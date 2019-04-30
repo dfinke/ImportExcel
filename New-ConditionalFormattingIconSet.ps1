@@ -27,6 +27,7 @@ function New-ConditionalFormattingIconSet {
         Add-Add-ConditionalFormatting
         New-ConditionalText
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system State')]
     param(
         [Parameter(Mandatory=$true)]
         $Range,

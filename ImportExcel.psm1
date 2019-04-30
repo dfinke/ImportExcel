@@ -48,6 +48,7 @@ if ($PSVersionTable.PSVersion.Major -ge 5) {
     . $PSScriptRoot\Plot.ps1
 
     Function New-Plot {
+        [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification='New-Plot does not change system state')]
         Param()
 
         [PSPlot]::new()
@@ -296,7 +297,7 @@ function Import-Excel {
             .SYNOPSIS
                 Create objects containing the column number and the column name for each of the different header types.
             #>
-
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification="Name would be incorrect, and command is not exported")]
             Param (
                 [Parameter(Mandatory)]
                 [Int[]]$Columns,

@@ -1,8 +1,8 @@
 ﻿Function Get-ExcelWorkbookInfo {
-    <# 
-      .SYNOPSIS 
+    <#
+      .SYNOPSIS
         Retrieve information of an Excel workbook.
-      .DESCRIPTION 
+      .DESCRIPTION
         The Get-ExcelWorkbookInfo cmdlet retrieves information (LastModifiedBy, LastPrinted, Created, Modified, ...) fron an Excel workbook. These are the same details that are visible in Windows Explorer when right clicking the Excel file, selecting Properties and check the Details tabpage.
       .PARAMETER Path
         Specifies the path to the Excel file. This parameter is required.
@@ -10,22 +10,22 @@
         Get-ExcelWorkbookInfo .\Test.xlsx
 
         CorePropertiesXml     : #document
-        Title                 : 
-        Subject               : 
+        Title                 :
+        Subject               :
         Author                : Konica Minolta User
-        Comments              : 
-        Keywords              : 
+        Comments              :
+        Keywords              :
         LastModifiedBy        : Bond, James (London) GBR
         LastPrinted           : 2017-01-21T12:36:11Z
         Created               : 17/01/2017 13:51:32
-        Category              : 
-        Status                : 
+        Category              :
+        Status                :
         ExtendedPropertiesXml : #document
         Application           : Microsoft Excel
-        HyperlinkBase         : 
+        HyperlinkBase         :
         AppVersion            : 14.0300
         Company               : Secret Service
-        Manager               : 
+        Manager               :
         Modified              : 10/02/2017 12:45:37
         CustomPropertiesXml   : #document
 
@@ -35,8 +35,8 @@
 
       .LINK
         https://github.com/dfinke/ImportExcel
-    #> 
-    
+    #>
+
     [CmdletBinding()]
     Param (
         [Alias('FullName')]
@@ -52,12 +52,12 @@
             $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
             $workbook  = $xl.Workbook
             $workbook.Properties
-            
+
             $stream.Close()
             $stream.Dispose()
             $xl.Dispose()
             $xl = $null
-        }    
+        }
         Catch {
             throw "Failed retrieving Excel workbook information for '$Path': $_"
         }

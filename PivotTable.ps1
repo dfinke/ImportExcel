@@ -312,6 +312,7 @@ function New-PivotTableDefinition {
 
         This is a re-work of one of the examples in Export-Excel - instead of writing out the pivot definition hash table it is built by calling New-PivotTableDefinition.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system State')]
     param(
         [Parameter(Mandatory)]
         [Alias("PivtoTableName")]#Previous typo - use alias to avoid breaking scripts

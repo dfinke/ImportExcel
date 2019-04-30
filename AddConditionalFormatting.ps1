@@ -185,7 +185,7 @@
             $Address = "$($Address.Row):$($Address.Row)"
     }
     elseif ($Address -is [OfficeOpenXml.ExcelColumn]) {
-        $Address = [OfficeOpenXml.ExcelAddress]::new(1,$address.ColumnMin,1,$address.ColumnMax).Address -replace '1',''
+        $Address = (New-Object 'OfficeOpenXml.ExcelAddress' @(1, $address.ColumnMin, 1, $address.ColumnMax).Address) -replace '1',''
         if ($Address -notmatch ':') {$Address = "$Address`:$Address"}
     }
     if ( $Address -is [string] -and $Address -match "!") {$Address = $Address -replace '^.*!',''}

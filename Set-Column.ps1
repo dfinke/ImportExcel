@@ -44,6 +44,8 @@
     [cmdletbinding()]
     [Alias("Set-Column")]
     [OutputType([OfficeOpenXml.ExcelColumn],[String])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system state')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification="Variables created for script block which may be passed as a parameter, but not used in the script")]
     Param (
         #If specifying the worksheet by name, the ExcelPackage object which contains the worksheet also needs to be passed.
         [Parameter(ParameterSetName="Package",Mandatory=$true)]
@@ -138,7 +140,7 @@
     process {
         if ($null -eq $workSheet.Dimension) {Write-Warning "Can't format an empty worksheet."; return}
         if ($Column  -eq 0 )  {$Column     = $endColumn    + 1 }
-        $columnName = [OfficeOpenXml.ExcelCellAddress]::new(1,$column).Address -replace "1",""
+        $columnName = (New-Object 'OfficeOpenXml.ExcelCellAddress' @(1, $column)).Address -replace "1",""
         Write-Verbose -Message "Updating Column $columnName"
         #If there is a heading, insert it and use it as the name for a range (if we're creating one)
         if      ($PSBoundParameters.ContainsKey('Heading'))                 {

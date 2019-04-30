@@ -1,6 +1,11 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Scope='Function', Target='Update*', Justification='Does not change system state')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Scope='Function', Target='Update*', Justification='Property would be incorrect')]
+
+param()
+
 Function Update-FirstObjectProperties {
-    <# 
-        .SYNOPSIS   
+    <#
+        .SYNOPSIS
             Updates the first object to contain all the properties of the object with the most properties in the array.
 
         .DESCRIPTION
@@ -30,7 +35,7 @@ Function Update-FirstObjectProperties {
             $Array = $Obj1, $Obj2, $Obj3
             $Array | Out-GridView -Title 'Not showing Member3 and Member4'
             $Array | Update-FirstObjectProperties | Out-GridView -Title 'All properties are visible'
-            
+
             Updates the fist object of the array by adding Member3 and Member4.
 
         .EXAMPLE
@@ -79,7 +84,7 @@ Function Update-FirstObjectProperties {
         $Union = @()
         $Input | ForEach-Object {
             If ($Union.Count) {
-                $_ | Get-Member | Where {-not ($Union[0] | Get-Member $_.Name)} | ForEach-Object {
+                $_ | Get-Member | Where-Object {-not ($Union[0] | Get-Member $_.Name)} | ForEach-Object {
                     $Union[0] | Add-Member -MemberType NoteProperty -Name $_.Name -Value $Null
                 }
             }

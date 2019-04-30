@@ -9,6 +9,7 @@
         Set-WorkSheetProtection -WorkSheet $planSheet -IsProtected -AllowAll -AllowInsertColumns:$false -AllowDeleteColumns:$false -UnLockAddress "A:N"
         Turns on protection for the worksheet in $planSheet, checks all the allow boxes excel Insert and Delete columns and unlocks columns A-N
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system state')]
     param (
         #The worksheet where protection is to be applied.
         [Parameter(Mandatory=$true)]
