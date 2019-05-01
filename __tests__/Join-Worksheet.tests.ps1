@@ -91,12 +91,12 @@ Describe "Join Worksheet part 1" {
 }
     $path = "$env:TEMP\Test.xlsx"
     Remove-item -Path $path -ErrorAction SilentlyContinue
-#switched from WMI to CIM objects so test runs on V6
+#switched to CIM objects so test runs on V6
 Describe "Join Worksheet part 2" {
-     Get-CimInstance -ClassName win32_logicaldisk |
+    Get-CimInstance -ClassName win32_logicaldisk |
         Select-Object -Property DeviceId,VolumeName, Size,Freespace |
             Export-Excel -Path $path -WorkSheetname Volumes -NumberFormat "0,000"
-    Get-NetAdapter  |
+    Get-CimInstance -Namespace root/StandardCimv2 -class MSFT_NetAdapter   |
         Select-Object -Property Name,InterfaceDescription,MacAddress,LinkSpeed |
             Export-Excel -Path $path -WorkSheetname NetAdapters
 
