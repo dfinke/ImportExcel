@@ -90,6 +90,8 @@
         Export-Excel
     #>
     [CmdletBinding(DefaultParameterSetName="none")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification="Allowed to use DBSessions Global variable from GETSQL Module")]
+
     param (
         [Parameter(ParameterSetName="SQLConnection",   Mandatory=$true)]
         [Parameter(ParameterSetName="ODBCConnection",  Mandatory=$true)]

@@ -97,6 +97,7 @@
     #>
     [Alias("New-ExcelChart")] #This was the former name. The new name reflects that we are defining a chart, not making one in the workbook.
     [cmdletbinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system State')]
     param(
         $Title = "Chart Title",
         $Header,

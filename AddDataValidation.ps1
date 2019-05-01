@@ -69,9 +69,9 @@
     }
     else {
         #We should accept, a worksheet and a name of a range or a cell address; a table; the address of a table; a named range; a row, a column or .Cells[ ]
-        if      (-not $WorkSheet -and $Range.worksheet) {$WorkSheet = $Range.worksheet} 
+        if      (-not $WorkSheet -and $Range.worksheet) {$WorkSheet = $Range.worksheet}
         if      ($Range.Address)   {$Range = $Range.Address}
-        
+
         if      ($Range -isnot [string] -or -not $WorkSheet) {Write-Warning -Message "You need to provide a worksheet and range of cells." ;return}
        #else we assume Range is a range.
 

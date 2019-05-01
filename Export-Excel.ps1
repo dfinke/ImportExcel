@@ -84,9 +84,9 @@
         .PARAMETER RangeName
             Makes the data in the worksheet a named range.
         .PARAMETER TableName
-            Makes the data in the worksheet a table with a name, and applies a style to it. Name must not contain spaces.
+            Makes the data in the worksheet a table with a name, and applies a style to it. The name must not contain spaces. If a style is specified without a name, table1, table2 etc. will be used.
         .PARAMETER TableStyle
-            Selects the style for the named table - defaults to 'Medium6'.
+            Selects the style for the named table - if a name is specified without a style, 'Medium6' is used as a default.
         .PARAMETER BarChart
             Creates a "quick" bar chart using the first text column as labels and the first numeric column as values
         .PARAMETER ColumnChart
@@ -418,15 +418,15 @@
         .LINK
             https://github.com/dfinke/ImportExcel
     #>
-    [CmdletBinding(DefaultParameterSetName = 'Default')]
+    [CmdletBinding(DefaultParameterSetName = 'Now')]
     [OutputType([OfficeOpenXml.ExcelPackage])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
     Param(
-        [Parameter(ParameterSetName = "Default", Position = 0)]
-        [Parameter(ParameterSetName = "Table"  , Position = 0)]
+
+        [Parameter(Mandatory = $true, ParameterSetName = "Path", Position = 0)]
         [String]$Path,
-        [Parameter(Mandatory = $true, ParameterSetName = "PackageDefault")]
-        [Parameter(Mandatory = $true, ParameterSetName = "PackageTable")]
+        [Parameter(Mandatory = $true, ParameterSetName = "Package")]
+
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [Parameter(ValueFromPipeline = $true)]
         [Alias('TargetData')]
@@ -462,8 +462,8 @@
         [Switch]$FreezeFirstColumn,
         [Switch]$FreezeTopRowFirstColumn,
         [Int[]]$FreezePane,
-        [Parameter(ParameterSetName = 'Default')]
-        [Parameter(ParameterSetName = 'PackageDefault')]
+
+
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
         [Switch]$NoHeader,
@@ -478,11 +478,11 @@
                 elseif ($_[0] -notmatch '[a-z]') { throw 'Tablename starts with an invalid character.'  }
                 else { $true }
             })]
-        [Parameter(ParameterSetName = 'Table'        , Mandatory = $true, ValueFromPipelineByPropertyName)]
-        [Parameter(ParameterSetName = 'PackageTable' , Mandatory = $true, ValueFromPipelineByPropertyName)]
+
+
         [String]$TableName,
-        [Parameter(ParameterSetName = 'Table')]
-        [Parameter(ParameterSetName = 'PackageTable')]
+
+
         [OfficeOpenXml.Table.TableStyles]$TableStyle,
         [Switch]$Barchart,
         [Switch]$PieChart,
@@ -793,9 +793,12 @@
                     Add-ExcelName  -RangeName $targetRangeName -Range $ws.Cells[$targetRow, ($StartColumn + $c ), $LastRow, ($StartColumn + $c )]
                     try {#this test can throw with some names, surpress any error
                         if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress(($targetRangeName -replace '\W' , '_' ))) {
-                            Write-Warning "AutoNameRange: Property name '$targetRangeName' is also a valid Excel address and may cause issues. Consider renaming the property name."
+                            Write-Warning -Message "AutoNameRange: Property name '$targetRangeName' is also a valid Excel address and may cause issues. Consider renaming the property."
                         }
-                    } Catch {}
+                    }
+                    Catch {
+                        Write-Warning -Message "AutoNameRange: Testing '$targetRangeName' caused an error. This should be harmless, but a change of property name may be needed.."
+                    }
                 }
             }
             catch {Write-Warning -Message "Failed adding named ranges to worksheet '$WorksheetName': $_"  }
@@ -803,14 +806,17 @@
         #Empty string is not allowed as a name for ranges or tables.
         if ($RangeName) { Add-ExcelName  -Range $ws.Cells[$dataRange] -RangeName $RangeName}
 
-        if ($TableName) {
+        #Allow table to be inserted by specifying Name, or Style or both; only process autoFilter if there is no table (they clash).
+        if     ($TableName) {
             if ($PSBoundParameters.ContainsKey('TableStyle')) {
                   Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
             }
             else {Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName}
         }
-
-        if ($AutoFilter) {
+        elseif ($PSBoundParameters.ContainsKey('TableStyle')) {
+                  Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName "" -TableStyle $TableStyle
+        }
+        elseif ($AutoFilter) {
             try {
                 $ws.Cells[$dataRange].AutoFilter = $true
                 Write-Verbose -Message "Enabled autofilter. "
@@ -1235,7 +1241,7 @@ function Select-Worksheet {
     }
 }
 
-Function Add-ExcelName {
+function Add-ExcelName {
     <#
       .SYNOPSIS
         Adds a named-range to an existing Excel worksheet.
@@ -1299,9 +1305,8 @@ function Add-ExcelTable {
         #The range of cells to assign to a table.
         [Parameter(Mandatory=$true)]
         [OfficeOpenXml.ExcelRange]$Range,
-        #The name for the Table - this should be unqiue in the Workbook.
-        [Parameter(Mandatory=$true)]
-        [String]$TableName,
+        #The name for the Table - this should be unqiue in the Workbook - auto generated names will be used if this is left empty.
+        [String]$TableName = "",
         #The Style for the table, by default "Medium6" is used
         [OfficeOpenXml.Table.TableStyles]$TableStyle = 'Medium6',
         #By default the header row is shown - it can be turned off with -ShowHeader:$false.
@@ -1324,32 +1329,37 @@ function Add-ExcelTable {
         [Switch]$PassThru
     )
     try {
-        if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress($TableName)) {
-            Write-Warning -Message "$tableName reads as an Excel address, and so is not allowed as a table name."
-            return
-        }
-        if ($tableName -notMatch '^[A-Z]') {
-            Write-Warning -Message "$tableName is not allowed as a table name because it does not begin with a letter."
-            return
-        }
-        if ($TableName -match "\W") {
-            Write-Warning -Message "At least one character in $TableName is illegal in a table name and will be replaced with '_' . "
-            $TableName = $TableName -replace '\W', '_'
-        }
-        $ws = $Range.Worksheet
-        #if the table exists in this worksheet, update it.
-        if ($ws.Tables[$TableName]) {
-            $tbl =$ws.Tables[$TableName]
-            $tbl.TableXml.table.ref = $Range.Address
-            Write-Verbose -Message "Re-defined table '$TableName', now at $($Range.Address)."
-        }
-        elseif ($ws.Workbook.Worksheets.Tables.Name -contains $TableName) {
-            Write-Warning -Message "The Table name '$TableName' is already used on a different worksheet."
-            return
+        if ($TableName -eq "" -or $null -eq $TableName) {
+            $tbl = $Range.Worksheet.Tables.Add($Range, "")
         }
         else {
-            $tbl = $ws.Tables.Add($Range, $TableName)
-            Write-Verbose -Message "Defined table '$TableName' at $($Range.Address)"
+            if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress($TableName)) {
+                Write-Warning -Message "$TableName reads as an Excel address, and so is not allowed as a table name."
+                return
+            }
+            if ($TableName -notMatch '^[A-Z]') {
+                Write-Warning -Message "$TableName is not allowed as a table name because it does not begin with a letter."
+                return
+            }
+            if ($TableName -match "\W") {
+                Write-Warning -Message "At least one character in $TableName is illegal in a table name and will be replaced with '_' . "
+                $TableName = $TableName -replace '\W', '_'
+            }
+            $ws = $Range.Worksheet
+            #if the table exists in this worksheet, update it.
+            if ($ws.Tables[$TableName]) {
+                $tbl =$ws.Tables[$TableName]
+                $tbl.TableXml.table.ref = $Range.Address
+                Write-Verbose -Message "Re-defined table '$TableName', now at $($Range.Address)."
+            }
+            elseif ($ws.Workbook.Worksheets.Tables.Name -contains $TableName) {
+                Write-Warning -Message "The Table name '$TableName' is already used on a different worksheet."
+                return
+            }
+            else {
+                $tbl = $ws.Tables.Add($Range, $TableName)
+                Write-Verbose -Message "Defined table '$($tbl.Name)' at $($Range.Address)"
+            }
         }
         #it seems that show total changes some of the others, so the sequence matters.
         if     ($PSBoundParameters.ContainsKey('ShowHeader'))        {$tbl.ShowHeader        = [bool]$ShowHeader}
@@ -1358,7 +1368,7 @@ function Add-ExcelTable {
             foreach ($k in $TotalSettings.keys) {
                 if (-not $tbl.Columns[$k]) {Write-Warning -Message "Table does not have a Column '$k'."}
                 elseif ($TotalSettings[$k] -notin @("Average", "Count", "CountNums", "Max", "Min", "None", "StdDev", "Sum", "Var") ) {
-                    Write-wanring "'$($TotalSettings[$k])' is not a valid total function."
+                    Write-Warning -Message "'$($TotalSettings[$k])' is not a valid total function."
                 }
                 else {$tbl.Columns[$k].TotalsRowFunction = $TotalSettings[$k]}
             }

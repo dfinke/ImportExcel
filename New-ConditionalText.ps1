@@ -42,8 +42,8 @@ function New-ConditionalText {
         Add-Add-ConditionalFormatting
         New-ConditionalFormattingIconSet
     #>
-
     [cmdletbinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system State')]
     param(
         #[Parameter(Mandatory=$true)]
         [Alias("ConditionValue")]

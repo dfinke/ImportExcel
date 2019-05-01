@@ -18,7 +18,7 @@ function Invoke-Sum {
             $h.$key=[ordered]@{}
         }
 
-        foreach($m in $measure) {        
+        foreach($m in $measure) {
             $value = $item.$m
             if($value -is [string] -or $value -is [System.Enum]) {
                 $value = 1
@@ -27,15 +27,15 @@ function Invoke-Sum {
             $h.$key.$m+=$value
         }
     }
-    
+
     foreach ($entry in $h.GetEnumerator()){
-        
+
         $nh=[ordered]@{Name=$entry.key}
-        
+
         foreach ($item in $entry.value.getenumerator()) {
             $nh.($item.key)=$item.value
-        }        
-        
+        }
+
         [pscustomobject]$nh
     }
 }

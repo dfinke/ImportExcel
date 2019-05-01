@@ -33,6 +33,8 @@
     [cmdletbinding()]
     [Alias("Set-Row")]
     [OutputType([OfficeOpenXml.ExcelRow],[String])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system state')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification="Variables created for script block which may be passed as a parameter, but not used in the script")]
     Param (
         #An Excel package object - e.g. from Export-Excel -PassThru - requires a sheet name.
         [Parameter(ParameterSetName="Package",Mandatory=$true)]
@@ -143,7 +145,7 @@
         #Fill in the data
         if      ($PSBoundParameters.ContainsKey('Value')) {foreach ($column in ($StartColumn..$endColumn)) {
             #We might want the column name in a script block
-            $columnName = [OfficeOpenXml.ExcelCellAddress]::new(1,$column).Address -replace "1",""
+            $columnName = (New-Object -TypeName OfficeOpenXml.ExcelCellAddress @(1,$column)).Address -replace "1",""
             if  ($Value -is [scriptblock] ) {
                 #re-create the script block otherwise variables from this function are out of scope.
                 $cellData = & ([scriptblock]::create( $Value ))
@@ -177,7 +179,7 @@
             if ($PSBoundParameters.ContainsKey($p)) {$params[$p] = $PSBoundParameters[$p]}
         }
         if ($params.Count) {
-            $theRange = [OfficeOpenXml.ExcelAddress]::New($Row, $StartColumn, $Row, $endColumn)
+            $theRange = New-Object -TypeName OfficeOpenXml.ExcelAddress @($Row, $StartColumn, $Row, $endColumn)
             Set-ExcelRange -WorkSheet $Worksheet -Range $theRange @params
         }
         #endregion

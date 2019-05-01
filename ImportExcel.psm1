@@ -5,7 +5,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Charting.ps1
 . $PSScriptRoot\ColorCompletion.ps1
 . $PSScriptRoot\ConvertExcelToImageFile.ps1
-. $PSScriptRoot\Compare-WorkSheet.ps1
+. $PSScriptRoot\compare-workSheet.ps1
 . $PSScriptRoot\ConvertFromExcelData.ps1
 . $PSScriptRoot\ConvertFromExcelToSQLInsert.ps1
 . $PSScriptRoot\ConvertToExcelXlsx.ps1
@@ -22,8 +22,8 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Import-Html.ps1
 . $PSScriptRoot\InferData.ps1
 . $PSScriptRoot\Invoke-Sum.ps1
-. $PSScriptRoot\Join-WorkSheet.ps1
-. $PSScriptRoot\Merge-Worksheet.ps1
+. $PSScriptRoot\Join-Worksheet.ps1
+. $PSScriptRoot\Merge-worksheet.ps1
 . $PSScriptRoot\New-ConditionalFormattingIconSet.ps1
 . $PSScriptRoot\New-ConditionalText.ps1
 . $PSScriptRoot\New-ExcelChart.ps1
@@ -32,7 +32,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Pivot.ps1
 . $PSScriptRoot\PivotTable.ps1
 . $PSScriptRoot\RemoveWorksheet.ps1
-. $PSScriptRoot\Send-SQLDataToExcel.ps1
+. $PSScriptRoot\Send-SqlDataToExcel.ps1
 . $PSScriptRoot\Set-CellStyle.ps1
 . $PSScriptRoot\Set-Column.ps1
 . $PSScriptRoot\Set-Row.ps1
@@ -45,9 +45,10 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 New-Alias -Name Use-ExcelData -Value "ConvertFrom-ExcelData" -Force
 
 if ($PSVersionTable.PSVersion.Major -ge 5) {
-    . $PSScriptRoot\Plot.ps1
+    . $PSScriptRoot\plot.ps1
 
     Function New-Plot {
+        [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification='New-Plot does not change system state')]
         Param()
 
         [PSPlot]::new()
@@ -296,7 +297,7 @@ function Import-Excel {
             .SYNOPSIS
                 Create objects containing the column number and the column name for each of the different header types.
             #>
-
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification="Name would be incorrect, and command is not exported")]
             Param (
                 [Parameter(Mandatory)]
                 [Int[]]$Columns,

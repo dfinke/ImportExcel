@@ -32,6 +32,7 @@
     #>
     [cmdletbinding()]
     [Alias("Set-Format")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system state')]
     Param   (
         #One or more row(s), Column(s) and/or block(s) of cells to format.
         [Parameter(ValueFromPipeline = $true,Position=0)]

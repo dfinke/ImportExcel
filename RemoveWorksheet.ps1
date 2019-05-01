@@ -15,7 +15,8 @@
         C:\> dir c:\reports\*.xlsx | Remove-WorkSheet
         Removes 'Sheet1' from all the xlsx files in the c:\reports directory
 
-#>
+    #>
+    [cmdletbinding(SupportsShouldProcess=$true)]
     param(
         #    [Parameter(ValueFromPipelineByPropertyName)]
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -34,9 +35,10 @@
 
         if ($pkg) {
             foreach ($wsn in $WorksheetName) {
-                $pkg.Workbook.Worksheets.Delete($wsn)
+                if ($PSCmdlet.ShouldProcess($FullName,"Remove Sheet $wsn")) {
+                    $pkg.Workbook.Worksheets.Delete($wsn)
+                }
             }
-
             Close-ExcelPackage -ExcelPackage $pkg -Show:$Show
         }
     }

@@ -1,6 +1,8 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification="False positives")]
+param()
 class PSPlot {
     hidden $path
-    hidden $pkg 
+    hidden $pkg
     hidden $ws
     hidden $chart
 
@@ -11,62 +13,62 @@ class PSPlot {
     }
 
     [PSPlot] Plot($yValues) {
-        
+
         $this.NewChart()
-            
+
         $xValues = 0..$yValues.Count
 
         $xCol = 'A'
         $yCol = 'B'
 
-        $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)        
+        $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)
         $this.AddSeries($xCol,$yCol,$yValues)
         $this.SetChartPosition($yCol)
-        
+
         return $this
     }
 
     [PSPlot] Plot($yValues,[string]$options) {
         $this.NewChart()
-            
+
         $xValues = 0..$yValues.Count
 
         $xCol = 'A'
         $yCol = 'B'
 
-        $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)        
+        $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)
         $this.AddSeries($xCol,$yCol,$yValues)
 
-        $this.SetMarkerInfo($options)        
+        $this.SetMarkerInfo($options)
         $this.SetChartPosition($yCol)
 
         return $this
     }
 
     [PSPlot] Plot($xValues,$yValues) {
-        
-        $this.NewChart()        
+
+        $this.NewChart()
 
         $xCol = 'A'
         $yCol = 'B'
 
-        $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)        
+        $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)
         $this.AddSeries($xCol,$yCol,$yValues)
 
         $this.SetChartPosition($yCol)
 
         return $this
     }
-    
+
     [PSPlot] Plot($xValues,$yValues,[string]$options) {
-        $this.NewChart()        
+        $this.NewChart()
 
         $xCol = 'A'
         $yCol = 'B'
 
-        $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)        
+        $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)
         $this.AddSeries($xCol,$yCol,$yValues)
-        
+
         $this.SetMarkerInfo($options)
 
         $this.SetChartPosition($yCol)
@@ -75,19 +77,19 @@ class PSPlot {
     }
 
     [PSPlot] Plot($xValues,$yValues,$x1Values,$y1Values) {
-        
-        $this.NewChart()        
+
+        $this.NewChart()
 
         $xCol = 'A'
         $yCol = 'B'
 
-        $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)        
+        $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)
         $this.AddSeries($xCol,$yCol,$yValues)
 
         $xCol=$this.GetNextColumnName($yCol)
         $yCol=$this.GetNextColumnName($xCol)
 
-        $this.AddDataToSheet($xCol,$yCol,'x1','y1',$x1Values,$y1Values)        
+        $this.AddDataToSheet($xCol,$yCol,'x1','y1',$x1Values,$y1Values)
         $this.AddSeries($xCol,$yCol,$y1Values)
 
         $this.SetChartPosition($yCol)
@@ -96,32 +98,32 @@ class PSPlot {
     }
 
     [PSPlot] Plot($xValues,$yValues,$x1Values,$y1Values,$x2Values,$y2Values) {
-        
-        $this.NewChart()        
+
+        $this.NewChart()
 
         $xCol = 'A'
         $yCol = 'B'
 
-        $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)        
+        $this.AddDataToSheet($xCol,$yCol,'x','y',$xValues,$yValues)
         $this.AddSeries($xCol,$yCol,$yValues)
 
         $xCol=$this.GetNextColumnName($yCol)
         $yCol=$this.GetNextColumnName($xCol)
 
-        $this.AddDataToSheet($xCol,$yCol,'x1','y1',$x1Values,$y1Values)        
+        $this.AddDataToSheet($xCol,$yCol,'x1','y1',$x1Values,$y1Values)
         $this.AddSeries($xCol,$yCol,$y1Values)
 
         $xCol=$this.GetNextColumnName($yCol)
         $yCol=$this.GetNextColumnName($xCol)
 
-        $this.AddDataToSheet($xCol,$yCol,'x2','y2',$x2Values,$y2Values)        
+        $this.AddDataToSheet($xCol,$yCol,'x2','y2',$x2Values,$y2Values)
         $this.AddSeries($xCol,$yCol,$y2Values)
 
         $this.SetChartPosition($yCol)
 
         return $this
     }
-    
+
     [PSPLot] SetChartPosition($yCol) {
         $columnNumber = $this.GetColumnNumber($yCol)+1
         $this.chart.SetPosition(1,0,$columnNumber,0)
@@ -131,29 +133,29 @@ class PSPlot {
 
     AddSeries($xCol,$yCol,$yValues) {
         $yRange = "{0}2:{0}{1}" -f $yCol,($yValues.Count+1)
-        $xRange = "{0}2:{0}{1}" -f $xCol,($yValues.Count+1)                
-        $Series=$this.chart.Series.Add($yRange,$xRange)    
+        $xRange = "{0}2:{0}{1}" -f $xCol,($yValues.Count+1)
+        $Series=$this.chart.Series.Add($yRange,$xRange)
     }
 
     hidden SetMarkerInfo([string]$options) {
         $c=$options.Substring(0,1)
         $m=$options.Substring(1)
-        
+
         $cmap=@{r='red';g='green';b='blue';i='indigo';v='violet';c='cyan'}
         $mmap=@{Ci='Circle';Da='Dash';di='diamond';do='dot';pl='plus';sq='square';tr='triangle'}
-        
+
         $this.chart.Series[0].Marker = $mmap.$m
         $this.chart.Series[0].MarkerColor = $cmap.$c
         $this.chart.Series[0].MarkerLineColor = $cmap.$c
     }
 
     hidden [string]GetNextColumnName($columnName) {
-        return $this.GetColumnName($this.GetColumnNumber($columnName)+1)        
+        return $this.GetColumnName($this.GetColumnNumber($columnName)+1)
     }
 
     hidden [int]GetColumnNumber($columnName) {
         $sum=0
-        
+
         $columnName.ToCharArray() |
             ForEach-Object {
                 $sum*=26
@@ -179,20 +181,20 @@ class PSPlot {
         $count=$yValues.Count
         $this.ws.Cells["$($xColumn)1"].Value=$xHeader
         $this.ws.Cells["$($yColumn)1"].Value=$yHeader
-        
-        for ($idx= 0; $idx-lt $count; $idx++) { 
-            $row=$idx+2                        
+
+        for ($idx= 0; $idx-lt $count; $idx++) {
+            $row=$idx+2
             $this.ws.Cells["$($xColumn)$($row)"].Value=$xValues[$idx]
             $this.ws.Cells["$($yColumn)$($row)"].Value=$yValues[$idx]
         }
     }
 
-    hidden NewChart() {        
+    hidden NewChart() {
         $chartType="XYScatter"
         #$chartType="line"
         $this.chart=$this.ws.Drawings.AddChart("plot", $chartType)
         $this.chart.Title.Text = 'Plot'
-        $this.chart.Legend.Remove()        
+        $this.chart.Legend.Remove()
         $this.SetChartSize(300,300)
     }
 

@@ -1,5 +1,5 @@
-<# 
-    .SYNOPSIS   
+<#
+    .SYNOPSIS
         Download the module files from GitHub.
 
     .DESCRIPTION
@@ -90,7 +90,7 @@ Process {
         }
 
         $WebClient = New-Object System.Net.WebClient
-        
+
         $Files | ForEach-Object {
             $WebClient.DownloadFile("$GitPath/$_","$installDirectory\$_")
             Write-Verbose "$ModuleName installed module file '$_'"

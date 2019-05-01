@@ -10,7 +10,7 @@ $PSVersionTable.PSVersion
 
 ## Create the zip before the tests run
 ## Otherwise the EPPlus.dll is in use after the Pester run
-$ModuleVersion = (Get-Content -Raw .\ImportExcel.psd1)  | Invoke-Expression | ForEach-Object ModuleVersion
+$ModuleVersion = (Invoke-Command -ScriptBlock ([scriptblock]::Create((Get-Content -Raw .\ImportExcel.psd1)))).moduleVersion
 
 if (!$DontCreateZip) {
     $dest = "ImportExcel-{0}-{1}.zip" -f $ModuleVersion, (Get-Date).ToString("yyyyMMddHHmmss")
