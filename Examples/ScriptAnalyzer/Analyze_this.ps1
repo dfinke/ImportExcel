@@ -1,24 +1,50 @@
-$xlfilename = $pwd.path -replace "^.*\\(.*?)\\(.*?)$", '$1-$2.xlsx'
-$xlpath     = Join-Path -Path $env:TEMP -ChildPath $xlfilename
-Remove-Item -Path $xlpath -ErrorAction SilentlyContinue
+<#
+  .Synopsis
 
-$ScriptAnalyzerResults = Invoke-ScriptAnalyzer .
+#>
+[CmdletBinding()]
+param (
+    [parameter(ValueFromPipeline = $true)]
+    $Path      = $PWD,
+    $xlfile    = "$env:TEMP\ScriptAnalyzer.xlsx",
+    $ChartType = 'BarClustered' ,
+    [switch]$Quiet
+)
 
-$xlPkg = $ScriptAnalyzerResults | Group-Object -Property RuleName -NoElement | Sort-Object -Property Name |
-    Select-Object -Property Name,Count |
-        Export-Excel -Path $xlpath -WorksheetName Summary  -AutoSize -PassThru
-
-$params = @{
-    WorksheetName     = 'FullResults'
-    AutoSize          = $true
-    AutoFilter        = $true
-    IncludePivotTable = $true
-    Activate          = $true
-    PivotRows         = 'Severity', 'RuleName'
-    PivotData         = @{RuleName = 'Count' }
-    IncludePivotChart = $true
-    ChartType         = 'BarClustered'
-    Show              = $true
+begin {
+    Remove-Item -Path $xlfile -ErrorAction SilentlyContinue
+    $xlparams = @{
+        Path           = $xlfile
+        WorksheetName  = 'FullResults'
+        AutoSize       = $true
+        AutoFilter     = $true
+        Activate       = $true
+        Show           = (-not $Quiet)
+    }
+    $pivotParams = @{
+        PivotTableName = 'BreakDown'
+        PivotData      = @{RuleName = 'Count' }
+        PivotRows      = 'Severity', 'RuleName'
+        PivotColumns   = 'Location'
+        PivotTotals    = 'Rows'
+    }
+    $dirsToProcess     = @()
+}
+process {
+    if     ($path.fullName) {$dirsToProcess += $path.fullName}
+    elseif ($path.path)     {$dirsToProcess += $path.Path}
+    else                    {$dirsToProcess += $path}
 }
 
-Export-Excel -ExcelPackage $xlpkg  -InputObject $ScriptAnalyzerResults @params
+end {
+    $pivotParams['-PivotChartDefinition'] = New-ExcelChartDefinition -ChartType $chartType -Column $dirsToProcess.Count -Title "Script analysis" -LegendBold
+    $xlparams['PivotTableDefinition']     = New-PivotTableDefinition @pivotParams
+
+    $dirsToProcess | ForEach-Object {
+        $dirName = (Resolve-Path -Path $_) -replace "^.*\\(.*?)\\(.*?)$", '$1-$2'
+        Write-Progress -Activity "Running Script Analyzer" -CurrentOperation $dirName
+        Invoke-ScriptAnalyzer -Path $_ -ErrorAction SilentlyContinue |
+            Add-Member -MemberType NoteProperty -Name Location -Value $dirName -PassThru
+    }   |       Export-Excel @xlparams
+    Write-Progress -Activity "Running Script Analyzer" -Completed
+}
