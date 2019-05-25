@@ -29,4 +29,14 @@ Describe "Tests" {
         $timer.TotalMilliseconds | should BeLessThan 3000
     }
 
+    It "Should be able to open, read and close as seperate actions" {
+        $timer = Measure-Command {
+            $excel = Open-ExcelPackage $PSScriptRoot\Simple.xlsx
+            $data = Import-Excel -ExcelPackage $excel
+            Close-ExcelPackage -ExcelPackage $excel -NoSave}
+            $timer.TotalMilliseconds | should BeLessThan 2100
+            $data.count | Should be 2
+            $data[0].p1 | Should be "a"
+            $data[1].p1 | Should be "b"
+    }
 }
