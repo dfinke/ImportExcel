@@ -76,7 +76,7 @@ function Import-Excel {
        Specifies the path to the Excel file.
    .PARAMETER ExcelPackage
        Instead of specifying a path provides an Excel Package object (from Open-ExcelPackage)
-       Using this avoids re-reading the whole file when importing mutliple parts of it.
+       Using this avoids re-reading the whole file when importing multiple parts of it.
        To allow multiple read operations Import-Excel does NOT close the package, and you should use
        Close-ExcelPackage -noSave to close it.
    .PARAMETER WorksheetName

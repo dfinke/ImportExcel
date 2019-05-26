@@ -53,6 +53,11 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
+# What's new 6.1.0
+
+Thank you to [James O'Neill](https://github.com/jhoneill)
+- Instead of specifying a path provides an Excel Package object (from `Open-ExcelPackage`), using this avoids re-reading the whole file when importing multiple parts of it. To allow multiple read operations `Import-Excel` does NOT close the package, and you should use `Close-ExcelPackage -noSave` to close it.
+
 # What's new 6.0.0
 
 Thank you to [James O'Neill](https://github.com/jhoneill) for the optimizations, and refactoring leading to a ***~10x*** speed increase. Thanks to [ili101](https://github.com/ili101) for earlier PRs that provided the ground work for this.
