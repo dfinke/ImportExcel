@@ -13,4 +13,3 @@ trigger:
   paths:
     exclude:
       - README.md
-      - Examples/**
