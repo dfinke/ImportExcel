@@ -12,5 +12,5 @@ steps:
 trigger:
   paths:
     exclude:
-    - README.md
-    - Examples/*
+      - README.md
+      - Examples/
