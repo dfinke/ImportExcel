@@ -1,6 +1,6 @@
 try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 
-$f = ".\dashboard.xlsx"
+$f = "$env:temp\dashboard.xlsx"
 Remove-Item $f -ErrorAction Ignore
 
 $data = @"
