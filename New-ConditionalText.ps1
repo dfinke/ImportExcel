@@ -39,7 +39,7 @@ function New-ConditionalText {
         "Finish Position". The range could be written -Range "C:C" to specify a
         named column, or -Range "C2:C102" to specify certain cells in the column.
       .Link
-        Add-Add-ConditionalFormatting
+        Add-ConditionalFormatting
         New-ConditionalFormattingIconSet
     #>
     [cmdletbinding()]

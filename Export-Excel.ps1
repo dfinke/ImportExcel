@@ -499,6 +499,7 @@
         [Switch]$AutoNameRange,
         [Int]$StartRow = 1,
         [Int]$StartColumn = 1,
+        [alias('PT')]
         [Switch]$PassThru,
         [String]$Numberformat = 'General',
         [string[]]$ExcludeProperty,
@@ -507,6 +508,7 @@
         [String[]]$NoNumberConversion,
         [Object[]]$ConditionalFormat,
         [Object[]]$ConditionalText,
+        [Object[]]$Style,
         [ScriptBlock]$CellStyleSB,
         #If there is already content in the workbook the sheet with the PivotTable will not be active UNLESS Activate is specified
         [switch]$Activate,
@@ -1022,7 +1024,10 @@
             }
             catch {throw "Error applying conditional formatting to worksheet $_"}
         }
-
+        foreach ($s in $Style) {
+            if (-not $s.Range) {$s["Range"] = $ws.Dimension.Address }
+            Set-ExcelRange -WorkSheet $ws @s
+        }
         if ($CellStyleSB) {
             try {
                 $TotalRows = $ws.Dimension.Rows
