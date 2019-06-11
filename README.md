@@ -53,6 +53,11 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
+# What's new 6.2.0
+
+- Fixed, Import-Excel can read xlsx files even if already open in Excel
+- Added `New-ExcelStyle`, plus `-Style` to `Export-Excel` and `-Merge` to `Set-ExcelRange`
+
 # What's new 6.1.0
 
 Thank you to [James O'Neill](https://github.com/jhoneill)
