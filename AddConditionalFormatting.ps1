@@ -1,4 +1,9 @@
-﻿Function Add-ConditionalFormatting {
+﻿try   {
+    #ensure that color and font lookups are available
+    [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
+}
+catch {}
+Function Add-ConditionalFormatting {
     <#
       .Synopsis
         Adds conditional formatting to all or part of a worksheet.
@@ -105,7 +110,7 @@
         [OfficeOpenXml.ConditionalFormatting.eExcelConditionalFormattingRuleType]$RuleType ,
         #Text color for matching objects
         [Parameter(ParameterSetName = "NamedRule")]
-        [Alias("ForegroundColour")]
+        [Alias("ForegroundColour","FontColor")]
         $ForegroundColor,
         #Color for databar type charts
         [Parameter(Mandatory = $true, ParameterSetName = "DataBar")]

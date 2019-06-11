@@ -345,8 +345,11 @@ function Import-Excel {
     }
 
     process {
-        if      ($Path -and  $Password)  {$ExcelPackage = Open-ExcelPackage -Path $Path -Password $Password}
-        elseif ($Path)                   {$ExcelPackage = Open-ExcelPackage -Path $Path}
+        if ($path) {
+            $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
+            if     ($Password)  {$ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream , $Password }
+            else                {$ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream}
+        }
         try {
             #Select worksheet
             if (-not  $WorksheetName) { $Worksheet = $ExcelPackage.Workbook.Worksheets[1] }
@@ -414,7 +417,7 @@ function Import-Excel {
         }
         catch { throw "Failed importing the Excel workbook '$Path' with worksheet '$Worksheetname': $_"; return }
         finally {
-            if ($Path) {Close-ExcelPackage -ExcelPackage $ExcelPackage -NoSave }
+            if ($Path) {$stream.close(); $ExcelPackage.Dispose() }
         }
     }
 }
@@ -513,7 +516,7 @@ Function WorksheetArgumentCompleter {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
     $xlPath = $fakeBoundParameter['Path']
     if (Test-Path -Path $xlPath) {
-        $xlpkg = Open-ExcelPackage -Path $xlPath
+        $xlpkg = Open-ExcelPackage -ReadOnly -Path $xlPath
         $WorksheetNames = $xlPkg.Workbook.Worksheets.Name
         Close-ExcelPackage -nosave -ExcelPackage $xlpkg
         $WorksheetNames.where( {$_ -like "*$wordToComplete*"}) | foreach-object {

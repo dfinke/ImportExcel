@@ -1,4 +1,4 @@
-﻿Function Set-ExcelRange {
+﻿function Set-ExcelRange {
     <#
       .SYNOPSIS
         Applies number, font, alignment and/or color formatting, values or formulas to a range of Excel cells.
@@ -56,6 +56,7 @@
         #Style for the right border.
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderRight,
         #Colour for the text - if none is specified it will be left as it is.
+        [Alias('ForegroundColor')]
         $FontColor,
         #Value for the cell.
         $Value,
@@ -107,7 +108,9 @@
         #Hide a row or column  (not a range); use -Hidden:$false to unhide.
         [Switch]$Hidden,
         #Locks cells. Cells are locked by default use -locked:$false on the whole sheet and then lock specific ones, and enable protection on the sheet.
-        [Switch]$Locked
+        [Switch]$Locked,
+        #Merges cells - it is recommended that you explicitly set -HorizontalAlignment
+        [Switch]$Merge
     )
     process {
         if  ($Range -is [Array])  {
@@ -167,6 +170,9 @@
             }
             if ($PSBoundParameters.ContainsKey('VerticalAlignment')) {
                 $Range.Style.VerticalAlignment   = $VerticalAlignment
+            }
+            if ($PSBoundParameters.ContainsKey('Merge')) {
+                $Range.Merge   = [boolean]$Merge
             }
             if ($PSBoundParameters.ContainsKey('Value')) {
                 if ($Value -match '^=')      {$PSBoundParameters["Formula"] = $Value -replace '^=','' }
@@ -251,7 +257,7 @@
     }
 }
 
-Function NumberFormatCompletion {
+function NumberFormatCompletion {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
     $numformats = [ordered]@{
         "General"       = "General"      # format ID  0
@@ -294,6 +300,7 @@ Function NumberFormatCompletion {
 if (Get-Command -ErrorAction SilentlyContinue -name Register-ArgumentCompleter) {
     Register-ArgumentCompleter -CommandName Add-ConditionalFormatting  -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName Export-Excel               -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
+    Register-ArgumentCompleter -CommandName New-ExcelStyle             -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName Set-ExcelRange             -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName Set-ExcelColumn            -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
     Register-ArgumentCompleter -CommandName Set-ExcelRow               -ParameterName NumberFormat        -ScriptBlock $Function:NumberFormatCompletion
@@ -305,7 +312,27 @@ if (Get-Command -ErrorAction SilentlyContinue -name Register-ArgumentCompleter) 
     Register-ArgumentCompleter -CommandName Add-ExcelChart             -ParameterName YAxisNumberformat   -ScriptBlock $Function:NumberFormatCompletion
 }
 
-Function Expand-NumberFormat {
+function ListFonts {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+    if (-not $script:FontFamilies) {
+        $script:FontFamilies = @("","")
+        try {
+            $script:FontFamilies = (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name
+        }
+        catch {}
+    }
+    $script:FontFamilies.where({$_ -Gt "" -and $_ -like "$wordToComplete*"} ) | ForEach-Object {
+        New-Object -TypeName System.Management.Automation.CompletionResult -ArgumentList "'$_'" , $_ ,
+        ([System.Management.Automation.CompletionResultType]::ParameterValue) , $_
+    }
+}
+if (Get-Command -ErrorAction SilentlyContinue -name Register-ArgumentCompleter) {
+    Register-ArgumentCompleter -CommandName New-ExcelStyle   -ParameterName FontName        -ScriptBlock $Function:ListFonts
+    Register-ArgumentCompleter -CommandName Set-ExcelColumn  -ParameterName FontName        -ScriptBlock $Function:ListFonts
+    Register-ArgumentCompleter -CommandName Set-ExcelRange   -ParameterName FontName        -ScriptBlock $Function:ListFonts
+    Register-ArgumentCompleter -CommandName Set-ExcelRow     -ParameterName FontName        -ScriptBlock $Function:ListFonts
+}
+function Expand-NumberFormat {
     <#
       .SYNOPSIS
         Converts short names for number formats to the formatting strings used in Excel
@@ -380,4 +407,82 @@ Function Expand-NumberFormat {
         "Text"          {return  "@"          } # format ID 49
         Default         {return  $NumberFormat}
     }
+}
+
+function New-ExcelStyle {
+    param (
+        [Alias("Address")]
+        $Range ,
+        #Number format to apply to cells e.g. "dd/MM/yyyy HH:mm", "£#,##0.00;[Red]-£#,##0.00", "0.00%" , "##/##" , "0.0E+0" etc.
+        [Alias("NFormat")]
+        $NumberFormat,
+        #Style of border to draw around the range.
+        [OfficeOpenXml.Style.ExcelBorderStyle]$BorderAround,
+        #Color of the border.
+        $BorderColor=[System.Drawing.Color]::Black,
+        #Style for the bottom border.
+        [OfficeOpenXml.Style.ExcelBorderStyle]$BorderBottom,
+        #Style for the top border.
+        [OfficeOpenXml.Style.ExcelBorderStyle]$BorderTop,
+        #Style for the left border.
+        [OfficeOpenXml.Style.ExcelBorderStyle]$BorderLeft,
+        #Style for the right border.
+        [OfficeOpenXml.Style.ExcelBorderStyle]$BorderRight,
+        #Colour for the text - if none is specified it will be left as it is.
+        [Alias('ForegroundColor')]
+        $FontColor,
+        #Value for the cell.
+        $Value,
+        #Formula for the cell.
+        $Formula,
+        #Specifies formula should be an array formula (a.k.a CSE [ctrl-shift-enter] formula).
+        [Switch]$ArrayFormula,
+        #Clear Bold, Italic, StrikeThrough and Underline and set color to Black.
+        [Switch]$ResetFont,
+        #Make text bold; use -Bold:$false to remove bold.
+        [Switch]$Bold,
+        #Make text italic;  use -Italic:$false to remove italic.
+        [Switch]$Italic,
+        #Underline the text using the underline style in -UnderlineType;  use -Underline:$false to remove underlining.
+        [Switch]$Underline,
+         #Specifies whether underlining should be single or double, normal or accounting mode. The default is "Single".
+        [OfficeOpenXml.Style.ExcelUnderLineType]$UnderLineType = [OfficeOpenXml.Style.ExcelUnderLineType]::Single,
+        #Strike through text; use -Strikethru:$false to remove Strike through
+        [Switch]$StrikeThru,
+        #Subscript or Superscript (or none).
+        [OfficeOpenXml.Style.ExcelVerticalAlignmentFont]$FontShift,
+        #Font to use - Excel defaults to Calibri.
+        [String]$FontName,
+        #Point size for the text.
+        [float]$FontSize,
+        #Change background color.
+        $BackgroundColor,
+        #Background pattern - Solid by default.
+        [OfficeOpenXml.Style.ExcelFillStyle]$BackgroundPattern = [OfficeOpenXml.Style.ExcelFillStyle]::Solid ,
+        #Secondary color for background pattern.
+        [Alias("PatternColour")]
+        $PatternColor,
+        #Turn on Text-Wrapping; use -WrapText:$false to turn off wrapping.
+        [Switch]$WrapText,
+        #Position cell contents to Left, Right, Center etc. default is 'General'.
+        [OfficeOpenXml.Style.ExcelHorizontalAlignment]$HorizontalAlignment,
+        #Position cell contents to Top, Bottom or Center.
+        [OfficeOpenXml.Style.ExcelVerticalAlignment]$VerticalAlignment,
+        #Degrees to rotate text. Up to +90 for anti-clockwise ("upwards"), or to -90 for clockwise.
+        [ValidateRange(-90, 90)]
+        [int]$TextRotation ,
+        #Autofit cells to width  (columns or ranges only).
+        [Alias("AutoFit")]
+        [Switch]$AutoSize,
+        #Set cells to a fixed width (columns or ranges only), ignored if Autosize is specified.
+        [float]$Width,
+        #Set cells to a fixed height  (rows or ranges only).
+        [float]$Height,
+        #Hide a row or column  (not a range); use -Hidden:$false to unhide.
+        [Switch]$Hidden,
+        #Locks cells. Cells are locked by default use -locked:$false on the whole sheet and then lock specific ones, and enable protection on the sheet.
+        [Switch]$Locked,
+        [Switch]$Merge
+    )
+    $PSBoundParameters
 }
