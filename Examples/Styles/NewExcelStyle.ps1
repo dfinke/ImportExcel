@@ -1,3 +1,4 @@
+# https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/NewExcelStyle.png
 try { . $PSScriptRoot\..\..\LoadPSD1.ps1 } catch { }
 
 $xlfile = "$env:TEMP\test.xlsx"
