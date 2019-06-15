@@ -387,13 +387,15 @@ function Add-ExcelChart {
             $chartDefCount = @($YRange).Count
             if ($chartDefCount -eq 1) {
                 $Series = $chart.Series.Add($YRange, $XRange)
-                if ($ChartType -notmatch "stacked|3D$|pie|Doughnut|Cone|Cylinder|Pyramid") {
-                    foreach ($trendLine in $ChartTrendLine) {
-                        $null = $Series.TrendLines.Add($trendLine)
+                if ($ChartTrendLine) {
+                    if ($ChartType -notmatch "stacked|3D$|pie|Doughnut|Cone|Cylinder|Pyramid") {
+                        foreach ($trendLine in $ChartTrendLine) {
+                            $null = $Series.TrendLines.Add($trendLine)
+                        }
                     }
-                }
-                else {
-                    Write-Warning "Chart trend line is not supported for chart type: $ChartType"
+                    else {
+                        Write-Warning "Chart trend line is not supported for chart type: $ChartType"
+                    }
                 }
                 if ($SeriesHeader) { $Series.Header = $SeriesHeader }
                 else { $Series.Header = 'Series 1' }
