@@ -53,6 +53,13 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
+# What's new 6.2.1
+
+- Added requested feature, chart trendlines.
+    - [Example PowerShell script](https://github.com/dfinke/ImportExcel/blob/master/Examples/Charts/NumberOfVisitors.ps1)
+
+![](/images/ChartTrendlines.png)
+
 # What's new 6.2.0
 Thank you to [James O'Neill](https://github.com/jhoneill)
 
