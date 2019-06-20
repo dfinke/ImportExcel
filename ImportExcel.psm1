@@ -1,5 +1,6 @@
 ﻿#region import everything we need
 Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
+<#
 . $PSScriptRoot\AddConditionalFormatting.ps1
 . $PSScriptRoot\AddDataValidation.ps1
 . $PSScriptRoot\Charting.ps1
@@ -40,7 +41,12 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\SetFormat.ps1
 . $PSScriptRoot\TrackingUtils.ps1
 . $PSScriptRoot\Update-FirstObjectProperties.ps1
-
+#>
+# Import all public functions
+foreach ($cmdlet in (Get-ChildItem "$ModuleRoot\cmdlets\*.ps1"))
+{
+	. Import-ModuleFile -Path $cmdlet.FullName
+}
 
 New-Alias -Name Use-ExcelData -Value "ConvertFrom-ExcelData" -Force
 
