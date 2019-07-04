@@ -301,15 +301,6 @@ function Import-Excel {
     begin {
         $sw = [System.Diagnostics.Stopwatch]::StartNew()
 
-        # $Path = (Resolve-Path $Path).ProviderPath
-        $resolvedPath = (Resolve-Path $Path -ErrorAction SilentlyContinue)
-        if ($resolvedPath) {
-            $Path = $resolvedPath.ProviderPath
-        }
-        else {
-            throw "'$($Path)' file not found"
-        }
-
         Function Get-PropertyNames {
             <#
             .SYNOPSIS
@@ -356,6 +347,15 @@ function Import-Excel {
 
     process {
         if ($path) {
+
+            # $Path = (Resolve-Path $Path).ProviderPath
+            $resolvedPath = (Resolve-Path $Path -ErrorAction SilentlyContinue)
+            if ($resolvedPath) {
+                $Path = $resolvedPath.ProviderPath
+            }
+            else {
+                throw "'$($Path)' file not found"
+            }
 
             $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
             if ($Password) { $ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream , $Password }
