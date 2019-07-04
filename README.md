@@ -60,6 +60,10 @@ Install-Module ImportExcel
 
 ![](/images/ChartTrendlines.png)
 
+# What's new 6.2.2
+
+- Fixed Import-Excel and relative path issue, added unit tests.
+
 # What's new 6.2.0
 Thank you to [James O'Neill](https://github.com/jhoneill)
 
