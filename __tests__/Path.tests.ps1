@@ -19,11 +19,6 @@
         $actual | Should Not Be $null
     }
 
-    # It "Should read with PSScriptRoot" {
-    #     $actual = Import-Excel -Path "$PSScriptRoot\$($script:xlfileName)"
-    #     $actual | Should Not Be $null
-    # }
-
     It "Should read with just a file name and resolve to cwd" {
         $actual = Import-Excel -Path "$($script:xlfileName)"
         $actual | Should Not Be $null
@@ -31,5 +26,13 @@
 
     It "Should fail for not found" {
         { Import-Excel -Path "ExcelFileDoesNotExist.xlsx" } | Should Throw "'ExcelFileDoesNotExist.xlsx' file not found"
+    }
+
+    It "Should fail for xls extension" {
+        { Import-Excel -Path "ExcelFileDoesNotExist.xls" } | Should Throw "Import-Excel does not support reading this extension type .xls"
+    }
+
+    It "Should fail for xlsxs extension" {
+        { Import-Excel -Path "ExcelFileDoesNotExist.xlsxs" } | Should Throw "Import-Excel does not support reading this extension type .xlsxs"
     }
 }
