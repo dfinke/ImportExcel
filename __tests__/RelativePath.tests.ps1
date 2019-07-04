@@ -19,4 +19,8 @@
         $actual = Import-Excel -Path "testRelative.xlsx"
         $actual | Should Not Be $null
     }
+
+    It "Should fail for not found" {
+        { Import-Excel -Path "ExcelFileDoesNotExist.xlsx" } | Should Throw "'ExcelFileDoesNotExist.xlsx' file not found"
+    }
 }

@@ -269,7 +269,7 @@ function Import-Excel {
         [Parameter(ParameterSetName = "PathA", Mandatory, ValueFromPipelineByPropertyName, ValueFromPipeline, Position = 0 )]
         [Parameter(ParameterSetName = "PathB", Mandatory, ValueFromPipelineByPropertyName, ValueFromPipeline, Position = 0 )]
         [Parameter(ParameterSetName = "PathC", Mandatory, ValueFromPipelineByPropertyName, ValueFromPipeline, Position = 0 )]
-        [ValidateScript( { (Test-Path -Path $_ -PathType Leaf) -and ($_ -match '.xls$|.xlsx$|.xlsm$') })]
+        # [ValidateScript( { (Test-Path -Path $_ -PathType Leaf) -and ($_ -match '.xls$|.xlsx$|.xlsm$') })]
         [String]$Path,
         [Parameter(ParameterSetName = "PackageA", Mandatory)]
         [Parameter(ParameterSetName = "PackageB", Mandatory)]
@@ -300,6 +300,16 @@ function Import-Excel {
     )
     begin {
         $sw = [System.Diagnostics.Stopwatch]::StartNew()
+
+        # $Path = (Resolve-Path $Path).ProviderPath
+        $resolvedPath = (Resolve-Path $Path -ErrorAction SilentlyContinue)
+        if ($resolvedPath) {
+            $Path = $resolvedPath.ProviderPath
+        }
+        else {
+            throw "'$($Path)' file not found"
+        }
+
         Function Get-PropertyNames {
             <#
             .SYNOPSIS
@@ -346,7 +356,6 @@ function Import-Excel {
 
     process {
         if ($path) {
-            $Path = (Resolve-Path $Path).ProviderPath
             $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
             if ($Password) { $ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream , $Password }
             else { $ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream }
