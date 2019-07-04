@@ -348,13 +348,22 @@ function Import-Excel {
     process {
         if ($path) {
 
-            # $Path = (Resolve-Path $Path).ProviderPath
-            $resolvedPath = (Resolve-Path $Path -ErrorAction SilentlyContinue)
-            if ($resolvedPath) {
-                $Path = $resolvedPath.ProviderPath
-            }
-            else {
-                throw "'$($Path)' file not found"
+            if (!$firstTimeThru) {
+                # '.xls$|.xlsx$|.xlsm$'
+                $extension = [System.IO.Path]::GetExtension($Path)
+                if ($extension -notmatch '.xlsx$|.xlsm$') {
+                    throw "Import-Excel does not support reading this extension type $($extension)"
+                }
+
+                # $Path = (Resolve-Path $Path).ProviderPath
+                $resolvedPath = (Resolve-Path $Path -ErrorAction SilentlyContinue)
+                if ($resolvedPath) {
+                    $Path = $resolvedPath.ProviderPath
+                }
+                else {
+                    throw "'$($Path)' file not found"
+                }
+                $firstTimeThru = $true
             }
 
             $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
