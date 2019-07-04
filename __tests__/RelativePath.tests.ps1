@@ -19,10 +19,10 @@
         $actual | Should Not Be $null
     }
 
-    It "Should read with PSScriptRoot" {
-        $actual = Import-Excel -Path "$PSScriptRoot\$($script:xlfileName)"
-        $actual | Should Not Be $null
-    }
+    # It "Should read with PSScriptRoot" {
+    #     $actual = Import-Excel -Path "$PSScriptRoot\$($script:xlfileName)"
+    #     $actual | Should Not Be $null
+    # }
 
     It "Should read with just a file name and resolve to cwd" {
         $actual = Import-Excel -Path "$($script:xlfileName)"
