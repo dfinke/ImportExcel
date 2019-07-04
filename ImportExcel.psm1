@@ -48,7 +48,7 @@ if ($PSVersionTable.PSVersion.Major -ge 5) {
     . $PSScriptRoot\plot.ps1
 
     Function New-Plot {
-        [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification='New-Plot does not change system state')]
+        [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'New-Plot does not change system state')]
         Param()
 
         [PSPlot]::new()
@@ -269,7 +269,7 @@ function Import-Excel {
         [Parameter(ParameterSetName = "PathA", Mandatory, ValueFromPipelineByPropertyName, ValueFromPipeline, Position = 0 )]
         [Parameter(ParameterSetName = "PathB", Mandatory, ValueFromPipelineByPropertyName, ValueFromPipeline, Position = 0 )]
         [Parameter(ParameterSetName = "PathC", Mandatory, ValueFromPipelineByPropertyName, ValueFromPipeline, Position = 0 )]
-        [ValidateScript( {(Test-Path -Path $_ -PathType Leaf) -and ($_ -match '.xls$|.xlsx$|.xlsm$')})]
+        [ValidateScript( { (Test-Path -Path $_ -PathType Leaf) -and ($_ -match '.xls$|.xlsx$|.xlsm$') })]
         [String]$Path,
         [Parameter(ParameterSetName = "PackageA", Mandatory)]
         [Parameter(ParameterSetName = "PackageB", Mandatory)]
@@ -305,7 +305,7 @@ function Import-Excel {
             .SYNOPSIS
                 Create objects containing the column number and the column name for each of the different header types.
             #>
-            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification="Name would be incorrect, and command is not exported")]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = "Name would be incorrect, and command is not exported")]
             Param (
                 [Parameter(Mandatory)]
                 [Int[]]$Columns,
@@ -318,13 +318,13 @@ function Import-Excel {
                     $i = 0
                     foreach ($C in $Columns) {
                         $i++
-                        $C | Select-Object @{N = 'Column'; E = {$_}}, @{N = 'Value'; E = {'P' + $i}}
+                        $C | Select-Object @{N = 'Column'; E = { $_ } }, @{N = 'Value'; E = { 'P' + $i } }
                     }
                 }
                 elseif ($HeaderName) {
                     $i = 0
                     foreach ($H in $HeaderName) {
-                        $H | Select-Object @{N = 'Column'; E = {$Columns[$i]}}, @{N = 'Value'; E = {$H}}
+                        $H | Select-Object @{N = 'Column'; E = { $Columns[$i] } }, @{N = 'Value'; E = { $H } }
                         $i++
                     }
                 }
@@ -334,7 +334,7 @@ function Import-Excel {
                     }
 
                     foreach ($C in $Columns) {
-                        $Worksheet.Cells[$StartRow, $C] | Where-Object {$_.Value} | Select-Object @{N = 'Column'; E = {$C}}, Value
+                        $Worksheet.Cells[$StartRow, $C] | Where-Object { $_.Value } | Select-Object @{N = 'Column'; E = { $C } }, Value
                     }
                 }
             }
@@ -346,43 +346,44 @@ function Import-Excel {
 
     process {
         if ($path) {
+            $Path = (Resolve-Path $Path).ProviderPath
             $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
-            if     ($Password)  {$ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream , $Password }
-            else                {$ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream}
+            if ($Password) { $ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream , $Password }
+            else { $ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream }
         }
         try {
             #Select worksheet
             if (-not  $WorksheetName) { $Worksheet = $ExcelPackage.Workbook.Worksheets[1] }
-            elseif(-not ($Worksheet = $ExcelPackage.Workbook.Worksheets[$WorkSheetName])) {
-                    throw "Worksheet '$WorksheetName' not found, the workbook only contains the worksheets '$($ExcelPackage.Workbook.Worksheets)'. If you only wish to select the first worksheet, please remove the '-WorksheetName' parameter." ; return
+            elseif (-not ($Worksheet = $ExcelPackage.Workbook.Worksheets[$WorkSheetName])) {
+                throw "Worksheet '$WorksheetName' not found, the workbook only contains the worksheets '$($ExcelPackage.Workbook.Worksheets)'. If you only wish to select the first worksheet, please remove the '-WorksheetName' parameter." ; return
             }
 
             Write-Debug $sw.Elapsed.TotalMilliseconds
             #region Get rows and columns
             #If we are doing dataonly it is quicker to work out which rows to ignore before processing the cells.
-            if (-not $EndRow   ) {$EndRow = $Worksheet.Dimension.End.Row    }
-            if (-not $EndColumn) {$EndColumn = $Worksheet.Dimension.End.Column }
+            if (-not $EndRow   ) { $EndRow = $Worksheet.Dimension.End.Row }
+            if (-not $EndColumn) { $EndColumn = $Worksheet.Dimension.End.Column }
             $endAddress = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$EndRow]C[$EndColumn]", 0, 0)
             if ($DataOnly) {
                 #If we are using headers startrow will be the header-row so examine data from startRow + 1,
-                if ($NoHeader) {$range = "A" + ($StartRow     ) + ":" + $endAddress }
-                else {$range = "A" + ($StartRow + 1 ) + ":" + $endAddress }
+                if ($NoHeader) { $range = "A" + ($StartRow     ) + ":" + $endAddress }
+                else { $range = "A" + ($StartRow + 1 ) + ":" + $endAddress }
                 #We're going to look at every cell and build 2 hash tables holding rows & columns which contain data.
                 #Want to Avoid 'select unique' operations & large Sorts, becuse time time taken increases with square
                 #of number of items (PS uses heapsort at large size). Instead keep a list of what we have seen,
                 #using Hash tables: "we've seen it" is all we need, no need to worry about "seen it before" / "Seen it many times".
-                $colHash = @{}
-                $rowHash = @{}
+                $colHash = @{ }
+                $rowHash = @{ }
                 foreach ($cell in $Worksheet.Cells[$range]) {
-                    if ($null -ne $cell.Value ) {$colHash[$cell.Start.Column] = 1; $rowHash[$cell.Start.row] = 1 }
+                    if ($null -ne $cell.Value ) { $colHash[$cell.Start.Column] = 1; $rowHash[$cell.Start.row] = 1 }
                 }
-                $rows = (   $StartRow..$EndRow   ).Where( {$rowHash[$_]})
-                $columns = ($StartColumn..$EndColumn).Where( {$colHash[$_]})
+                $rows = (   $StartRow..$EndRow   ).Where( { $rowHash[$_] })
+                $columns = ($StartColumn..$EndColumn).Where( { $colHash[$_] })
             }
             else {
-                $Columns = $StartColumn .. $EndColumn  ; if ($StartColumn -gt $EndColumn) {Write-Warning -Message "Selecting columns $StartColumn to $EndColumn might give odd results."}
-                if ($NoHeader) {$Rows =  $StartRow..$EndRow ; if ($StartRow -gt $EndRow) {Write-Warning -Message "Selecting rows $StartRow to $EndRow might give odd results."} }
-                else {$Rows = (1 + $StartRow)..$EndRow ; if ($StartRow -ge $EndRow) {Write-Warning -Message "Selecting $StartRow as the header with data in $(1+$StartRow) to $EndRow might give odd results."}}
+                $Columns = $StartColumn .. $EndColumn  ; if ($StartColumn -gt $EndColumn) { Write-Warning -Message "Selecting columns $StartColumn to $EndColumn might give odd results." }
+                if ($NoHeader) { $Rows = $StartRow..$EndRow ; if ($StartRow -gt $EndRow) { Write-Warning -Message "Selecting rows $StartRow to $EndRow might give odd results." } }
+                else { $Rows = (1 + $StartRow)..$EndRow } # ; if ($StartRow -ge $EndRow) { Write-Warning -Message "Selecting $StartRow as the header with data in $(1+$StartRow) to $EndRow might give odd results." } }
             }
             #endregion
             #region Create property names
@@ -402,7 +403,7 @@ function Import-Excel {
                 foreach ($R in $Rows) {
                     #Disabled write-verbose for speed
                     #  Write-Verbose "Import row '$R'"
-                    $NewRow = [Ordered]@{}
+                    $NewRow = [Ordered]@{ }
 
                     foreach ($P in $PropertyNames) {
                         $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value
@@ -417,7 +418,7 @@ function Import-Excel {
         }
         catch { throw "Failed importing the Excel workbook '$Path' with worksheet '$Worksheetname': $_"; return }
         finally {
-            if ($Path) {$stream.close(); $ExcelPackage.Dispose() }
+            if ($Path) { $stream.close(); $ExcelPackage.Dispose() }
         }
     }
 }
@@ -463,9 +464,9 @@ function ConvertFrom-ExcelSheet {
     $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
     $workbook = $xl.Workbook
 
-    $targetSheets = $workbook.Worksheets | Where-Object {$_.Name -like $SheetName}
+    $targetSheets = $workbook.Worksheets | Where-Object { $_.Name -like $SheetName }
 
-    $params = @{} + $PSBoundParameters
+    $params = @{ } + $PSBoundParameters
     $params.Remove("OutputPath")
     $params.Remove("SheetName")
     $params.Remove('Extension')
@@ -496,7 +497,7 @@ function Export-MultipleExcelSheets {
         [Switch]$AutoSize
     )
 
-    $parameters = @{} + $PSBoundParameters
+    $parameters = @{ } + $PSBoundParameters
     $parameters.Remove("InfoMap")
     $parameters.Remove("Show")
 
@@ -509,7 +510,7 @@ function Export-MultipleExcelSheets {
         & $entry.Value | Export-Excel @parameters
     }
 
-    if ($Show) {Invoke-Item $Path}
+    if ($Show) { Invoke-Item $Path }
 }
 
 Function WorksheetArgumentCompleter {
@@ -519,7 +520,7 @@ Function WorksheetArgumentCompleter {
         $xlpkg = Open-ExcelPackage -ReadOnly -Path $xlPath
         $WorksheetNames = $xlPkg.Workbook.Worksheets.Name
         Close-ExcelPackage -nosave -ExcelPackage $xlpkg
-        $WorksheetNames.where( {$_ -like "*$wordToComplete*"}) | foreach-object {
+        $WorksheetNames.where( { $_ -like "*$wordToComplete*" }) | foreach-object {
             New-Object -TypeName System.Management.Automation.CompletionResult -ArgumentList "'$_'",
             $_ , ([System.Management.Automation.CompletionResultType]::ParameterValue) , $_
         }
