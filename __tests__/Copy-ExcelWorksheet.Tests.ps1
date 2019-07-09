@@ -60,29 +60,29 @@ Describe "Copy-Worksheet" {
         it "Copied the expected data into the worksheet                                            " {
             $ws.Cells[2, 1].Value.Gettype().name                        | Should     be  'DateTime'
             $ws.Cells[2, 2].Formula                                     | Should     be  'SUM(F2:G2)'
-            $ws.Cells[2, 5].Value.GetType().name                       | Should     be  'String'
-            $ws.Cells[2, 6].Value.GetType().name                       | Should     be  'String'
+            $ws.Cells[2, 5].Value.GetType().name                        | Should     be  'String'
+            $ws.Cells[2, 6].Value.GetType().name                        | Should     be  'String'
             $ws.Cells[2, 18].Value.GetType().name                       | Should     be  'String'
-            ($ws.Cells[2, 11].Value -is [valuetype] )                   | Should     be  $true
-            ($ws.Cells[2, 12].Value -is [valuetype] )                   | Should     be  $true
-            ($ws.Cells[2, 13].Value -is [valuetype] )                   | Should     be  $true
-            $ws.Cells[2, 11].Value                                     | Should     beLessThan 0
-            $ws.Cells[2, 12].Value                                     | Should     beLessThan 0
-            $ws.Cells[2, 13].Value                                     | Should     beLessThan 0
+           ($ws.Cells[2, 11].Value -is [valuetype] )                    | Should     be  $true
+           ($ws.Cells[2, 12].Value -is [valuetype] )                    | Should     be  $true
+           ($ws.Cells[2, 13].Value -is [valuetype] )                    | Should     be  $true
+            $ws.Cells[2, 11].Value                                      | Should     beLessThan 0
+            $ws.Cells[2, 12].Value                                      | Should     beLessThan 0
+            $ws.Cells[2, 13].Value                                      | Should     beLessThan 0
             if ((Get-Culture).NumberFormat.NumberGroupSeparator -EQ ",") {
-                ($ws.Cells[2, 8].Value -is [valuetype] )                | Should     be  $true
-                $ws.Cells[2, 9].Value.GetType().name                   | Should     be  'String'
+               ($ws.Cells[2, 8].Value -is [valuetype] )                 | Should     be  $true
+                $ws.Cells[2, 9].Value.GetType().name                    | Should     be  'String'
             }
             elseif ((Get-Culture).NumberFormat.NumberGroupSeparator -EQ ".") {
-                ($ws.Cells[2, 9].Value -is [valuetype] )                | Should     be  $true
-                $ws.Cells[2, 8].Value.GetType().name                   | Should     be  'String'
+               ($ws.Cells[2, 9].Value -is [valuetype] )                 | Should     be  $true
+                $ws.Cells[2, 8].Value.GetType().name                    | Should     be  'String'
             }
-            ($ws.Cells[2, 14].Value -is [valuetype] )                   | Should     be  $true
-            $ws.Cells[2, 15].Value.GetType().name                      | Should     be  'String'
-            $ws.Cells[2, 16].Value.GetType().name                      | Should     be  'String'
-            $ws.Cells[2, 17].Value.GetType().name                      | Should     be  'String'
-            ($ws.Cells[2, 19].Value -is [valuetype] )                   | Should     be  $true
-            ($ws.Cells[2, 20].Value -is [valuetype] )                   | Should     be  $true
+           ($ws.Cells[2, 14].Value -is [valuetype] )                    | Should     be  $true
+            $ws.Cells[2, 15].Value.GetType().name                       | Should     be  'String'
+            $ws.Cells[2, 16].Value.GetType().name                       | Should     be  'String'
+            $ws.Cells[2, 17].Value.GetType().name                       | Should     be  'String'
+           ($ws.Cells[2, 19].Value -is [valuetype] )                    | Should     be  $true
+           ($ws.Cells[2, 20].Value -is [valuetype] )                    | Should     be  $true
         }
     }
 
@@ -101,7 +101,7 @@ Describe "Copy-Worksheet" {
             }
         }
 
-        it "Should copy and remove sheets" {
+        it "Should copy and remove sheets                                                          " {
             $targetSheets = echo 1.1.2019 1.4.2019
 
             $targetSheets | ForEach-Object {
@@ -111,6 +111,30 @@ Describe "Copy-Worksheet" {
             $targetSheets | ForEach-Object { Remove-WorkSheet -FullName $xlfile -WorksheetName $_ }
 
             (Get-ExcelSheetInfo -Path $xlfile ).Count | Should Be 3
+        }
+    }
+
+    Context "Copy worksheet should support piped input" {
+        BeforeAll {
+            $xlfile = "$env:TEMP\reports.xlsx"
+            $xlfileArchive = "$env:TEMP\reportsArchive.xlsx"
+
+            rm $xlfile -ErrorAction SilentlyContinue
+            rm $xlfileArchive -ErrorAction SilentlyContinue
+
+            $sheets = echo 1.1.2019 1.2.2019 1.3.2019 1.4.2019 1.5.2019
+
+            $sheets | ForEach-Object {
+                "Hello World" | Export-Excel $xlfile -WorksheetName $_
+            }
+            $e = Open-ExcelPackage $xlfile
+            $e.Workbook.Worksheets | Copy-ExcelWorkSheet -DestinationWorkbook $xlfileArchive
+            Close-ExcelPackage -NoSave $e
+        }
+        it "Should copy sheets piped into the command                                              " {
+            $excel = Open-ExcelPackage $xlfileArchive
+            $excel.Workbook.Worksheets.Count                            | should      be 5
+            $excel.Workbook.Worksheets['1.3.2019'].Cells['A1'].Value    | should      be 'Hello World'
         }
     }
 }
