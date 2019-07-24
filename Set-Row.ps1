@@ -13,7 +13,7 @@
         Set-ExcelRow -Worksheet $ws -Heading Total -Value {"=sum($columnName`2:$columnName$endrow)" }
 
         $Ws contains a worksheet object, and no Row number is specified so
-        Set-ExcelRow will select the next row after the endof the data in
+        Set-ExcelRow will select the next row after the end of the data in
         the sheet. The first cell in the row will contain "Total", and
         each of the other cells will contain
             =Sum(xx2:xx99)
