@@ -52,15 +52,21 @@ Install-Module ImportExcel -scope CurrentUser
 ```PowerShell
 Install-Module ImportExcel
 ```
+# What's new 6.2.3
 
-# What's new 6.2.1
+Thank you [jhoneill](https://github.com/jhoneill).
+
+- Refactored copy sheet and added pipe support
+- Add `ClearAll` to `Set-ExcelRange`
+- Fix broken test & regression for `passwords`
+    - **Note**: Passwords do not work on `pwsh`. The EPPlus library does not support these dotnet core APIs at this time.
+
+# What's new 6.2.2
 
 - Added requested feature, chart trendlines.
     - [Example PowerShell script](https://github.com/dfinke/ImportExcel/blob/master/Examples/Charts/NumberOfVisitors.ps1)
 
 ![](/images/ChartTrendlines.png)
-
-# What's new 6.2.2
 
 - Fixed Import-Excel and relative path issue, added unit tests.
 
