@@ -12,4 +12,4 @@ steps:
 trigger:
   paths:
     exclude:
-    - README.md
+      - README.md

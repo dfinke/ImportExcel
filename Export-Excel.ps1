@@ -138,7 +138,7 @@
         .PARAMETER Activate
             If there is already content in the workbook, a new sheet will not be active UNLESS Activate is specified; if a PivotTable is included it will be the active sheet
         .PARAMETER Now
-            The -Now switch is a shortcut that automatically creates a temporary file, enables "AutoSize", "AutoFiler" and "Show", and opens the file immediately.
+            The -Now switch is a shortcut that automatically creates a temporary file, enables "AutoSize", "AutoFilter" and "Show", and opens the file immediately.
         .PARAMETER NumberFormat
             Formats all values that can be converted to a number to the format specified.
 

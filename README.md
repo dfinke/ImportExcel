@@ -53,6 +53,31 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
+# What's new 6.2.1
+
+- Added requested feature, chart trendlines.
+    - [Example PowerShell script](https://github.com/dfinke/ImportExcel/blob/master/Examples/Charts/NumberOfVisitors.ps1)
+
+![](/images/ChartTrendlines.png)
+
+# What's new 6.2.2
+
+- Fixed Import-Excel and relative path issue, added unit tests.
+
+# What's new 6.2.0
+Thank you to [James O'Neill](https://github.com/jhoneill)
+
+- Fixed, Import-Excel can read xlsx files even if already open in Excel
+- Added `New-ExcelStyle`, plus `-Style` to `Export-Excel` and `-Merge` to `Set-ExcelRange`
+- Added [Style Examples](https://github.com/dfinke/ImportExcel/tree/master/Examples/Styles)
+
+![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/NewExcelStyle.png)
+
+# What's new 6.1.0
+
+Thank you to [James O'Neill](https://github.com/jhoneill)
+- Instead of specifying a path provides an Excel Package object (from `Open-ExcelPackage`), using this avoids re-reading the whole file when importing multiple parts of it. To allow multiple read operations `Import-Excel` does NOT close the package, and you should use `Close-ExcelPackage -noSave` to close it.
+
 # What's new 6.0.0
 
 Thank you to [James O'Neill](https://github.com/jhoneill) for the optimizations, and refactoring leading to a ***~10x*** speed increase. Thanks to [ili101](https://github.com/ili101) for earlier PRs that provided the ground work for this.
