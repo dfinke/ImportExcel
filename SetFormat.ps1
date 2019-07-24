@@ -124,7 +124,10 @@
                 $Range = $WorkSheet.Cells[$Range]
             }
             elseif ($Range -is [string]) {Write-Warning -Message "The range pararameter you have specified also needs a worksheet parameter." ;return}
-            #else we assume Range is a range.
+            #else we assume $Range is a range.
+            if ($ClearAll)  {
+                $Range.Clear()
+            }
             if ($ResetFont) {
                 $Range.Style.Font.Color.SetColor( ([System.Drawing.Color]::Black))
                 $Range.Style.Font.Bold          = $false
@@ -332,6 +335,7 @@ if (Get-Command -ErrorAction SilentlyContinue -name Register-ArgumentCompleter) 
     Register-ArgumentCompleter -CommandName Set-ExcelRange   -ParameterName FontName        -ScriptBlock $Function:ListFonts
     Register-ArgumentCompleter -CommandName Set-ExcelRow     -ParameterName FontName        -ScriptBlock $Function:ListFonts
 }
+
 function Expand-NumberFormat {
     <#
       .SYNOPSIS
