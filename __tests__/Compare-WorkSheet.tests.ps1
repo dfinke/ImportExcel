@@ -1,6 +1,6 @@
 ﻿#Requires -Modules Pester
 Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-if ($PSVersionTable.PSVersion.Major -gt 5) { Write-Warning "Can't test grid view on V6" }
+if ($PSVersionTable.PSVersion.Major -gt 5) { Write-Warning "Can't test grid view on V6 and later" }
 else                                       {Add-Type -AssemblyName System.Windows.Forms }
 Describe "Compare Worksheet" {
     Context "Simple comparison output" {

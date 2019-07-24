@@ -347,8 +347,9 @@ function Import-Excel {
     process {
         if ($path) {
             $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
-            if     ($Password)  {$ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream , $Password }
-            else                {$ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream}
+            $ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage
+            if   ($Password) { $ExcelPackage.Load($stream,$Password)}
+            else             { $ExcelPackage.Load($stream) }
         }
         try {
             #Select worksheet
