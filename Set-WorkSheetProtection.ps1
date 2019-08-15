@@ -7,7 +7,7 @@
 
       .Example
         Set-WorkSheetProtection -WorkSheet $planSheet -IsProtected -AllowAll -AllowInsertColumns:$false -AllowDeleteColumns:$false -UnLockAddress "A:N"
-        Turns on protection for the worksheet in $planSheet, checks all the allow boxes excel Insert and Delete columns and unlocks columns A-N
+        Turns on protection for the worksheet in $planSheet, checks all the allow boxes except Insert and Delete columns and unlocks columns A-N
     #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system state')]
     param (
@@ -48,7 +48,7 @@
         [switch]$BlockEditObject,
         ##Opposite of the value in the 'Edit Scenarios' check box. Set to allow when Protect is first enabled
         [switch]$BlockEditScenarios,
-        #Address range for cells to lock in the form "A:Z" or "1:10" or "A1:Z10"
+        #Address range for cells to lock in the form "A:Z" or "1:10" or "A1:Z10". If No range is specified, the whole sheet is locked by default.
         [string]$LockAddress,
          #Address range for cells to Unlock in the form "A:Z" or "1:10" or "A1:Z10"
         [string]$UnLockAddress
@@ -72,10 +72,13 @@
     }
     Else {Write-Warning -Message "You haven't said if you want to turn protection off, or on." }
 
+    if ($LockAddress) {
+        Set-ExcelRange     -Range $WorkSheet.cells[$LockAddress] -Locked
+    }
+    elseif ($IsProtected) {
+        Set-ExcelRange     -Range $WorkSheet.Cells -Locked
+    }
     if ($UnlockAddress) {
         Set-ExcelRange     -Range $WorkSheet.cells[$UnlockAddress] -Locked:$false
-    }
-    if ($lockAddress) {
-        Set-ExcelRange     -Range $WorkSheet.cells[$UnlockAddress] -Locked
     }
 }

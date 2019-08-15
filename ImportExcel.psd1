@@ -118,6 +118,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Set-ExcelColumn',
         'Set-ExcelRange',
         'Set-ExcelRow',
+        'Set-WorkSheetProtection',
         'Test-Boolean',
         'Test-Date',
         'Test-Integer',

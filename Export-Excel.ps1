@@ -531,13 +531,13 @@
         try   {
             $script:Header = $null
             if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
+            #if we have no params, or explicit -now, or no path/package. Set a path, and set show/autosize/Autofilter if not set (they maybe passed as $false)
             if ($PSBoundParameters.Keys.Count -eq 0 -Or $Now -or (-not $Path -and -not $ExcelPackage) ) {
                 $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx'
-                $Show = $true
-                $AutoSize = $true
-                if (-not $TableName) {
-                    $AutoFilter = $true
-                }
+                if (-not $PSBoundParameters.ContainsKey('Show'))      {$Show       = $true}
+                if (-not $PSBoundParameters.ContainsKey('AutoSize'))  {$AutoSize   = $true}
+                if (-not $PSBoundParameters.ContainsKey('AutoFilter') -and
+                    -not $TableName)                                  {$AutoFilter = $true}
             }
             if ($ExcelPackage) {
                 $pkg = $ExcelPackage
