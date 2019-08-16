@@ -53,7 +53,7 @@ function Out-Excel {
 
     begin{
         $ExcelData = @()
-        if (!($Path.EndsWith(".xlsx"))){
+        if (!($Path.EndsWith(".xlsx")) -or ($Path.EndsWith(".xls"))){
             Write-Verbose "No Extension specified, adding .xlsx to $Path"
             $Path = $Path + ".xlsx"
         }
