@@ -29,6 +29,7 @@ New-ConditionalText.ps1
 New-ExcelChart.ps1
 New-PSItem.ps1
 Open-ExcelPackage.ps1
+Out-Excel.ps1
 Pivot.ps1
 PivotTable.ps1
 Plot.ps1
