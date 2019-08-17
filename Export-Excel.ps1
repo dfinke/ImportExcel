@@ -473,14 +473,9 @@
                 else { $true }
             })]
         [String]$RangeName,
-        [ValidateScript( {
-                if (-not $_) {  throw 'Tablename is null or empty.'  }
-                elseif ($_[0] -notmatch '[a-z]') { throw 'Tablename starts with an invalid character.'  }
-                else { $true }
-            })]
 
 
-        [String]$TableName,
+        $TableName,
 
 
         [OfficeOpenXml.Table.TableStyles]$TableStyle,
@@ -532,14 +527,15 @@
         try   {
             $script:Header = $null
             if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
+            $TableName = if ($null -eq $TableName -or ($TableName -is [bool] -and $false -eq $TableName)) { $null } else {[String]$TableName}
             if ($PSBoundParameters.Keys.Count -eq 0 -Or $Now -or (-not $Path -and -not $ExcelPackage) ) {
                 if (-not $PSBoundParameters.ContainsKey("Path")) { $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx' }
                 if (-not $PSBoundParameters.ContainsKey("Show")) { $Show = $true }
                 if (-not $PSBoundParameters.ContainsKey("AutoSize")) { $AutoSize = $true }
                 if (-not $PSBoundParameters.ContainsKey("TableName") -and
                     -not $PSBoundParameters.ContainsKey("TableStyle") -and 
-                    -not $PSBoundParameters.ContainsKey("AutoFilter")) {
-                    $AutoFilter = $true
+                    -not $AutoFilter) {
+                    $TableName = ''
                 }
             }
             if ($ExcelPackage) {
@@ -581,7 +577,7 @@
                 }
 
                 #if we did not get a table name but there is a table which covers the active part of the sheet, set table name to that, and don't do anything with autofilter
-                if (-not $TableName -and $ws.Tables.Where({$_.address.address -eq $ws.dimension.address})) {
+                if ($null -eq $TableName -and $ws.Tables.Where({$_.address.address -eq $ws.dimension.address})) {
                     $TableName  = $ws.Tables.Where({$_.address.address -eq $ws.dimension.address},'First', 1).Name
                     $AutoFilter = $false
                 }
@@ -812,7 +808,7 @@
         if ($RangeName) { Add-ExcelName  -Range $ws.Cells[$dataRange] -RangeName $RangeName}
 
         #Allow table to be inserted by specifying Name, or Style or both; only process autoFilter if there is no table (they clash).
-        if     ($TableName) {
+        if     ($null -ne $TableName) {
             if ($PSBoundParameters.ContainsKey('TableStyle')) {
                   Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
             }
