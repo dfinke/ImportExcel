@@ -513,6 +513,7 @@
         #If there is already content in the workbook the sheet with the PivotTable will not be active UNLESS Activate is specified
         [switch]$Activate,
         [Parameter(ParameterSetName = 'Now')]
+        [Parameter(ParameterSetName = "Path")]
         [Switch]$Now,
         [Switch]$ReturnRange,
         #By default PivotTables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
@@ -532,10 +533,12 @@
             $script:Header = $null
             if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
             if ($PSBoundParameters.Keys.Count -eq 0 -Or $Now -or (-not $Path -and -not $ExcelPackage) ) {
-                $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx'
-                $Show = $true
-                $AutoSize = $true
-                if (-not $TableName) {
+                if (-not $PSBoundParameters.ContainsKey("Path")) { $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx' }
+                if (-not $PSBoundParameters.ContainsKey("Show")) { $Show = $true }
+                if (-not $PSBoundParameters.ContainsKey("AutoSize")) { $AutoSize = $true }
+                if (-not $PSBoundParameters.ContainsKey("TableName") -and
+                    -not $PSBoundParameters.ContainsKey("TableStyle") -and 
+                    -not $PSBoundParameters.ContainsKey("AutoFilter")) {
                     $AutoFilter = $true
                 }
             }
