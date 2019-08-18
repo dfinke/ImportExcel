@@ -109,7 +109,6 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'New-PSItem',
         'NumberFormatCompletion',
         'Open-ExcelPackage',
-        'Out-Excel',
         'PieChart',
         'Pivot',
         'Remove-WorkSheet'

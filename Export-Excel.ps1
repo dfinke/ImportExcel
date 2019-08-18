@@ -138,7 +138,7 @@
         .PARAMETER Activate
             If there is already content in the workbook, a new sheet will not be active UNLESS Activate is specified; if a PivotTable is included it will be the active sheet
         .PARAMETER Now
-            The -Now switch is a shortcut that automatically creates a temporary file, enables "AutoSize", "AutoFilter" and "Show", and opens the file immediately.
+            The -Now switch is a shortcut that automatically creates a temporary file, enables "AutoSize", "TableName" and "Show", and opens the file immediately.
         .PARAMETER NumberFormat
             Formats all values that can be converted to a number to the format specified.
 
@@ -418,12 +418,12 @@
         .LINK
             https://github.com/dfinke/ImportExcel
     #>
-    [CmdletBinding(DefaultParameterSetName = 'Now')]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     [OutputType([OfficeOpenXml.ExcelPackage])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
     Param(
 
-        [Parameter(Mandatory = $true, ParameterSetName = "Path", Position = 0)]
+        [Parameter(ParameterSetName = 'Default', Position = 0)]
         [String]$Path,
         [Parameter(Mandatory = $true, ParameterSetName = "Package")]
 
@@ -507,8 +507,7 @@
         [ScriptBlock]$CellStyleSB,
         #If there is already content in the workbook the sheet with the PivotTable will not be active UNLESS Activate is specified
         [switch]$Activate,
-        [Parameter(ParameterSetName = 'Now')]
-        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = 'Default')]
         [Switch]$Now,
         [Switch]$ReturnRange,
         #By default PivotTables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
@@ -533,7 +532,7 @@
                 if (-not $PSBoundParameters.ContainsKey("Show")) { $Show = $true }
                 if (-not $PSBoundParameters.ContainsKey("AutoSize")) { $AutoSize = $true }
                 if (-not $PSBoundParameters.ContainsKey("TableName") -and
-                    -not $PSBoundParameters.ContainsKey("TableStyle") -and 
+                    -not $PSBoundParameters.ContainsKey("TableStyle") -and
                     -not $AutoFilter) {
                     $TableName = ''
                 }

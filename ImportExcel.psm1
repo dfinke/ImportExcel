@@ -29,7 +29,6 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\New-ExcelChart.ps1
 . $PSScriptRoot\New-PSItem.ps1
 . $PSScriptRoot\Open-ExcelPackage.ps1
-. $PSScriptRoot\Out-Excel.ps1
 . $PSScriptRoot\Pivot.ps1
 . $PSScriptRoot\PivotTable.ps1
 . $PSScriptRoot\RemoveWorksheet.ps1
