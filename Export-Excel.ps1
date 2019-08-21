@@ -138,7 +138,7 @@
         .PARAMETER Activate
             If there is already content in the workbook, a new sheet will not be active UNLESS Activate is specified; if a PivotTable is included it will be the active sheet
         .PARAMETER Now
-            The -Now switch is a shortcut that automatically creates a temporary file, enables "AutoSize", "AutoFilter" and "Show", and opens the file immediately.
+            The -Now switch is a shortcut that automatically creates a temporary file, enables "AutoSize", "TableName" and "Show", and opens the file immediately.
         .PARAMETER NumberFormat
             Formats all values that can be converted to a number to the format specified.
 
@@ -418,12 +418,12 @@
         .LINK
             https://github.com/dfinke/ImportExcel
     #>
-    [CmdletBinding(DefaultParameterSetName = 'Now')]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     [OutputType([OfficeOpenXml.ExcelPackage])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
     Param(
 
-        [Parameter(Mandatory = $true, ParameterSetName = "Path", Position = 0)]
+        [Parameter(ParameterSetName = 'Default', Position = 0)]
         [String]$Path,
         [Parameter(Mandatory = $true, ParameterSetName = "Package")]
 
@@ -473,14 +473,9 @@
                 else { $true }
             })]
         [String]$RangeName,
-        [ValidateScript( {
-                if (-not $_) {  throw 'Tablename is null or empty.'  }
-                elseif ($_[0] -notmatch '[a-z]') { throw 'Tablename starts with an invalid character.'  }
-                else { $true }
-            })]
 
 
-        [String]$TableName,
+        $TableName,
 
 
         [OfficeOpenXml.Table.TableStyles]$TableStyle,
@@ -512,7 +507,7 @@
         [ScriptBlock]$CellStyleSB,
         #If there is already content in the workbook the sheet with the PivotTable will not be active UNLESS Activate is specified
         [switch]$Activate,
-        [Parameter(ParameterSetName = 'Now')]
+        [Parameter(ParameterSetName = 'Default')]
         [Switch]$Now,
         [Switch]$ReturnRange,
         #By default PivotTables have Totals for each Row (on the right) and for each column at the bottom. This allows just one or neither to be selected.
@@ -531,12 +526,15 @@
         try   {
             $script:Header = $null
             if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
+            $TableName = if ($null -eq $TableName -or ($TableName -is [bool] -and $false -eq $TableName)) { $null } else {[String]$TableName}
             if ($PSBoundParameters.Keys.Count -eq 0 -Or $Now -or (-not $Path -and -not $ExcelPackage) ) {
-                $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx'
-                $Show = $true
-                $AutoSize = $true
-                if (-not $TableName) {
-                    $AutoFilter = $true
+                if (-not $PSBoundParameters.ContainsKey("Path")) { $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx' }
+                if (-not $PSBoundParameters.ContainsKey("Show")) { $Show = $true }
+                if (-not $PSBoundParameters.ContainsKey("AutoSize")) { $AutoSize = $true }
+                if (-not $PSBoundParameters.ContainsKey("TableName") -and
+                    -not $PSBoundParameters.ContainsKey("TableStyle") -and
+                    -not $AutoFilter) {
+                    $TableName = ''
                 }
             }
             if ($ExcelPackage) {
@@ -578,7 +576,7 @@
                 }
 
                 #if we did not get a table name but there is a table which covers the active part of the sheet, set table name to that, and don't do anything with autofilter
-                if (-not $TableName -and $ws.Tables.Where({$_.address.address -eq $ws.dimension.address})) {
+                if ($null -eq $TableName -and $ws.Tables.Where({$_.address.address -eq $ws.dimension.address})) {
                     $TableName  = $ws.Tables.Where({$_.address.address -eq $ws.dimension.address},'First', 1).Name
                     $AutoFilter = $false
                 }
@@ -809,7 +807,7 @@
         if ($RangeName) { Add-ExcelName  -Range $ws.Cells[$dataRange] -RangeName $RangeName}
 
         #Allow table to be inserted by specifying Name, or Style or both; only process autoFilter if there is no table (they clash).
-        if     ($TableName) {
+        if     ($null -ne $TableName) {
             if ($PSBoundParameters.ContainsKey('TableStyle')) {
                   Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
             }
