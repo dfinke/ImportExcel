@@ -52,6 +52,24 @@ Install-Module ImportExcel -scope CurrentUser
 ```PowerShell
 Install-Module ImportExcel
 ```
+
+# What's new 6.2.4
+
+Sensible parameter defaults, make your life easier and gets things done faster.
+
+- Thank you to [DomRRuggeri](https://github.com/DomRRuggeri) for the initial Out-Excel PR and kicking off the conversation on the improvements.
+- Thank you to [ili101](https://github.com/ili101) for refactoring and improving the defaults, and adding the tests for parameters.
+
+- Creates a table, with filtering
+- Chooses a `TableStyle`
+- Displays the Excel spreadsheet automatically
+
+```powershell
+Get-Process | select Company, Name, Handles | Export-Excel
+```
+
+![image](./images/ImproveNowDefaults.png)
+
 # What's new 6.2.3
 
 Thank you [jhoneill](https://github.com/jhoneill).
