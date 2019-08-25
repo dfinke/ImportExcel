@@ -22,15 +22,15 @@ Describe "Setting worksheet protection " {
         $excel = Open-ExcelPackage -Path $path
         $ws = $ws = $excel.sheet1
     }
-    it "Turned on protection for the sheet                       " {
+    it "Turned on protection for the sheet                                                        " {
         $ws.Protection.IsProtected                                  | should     be  $true
     }
-    it "Set sheet-wide protection options                        " {
+    it "Set sheet-wide protection options                                                         " {
         $ws.Protection.AllowEditObject                              | should     be  $false
         $ws.Protection.AllowFormatRows                              | should     be  $true
         $ws.cells["a2"].Style.Locked                                | should     be  $true
     }
-    it "Unprotected some cells                                   " {
+    it "Unprotected some cells                                                                    " {
         $ws.cells["a1"].Style.Locked                                | should     be  $false
     }
 }
