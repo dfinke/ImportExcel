@@ -479,6 +479,8 @@ Describe ExportExcel {
         }
         #test adding pivot chart using the already open sheet
         $warnvar = $null
+        Export-Excel -ExcelPackage $Excel -WorkSheetname Processes -IncludePivotTable -PivotRows Company -PivotData PM -IncludePivotChart -ChartType PieExploded3D -ShowCategory -ShowPercent  -NoLegend -WarningAction SilentlyContinue -WarningVariable warnvar
+        $Excel = Open-ExcelPackage   $path
         it "Added a chart to the pivot table without rebuilding                                    " {
             $ws = $Excel.Workbook.Worksheets["ProcessesPivotTable"]
             $Excel.Workbook.Worksheets.Count                            | Should     be $wCount
