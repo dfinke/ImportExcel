@@ -975,4 +975,86 @@ Describe ExportExcel {
         }
     }
 
+    Context "                # Parameters and ParameterSets" {
+        $Path = "$Env:TEMP\test.xlsx"
+        Remove-Item -Path $Path -ErrorAction SilentlyContinue
+        $Processes = Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company
+
+        it "Default Set with Path".PadRight(87) {
+            $ExcelPackage = $Processes | Export-Excel -Path $Path -PassThru
+            $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
+
+            $ExcelPackage.File | Should Be $Path
+            $Worksheet.Cells['A1'].Value | Should Be 'Name'
+            $Worksheet.Tables | Should BeNullOrEmpty
+            $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
+        }
+        it "ExcelPackage Set. Path and (ExcelPackage or Now) should throw".PadRight(87) {
+            $ExcelPackage = Export-Excel -Path $Path -PassThru
+            {Export-Excel -ExcelPackage $ExcelPackage -Path $Path} | Should Throw 'Parameter set cannot be resolved using the specified named parameters'
+            {Export-Excel -ExcelPackage $ExcelPackage -Now} | Should Throw 'Parameter set cannot be resolved using the specified named parameters'
+
+            $Processes | Export-Excel -ExcelPackage $ExcelPackage
+            Remove-Item -Path $Path
+        }
+        it "If TableName and AutoFilter provided AutoFilter will be ignored".PadRight(87) {
+            $ExcelPackage = Export-Excel -Path $Path -PassThru -TableName 'Data' -AutoFilter
+            $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
+
+            $Worksheet.Tables[0].Name | Should Be 'Data'
+            $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
+        }
+        it "Default Set with Path and TableName with generated name".PadRight(87) {
+            $ExcelPackage = $Processes | Export-Excel -Path $Path -PassThru -TableName ''
+            $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
+
+            $ExcelPackage.File | Should Be $Path
+            $Worksheet.Tables[0].Name | Should Be 'Table1'
+        }
+        it "Now will use temp Path, set TableName with generated name and AutoSize".PadRight(87) {
+            $ExcelPackage = $Processes | Export-Excel -Now -PassThru
+            $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
+
+            $ExcelPackage.File | Should BeLike ([IO.Path]::GetTempPath() + '*')
+            $Worksheet.Tables[0].Name | Should Be 'Table1'
+            $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
+            $Worksheet.Column(5).Width | Should BeGreaterThan 9.5
+        }
+        it "Now allows override of Path and TableName".PadRight(87) {
+            $ExcelPackage = $Processes | Export-Excel -Now -PassThru -Path $Path -TableName:$false
+            $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
+
+            $ExcelPackage.File | Should Be $Path
+            $Worksheet.Tables | Should BeNullOrEmpty
+            $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
+            $Worksheet.Column(5).Width | Should BeGreaterThan 9.5
+        }
+        <# Mock looks unreliable need to check
+        Mock -CommandName 'Invoke-Item'
+        it "Now will Show".PadRight(87) {
+            $Processes | Export-Excel
+            Assert-MockCalled -CommandName 'Invoke-Item' -Times 1 -Exactly -Scope 'It'
+        }
+        it "Now allows override of Show".PadRight(87) {
+            $Processes | Export-Excel -Show:$false
+            Assert-MockCalled -CommandName 'Invoke-Item' -Times 0 -Exactly -Scope 'It'
+        }
+        #>
+        it "Now allows override of AutoSize and TableName to AutoFilter".PadRight(87) {
+            $ExcelPackage = $Processes | Export-Excel -Now -PassThru -AutoSize:$false -AutoFilter
+            $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
+
+            $Worksheet.Tables | Should BeNullOrEmpty
+            $Worksheet.AutoFilterAddress | Should Not BeNullOrEmpty
+            [math]::Round($Worksheet.Column(5).Width, 2) | Should Be 9.14
+        }
+        it "Now allows to set TableName".PadRight(87) {
+            $ExcelPackage = $Processes | Export-Excel -Now -PassThru -TableName 'Data'
+            $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
+
+            $Worksheet.Tables[0].Name | Should Be 'Data'
+            $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
+            $Worksheet.Column(5).Width | Should BeGreaterThan 9.5
+        }
+    }
 }

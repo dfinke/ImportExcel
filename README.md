@@ -7,23 +7,19 @@ If this project helped you reduce the time to get your job done, let me know.
 
 ![](https://media.giphy.com/media/hpXxJ78YtpT0s/giphy.gif)
 
+<br/>
 
-<br/>
-<br/>
-<br/>
-<p align="center">
-<a href="https://ci.appveyor.com/project/dfinke/importexcel/branch/master"><img src="https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true"></a>
-<a href="https://dougfinke.visualstudio.com/ImportExcel/_build?definitionId=10"><img src="https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/ImportExcel-CI?branchName=master"></a>
+<p>
+<a href="https://www.powershellgallery.com/packages/ImportExcel"><img src="https://img.shields.io/powershellgallery/v/ImportExcel.svg"></a>
+<a href="https://www.powershellgallery.com/packages/ImportExcel"><img src="https://img.shields.io/powershellgallery/dt/ImportExcel.svg"></a>
+<a href="./LICENSE.txt"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"></a>
 </p>
 
-<p align="center">
-<a href="./LICENSE.txt"><img
-src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"></a>
-<a href="https://www.powershellgallery.com/packages/ImportExcel"><img
-src="https://img.shields.io/powershellgallery/dt/ImportExcel.svg"></a>
-<a href="https://www.powershellgallery.com/packages/ImportExcel"><img
-src="https://img.shields.io/powershellgallery/v/ImportExcel.svg"></a>
-</p>
+|CI System |OS|Status|
+|---|---|---|
+|Azure DevOps|Windows|[![Build status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/ImportExcel-CI)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=10)|
+|Azure DevOps|Windows, Linux, Mac|[![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=20&branchName=master)|
+|Appveyor|Windows|[![Build Status](https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true)](https://ci.appveyor.com/project/dfinke/importexcel/branch/master)|
 
 <!-- /BADGES -->
 
@@ -37,7 +33,8 @@ This PowerShell Module allows you to read and write Excel files without installi
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/testimonial.png)
 
 # How to Videos
-* [PowerShell Excel Module - ImportExcel](https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq)
+
+* [PowerShell Excel Module - ImportExcel](https://www.youtube.com/watch?v=fvKKdIzJCws&list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq)
 
 Installation
 -
@@ -53,14 +50,38 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
-# What's new 6.2.1
+# What's new 6.2.4
+
+Sensible parameter defaults, make your life easier and gets things done faster.
+
+- Thank you to [DomRRuggeri](https://github.com/DomRRuggeri) for the initial Out-Excel PR and kicking off the conversation on the improvements.
+- Thank you to [ili101](https://github.com/ili101) for refactoring and improving the defaults, and adding the tests for parameters.
+
+- Creates a table, with filtering
+- Chooses a `TableStyle`
+- Displays the Excel spreadsheet automatically
+
+```powershell
+Get-Process | select Company, Name, Handles | Export-Excel
+```
+
+![image](./images/ImproveNowDefaults.png)
+
+# What's new 6.2.3
+
+Thank you [jhoneill](https://github.com/jhoneill).
+
+- Refactored copy sheet and added pipe support
+- Add `ClearAll` to `Set-ExcelRange`
+- Fix broken test & regression for `passwords`
+    - **Note**: Passwords do not work on `pwsh`. The EPPlus library does not support these dotnet core APIs at this time.
+
+# What's new 6.2.2
 
 - Added requested feature, chart trendlines.
     - [Example PowerShell script](https://github.com/dfinke/ImportExcel/blob/master/Examples/Charts/NumberOfVisitors.ps1)
 
 ![](/images/ChartTrendlines.png)
-
-# What's new 6.2.2
 
 - Fixed Import-Excel and relative path issue, added unit tests.
 
