@@ -7,23 +7,19 @@ If this project helped you reduce the time to get your job done, let me know.
 
 ![](https://media.giphy.com/media/hpXxJ78YtpT0s/giphy.gif)
 
+<br/>
 
-<br/>
-<br/>
-<br/>
-<p align="center">
-<a href="https://ci.appveyor.com/project/dfinke/importexcel/branch/master"><img src="https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true"></a>
-<a href="https://dougfinke.visualstudio.com/ImportExcel/_build?definitionId=10"><img src="https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/ImportExcel-CI?branchName=master"></a>
+<p>
+<a href="https://www.powershellgallery.com/packages/ImportExcel"><img src="https://img.shields.io/powershellgallery/v/ImportExcel.svg"></a>
+<a href="https://www.powershellgallery.com/packages/ImportExcel"><img src="https://img.shields.io/powershellgallery/dt/ImportExcel.svg"></a>
+<a href="./LICENSE.txt"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"></a>
 </p>
 
-<p align="center">
-<a href="./LICENSE.txt"><img
-src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"></a>
-<a href="https://www.powershellgallery.com/packages/ImportExcel"><img
-src="https://img.shields.io/powershellgallery/dt/ImportExcel.svg"></a>
-<a href="https://www.powershellgallery.com/packages/ImportExcel"><img
-src="https://img.shields.io/powershellgallery/v/ImportExcel.svg"></a>
-</p>
+|CI System |OS|Status|
+|---|---|---|
+|Azure DevOps|Windows|[![Build status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/ImportExcel-CI)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=10)|
+|Azure DevOps|Windows, Linux, Mac|[![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=20&branchName=master)|
+|Appveyor|Windows|[![Build Status](https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true)](https://ci.appveyor.com/project/dfinke/importexcel/branch/master)|
 
 <!-- /BADGES -->
 
@@ -37,7 +33,8 @@ This PowerShell Module allows you to read and write Excel files without installi
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/testimonial.png)
 
 # How to Videos
-* [PowerShell Excel Module - ImportExcel](https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq)
+
+* [PowerShell Excel Module - ImportExcel](https://www.youtube.com/watch?v=fvKKdIzJCws&list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq)
 
 Installation
 -
