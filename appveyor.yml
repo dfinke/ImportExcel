@@ -41,7 +41,7 @@ test_script:
 # Deploy
 deploy_script:
   - ps: '& .\__tests__\CI.ps1 -Artifact'
-  - ps: '$null = Install-PackageProvider -Name NuGet -Force ; & .\__tests__\Publish.ps1'
+  #- ps: '$null = Install-PackageProvider -Name NuGet -Force ; & .\__tests__\Publish.ps1'
 
 # Linux setup
 for:
