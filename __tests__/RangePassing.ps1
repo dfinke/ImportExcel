@@ -1,5 +1,10 @@
-$path = "$env:temp\test.xlsx"
+
+if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
+$notWindows =  ($PSVersionTable.os -and $PSVersionTable.os -notMatch 'Windows' )
+
+$path = Join-Path $Env:TEMP "test.xlsx"
 describe "Consistent passing of ranges." {
+    if ($notWindows) {Write-warning -message "Test uses get-service so only works on Windows" ; return}
     Context "Conditional Formatting"  {
         Remove-Item -path $path  -ErrorAction SilentlyContinue
         $excel = Get-Service | Export-Excel -Path $path -WorksheetName Services -PassThru -AutoSize -DisplayPropertySet -AutoNameRange -Title "Services on $Env:COMPUTERNAME"

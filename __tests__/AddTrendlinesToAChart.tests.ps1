@@ -1,4 +1,7 @@
-﻿Describe "Test adding trendlines to charts" {
+﻿Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
+if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
+$notWindows =  ($PSVersionTable.os -and $PSVersionTable.os -notMatch 'Windows' )
+Describe "Test adding trendlines to charts" {
     BeforeAll {
         $script:data = ConvertFrom-Csv @"
 Region,Item,TotalSold
@@ -21,7 +24,7 @@ South,avocado,73
         Remove-Item $xlfile -ErrorAction SilentlyContinue
     }
 
-    It "Should add a linear trendline" {
+    It "Should add a linear trendline".PadRight(90)  {
 
         $cd = New-ExcelChartDefinition -XRange Region -YRange TotalSold -ChartType ColumnClustered -ChartTrendLine Linear
         $data | Export-Excel $xlfile -ExcelChartDefinition $cd -AutoNameRange
@@ -34,7 +37,7 @@ South,avocado,73
         Close-ExcelPackage $excel
     }
 
-    It "Should add a MovingAvgerage trendline" {
+    It "Should add a MovingAvgerage trendline".PadRight(90)  {
 
         $cd = New-ExcelChartDefinition -XRange Region -YRange TotalSold -ChartType ColumnClustered -ChartTrendLine MovingAvgerage
         $data | Export-Excel $xlfile -ExcelChartDefinition $cd -AutoNameRange

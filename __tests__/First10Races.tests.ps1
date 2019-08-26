@@ -1,9 +1,11 @@
-﻿$scriptPath = Split-Path -Path $MyInvocation.MyCommand.path -Parent
+﻿if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
+
+$scriptPath = Split-Path -Path $MyInvocation.MyCommand.path -Parent
 $dataPath = Join-Path  -Path $scriptPath -ChildPath "First10Races.csv"
 
 Describe "Creating small named ranges with hyperlinks" {
     BeforeAll {
-        $path = "$env:TEMP\Results.xlsx"
+        $path = Join-Path $Env:TEMP "results.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         #Read race results, and group by race name : export 1 row to get headers, leaving enough rows aboce to put in a link for each race
         $results = Import-Csv -Path $dataPath |

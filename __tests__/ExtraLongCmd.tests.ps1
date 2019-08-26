@@ -1,6 +1,7 @@
+if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
 
 
-$path = "$Env:TEMP\test.xlsx"
+$path = Join-Path $Env:TEMP "test.xlsx"
 remove-item -path $path -ErrorAction SilentlyContinue
 ConvertFrom-Csv    @"
 Product, City, Gross, Net

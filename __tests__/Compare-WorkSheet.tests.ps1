@@ -1,4 +1,6 @@
 ﻿#Requires -Modules Pester
+if ($PSVersionTable.os -and $PSVersionTable.os -notMatch 'Windows' ) {return}   #Currently this test outputs windows services so only run on Windows.
+if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() }
 Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
 if ($PSVersionTable.PSVersion.Major -gt 5) { Write-Warning "Can't test grid view on V6 and later" }
 else                                       {Add-Type -AssemblyName System.Windows.Forms }
@@ -19,7 +21,7 @@ Describe "Compare Worksheet" {
             $s.RemoveAt(5)
             $s | Export-Excel -Path $env:temp\server2.xlsx
             #Assume default worksheet name, (sheet1) and column header for key ("name")
-            $comp = compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" | Sort-Object -Property _row, _file
+            $comp = compare-WorkSheet "$env:temp\server1.xlsx" "$env:temp\server2.xlsx" | Sort-Object -Property _row, _file
         }
         it "Found the right number of differences                                                  " {
             $comp                                                         | should not beNullOrEmpty
@@ -55,13 +57,13 @@ Describe "Compare Worksheet" {
                 $ModulePath = (Get-Command -Name 'Compare-WorkSheet').Module.Path
                 $PowerShellExec = if ($PSEdition -eq 'Core') {'pwsh.exe'} else {'powershell.exe'}
                 $PowerShellPath = Join-Path -Path $PSHOME -ChildPath $PowerShellExec
-                . $PowerShellPath -Command ("Import-Module $ModulePath; " + '$null = Compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView; Start-Sleep -sec 5')
+                . $PowerShellPath -Command ("Import-Module $ModulePath; " + '$null = Compare-WorkSheet "$env:temp\server1.xlsx" "$env:temp\server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView; Start-Sleep -sec 5')
             }
             else {
-                $null = Compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView:$useGrid
+                $null = Compare-WorkSheet "$env:temp\server1.xlsx" "$env:temp\server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView:$useGrid
             }
-            $xl1  = Open-ExcelPackage -Path "$env:temp\Server1.xlsx"
-            $xl2  = Open-ExcelPackage -Path "$env:temp\Server2.xlsx"
+            $xl1  = Open-ExcelPackage -Path "$env:temp\server1.xlsx"
+            $xl2  = Open-ExcelPackage -Path "$env:temp\server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets[1]
             $s2Sheet = $xl2.Workbook.Worksheets[1]
         }
@@ -85,9 +87,9 @@ Describe "Compare Worksheet" {
 
     Context "Setting the forgound to highlight changed properties" {
         BeforeAll {
-            $null = compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -AllDataBackgroundColor([System.Drawing.Color]::white) -BackgroundColor ([System.Drawing.Color]::LightGreen)  -FontColor ([System.Drawing.Color]::DarkRed)
-            $xl1  = Open-ExcelPackage -Path "$env:temp\Server1.xlsx"
-            $xl2  = Open-ExcelPackage -Path "$env:temp\Server2.xlsx"
+            $null = compare-WorkSheet "$env:temp\server1.xlsx" "$env:temp\server2.xlsx" -AllDataBackgroundColor([System.Drawing.Color]::white) -BackgroundColor ([System.Drawing.Color]::LightGreen)  -FontColor ([System.Drawing.Color]::DarkRed)
+            $xl1  = Open-ExcelPackage -Path "$env:temp\server1.xlsx"
+            $xl2  = Open-ExcelPackage -Path "$env:temp\server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets[1]
             $s2Sheet = $xl2.Workbook.Worksheets[1]
         }
@@ -130,9 +132,9 @@ Describe "Compare Worksheet" {
 
             $s | Select-Object -Property ServiceName, DisplayName, StartType, ServiceType | Export-Excel -Path $env:temp\server2.xlsx -WorkSheetname server2
             #Assume default worksheet name, (sheet1) and column header for key ("name")
-            $comp = compare-WorkSheet "$env:temp\Server1.xlsx" "$env:temp\Server2.xlsx" -WorkSheetName Server1,Server2 -Key ServiceName -Property DisplayName,StartType -AllDataBackgroundColor ([System.Drawing.Color]::AliceBlue) -BackgroundColor ([System.Drawing.Color]::White) -FontColor ([System.Drawing.Color]::Red)   | Sort-Object _row,_file
-            $xl1  = Open-ExcelPackage -Path "$env:temp\Server1.xlsx"
-            $xl2  = Open-ExcelPackage -Path "$env:temp\Server2.xlsx"
+            $comp = compare-WorkSheet "$env:temp\server1.xlsx" "$env:temp\server2.xlsx" -WorkSheetName Server1,Server2 -Key ServiceName -Property DisplayName,StartType -AllDataBackgroundColor ([System.Drawing.Color]::AliceBlue) -BackgroundColor ([System.Drawing.Color]::White) -FontColor ([System.Drawing.Color]::Red)   | Sort-Object _row,_file
+            $xl1  = Open-ExcelPackage -Path "$env:temp\server1.xlsx"
+            $xl2  = Open-ExcelPackage -Path "$env:temp\server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets["server1"]
             $s2Sheet = $xl2.Workbook.Worksheets["server2"]
         }
@@ -188,7 +190,7 @@ Describe "Compare Worksheet" {
 Describe "Merge Worksheet" {
     Context "Merge with 3 properties" {
         BeforeAll {
-            Remove-Item -Path  "$env:temp\server*.xlsx" , "$env:temp\Combined*.xlsx" -ErrorAction SilentlyContinue
+            Remove-Item -Path  "$env:temp\server*.xlsx" , "$env:temp\combined*.xlsx" -ErrorAction SilentlyContinue
             [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property *
 
             $s | Export-Excel -Path $env:temp\server1.xlsx
@@ -205,7 +207,7 @@ Describe "Merge Worksheet" {
 
             $s | Export-Excel -Path $env:temp\server2.xlsx
             #Assume default worksheet name, (sheet1) and column header for key ("name")
-            Merge-Worksheet -Referencefile "$env:temp\server1.xlsx" -Differencefile  "$env:temp\Server2.xlsx" -OutputFile  "$env:temp\combined1.xlsx"  -Property name,displayname,startType -Key name
+            Merge-Worksheet -Referencefile "$env:temp\server1.xlsx" -Differencefile  "$env:temp\server2.xlsx" -OutputFile  "$env:temp\combined1.xlsx"  -Property name,displayname,startType -Key name
             $excel = Open-ExcelPackage -Path "$env:temp\combined1.xlsx"
             $ws    = $excel.Workbook.Worksheets["sheet1"]
         }
@@ -247,14 +249,14 @@ Describe "Merge Worksheet" {
     }
     Context "Wider data set"    {
         it "Coped with columns beyond Z in the Output sheet                                        " {
-            { Merge-Worksheet -Referencefile "$env:temp\server1.xlsx" -Differencefile  "$env:temp\Server2.xlsx" -OutputFile  "$env:temp\combined2.xlsx"  }           | Should not throw
+            { Merge-Worksheet -Referencefile "$env:temp\server1.xlsx" -Differencefile  "$env:temp\server2.xlsx" -OutputFile  "$env:temp\combined2.xlsx"  }           | Should not throw
         }
     }
 }
 Describe "Merge Multiple sheets" {
     Context "Merge 3 sheets with 3 properties" {
         BeforeAll {
-            Remove-Item -Path  "$env:temp\server*.xlsx" , "$env:temp\Combined*.xlsx" -ErrorAction SilentlyContinue
+            Remove-Item -Path  "$env:temp\server*.xlsx" , "$env:temp\combined*.xlsx" -ErrorAction SilentlyContinue
             [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property Name,DisplayName,StartType
             $s | Export-Excel -Path $env:temp\server1.xlsx
 
@@ -281,7 +283,7 @@ Describe "Merge Multiple sheets" {
 
             $s | Export-Excel -Path $env:temp\server3.xlsx
 
-            Merge-MultipleSheets -Path "$env:temp\server1.xlsx", "$env:temp\Server2.xlsx","$env:temp\Server3.xlsx" -OutputFile "$env:temp\combined3.xlsx"  -Property name,displayname,startType -Key name
+            Merge-MultipleSheets -Path "$env:temp\server1.xlsx", "$env:temp\server2.xlsx","$env:temp\server3.xlsx" -OutputFile "$env:temp\combined3.xlsx"  -Property name,displayname,startType -Key name
             $excel = Open-ExcelPackage -Path "$env:temp\combined3.xlsx"
             $ws    = $excel.Workbook.Worksheets["sheet1"]
 
@@ -295,10 +297,10 @@ Describe "Merge Multiple sheets" {
             $ws.Cells[ 1,6 ].Value                                        | Should     be "Server2 StartType"
             $ws.Column(7).hidden                                          | Should     be $true
             $ws.Cells[ 1,8].Value                                         | Should     be "Server2 Row"
-            $ws.Cells[ 1,9 ].Value                                        | Should     be "Server3 DisplayName"
-            $ws.Cells[ 1,10].Value                                        | Should     be "Server3 StartType"
+            $ws.Cells[ 1,9 ].Value                                        | Should     be "server3 DisplayName"
+            $ws.Cells[ 1,10].Value                                        | Should     be "server3 StartType"
             $ws.Column(11).hidden                                         | Should     be $true
-            $ws.Cells[ 1,12].Value                                        | Should     be "Server3 Row"
+            $ws.Cells[ 1,12].Value                                        | Should     be "server3 Row"
         }
         it "Joined the three sheets correctly                                                      " {
             $ws.Cells[ 2,3 ].Value                                        | Should     be $ws.Cells[ 2,5 ].Value

@@ -1,3 +1,6 @@
+if ($PSVersionTable.os -and $PSVersionTable.os -notMatch 'Windows' ) {return}   #Currently this test outputs windows services so only run on Windows.
+if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
+
 $path1 = "$env:TEMP\Test1.xlsx"
 $path2 = "$env:TEMP\Test2.xlsx"
 Remove-item -Path $path1, $path2  -ErrorAction SilentlyContinue
@@ -91,8 +94,8 @@ Describe "Copy-Worksheet" {
             $xlfile = "$env:TEMP\reports.xlsx"
             $xlfileArchive = "$env:TEMP\reportsArchive.xlsx"
 
-            rm $xlfile -ErrorAction SilentlyContinue
-            rm $xlfileArchive -ErrorAction SilentlyContinue
+            Remove-Item $xlfile -ErrorAction SilentlyContinue
+            Remove-Item $xlfileArchive -ErrorAction SilentlyContinue
 
             $sheets = echo 1.1.2019 1.2.2019 1.3.2019 1.4.2019 1.5.2019
 
@@ -119,8 +122,8 @@ Describe "Copy-Worksheet" {
             $xlfile = "$env:TEMP\reports.xlsx"
             $xlfileArchive = "$env:TEMP\reportsArchive.xlsx"
 
-            rm $xlfile -ErrorAction SilentlyContinue
-            rm $xlfileArchive -ErrorAction SilentlyContinue
+            Remove-Item $xlfile -ErrorAction SilentlyContinue
+            Remove-Item $xlfileArchive -ErrorAction SilentlyContinue
 
             $sheets = echo 1.1.2019 1.2.2019 1.3.2019 1.4.2019 1.5.2019
 
