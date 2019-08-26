@@ -1,36 +1,36 @@
-$path1 = "TestDrive:\Test1.xlsx"
-$path2 = "TestDrive:\Test2.xlsx"
-Remove-item -Path $path1, $path2  -ErrorAction SilentlyContinue
-
-$ProcRange = Get-Process | Export-Excel $path1 -DisplayPropertySet -WorkSheetname Processes -ReturnRange
-
-if ((Get-Culture).NumberFormat.CurrencySymbol -eq "£") {$OtherCurrencySymbol = "$"}
-else {$OtherCurrencySymbol = "£"}
-[PSCustOmobject][Ordered]@{
-    Date             = Get-Date
-    Formula1         = '=SUM(F2:G2)'
-    String1          = 'My String'
-    Float            = [math]::pi
-    IPAddress        = '10.10.25.5'
-    StrLeadZero      = '07670'
-    StrComma         = '0,26'
-    StrEngThousand   = '1,234.56'
-    StrEuroThousand  = '1.555,83'
-    StrDot           = '1.2'
-    StrNegInt        = '-31'
-    StrTrailingNeg   = '31-'
-    StrParens        = '(123)'
-    strLocalCurrency = ('{0}123.45' -f (Get-Culture).NumberFormat.CurrencySymbol )
-    strOtherCurrency = ('{0}123.45' -f $OtherCurrencySymbol )
-    StrE164Phone     = '+32 (444) 444 4444'
-    StrAltPhone1     = '+32 4 4444 444'
-    StrAltPhone2     = '+3244444444'
-    StrLeadSpace     = '  123'
-    StrTrailSpace    = '123   '
-    Link1            = [uri]"https://github.com/dfinke/ImportExcel"
-    Link2            = "https://github.com/dfinke/ImportExcel"     # Links are not copied correctly, hopefully this will be fixed at some future date
-} | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2 -WorkSheetname MixedTypes -Path $path2
 Describe "Copy-Worksheet" {
+    $path1 = "TestDrive:\Test1.xlsx"
+    $path2 = "TestDrive:\Test2.xlsx"
+    Remove-Item -Path $path1, $path2  -ErrorAction SilentlyContinue
+
+    $ProcRange = Get-Process | Export-Excel $path1 -DisplayPropertySet -WorkSheetname Processes -ReturnRange
+
+    if ((Get-Culture).NumberFormat.CurrencySymbol -eq "£") { $OtherCurrencySymbol = "$" }
+    else { $OtherCurrencySymbol = "£" }
+    [PSCustOmobject][Ordered]@{
+        Date             = Get-Date
+        Formula1         = '=SUM(F2:G2)'
+        String1          = 'My String'
+        Float            = [math]::pi
+        IPAddress        = '10.10.25.5'
+        StrLeadZero      = '07670'
+        StrComma         = '0,26'
+        StrEngThousand   = '1,234.56'
+        StrEuroThousand  = '1.555,83'
+        StrDot           = '1.2'
+        StrNegInt        = '-31'
+        StrTrailingNeg   = '31-'
+        StrParens        = '(123)'
+        strLocalCurrency = ('{0}123.45' -f (Get-Culture).NumberFormat.CurrencySymbol )
+        strOtherCurrency = ('{0}123.45' -f $OtherCurrencySymbol )
+        StrE164Phone     = '+32 (444) 444 4444'
+        StrAltPhone1     = '+32 4 4444 444'
+        StrAltPhone2     = '+3244444444'
+        StrLeadSpace     = '  123'
+        StrTrailSpace    = '123   '
+        Link1            = [uri]"https://github.com/dfinke/ImportExcel"
+        Link2            = "https://github.com/dfinke/ImportExcel"     # Links are not copied correctly, hopefully this will be fixed at some future date
+    } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2 -WorkSheetname MixedTypes -Path $path2
     Context "Simplest copy" {
         BeforeAll {
             Copy-ExcelWorkSheet -SourceWorkbook $path1 -DestinationWorkbook $path2

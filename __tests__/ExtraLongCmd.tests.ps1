@@ -1,9 +1,10 @@
 if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
 
 
-$path = "TestDrive:\test.xlsx"
-remove-item -path $path -ErrorAction SilentlyContinue
-ConvertFrom-Csv    @"
+Describe "Creating workbook with a single line" {
+    $path = "TestDrive:\test.xlsx"
+    remove-item -path $path -ErrorAction SilentlyContinue
+    ConvertFrom-Csv    @"
 Product, City, Gross, Net
 Apple, London , 300, 250
 Orange, London , 400, 350
@@ -17,10 +18,9 @@ Apple, New York, 1200,700
 
             PivotChartDefinition=@{Title="Gross and net by city and product"; ChartType="ColumnClustered"; Column=6; Width=600; Height=360; YMajorUnit=500; YMinorUnit=100; YAxisNumberformat="$#,##0"; LegendPosition="Bottom"}}}
 
-$excel = Open-ExcelPackage $path
-$ws1 = $excel.Workbook.Worksheets[1]
-$ws2  = $excel.Workbook.Worksheets[2]
-Describe "Creating workbook with a single line" {
+    $excel = Open-ExcelPackage $path
+    $ws1 = $excel.Workbook.Worksheets[1]
+    $ws2  = $excel.Workbook.Worksheets[2]
     Context "Data Page" {
         It "Inserted the data and created the table                                                " {
             $ws1.Tables[0]                                              | Should not beNullOrEmpty

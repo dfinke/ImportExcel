@@ -1,6 +1,8 @@
-$path = "TestDrive:\test.xlsx"
-Remove-Item -path $path -ErrorAction SilentlyContinue
-$excel = ConvertFrom-Csv    @"
+Describe "Setting worksheet protection " {
+    BeforeAll {
+        $path = "TestDrive:\test.xlsx"
+        Remove-Item -path $path -ErrorAction SilentlyContinue
+        $excel = ConvertFrom-Csv    @"
 Product, City, Gross, Net
 Apple, London , 300, 250
 Orange, London , 400, 350
@@ -11,14 +13,11 @@ Apple, New York, 1200,700
 
 "@  | Export-Excel  -Path $path  -WorksheetName Sheet1 -PassThru
 
-$ws = $excel.sheet1
+        $ws = $excel.sheet1
 
-Set-WorkSheetProtection -WorkSheet $ws -IsProtected -BlockEditObject -AllowFormatRows -UnLockAddress "1:1"
+        Set-WorkSheetProtection -WorkSheet $ws -IsProtected -BlockEditObject -AllowFormatRows -UnLockAddress "1:1"
 
-Close-ExcelPackage -ExcelPackage $excel
-
-Describe "Setting worksheet protection " {
-    BeforeAll {
+        Close-ExcelPackage -ExcelPackage $excel
         $excel = Open-ExcelPackage -Path $path
         $ws = $ws = $excel.sheet1
     }

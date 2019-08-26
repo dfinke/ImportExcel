@@ -386,19 +386,19 @@ Describe ExportExcel {
         }
     }
 
-    Context "#Example 6      # Adding multiple conditional formats using short form syntax. " {
-        if ($notwindows)  {Write-warning "Test only runs on Windows" ; return}
-        #Test adding mutliple conditional blocks and using the minimal syntax for new-ConditionalText
-        $path = "TestDrive:\Test.xlsx"
-        Remove-item -Path $path -ErrorAction SilentlyContinue
+    #Test adding mutliple conditional blocks and using the minimal syntax for new-ConditionalText
+    $path = "TestDrive:\Test.xlsx"
+    Remove-item -Path $path -ErrorAction SilentlyContinue
 
-        #Testing -Passthrough
-        $Excel = Get-Service | Select-Object Name, Status, DisplayName, ServiceName |
-            Export-Excel $path -PassThru  -ConditionalText $(
-            New-ConditionalText Stop ([System.Drawing.Color]::DarkRed) ([System.Drawing.Color]::LightPink)
-            New-ConditionalText Running ([System.Drawing.Color]::Blue) ([System.Drawing.Color]::Cyan)
-        )
-        $ws = $Excel.Workbook.Worksheets[1]
+    #Testing -Passthrough
+    $Excel = Get-Service | Select-Object Name, Status, DisplayName, ServiceName |
+        Export-Excel $path -PassThru  -ConditionalText $(
+        New-ConditionalText Stop ([System.Drawing.Color]::DarkRed) ([System.Drawing.Color]::LightPink)
+        New-ConditionalText Running ([System.Drawing.Color]::Blue) ([System.Drawing.Color]::Cyan)
+    )
+    $ws = $Excel.Workbook.Worksheets[1]
+
+    Context "#Example 6      # Adding multiple conditional formats using short form syntax. " {
         it "Added two blocks of conditional formating for the data range                           " {
             $ws.ConditionalFormatting.Count                             | Should     be 2
             $ws.ConditionalFormatting[0].Address                        | Should     be ($ws.Dimension.Address)
@@ -411,8 +411,8 @@ Describe ExportExcel {
             $ws.ConditionalFormatting[1].Type                           | Should     be "ContainsText"
             #Add RGB Comparison
         }
-        Close-ExcelPackage -ExcelPackage $Excel
     }
+    Close-ExcelPackage -ExcelPackage $Excel
 
     Context "#Example 7      # Update-FirstObjectProperties works " {
         $Array = @()
@@ -991,7 +991,7 @@ Describe ExportExcel {
     }
 
     Context "                # Parameters and ParameterSets" {
-        $Path = "TestDrive:\test.xlsx"
+        $Path = Join-Path (Resolve-Path 'TestDrive:').ProviderPath "test.xlsx"
         Remove-Item -Path $Path -ErrorAction SilentlyContinue
         $Processes = Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company
 

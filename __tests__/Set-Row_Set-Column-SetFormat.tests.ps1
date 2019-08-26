@@ -282,7 +282,7 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
 
 Describe "Conditional Formatting" {
     BeforeAll {
-        Remove-Item $path
+        #Remove-Item $path
         $data = Get-Process | Where-Object company | Select-Object company, name, pm, handles, *mem*
         $cfmt = New-ConditionalFormattingIconSet -Range "c:c" -ConditionalFormat ThreeIconSet -IconType Arrows
         $data | Export-Excel -path $Path  -AutoSize -ConditionalFormat $cfmt
@@ -357,7 +357,7 @@ Sold,ID
 
 Describe "Table Formatting" {
     BeforeAll {
-        Remove-Item $path
+        #Remove-Item $path
         $excel = $data2 | Export-excel -path $path -WorksheetName Hardware -AutoNameRange -AutoSize -BoldTopRow -FreezeTopRow -PassThru
         $ws = $excel.Workbook.Worksheets[1]
         #test showfilter & TotalSettings
