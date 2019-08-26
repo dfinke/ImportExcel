@@ -27,7 +27,7 @@ ID,Product,Quantity,Price,Total
 
 Describe "Join Worksheet part 1" {
     BeforeAll {
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\test.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         $data1 | Export-Excel -Path $path -WorkSheetname Oxford
         $data2 | Export-Excel -Path $path -WorkSheetname Abingdon
@@ -92,7 +92,7 @@ Describe "Join Worksheet part 1" {
         }
     }
 }
-    $path = Join-Path $Env:TEMP "Test.xlsx"
+    $path = "TestDrive:\Test.xlsx"
     Remove-item -Path $path -ErrorAction SilentlyContinue
 #switched to CIM objects so test runs on V6
 Describe "Join Worksheet part 2" {

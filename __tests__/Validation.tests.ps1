@@ -11,7 +11,7 @@ ID,Product,Quantity,Price
 12011,Crowbar,7,23.48
 "@
 
-$path = Join-Path $Env:TEMP "DataValidation.xlsx"
+$path = "TestDrive:\DataValidation.xlsx"
 
 Describe "Data validation and protection" {
     Context "Data Validation rules" {

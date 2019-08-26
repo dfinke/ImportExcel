@@ -10,7 +10,7 @@ Name,Age
 Jane,10
 John,20
 "@
-            $xlFile1 = Join-Path $Env:TEMP "removeWorsheet1.xlsx"
+            $xlFile1 = "TestDrive:\RemoveWorsheet1.xlsx"
             Remove-Item $xlFile1 -ErrorAction SilentlyContinue
 
             $data | Export-Excel -Path $xlFile1 -WorksheetName Target1
@@ -18,7 +18,7 @@ John,20
             $data | Export-Excel -Path $xlFile1 -WorksheetName Target3
             $data | Export-Excel -Path $xlFile1 -WorksheetName Sheet1
 
-            $xlFile2 = Join-Path $Env:TEMP "removeWorsheet2.xlsx"
+            $xlFile2 = "TestDrive:\RemoveWorsheet2.xlsx"
             Remove-Item $xlFile2 -ErrorAction SilentlyContinue
 
             $data | Export-Excel -Path $xlFile2 -WorksheetName Target1
@@ -65,7 +65,7 @@ John,20
 
         it "Should delete sheet from multiple workbooks".PadRight(87)  {
 
-            Get-ChildItem (Join-Path $Env:TEMP "removeWorsheet*.xlsx") | Remove-WorkSheet
+            Get-ChildItem "TestDrive:\RemoveWorsheet*.xlsx" | Remove-WorkSheet
 
             $actual = Get-ExcelSheetInfo -Path $xlFile1
 

@@ -1,8 +1,4 @@
-
-if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
-$notWindows =  ($PSVersionTable.os -and $PSVersionTable.os -notMatch 'Windows' )
-
-$path = Join-Path $Env:TEMP "test.xlsx"
+$path = "TestDrive:\test.xlsx"
 describe "Consistent passing of ranges." {
     if ($notWindows) {Write-warning -message "Test uses get-service so only works on Windows" ; return}
     Context "Conditional Formatting"  {

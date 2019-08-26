@@ -20,7 +20,7 @@ South,avocado,73
     }
 
     BeforeEach {
-        $xlfile = "$env:TEMP\trendLine.xlsx"
+        $xlfile = "TestDrive:\trendLine.xlsx"
         Remove-Item $xlfile -ErrorAction SilentlyContinue
     }
 

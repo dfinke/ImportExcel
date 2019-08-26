@@ -1,6 +1,6 @@
 #Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
 
-$xlFile = "$env:TEMP\testSQL.xlsx"
+$xlFile = "TestDrive:\testSQL.xlsx"
 
 Describe "ConvertFrom-ExcelToSQLInsert" {
 

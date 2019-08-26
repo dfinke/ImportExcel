@@ -8,7 +8,7 @@ if (Get-process -Name Excel,xlim -ErrorAction SilentlyContinue) {    Write-Warni
 Describe ExportExcel {
 
     Context "#Example 1      # Creates and opens a file with the right number of rows and columns" {
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
         #Test with a maximum of 100 processes for speed; export all properties, then export smaller subsets.
         $processes = Get-Process | where {$_.StartTime} | Select-Object -first 100 -Property * -excludeProperty  Parent
@@ -70,7 +70,7 @@ Describe ExportExcel {
     }
 
     Context "                # NoAliasOrScriptPropeties -ExcludeProperty and -DisplayPropertySet work" {
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         Remove-item -Path $path  -ErrorAction SilentlyContinue
         $processes = Get-Process | Select-Object -First 100
         $propertyNames = $Processes[0].psobject.properties.where( {$_.MemberType -eq 'Property'}).name
@@ -119,7 +119,7 @@ Describe ExportExcel {
 
     Context "#Example 2      # Exports a list of numbers and applies number format " {
 
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
         #testing -ReturnRange switch and applying number format to Formulas as well as values.
         $returnedRange =   @($null, -1, 0, 34, 777, "", -0.5, 119, -0.1, 234, 788,"=A9+A10")   | Export-Excel -NumberFormat '[Blue]$#,##0.00;[Red]-$#,##0.00' -Path $path -ReturnRange
@@ -158,7 +158,7 @@ Describe ExportExcel {
 
     Context "                # Number format parameter" {
         BeforeAll {
-            $path = Join-Path $Env:TEMP "test.xlsx"
+            $path = "TestDrive:\test.xlsx"
             Remove-Item -Path  $path -ErrorAction SilentlyContinue
             1..10  | Export-Excel -Path $path -Numberformat 'Number'
             1..10  | Export-Excel -Path $path -Numberformat 'Percentage' -Append
@@ -181,7 +181,7 @@ Describe ExportExcel {
 
         if ((Get-Culture).NumberFormat.CurrencySymbol -eq "£") {$OtherCurrencySymbol = "$"}
         else {$OtherCurrencySymbol = "£"}
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         $warnVar = $null
         #Test correct export of different data types and number formats; test hyperlinks, test -NoNumberConversion test object is converted to a string with no warnings, test calcuation of formula
         Remove-item -Path $path -ErrorAction SilentlyContinue
@@ -298,7 +298,7 @@ Describe ExportExcel {
 
     Context "#               # Setting cells for different data types with -noHeader" {
 
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
         #Test -NoHeader & -NoNumberConversion
         [PSCustOmobject][Ordered]@{
@@ -359,7 +359,7 @@ Describe ExportExcel {
         #Test  New-ConditionalText builds correctly
         $ct = New-ConditionalText -ConditionalType GreaterThan 525 -ConditionalTextColor ([System.Drawing.Color]::DarkRed) -BackgroundColor ([System.Drawing.Color]::LightPink)
 
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
         #Test -ConditionalText with a single conditional spec.
         Write-Output 489 668 299 777 860 151 119 497 234 788 | Export-Excel -Path $path -ConditionalText $ct
@@ -389,7 +389,7 @@ Describe ExportExcel {
     Context "#Example 6      # Adding multiple conditional formats using short form syntax. " {
         if ($notwindows)  {Write-warning "Test only runs on Windows" ; return}
         #Test adding mutliple conditional blocks and using the minimal syntax for new-ConditionalText
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
 
         #Testing -Passthrough
@@ -451,7 +451,7 @@ Describe ExportExcel {
     }
 
     Context "#Examples 8 & 9 # Adding Pivot tables and charts from parameters" {
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         #Test -passthru and -worksheetName creating a new, named, sheet in an existing file.
         $Script:Procs= Get-Process |  Select-Object -first 20 -Property Name, cpu, pm, handles, company
         if ($Procs.count -lt 20) {Write-warning "Not enough proceses were returned by get-Process to run the test." ; return}
@@ -512,7 +512,7 @@ Describe ExportExcel {
     }
 
     Context "                # Add-Worksheet inserted sheets, moved them correctly, and copied a sheet" {
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         #Test the -CopySource and -Movexxxx parameters for Add-WorkSheet
         $Excel = Open-ExcelPackage  $path
         #At this point Sheets Should be in the order Sheet1, Processes, ProcessesPivotTable
@@ -547,7 +547,7 @@ Describe ExportExcel {
     }
 
     Context "                # Create and append with Start row and Start Column, inc ranges and Pivot table. " {
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         remove-item -Path $path -ErrorAction SilentlyContinue
         #Catch warning
         $warnVar = $null
@@ -599,7 +599,7 @@ Describe ExportExcel {
     }
 
     Context "                # Create and append explicit and auto table and range extension" {
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         #Test -Append automatically extends a table, even when it is not specified in the append command;
         $Script:Procs= Get-process
         if ($Procs.count -lt 20) {Write-warning "Not enough proceses were returned by get-Process to run the test." ; return}
@@ -635,8 +635,7 @@ Describe ExportExcel {
     }
 
     Context "#Example 11     # Create and append with title, inc ranges and Pivot table" {
-        if ($Procs.count -lt 20) {Write-warning "Not enough proceses were returned by get-Process to run the test." ; return}
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         #Test New-PivotTableDefinition builds definition using -Pivotfilter and -PivotTotals options.
         $ptDef = [ordered]@{}
         $ptDef += New-PivotTableDefinition -PivotTableName "PT1" -SourceWorkSheet 'Sheet1' -PivotRows "Status"  -PivotData @{'Status'  = 'Count'} -PivotTotals Columns -PivotFilter "StartType" -IncludePivotChart -ChartType BarClustered3D  -ChartTitle "Services by status" -ChartHeight 512 -ChartWidth 768 -ChartRow 10 -ChartColumn 0 -NoLegend -PivotColumns CanPauseAndContinue
@@ -718,8 +717,8 @@ Describe ExportExcel {
     }
 
     Context "#Example 13     # Formatting and another way to do a pivot.  " {
-        $path = Join-Path $Env:TEMP "test.xlsx"
-        Remove-Item $path -ErrorAction SilentlyContinue
+        $path = "TestDrive:\Test.xlsx"
+        Remove-Item $path
         #Test freezing top row/first column, adding formats and a pivot table - from Add-Pivot table not a specification variable - after the export
         $excel = Get-Process | Select-Object -Property Name, Company, Handles, CPU, PM, NPM, WS | Export-Excel -Path $path -ClearSheet -WorkSheetname "Processes" -FreezeTopRowFirstColumn -PassThru
         $sheet = $excel.Workbook.Worksheets["Processes"]
@@ -800,7 +799,7 @@ Describe ExportExcel {
     }
 
     Context "                # Chart from MultiSeries.ps1 in the Examples\charts Directory" {
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         Remove-Item -Path   $path -ErrorAction SilentlyContinue
         #Test we haven't missed any parameters on New-ChartDefinition which are on add chart or vice versa.
 
@@ -858,7 +857,7 @@ Describe ExportExcel {
     }
 
     Context "                # variation of plot.ps1 from Examples Directory using Add chart outside ExportExcel" {
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         #Test inserting a fomual
         $excel = 0..360 | ForEach-Object {[pscustomobject][ordered]@{x = $_; Sinx = "=Sin(Radians(x)) "}} | Export-Excel -AutoNameRange -Path $path -WorkSheetname SinX -ClearSheet -FreezeFirstColumn -PassThru
         #Test-Add Excel Chart to existing data. Test add Conditional formatting with a formula
@@ -900,7 +899,7 @@ Describe ExportExcel {
     }
 
     Context "                # Quick line chart" {
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\Test.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         #test drawing a chart when data doesn't have a string
         0..360 | ForEach-Object {[pscustomobject][ordered]@{x = $_; Sinx = "=Sin(Radians(x)) "}} | Export-Excel -AutoNameRange  -Path $path -LineChart
@@ -918,7 +917,7 @@ Describe ExportExcel {
     }
 
     Context "                # Quick Pie chart and three icon conditional formating" {
-        $path = Join-Path $Env:TEMP "Pie.xlsx"
+        $path = "TestDrive:\Pie.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         $Script:Procs= Get-Process
         if ($Procs.count -lt 20) {Write-warning "Not enough proceses were returned by get-Process to run the test." ; return}
@@ -957,8 +956,7 @@ Describe ExportExcel {
     }
 
     Context "                # Awkward multiple tables" {
-        if ($notWindows) {Write-warning "Test only runs on Windows" ; return}
-        $path = Join-Path $Env:TEMP "test.xlsx"
+        $path = "TestDrive:\test.xlsx"
         #Test creating 3 on overlapping tables on the same page. Create rightmost the left most then middle.
         remove-item -Path $path -ErrorAction SilentlyContinue
         $r = Get-ChildItem -path C:\WINDOWS\system32 -File
@@ -993,7 +991,7 @@ Describe ExportExcel {
     }
 
     Context "                # Parameters and ParameterSets" {
-        $Path = join-path $env:TEMP "temp.xlsx"
+        $Path = "TestDrive:\test.xlsx"
         Remove-Item -Path $Path -ErrorAction SilentlyContinue
         $Processes = Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company
 

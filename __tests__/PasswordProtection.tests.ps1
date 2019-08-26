@@ -8,7 +8,7 @@ Describe "Password Support" {
     Context "Password protected sheet" {
         BeforeAll  {
             $password = "YouMustRememberThis"
-            $path = "$env:TEMP\Test.xlsx"
+            $path = "TestDrive:\Test.xlsx"
             Remove-Item $path -ErrorAction SilentlyContinue
             Get-Service | Select-Object -First 10 | Export-excel -password $password -Path $Path -DisplayPropertySet
         }

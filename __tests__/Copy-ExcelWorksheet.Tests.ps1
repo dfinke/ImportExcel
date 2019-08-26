@@ -1,8 +1,5 @@
-if ($PSVersionTable.os -and $PSVersionTable.os -notMatch 'Windows' ) {return}   #Currently this test outputs windows services so only run on Windows.
-if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
-
-$path1 = "$env:TEMP\Test1.xlsx"
-$path2 = "$env:TEMP\Test2.xlsx"
+$path1 = "TestDrive:\Test1.xlsx"
+$path2 = "TestDrive:\Test2.xlsx"
 Remove-item -Path $path1, $path2  -ErrorAction SilentlyContinue
 
 $ProcRange = Get-Process | Export-Excel $path1 -DisplayPropertySet -WorkSheetname Processes -ReturnRange
@@ -91,8 +88,8 @@ Describe "Copy-Worksheet" {
 
     Context "Copy worksheet should close all files" {
         BeforeAll {
-            $xlfile = "$env:TEMP\reports.xlsx"
-            $xlfileArchive = "$env:TEMP\reportsArchive.xlsx"
+            $xlfile = "TestDrive:\reports.xlsx"
+            $xlfileArchive = "TestDrive:\reportsArchive.xlsx"
 
             Remove-Item $xlfile -ErrorAction SilentlyContinue
             Remove-Item $xlfileArchive -ErrorAction SilentlyContinue
@@ -119,8 +116,8 @@ Describe "Copy-Worksheet" {
 
     Context "Copy worksheet should support piped input" {
         BeforeAll {
-            $xlfile = "$env:TEMP\reports.xlsx"
-            $xlfileArchive = "$env:TEMP\reportsArchive.xlsx"
+            $xlfile = "TestDrive:\reports.xlsx"
+            $xlfileArchive = "TestDrive:\reportsArchive.xlsx"
 
             Remove-Item $xlfile -ErrorAction SilentlyContinue
             Remove-Item $xlfileArchive -ErrorAction SilentlyContinue
