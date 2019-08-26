@@ -1,5 +1,6 @@
-﻿
-$path = "$Env:TEMP\test.xlsx"
+﻿Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
+if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
+$path = Join-Path $Env:TEMP "test.xlsx"
 
 $data = ConvertFrom-Csv -InputObject @"
 ID,Product,Quantity,Price
@@ -299,7 +300,7 @@ Describe "Conditional Formatting" {
     }
 
 }
-$path = "$Env:TEMP\test.xlsx"
+$path = Join-Path $Env:TEMP "test.xlsx"
 $data2 = ConvertFrom-Csv -InputObject @"
 ID,Product,Quantity,Price,Total
 12001,Nails,37,3.99,147.63
@@ -320,7 +321,7 @@ ID,Product,Quantity,Price,Total
 
 Describe "AutoNameRange data with a single property name" {
     BeforeEach {
-        $xlfile = "$Env:TEMP\testNamedRange.xlsx"
+        $xlfile = Join-Path $Env:TEMP "testNamedRange.xlsx"
         Remove-Item $xlfile -ErrorAction SilentlyContinue
     }
 

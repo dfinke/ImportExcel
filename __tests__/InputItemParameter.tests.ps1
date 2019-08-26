@@ -1,6 +1,8 @@
+if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
+
 Describe "Exporting with -Inputobject" {
     BeforeAll {
-        $path = "$env:TEMP\Results.xlsx"
+        $path = Join-Path $Env:TEMP "results.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         #Read race results, and group by race name : export 1 row to get headers, leaving enough rows aboce to put in a link for each race
         $results = ((Get-Process) + (Get-Process -id $PID)) | Select-Object -last  10 -Property Name, cpu, pm, handles, StartTime

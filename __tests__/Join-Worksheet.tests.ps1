@@ -1,4 +1,7 @@
-﻿$data1 = ConvertFrom-Csv -InputObject @"
+﻿if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
+$notWindows =  ($PSVersionTable.os -and $PSVersionTable.os -notMatch 'Windows' )
+
+$data1 = ConvertFrom-Csv -InputObject @"
 ID,Product,Quantity,Price,Total
 12001,Nails,37,3.99,147.63
 12002,Hammer,5,12.10,60.5
@@ -24,7 +27,7 @@ ID,Product,Quantity,Price,Total
 
 Describe "Join Worksheet part 1" {
     BeforeAll {
-        $path = "$Env:TEMP\test.xlsx"
+        $path = Join-Path $Env:TEMP "test.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         $data1 | Export-Excel -Path $path -WorkSheetname Oxford
         $data2 | Export-Excel -Path $path -WorkSheetname Abingdon
@@ -89,10 +92,11 @@ Describe "Join Worksheet part 1" {
         }
     }
 }
-    $path = "$env:TEMP\Test.xlsx"
+    $path = Join-Path $Env:TEMP "Test.xlsx"
     Remove-item -Path $path -ErrorAction SilentlyContinue
 #switched to CIM objects so test runs on V6
 Describe "Join Worksheet part 2" {
+    if ($notWindows) {Write-warning -message "Test only runs on Windows" ; return}
     Get-CimInstance -ClassName win32_logicaldisk |
         Select-Object -Property DeviceId,VolumeName, Size,Freespace |
             Export-Excel -Path $path -WorkSheetname Volumes -NumberFormat "0,000"

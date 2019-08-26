@@ -1,9 +1,10 @@
-﻿if ($PSVersionTable.PSVersion.Major -GT 5) {
-     Write-Warning "Can't test passwords on V6 and later"
-     return
-}
+﻿
 
 Describe "Password Support" {
+    if ($PSVersionTable.PSVersion.Major -GT 5) {
+        Write-Warning "Can't test passwords on V6 and later"
+        return
+    }
     Context "Password protected sheet" {
         BeforeAll  {
             $password = "YouMustRememberThis"
