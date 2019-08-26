@@ -32,7 +32,6 @@ Describe "Data validation and protection" {
             $ws.DataValidations[0].ValidationType.Type.tostring()       | Should     be 'List'
             $ws.DataValidations[0].Formula.ExcelFormula                 | Should     be 'values!$a$1:$a$10'
             $ws.DataValidations[0].Formula2                             | Should     benullorempty
-            $ws.DataValidations[0].Operator.tostring()                  | should     be 'any'
         }
         It "Created an integer validation rule for values between X and Y                          " {
             $ws.DataValidations[1].ValidationType.Type.tostring()       | Should     be 'Whole'
