@@ -5,7 +5,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Charting.ps1
 . $PSScriptRoot\ColorCompletion.ps1
 . $PSScriptRoot\ConvertExcelToImageFile.ps1
-. $PSScriptRoot\compare-workSheet.ps1
+. $PSScriptRoot\Compare-WorkSheet.ps1
 . $PSScriptRoot\ConvertFromExcelData.ps1
 . $PSScriptRoot\ConvertFromExcelToSQLInsert.ps1
 . $PSScriptRoot\ConvertToExcelXlsx.ps1

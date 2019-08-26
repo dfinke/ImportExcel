@@ -1,5 +1,5 @@
-﻿Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
+#Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
+
 $xlFile = "$env:TEMP\testSQL.xlsx"
 
 Describe "ConvertFrom-ExcelToSQLInsert" {

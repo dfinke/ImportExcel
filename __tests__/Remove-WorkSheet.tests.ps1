@@ -1,6 +1,5 @@
 ﻿#Requires -Modules Pester
-Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
+#Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
 
 Describe "Remove Worksheet" {
     Context "Remove a worksheet output" {

@@ -1,7 +1,5 @@
 ﻿#Requires -Modules Pester
-if ($PSVersionTable.os -and $PSVersionTable.os -notMatch 'Windows' ) {return}   #Currently this test outputs windows services so only run on Windows.
-if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() }
-Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
+#Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
 if ($PSVersionTable.PSVersion.Major -gt 5) { Write-Warning "Can't test grid view on V6 and later" }
 else                                       {Add-Type -AssemblyName System.Windows.Forms }
 Describe "Compare Worksheet" {

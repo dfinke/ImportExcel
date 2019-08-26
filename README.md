@@ -15,11 +15,13 @@ If this project helped you reduce the time to get your job done, let me know.
 <a href="./LICENSE.txt"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"></a>
 </p>
 
-|CI System |OS|Status|
-|---|---|---|
-|Azure DevOps|Windows|[![Build status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/ImportExcel-CI)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=10)|
-|Azure DevOps|Windows, Linux, Mac|[![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=20&branchName=master)|
-|Appveyor|Windows|[![Build Status](https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true)](https://ci.appveyor.com/project/dfinke/importexcel/branch/master)|
+| CI System    | Environment                   | Status                                                                                                                                                                                                                             |
+|--------------|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AppVeyor     | Windows, Core preview, Ubuntu | [![Build status](https://ci.appveyor.com/api/projects/status/7c0s1g5rgdx1bbts/branch/master?svg=true)](https://ci.appveyor.com/project/ili101/Module-Template)                                                                     |
+| Azure DevOps | Windows                       | [![Build Status](https://dev.azure.com/ili101/ImportExcel/_apis/build/status/ili101.ImportExcel?branchName=master&jobName=Windows)](https://dev.azure.com/ili101/ImportExcel/_build/latest?definitionId=1&branchName=master)       |
+| Azure DevOps | Windows (Core)                | [![Build Status](https://dev.azure.com/ili101/ImportExcel/_apis/build/status/ili101.ImportExcel?branchName=master&jobName=WindowsPSCore)](https://dev.azure.com/ili101/ImportExcel/_build/latest?definitionId=1&branchName=master) |
+| Azure DevOps | Ubuntu                        | [![Build Status](https://dev.azure.com/ili101/ImportExcel/_apis/build/status/ili101.ImportExcel?branchName=master&jobName=Ubuntu)](https://dev.azure.com/ili101/ImportExcel/_build/latest?definitionId=1&branchName=master)        |
+| Azure DevOps | macOS                         | [![Build Status](https://dev.azure.com/ili101/ImportExcel/_apis/build/status/ili101.ImportExcel?branchName=master&jobName=macOS)](https://dev.azure.com/ili101/ImportExcel/_build/latest?definitionId=1&branchName=master)         |
 
 <!-- /BADGES -->
 
