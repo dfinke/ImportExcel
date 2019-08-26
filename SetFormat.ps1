@@ -230,12 +230,15 @@
                 else {Write-Warning -Message ("Can set the height of a row or a range but not a {0} object" -f ($Range.GetType().name)) }
             }
             if ($Autosize) {
-                if ($Range -is [OfficeOpenXml.ExcelColumn]) {$Range.AutoFit() }
-                elseif ($Range -is [OfficeOpenXml.ExcelRange] ) {
-                    $Range.AutoFitColumns()
-                }
-                else {Write-Warning -Message ("Can autofit a column or a range but not a {0} object" -f ($Range.GetType().name)) }
+                try {
+                    if ($Range -is [OfficeOpenXml.ExcelColumn]) {$Range.AutoFit() }
+                    elseif ($Range -is [OfficeOpenXml.ExcelRange] ) {
+                        $Range.AutoFitColumns()
 
+                    }
+                    else {Write-Warning -Message ("Can autofit a column or a range but not a {0} object" -f ($Range.GetType().name)) }
+                }
+                catch {Write-Warning -Message "Failed autosizing columns of worksheet '$WorksheetName': $_"}
             }
             elseif ($PSBoundParameters.ContainsKey('Width')) {
                 if ($Range -is [OfficeOpenXml.ExcelColumn]) {$Range.Width = $Width}
