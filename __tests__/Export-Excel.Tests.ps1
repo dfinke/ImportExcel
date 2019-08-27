@@ -1,8 +1,7 @@
 ﻿#Requires -Modules Pester
 
-Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
-$notWindows =  ($PSVersionTable.os -and $PSVersionTable.os -notMatch 'Windows' )
+#Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
+. "$PSScriptRoot\Samples\Samples.ps1"
 
 if (Get-process -Name Excel,xlim -ErrorAction SilentlyContinue) {    Write-Warning -Message "You need to close Excel before running the tests." ; return}
 Describe ExportExcel {
