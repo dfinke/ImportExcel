@@ -19,7 +19,7 @@ Describe "Compare Worksheet" {
         $s.RemoveAt(5)
         $s | Export-Excel -Path TestDrive:\server2.xlsx
         #Assume default worksheet name, (sheet1) and column header for key ("name")
-        $comp = compare-WorkSheet "TestDrive:\Server1.xlsx" "TestDrive:\Server2.xlsx" | Sort-Object -Property _row, _file
+        $comp = compare-WorkSheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" | Sort-Object -Property _row, _file
     }
     Context "Simple comparison output" {
         it "Found the right number of differences                                                  " {
@@ -56,13 +56,13 @@ Describe "Compare Worksheet" {
                 $ModulePath = (Get-Command -Name 'Compare-WorkSheet').Module.Path
                 $PowerShellExec = if ($PSEdition -eq 'Core') {'pwsh.exe'} else {'powershell.exe'}
                 $PowerShellPath = Join-Path -Path $PSHOME -ChildPath $PowerShellExec
-                . $PowerShellPath -Command ('Import-Module {0}; $null = Compare-WorkSheet "{1}Server1.xlsx" "{1}Server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView; Start-Sleep -sec 5' -f $ModulePath, (Resolve-Path 'TestDrive:').ProviderPath)
+                . $PowerShellPath -Command ('Import-Module {0}; $null = Compare-WorkSheet "{1}server1.xlsx" "{1}server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView; Start-Sleep -sec 5' -f $ModulePath, (Resolve-Path 'TestDrive:').ProviderPath)
             }
             else {
-                $null = Compare-WorkSheet "TestDrive:\Server1.xlsx" "TestDrive:\Server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView:$useGrid
+                $null = Compare-WorkSheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView:$useGrid
             }
-            $xl1  = Open-ExcelPackage -Path "TestDrive:\Server1.xlsx"
-            $xl2  = Open-ExcelPackage -Path "TestDrive:\Server2.xlsx"
+            $xl1  = Open-ExcelPackage -Path "TestDrive:\server1.xlsx"
+            $xl2  = Open-ExcelPackage -Path "TestDrive:\server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets[1]
             $s2Sheet = $xl2.Workbook.Worksheets[1]
         }
@@ -86,9 +86,9 @@ Describe "Compare Worksheet" {
 
     Context "Setting the forgound to highlight changed properties" {
         BeforeAll {
-            $null = compare-WorkSheet "TestDrive:\Server1.xlsx" "TestDrive:\Server2.xlsx" -AllDataBackgroundColor([System.Drawing.Color]::white) -BackgroundColor ([System.Drawing.Color]::LightGreen)  -FontColor ([System.Drawing.Color]::DarkRed)
-            $xl1  = Open-ExcelPackage -Path "TestDrive:\Server1.xlsx"
-            $xl2  = Open-ExcelPackage -Path "TestDrive:\Server2.xlsx"
+            $null = compare-WorkSheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" -AllDataBackgroundColor([System.Drawing.Color]::white) -BackgroundColor ([System.Drawing.Color]::LightGreen)  -FontColor ([System.Drawing.Color]::DarkRed)
+            $xl1  = Open-ExcelPackage -Path "TestDrive:\server1.xlsx"
+            $xl2  = Open-ExcelPackage -Path "TestDrive:\server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets[1]
             $s2Sheet = $xl2.Workbook.Worksheets[1]
         }
@@ -117,7 +117,7 @@ Describe "Compare Worksheet" {
         BeforeAll {
             [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property RequiredServices, CanPauseAndContinue, CanShutdown, CanStop,
             DisplayName, DependentServices, MachineName, ServiceName, ServicesDependedOn, ServiceHandle, Status, ServiceType, StartType  -ExcludeProperty Name
-            $s | Export-Excel -Path TestDrive:\server1.xlsx  -WorkSheetname Server1
+            $s | Export-Excel -Path TestDrive:\server1.xlsx  -WorkSheetname server1
             #$s is a zero based array, excel rows are 1 based and excel has a header row so Excel rows will be 2 + index in $s
             $row4Displayname  = $s[2].DisplayName
             $s[2].DisplayName = "Changed from the orginal"
@@ -131,9 +131,9 @@ Describe "Compare Worksheet" {
 
             $s | Select-Object -Property ServiceName, DisplayName, StartType, ServiceType | Export-Excel -Path TestDrive:\server2.xlsx -WorkSheetname server2
             #Assume default worksheet name, (sheet1) and column header for key ("name")
-            $comp = compare-WorkSheet "TestDrive:\Server1.xlsx" "TestDrive:\Server2.xlsx" -WorkSheetName Server1,Server2 -Key ServiceName -Property DisplayName,StartType -AllDataBackgroundColor ([System.Drawing.Color]::AliceBlue) -BackgroundColor ([System.Drawing.Color]::White) -FontColor ([System.Drawing.Color]::Red)   | Sort-Object _row,_file
-            $xl1  = Open-ExcelPackage -Path "TestDrive:\Server1.xlsx"
-            $xl2  = Open-ExcelPackage -Path "TestDrive:\Server2.xlsx"
+            $comp = compare-WorkSheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" -WorkSheetName server1,server2 -Key ServiceName -Property DisplayName,StartType -AllDataBackgroundColor ([System.Drawing.Color]::AliceBlue) -BackgroundColor ([System.Drawing.Color]::White) -FontColor ([System.Drawing.Color]::Red)   | Sort-Object _row,_file
+            $xl1  = Open-ExcelPackage -Path "TestDrive:\server1.xlsx"
+            $xl2  = Open-ExcelPackage -Path "TestDrive:\server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets["server1"]
             $s2Sheet = $xl2.Workbook.Worksheets["server2"]
         }
@@ -188,7 +188,7 @@ Describe "Compare Worksheet" {
 
 Describe "Merge Worksheet" {
     BeforeAll {
-        Remove-Item -Path  "TestDrive:\server*.xlsx" , "TestDrive:\Combined*.xlsx" -ErrorAction SilentlyContinue
+        Remove-Item -Path  "TestDrive:\server*.xlsx" , "TestDrive:\combined*.xlsx" -ErrorAction SilentlyContinue
         [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property *
 
         $s | Export-Excel -Path TestDrive:\server1.xlsx
@@ -205,7 +205,7 @@ Describe "Merge Worksheet" {
 
         $s | Export-Excel -Path TestDrive:\server2.xlsx
         #Assume default worksheet name, (sheet1) and column header for key ("name")
-        Merge-Worksheet -Referencefile "TestDrive:\server1.xlsx" -Differencefile  "TestDrive:\Server2.xlsx" -OutputFile  "TestDrive:\combined1.xlsx"  -Property name,displayname,startType -Key name
+        Merge-Worksheet -Referencefile "TestDrive:\server1.xlsx" -Differencefile  "TestDrive:\server2.xlsx" -OutputFile  "TestDrive:\combined1.xlsx"  -Property name,displayname,startType -Key name
         $excel = Open-ExcelPackage -Path "TestDrive:\combined1.xlsx"
         $ws    = $excel.Workbook.Worksheets["sheet1"]
     }
@@ -215,8 +215,8 @@ Describe "Merge Worksheet" {
             $ws.Cells[ 1,1].Value                                         | Should     be "name"
             $ws.Cells[ 1,2].Value                                         | Should     be "DisplayName"
             $ws.Cells[ 1,3].Value                                         | Should     be "StartType"
-            $ws.Cells[ 1,4].Value                                         | Should     be "Server2 DisplayName"
-            $ws.Cells[ 1,5].Value                                         | Should     be "Server2 StartType"
+            $ws.Cells[ 1,4].Value                                         | Should     be "server2 DisplayName"
+            $ws.Cells[ 1,5].Value                                         | Should     be "server2 StartType"
         }
         it "Joined the two sheets correctly                                                        " {
             $ws.Cells[ 2,2].Value                                         | Should     be $ws.Cells[ 2,4].Value
@@ -248,14 +248,14 @@ Describe "Merge Worksheet" {
     }
     Context "Wider data set"    {
         it "Coped with columns beyond Z in the Output sheet                                        " {
-            { Merge-Worksheet -Referencefile "TestDrive:\server1.xlsx" -Differencefile  "TestDrive:\Server2.xlsx" -OutputFile  "TestDrive:\combined2.xlsx"  }           | Should not throw
+            { Merge-Worksheet -Referencefile "TestDrive:\server1.xlsx" -Differencefile  "TestDrive:\server2.xlsx" -OutputFile  "TestDrive:\combined2.xlsx"  }           | Should not throw
         }
     }
 }
 Describe "Merge Multiple sheets" {
     Context "Merge 3 sheets with 3 properties" {
         BeforeAll {
-            Remove-Item -Path  "TestDrive:\server*.xlsx" , "TestDrive:\Combined*.xlsx" -ErrorAction SilentlyContinue
+            Remove-Item -Path  "TestDrive:\server*.xlsx" , "TestDrive:\combined*.xlsx" -ErrorAction SilentlyContinue
             [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property Name,DisplayName,StartType
             $s | Export-Excel -Path TestDrive:\server1.xlsx
 
@@ -282,7 +282,7 @@ Describe "Merge Multiple sheets" {
 
             $s | Export-Excel -Path TestDrive:\server3.xlsx
 
-            Merge-MultipleSheets -Path "TestDrive:\server1.xlsx", "TestDrive:\Server2.xlsx","TestDrive:\Server3.xlsx" -OutputFile "TestDrive:\combined3.xlsx"  -Property name,displayname,startType -Key name
+            Merge-MultipleSheets -Path "TestDrive:\server1.xlsx", "TestDrive:\server2.xlsx","TestDrive:\server3.xlsx" -OutputFile "TestDrive:\combined3.xlsx"  -Property name,displayname,startType -Key name
             $excel = Open-ExcelPackage -Path "TestDrive:\combined3.xlsx"
             $ws    = $excel.Workbook.Worksheets["sheet1"]
 
@@ -290,12 +290,12 @@ Describe "Merge Multiple sheets" {
         it "Created a worksheet with the correct headings                                          " {
             $ws                                                           | Should not beNullOrEmpty
             $ws.Cells[ 1,2 ].Value                                        | Should     be "name"
-            $ws.Cells[ 1,3 ].Value                                        | Should     be "Server1 DisplayName"
-            $ws.Cells[ 1,4 ].Value                                        | Should     be "Server1 StartType"
-            $ws.Cells[ 1,5 ].Value                                        | Should     be "Server2 DisplayName"
-            $ws.Cells[ 1,6 ].Value                                        | Should     be "Server2 StartType"
+            $ws.Cells[ 1,3 ].Value                                        | Should     be "server1 DisplayName"
+            $ws.Cells[ 1,4 ].Value                                        | Should     be "server1 StartType"
+            $ws.Cells[ 1,5 ].Value                                        | Should     be "server2 DisplayName"
+            $ws.Cells[ 1,6 ].Value                                        | Should     be "server2 StartType"
             $ws.Column(7).hidden                                          | Should     be $true
-            $ws.Cells[ 1,8].Value                                         | Should     be "Server2 Row"
+            $ws.Cells[ 1,8].Value                                         | Should     be "server2 Row"
             $ws.Cells[ 1,9 ].Value                                        | Should     be "server3 DisplayName"
             $ws.Cells[ 1,10].Value                                        | Should     be "server3 StartType"
             $ws.Column(11).hidden                                         | Should     be $true
