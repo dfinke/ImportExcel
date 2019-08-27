@@ -50,6 +50,23 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
+# What's new 6.5.0
+
+This is now using the latest version of EPPlus. Unit tests are updated and passing, if you hit problems, please open an issue.
+You can rollback to an older version from the PowerShell Gallery if you are blocked.
+
+- Unit tests were updated and fixed
+- "Set-WorksheetProtection" is now switched on
+- Made a change to make Set-Excel range more friendly when Auto Sizing on non-windows platforms
+- Fixed - Windows only tests don't attempt to run on non-windows systems
+- Tests based on Get-Process don't attempt to run if <20 processes are returned
+- If $env:TEMP is not set (as will be the case on Linux)
+- Join-Path if used so paths are built with / or with \ as suits the OS where the test is running.
+- Excel Sparklines now supported, check out the examples [SalesByQuarter](https://github.com/dfinke/ImportExcel/blob/master/Examples/Sparklines/SalesByQuarter.ps1) and [Sparklines](https://github.com/dfinke/ImportExcel/blob/master/Examples/Sparklines/Sparklines.ps1).
+
+![](./images/Sparklines.png)
+
+
 # What's new 6.2.4
 
 Sensible parameter defaults, make your life easier and gets things done faster.
