@@ -1,4 +1,3 @@
-if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
 
 
 Describe "Creating workbook with a single line" {

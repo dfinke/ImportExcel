@@ -1,5 +1,3 @@
-if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
-
 Describe "Exporting with -Inputobject" {
     BeforeAll {
         $path = "TestDrive:\Results.xlsx"

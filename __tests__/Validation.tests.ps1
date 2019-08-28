@@ -1,7 +1,3 @@
-Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
-$notWindows =  ($PSVersionTable.os -and $PSVersionTable.os -notMatch 'Windows' )
-
 $data = ConvertFrom-Csv -InputObject @"
 ID,Product,Quantity,Price
 12001,Nails,37,3.99

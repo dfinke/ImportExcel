@@ -1,6 +1,4 @@
-﻿if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
-
-$scriptPath = Split-Path -Path $MyInvocation.MyCommand.path -Parent
+﻿$scriptPath = Split-Path -Path $MyInvocation.MyCommand.path -Parent
 $dataPath = Join-Path  -Path $scriptPath -ChildPath "First10Races.csv"
 
 Describe "Creating small named ranges with hyperlinks" {
