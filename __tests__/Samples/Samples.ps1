@@ -1,16 +1,3 @@
-<#
-Get-Service | Select-Object -First 30 | Export-Clixml -Path Get-Service.xml
-
-$Disk = Get-CimInstance -ClassName win32_logicaldisk | Select-Object -Property DeviceId,VolumeName, Size,Freespace
-$Disk | Export-Clixml -Path Get-CimInstanceDisk.xml
-
-$NetAdapter = Get-CimInstance -Namespace root/StandardCimv2 -class MSFT_NetAdapter | Select-Object -Property Name, InterfaceDescription, MacAddress, LinkSpeed
-$NetAdapter | Export-Clixml -Path Get-CimInstanceNetAdapter.xml
-
-$Process = Get-Process | Where-Object { $_.StartTime } | Select-Object -first 20
-$Process | Export-Clixml -Path Get-Process.xml
-#>
-
 if ($IsLinux -or $IsMacOS) {
     if (-not (Get-Command 'Get-Service' -ErrorAction SilentlyContinue)) {
         function Get-Service {
@@ -33,6 +20,34 @@ if ($IsLinux -or $IsMacOS) {
         }
     }
     function Get-Process {
-        Import-Clixml -Path (Join-Path $PSScriptRoot Get-Process.xml)
+        param (
+            $Name,
+            $Id
+        )
+        if (-not $Name) {
+            if ($Id) {
+                (Import-Clixml -Path (Join-Path $PSScriptRoot Get-Process.xml))[0]
+            }
+            else {
+                Import-Clixml -Path (Join-Path $PSScriptRoot Get-Process.xml)
+            }
+        }
     }
 }
+
+<# Creating the samples
+Get-Service | Select-Object -First 30 | Export-Clixml -Path Get-Service.xml
+
+$Disk = Get-CimInstance -ClassName win32_logicaldisk | Select-Object -Property DeviceId,VolumeName, Size,Freespace
+$Disk | Export-Clixml -Path Get-CimInstanceDisk.xml
+
+$NetAdapter = Get-CimInstance -Namespace root/StandardCimv2 -class MSFT_NetAdapter | Select-Object -Property Name, InterfaceDescription, MacAddress, LinkSpeed
+$NetAdapter | Export-Clixml -Path Get-CimInstanceNetAdapter.xml
+
+$Process = Get-Process | Where-Object { $_.StartTime -and $_.StartInfo -and $_.Modules -and $_.Company -notlike '*Microsoft*' } | Select-Object -first 20
+$Process | Export-Clixml -Path $Path
+$Process = Import-Clixml -Path $Path
+$Process | foreach {$_.Threads = 'System.Diagnostics.ProcessThreadCollection'}
+$Process | foreach {$_.Modules = 'System.Diagnostics.ProcessThreadCollection'}
+$Process | Export-Clixml -Path $Path
+#>

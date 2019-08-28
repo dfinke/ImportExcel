@@ -24,10 +24,10 @@ ID,Product,Quantity,Price,Total
 12010,Drill,11,8,88
 12012,Pliers,3,14.99,44.97
 "@
-. "$PSScriptRoot\Samples\Samples.ps1"
 
 Describe "Join Worksheet part 1" {
     BeforeAll {
+        . "$PSScriptRoot\Samples\Samples.ps1"
         $path = "TestDrive:\test.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         $data1 | Export-Excel -Path $path -WorkSheetname Oxford

@@ -1,10 +1,17 @@
 ﻿#Requires -Modules Pester
 
 #Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-. "$PSScriptRoot\Samples\Samples.ps1"
 
-if (Get-process -Name Excel,xlim -ErrorAction SilentlyContinue) {    Write-Warning -Message "You need to close Excel before running the tests." ; return}
 Describe ExportExcel {
+    . "$PSScriptRoot\Samples\Samples.ps1"
+    if (Get-process -Name Excel,xlim -ErrorAction SilentlyContinue) {
+        It "Excel is open" {
+            $Warning = "You need to close Excel before running the tests."
+            Write-Warning -Message $Warning
+            Set-ItResult -Inconclusive -Because $Warning
+        }
+        return
+    }
 
     Context "#Example 1      # Creates and opens a file with the right number of rows and columns" {
         $path = "TestDrive:\Test.xlsx"
@@ -958,7 +965,13 @@ Describe ExportExcel {
         $path = "TestDrive:\test.xlsx"
         #Test creating 3 on overlapping tables on the same page. Create rightmost the left most then middle.
         remove-item -Path $path -ErrorAction SilentlyContinue
-        $r = Get-ChildItem -path C:\WINDOWS\system32 -File
+        if ($IsLinux -or $IsMacOS) {
+            $SystemFolder = '/etc'
+        }
+        else {
+            $SystemFolder = 'C:\WINDOWS\system32'
+        }
+        $r = Get-ChildItem -path $SystemFolder -File
 
         "Biggest files" | Export-Excel -Path $path -StartRow 1 -StartColumn 7
         $r | Sort-Object length -Descending | Select-Object -First 14 Name, @{n="Size";e={$_.Length}}  |
