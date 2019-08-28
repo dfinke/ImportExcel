@@ -519,13 +519,13 @@
     )
 
     begin {
+        if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
         $numberRegex = [Regex]'\d'
         $isDataTypeValueType = $false
         if ($NoClobber) {Write-Warning -Message "-NoClobber parameter is no longer used" }
         #Open the file, get the worksheet, and decide where in the sheet we are writing, and if there is a number format to apply.
         try   {
             $script:Header = $null
-            if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
             $TableName = if ($null -eq $TableName -or ($TableName -is [bool] -and $false -eq $TableName)) { $null } else {[String]$TableName}
             if ($PSBoundParameters.Keys.Count -eq 0 -Or $Now -or (-not $Path -and -not $ExcelPackage) ) {
                 if (-not $PSBoundParameters.ContainsKey("Path")) { $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx' }
