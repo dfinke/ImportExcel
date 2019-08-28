@@ -1,10 +1,14 @@
 ﻿#Requires -Modules Pester
 #Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
 
-if ($PSVersionTable.PSVersion.Major -gt 5) { Write-Warning "Can't test grid view on V6 and later" }
-else                                       {Add-Type -AssemblyName System.Windows.Forms }
 Describe "Compare Worksheet" {
     BeforeAll {
+        if ($PSVersionTable.PSVersion.Major -gt 5) {
+            It "GridView Support" {
+                Set-ItResult -Pending -Because "Can't test grid view on V6 and later"
+            }
+        }
+        else { Add-Type -AssemblyName System.Windows.Forms }
         . "$PSScriptRoot\Samples\Samples.ps1"
         Remove-Item -Path  "TestDrive:\server*.xlsx"
         [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property Name, RequiredServices, CanPauseAndContinue, CanShutdown, CanStop, DisplayName, DependentServices, MachineName

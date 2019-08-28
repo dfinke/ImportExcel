@@ -92,11 +92,12 @@ Describe "Creating small named ranges with hyperlinks" {
             $sheet.ConditionalFormatting[1].StopIfTrue                  | Should     be $true
         }
         It "Applied ConditionalFormatting, including Reverse                                       " {
+            Set-ItResult -Pending -Because "Bug in EPPLus 4.5"
             $sheet.ConditionalFormatting[3].LowValue.Color.R            | Should     begreaterThan 180
             $sheet.ConditionalFormatting[3].LowValue.Color.G            | Should     beLessThan 128
             $sheet.ConditionalFormatting[3].HighValue.Color.R           | Should     beLessThan 128
             $sheet.ConditionalFormatting[3].HighValue.Color.G           | Should     begreaterThan 180
-        } -Skip  # << Bug in EPPLus 4.5
+        }
     }
     Context "Adding a table" {
         it "Created a table                                                                        " {

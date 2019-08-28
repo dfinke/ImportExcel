@@ -51,9 +51,10 @@ Describe "Join Worksheet part 1" {
             $excel.Workbook.Worksheets["SummaryPivot"].Hidden           | Should     be 'Visible'
         }
         it "Activated the correct worksheet                                                        " {
+            Set-ItResult -Pending -Because "Bug in EPPLus 4.5"
             $excel.Workbook.worksheets["SummaryPivot"].View.TabSelected | Should     be $true
             $excel.Workbook.worksheets["Total"].View.TabSelected        | Should     be $false
-        } -Skip  # << Bug in EPPLus 4.5
+        }
 
     }
     Context "Merging 3 blocks" {

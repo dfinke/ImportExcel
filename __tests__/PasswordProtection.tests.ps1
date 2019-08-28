@@ -2,7 +2,9 @@
 
 Describe "Password Support" {
     if ($PSVersionTable.PSVersion.Major -GT 5) {
-        Write-Warning "Can't test passwords on V6 and later"
+        It "Password Supported" {
+            Set-ItResult -Pending -Because "Can't test passwords on V6 and later"
+        }
         return
     }
     Context "Password protected sheet" {

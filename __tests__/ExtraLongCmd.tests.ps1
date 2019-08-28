@@ -51,8 +51,9 @@ Apple, New York, 1200,700
             $ws2.PivotTables[0].ColumGrandTotals                        | Should     be $true   #Epplus's mis-spelling of column not mine
         }
         it "Made the PivotTable page active                                                        " {
+            Set-ItResult -Pending -Because "Bug in EPPLus 4.5"
             $ws2.View.TabSelected                                       | Should     be $true
-        } -Skip  # << Bug in EPPLus 4.5
+        }
         it "Created the Pivot Chart                                                                " {
             $ws2.Drawings[0]                                            | Should not beNullOrEmpty
             $ws2.Drawings[0].ChartType.ToString()                       | Should     be ColumnClustered

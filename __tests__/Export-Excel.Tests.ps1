@@ -475,8 +475,9 @@ Describe ExportExcel {
             $excel.Workbook.Worksheets["Processes"].Dimension.rows      | Should     be 21    #20 data + 1 header
         }
         it "Selected  the Pivottable page                                                          " {
+            Set-ItResult -Pending -Because "Bug in EPPLus 4.5"
             $PTws.View.TabSelected                                      | Should     be $true
-        } -Skip  # << Bug in EPPLus 4.5
+        }
         $pt = $PTws.PivotTables[0]
         it "Built the expected Pivot table                                                         " {
             $pt.RowFields.Count                                         | Should     be 1
