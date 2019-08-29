@@ -4,8 +4,8 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\AddDataValidation.ps1
 . $PSScriptRoot\Charting.ps1
 . $PSScriptRoot\ColorCompletion.ps1
+. $PSScriptRoot\Compare-WorkSheet.ps1
 . $PSScriptRoot\ConvertExcelToImageFile.ps1
-. $PSScriptRoot\compare-workSheet.ps1
 . $PSScriptRoot\ConvertFromExcelData.ps1
 . $PSScriptRoot\ConvertFromExcelToSQLInsert.ps1
 . $PSScriptRoot\ConvertToExcelXlsx.ps1
@@ -23,7 +23,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\InferData.ps1
 . $PSScriptRoot\Invoke-Sum.ps1
 . $PSScriptRoot\Join-Worksheet.ps1
-. $PSScriptRoot\Merge-worksheet.ps1
+. $PSScriptRoot\Merge-Worksheet.ps1
 . $PSScriptRoot\New-ConditionalFormattingIconSet.ps1
 . $PSScriptRoot\New-ConditionalText.ps1
 . $PSScriptRoot\New-ExcelChart.ps1
@@ -31,8 +31,9 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 . $PSScriptRoot\Open-ExcelPackage.ps1
 . $PSScriptRoot\Pivot.ps1
 . $PSScriptRoot\PivotTable.ps1
+#. $PSScriptRoot\Plot.ps1
 . $PSScriptRoot\RemoveWorksheet.ps1
-. $PSScriptRoot\Send-SqlDataToExcel.ps1
+. $PSScriptRoot\Send-SQLDataToExcel.ps1
 . $PSScriptRoot\Set-CellStyle.ps1
 . $PSScriptRoot\Set-Column.ps1
 . $PSScriptRoot\Set-Row.ps1
@@ -45,7 +46,7 @@ Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
 New-Alias -Name Use-ExcelData -Value "ConvertFrom-ExcelData" -Force
 
 if ($PSVersionTable.PSVersion.Major -ge 5) {
-    . $PSScriptRoot\plot.ps1
+    . $PSScriptRoot\Plot.ps1
 
     Function New-Plot {
         [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'New-Plot does not change system state')]
@@ -58,6 +59,25 @@ if ($PSVersionTable.PSVersion.Major -ge 5) {
 else {
     Write-Warning 'PowerShell 5 is required for plot.ps1'
     Write-Warning 'PowerShell Excel is ready, except for that functionality'
+}
+if ($IsLinux -or $IsMacOS) {
+    $ExcelPackage = [OfficeOpenXml.ExcelPackage]::new()
+    $Cells = ($ExcelPackage | Add-WorkSheet).Cells['A1']
+    $Cells.Value = 'Test'
+    try {
+        $Cells.AutoFitColumns()
+    }
+    catch {
+        if ($IsLinux) {
+            Write-Warning -Message 'ImportExcel Module Cannot Autosize. Please run the following command to install dependencies: "sudo apt-get install -y --no-install-recommends libgdiplus libc6-dev"'
+        }
+        if ($IsMacOS) {
+            Write-Warning -Message 'ImportExcel Module Cannot Autosize. Please run the following command to install dependencies: "brew install mono-libgdiplus"'
+        }
+    }
+    finally {
+        $ExcelPackage | Close-ExcelPackage -NoSave
+    }
 }
 #endregion
 function Import-Excel {

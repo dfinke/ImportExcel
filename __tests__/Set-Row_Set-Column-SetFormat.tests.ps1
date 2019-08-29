@@ -1,6 +1,4 @@
-﻿Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
-$path = Join-Path $Env:TEMP "test.xlsx"
+$path = "TestDrive:\test.xlsx"
 
 $data = ConvertFrom-Csv -InputObject @"
 ID,Product,Quantity,Price
@@ -284,7 +282,7 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
 
 Describe "Conditional Formatting" {
     BeforeAll {
-        Remove-Item $path
+        #Remove-Item $path
         $data = Get-Process | Where-Object company | Select-Object company, name, pm, handles, *mem*
         $cfmt = New-ConditionalFormattingIconSet -Range "c:c" -ConditionalFormat ThreeIconSet -IconType Arrows
         $data | Export-Excel -path $Path  -AutoSize -ConditionalFormat $cfmt
@@ -300,7 +298,7 @@ Describe "Conditional Formatting" {
     }
 
 }
-$path = Join-Path $Env:TEMP "test.xlsx"
+$path = "TestDrive:\test.xlsx"
 $data2 = ConvertFrom-Csv -InputObject @"
 ID,Product,Quantity,Price,Total
 12001,Nails,37,3.99,147.63
@@ -321,7 +319,7 @@ ID,Product,Quantity,Price,Total
 
 Describe "AutoNameRange data with a single property name" {
     BeforeEach {
-        $xlfile = Join-Path $Env:TEMP "testNamedRange.xlsx"
+        $xlfile = "TestDrive:\testNamedRange.xlsx"
         Remove-Item $xlfile -ErrorAction SilentlyContinue
     }
 
@@ -359,7 +357,7 @@ Sold,ID
 
 Describe "Table Formatting" {
     BeforeAll {
-        Remove-Item $path
+        #Remove-Item $path
         $excel = $data2 | Export-excel -path $path -WorksheetName Hardware -AutoNameRange -AutoSize -BoldTopRow -FreezeTopRow -PassThru
         $ws = $excel.Workbook.Worksheets[1]
         #test showfilter & TotalSettings

@@ -1,4 +1,4 @@
-﻿Import-Module $PSScriptRoot\..\..\ImportExcel.psd1
+﻿#Import-Module $PSScriptRoot\..\..\ImportExcel.psd1
 
 Describe "Tests" {
     BeforeAll {

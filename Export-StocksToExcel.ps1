@@ -5,7 +5,7 @@
         $measure = "Open"
     )
 
-    $xl = "$env:TEMP\Stocks.xlsx"
+    $xl = Join-Path ([IO.Path]::GetTempPath()) 'Stocks.xlsx'
 
     Remove-Item $xl -ErrorAction SilentlyContinue
 

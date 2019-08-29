@@ -1,7 +1,4 @@
-﻿Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
-$notWindows =  ($PSVersionTable.os -and $PSVersionTable.os -notMatch 'Windows' )
-Describe "Test adding trendlines to charts" {
+﻿Describe "Test adding trendlines to charts" {
     BeforeAll {
         $script:data = ConvertFrom-Csv @"
 Region,Item,TotalSold
@@ -20,7 +17,7 @@ South,avocado,73
     }
 
     BeforeEach {
-        $xlfile = "$env:TEMP\trendLine.xlsx"
+        $xlfile = "TestDrive:\trendLine.xlsx"
         Remove-Item $xlfile -ErrorAction SilentlyContinue
     }
 

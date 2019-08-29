@@ -2,13 +2,15 @@
 
 Describe "Password Support" {
     if ($PSVersionTable.PSVersion.Major -GT 5) {
-        Write-Warning "Can't test passwords on V6 and later"
+        It "Password Supported" {
+            Set-ItResult -Pending -Because "Can't test passwords on V6 and later"
+        }
         return
     }
     Context "Password protected sheet" {
         BeforeAll  {
             $password = "YouMustRememberThis"
-            $path = "$env:TEMP\Test.xlsx"
+            $path = "TestDrive:\Test.xlsx"
             Remove-Item $path -ErrorAction SilentlyContinue
             Get-Service | Select-Object -First 10 | Export-excel -password $password -Path $Path -DisplayPropertySet
         }

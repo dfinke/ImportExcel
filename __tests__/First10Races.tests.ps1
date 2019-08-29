@@ -1,11 +1,9 @@
-﻿if (-not $env:TEMP) {$env:TEMP = [IO.Path]::GetTempPath() -replace "/$","" }
-
-$scriptPath = Split-Path -Path $MyInvocation.MyCommand.path -Parent
+﻿$scriptPath = Split-Path -Path $MyInvocation.MyCommand.path -Parent
 $dataPath = Join-Path  -Path $scriptPath -ChildPath "First10Races.csv"
 
 Describe "Creating small named ranges with hyperlinks" {
     BeforeAll {
-        $path = Join-Path $Env:TEMP "results.xlsx"
+        $path = "TestDrive:\Results.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         #Read race results, and group by race name : export 1 row to get headers, leaving enough rows aboce to put in a link for each race
         $results = Import-Csv -Path $dataPath |
@@ -94,11 +92,12 @@ Describe "Creating small named ranges with hyperlinks" {
             $sheet.ConditionalFormatting[1].StopIfTrue                  | Should     be $true
         }
         It "Applied ConditionalFormatting, including Reverse                                       " {
+            Set-ItResult -Pending -Because "Bug in EPPLus 4.5"
             $sheet.ConditionalFormatting[3].LowValue.Color.R            | Should     begreaterThan 180
             $sheet.ConditionalFormatting[3].LowValue.Color.G            | Should     beLessThan 128
             $sheet.ConditionalFormatting[3].HighValue.Color.R           | Should     beLessThan 128
             $sheet.ConditionalFormatting[3].HighValue.Color.G           | Should     begreaterThan 180
-        } -Skip  # << Bug in EPPLus 4.5
+        }
     }
     Context "Adding a table" {
         it "Created a table                                                                        " {
