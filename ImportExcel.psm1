@@ -60,6 +60,25 @@ else {
     Write-Warning 'PowerShell 5 is required for plot.ps1'
     Write-Warning 'PowerShell Excel is ready, except for that functionality'
 }
+if ($IsLinux -or $IsMacOS) {
+    $ExcelPackage = [OfficeOpenXml.ExcelPackage]::new()
+    $Cells = ($ExcelPackage | Add-WorkSheet).Cells['A1']
+    $Cells.Value = 'Test'
+    try {
+        $Cells.AutoFitColumns()
+    }
+    catch {
+        if ($IsLinux) {
+            Write-Warning -Message 'ImportExcel Module Cannot Autosize. Please run the following command to install dependencies: "sudo apt-get install -y --no-install-recommends libgdiplus libc6-dev"'
+        }
+        if ($IsMacOS) {
+            Write-Warning -Message 'ImportExcel Module Cannot Autosize. Please run the following command to install dependencies: "brew install mono-libgdiplus"'
+        }
+    }
+    finally {
+        $ExcelPackage | Close-ExcelPackage -NoSave
+    }
+}
 #endregion
 function Import-Excel {
     <#
