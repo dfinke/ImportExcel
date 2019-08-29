@@ -1073,6 +1073,5 @@ Describe ExportExcel {
             $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
             $Worksheet.Column(5).Width | Should BeGreaterThan 9.5
         }
-
     }
 }
