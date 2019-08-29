@@ -15,13 +15,13 @@ If this project helped you reduce the time to get your job done, let me know.
 <a href="./LICENSE.txt"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"></a>
 </p>
 
-| CI System    | Environment                   | Status                                                                                                                                                                                                                             |
-|--------------|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| AppVeyor     | Windows, Core preview, Ubuntu | [![Build status](https://ci.appveyor.com/api/projects/status/7c0s1g5rgdx1bbts/branch/Tests?svg=true)](https://ci.appveyor.com/project/ili101/Module-Template)                                                                      |
-| Azure DevOps | Windows                       | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=Windows)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master) |
+| CI System    | Environment                   | Status                                                                                                                                                                                                                                          |
+|--------------|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AppVeyor     | Windows, Core preview, Ubuntu | [![Build status](https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true)](https://ci.appveyor.com/project/dfinke/importexcel/branch/master)                                                                        |
+| Azure DevOps | Windows                       | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=Windows)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master)       |
 | Azure DevOps | Windows (Core)                | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=WindowsPSCore)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master) |
-| Azure DevOps | Ubuntu                        | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=Ubuntu)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master) |
-| Azure DevOps | macOS                         | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=macOS)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master) |
+| Azure DevOps | Ubuntu                        | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=Ubuntu)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master)        |
+| Azure DevOps | macOS                         | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=macOS)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master)         |
 
 <!-- /BADGES -->
 
