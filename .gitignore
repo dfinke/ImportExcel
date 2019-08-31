@@ -63,3 +63,5 @@ ImportExcel.zip
 .vscode/settings.json
 
 ~$*
+InstallModule.ps1
+PublishToGallery.ps1
