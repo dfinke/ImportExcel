@@ -11,7 +11,9 @@ param
     # AppVeyor Only - Upload results to AppVeyor "Tests" tab.
     [Switch]$Finalize,
     # AppVeyor and Azure - Upload module as AppVeyor Artifact.
-    [Switch]$Artifact
+    [Switch]$Artifact,
+    # Azure - Runs PsScriptAnalyzer against one or more folders and pivots the results to form a report.
+    [Switch]$Analyzer
 )
 $ErrorActionPreference = 'Stop'
 if ($Initialize) {
@@ -138,5 +140,69 @@ if ($Artifact) {
     elseif ($env:AGENT_NAME) {
         #Write-Host "##vso[task.setvariable variable=ModuleName]$ModuleName"
         Copy-Item -Path $ModulePath -Destination $env:Build_ArtifactStagingDirectory -Recurse
+    }
+}
+if ($Analyzer) {
+    if (!(Get-Module -Name PSScriptAnalyzer -ListAvailable)) {
+        '[Progress] Installing PSScriptAnalyzer.'
+        Install-Module -Name PSScriptAnalyzer -Force
+    }
+
+    if ($env:System_PullRequest_TargetBranch) {
+        '[Progress] Get target branch.'
+        $TempGitClone = Join-Path ([IO.Path]::GetTempPath()) (New-Guid)
+        Copy-Item -Path $PWD -Destination $TempGitClone -Recurse
+        (Get-Item (Join-Path $TempGitClone '.git')).Attributes += 'Hidden'
+        "[Progress] git clean."
+        git -C $TempGitClone clean -f
+        "[Progress] git reset."
+        git -C $TempGitClone reset --hard
+        "[Progress] git checkout."
+        git -C $TempGitClone checkout -q $env:System_PullRequest_TargetBranch
+
+        $DirsToProcess = @{ 'Pull Request' = $PWD ; $env:System_PullRequest_TargetBranch = $TempGitClone }
+    }
+    else {
+        $DirsToProcess = @{ 'GitHub' = $PWD }
+    }
+
+    "[Progress] Running Script Analyzer."
+    $AnalyzerResults = $DirsToProcess.GetEnumerator() | ForEach-Object {
+        $DirName = $_.Key
+        Write-Verbose "[Progress] Running Script Analyzer on $DirName."
+        Invoke-ScriptAnalyzer -Path $_.Value -Recurse -ErrorAction SilentlyContinue |
+        Add-Member -MemberType NoteProperty -Name Location -Value $DirName -PassThru
+    }
+
+    if ($AnalyzerResults) {
+        if (!(Get-Module -Name ImportExcel -ListAvailable)) {
+            '[Progress] Installing ImportExcel.'
+            Install-Module -Name ImportExcel -Force
+        }
+        '[Progress] Creating ScriptAnalyzer.xlsx.'
+        $ExcelParams = @{
+            Path          = 'ScriptAnalyzer.xlsx'
+            WorksheetName = 'FullResults'
+            Now           = $true
+            Activate      = $true
+            Show          = $false
+        }
+        $PivotParams = @{
+            PivotTableName = 'BreakDown'
+            PivotData      = @{RuleName = 'Count' }
+            PivotRows      = 'Severity', 'RuleName'
+            PivotColumns   = 'Location'
+            PivotTotals    = 'Rows'
+        }
+        Remove-Item -Path $ExcelParams['Path'] -ErrorAction SilentlyContinue
+
+        $PivotParams['PivotChartDefinition'] = New-ExcelChartDefinition -ChartType 'BarClustered' -Column (1 + $DirsToProcess.Count) -Title "Script analysis" -LegendBold
+        $ExcelParams['PivotTableDefinition'] = New-PivotTableDefinition @PivotParams
+
+        $AnalyzerResults | Export-Excel @ExcelParams
+        '[Progress] Analyzer finished.'
+    }
+    else {
+        "[Info] Invoke-ScriptAnalyzer didn't return any problems."
     }
 }
