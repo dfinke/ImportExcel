@@ -127,6 +127,9 @@ function Import-Excel {
    .PARAMETER EndColumn
         By default the import reads up to the last populated column, -EndColumn tells the import to stop at an earlier number.
 
+   .PARAMETER AsText
+       Normally Import-Excel returns the Cell values. If AsText is specified the data is returned as the text displayed in the cells.
+
    .PARAMETER Password
        Accepts a string that will be used to open a password protected Excel file.
 
@@ -314,6 +317,7 @@ function Import-Excel {
         [Alias('RightColumn')]
         [Int]$EndColumn  ,
         [Switch]$DataOnly,
+        [switch]$AsText,
         [ValidateNotNullOrEmpty()]
         [String]$Password
     )
@@ -437,12 +441,17 @@ function Import-Excel {
                     #Disabled write-verbose for speed
                     #  Write-Verbose "Import row '$R'"
                     $NewRow = [Ordered]@{ }
-
-                    foreach ($P in $PropertyNames) {
-                        $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value
-                        #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
+                    if ($AsText) {
+                        foreach ($P in $PropertyNames) {
+                            $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Text
+                         }
                     }
-
+                    else {
+                        foreach ($P in $PropertyNames) {
+                            $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value
+                            #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
+                        }
+                    }
                     [PSCustomObject]$NewRow
                 }
                 #endregion
