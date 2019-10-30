@@ -180,7 +180,7 @@
         #if force was specified export even if there are no rows. If there are no columns, the query failed and export "null" if forced
         if     ($Force -or $DataTable.Rows.Count) {
             #Call export-excel removing parameters which relate to the SQL query, and keeping the rest.
-            'Connection' , 'Database'  , 'Session' , 'MsSQLserver' , 'SQL'  , 'DataTable'  , 'QueryTimeout'  |
+            'Connection' , 'Database'  , 'Session' , 'MsSQLserver' , 'SQL'  , 'DataTable'  , 'QueryTimeout' , 'Force' |
                 ForEach-Object {$null = $PSBoundParameters.Remove($_) }
                 if ($DataTable.Columns.Count) { Export-Excel  @PSBoundParameters -InputObject $DataTable }
                 else                          { Export-Excel  @PSBoundParameters -InputObject $null }
