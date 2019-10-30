@@ -1,6 +1,7 @@
 ﻿#Requires -Modules Pester
-#Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-
+if (-not (get-command Import-Excel -ErrorAction SilentlyContinue)) {
+    Import-Module $PSScriptRoot\..\ImportExcel.psd1
+}
 Describe "Compare Worksheet" {
     BeforeAll {
         if ($PSVersionTable.PSVersion.Major -gt 5) {

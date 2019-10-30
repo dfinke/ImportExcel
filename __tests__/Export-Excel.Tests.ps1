@@ -1,7 +1,8 @@
 ﻿#Requires -Modules Pester
 
-#Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-
+if (-not (get-command Import-Excel -ErrorAction SilentlyContinue)) {
+    Import-Module $PSScriptRoot\..\ImportExcel.psd1
+}
 Describe ExportExcel {
     . "$PSScriptRoot\Samples\Samples.ps1"
     if (Get-process -Name Excel,xlim -ErrorAction SilentlyContinue) {
