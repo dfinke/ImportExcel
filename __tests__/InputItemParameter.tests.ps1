@@ -16,6 +16,9 @@ Describe "Exporting with -Inputobject" {
         export-excel        -Path $path -InputObject $results   -WorksheetName Sheet1 -RangeName "Whole"
         export-excel        -Path $path -InputObject $DataTable -WorksheetName Sheet2 -AutoNameRange
         Send-SQLDataToExcel -path $path -DataTable   $DataTable -WorkSheetname Sheet3  -TableName "Data"
+        $DataTable.Rows.Clear()
+        Send-SQLDataToExcel -path $path -DataTable   $DataTable -WorkSheetname Sheet4  -force
+        Send-SQLDataToExcel -path $path -DataTable  ([System.Data.DataTable]::new('Test2')) -WorkSheetname Sheet5  -force
         $excel = Open-ExcelPackage $path
         $sheet = $excel.Sheet1
     }
@@ -60,7 +63,7 @@ Describe "Exporting with -Inputobject" {
     }
     $sheet = $excel.Sheet3
     Context "Table of processes via Send-SQLDataToExcel" {
-        it "Put the correct rows and columns into the sheet                                        " {
+        it "Put the correct data rows and columns into the sheet                                   " {
             $sheet.Dimension.Rows                                       | should     be ($results.Count + 1)
             $sheet.Dimension.Columns                                    | should     be  5
             $sheet.cells["A1"].Value                                    | should     be "Name"
@@ -76,4 +79,29 @@ Describe "Exporting with -Inputobject" {
             $sheet.Cells["E11"].Style.Numberformat.NumFmtID             | should     be 22
         }
     }
+    $Sheet = $excel.Sheet4
+    Context "Zero row Data Table sent with Send-SQLDataToExcel -Force" {
+        it "Put the correct data headers into the sheet                                            " {
+            $sheet.Dimension.Rows                                       | should     be  1
+            $sheet.Dimension.Columns                                    | should     be  5
+            $sheet.cells["A1"].Value                                    | should     be "Name"
+            $sheet.cells["E1"].Value                                    | should     be "StartTime"
+            $sheet.cells["A3"].Value                                    | should     beNullOrEmpty
+        }
+    }
+    $Sheet = $excel.Sheet5
+    Context "Zero column data table handled by Send-SQLDataToExcel -Force" {
+        it "Put Created a blank Sheet                                                              " {
+            $sheet.Dimension                                            | should     beNullOrEmpty
+        }
+    }
+    Close-ExcelPackage $excel
+    Context "Import As Text returns text values" {
+        $x = import-excel  $path -WorksheetName sheet3 -AsText | Select-Object -last 1
+        it "Had fields of type string, not date or int                                             " {
+            $x.Handles.GetType().Name                                   | should     be "String"
+            $x.StartTime.GetType().Name                                 | should     be "String"
+        }
+    }
+
 }
