@@ -1,3 +1,5 @@
+if ($null -eq $IsWindows) {$IsWindows = [environment]::OSVersion.Platform -like "win*"}
+
 $path = "TestDrive:\test.xlsx"
 
 $data = ConvertFrom-Csv -InputObject @"
@@ -142,8 +144,10 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
         Set-ExcelRange -WorkSheet $ws -Range "E1"  -ResetFont -HorizontalAlignment General -FontName "Courier New" -fontSize 9
         Set-ExcelRange -Address   $ws.Cells["E7"]  -ResetFont -WrapText -BackgroundColor  ([System.Drawing.Color]::AliceBlue) -BackgroundPattern DarkTrellis -PatternColor  ([System.Drawing.Color]::Red)  -NumberFormat "£#,###.00"
         Set-ExcelRange -Address   $ws.Column(1)    -Width  0
-        Set-ExcelRange -Address   $ws.Column(2)    -AutoFit
-        Set-ExcelRange -Address   $ws.Cells["E:E"] -AutoFit
+        if ($IsWindows) {
+            Set-ExcelRange -Address   $ws.Column(2)    -AutoFit
+            Set-ExcelRange -Address   $ws.Cells["E:E"] -AutoFit
+        }
         #Test alias
         Set-Format     -Address   $ws.row(5)       -Height 0
         $rr = $r.row

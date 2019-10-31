@@ -1,5 +1,6 @@
 ﻿$scriptPath = Split-Path -Path $MyInvocation.MyCommand.path -Parent
 $dataPath = Join-Path  -Path $scriptPath -ChildPath "First10Races.csv"
+$WarningAction = "SilentlyContinue"
 
 Describe "Creating small named ranges with hyperlinks" {
     BeforeAll {

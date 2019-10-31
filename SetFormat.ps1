@@ -229,7 +229,7 @@
                 }
                 else {Write-Warning -Message ("Can set the height of a row or a range but not a {0} object" -f ($Range.GetType().name)) }
             }
-            if ($Autosize) {
+            if ($Autosize -and ([environment]::OSVersion.Platform -like "win*" -or $env:AUTOSIZE)) {
                 try {
                     if ($Range -is [OfficeOpenXml.ExcelColumn]) {$Range.AutoFit() }
                     elseif ($Range -is [OfficeOpenXml.ExcelRange] ) {
@@ -240,6 +240,7 @@
                 }
                 catch {Write-Warning -Message "Failed autosizing columns of worksheet '$WorksheetName': $_"}
             }
+            elseif ($AutoSize) {Write-Warning -Message "Auto-fitting columns is not available with this OS configuration." }
             elseif ($PSBoundParameters.ContainsKey('Width')) {
                 if ($Range -is [OfficeOpenXml.ExcelColumn]) {$Range.Width = $Width}
                 elseif ($Range -is [OfficeOpenXml.ExcelRange] ) {
