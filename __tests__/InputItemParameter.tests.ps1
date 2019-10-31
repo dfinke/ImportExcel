@@ -2,7 +2,7 @@ Describe "Exporting with -Inputobject; table handling, Send SQL Data and import 
     BeforeAll {
         $path = "TestDrive:\Results.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
-        #Read race results, and group by race name : export 1 row to get headers, leaving enough rows aboce to put in a link for each race
+        . "$PSScriptRoot\Samples\Samples.ps1"
         $results = ((Get-Process) + (Get-Process -id $PID)) | Select-Object -last  10 -Property Name, cpu, pm, handles, StartTime
         $DataTable = [System.Data.DataTable]::new('Test')
         $null = $DataTable.Columns.Add('Name')
@@ -100,10 +100,11 @@ Describe "Exporting with -Inputobject; table handling, Send SQL Data and import 
     }
     Close-ExcelPackage $excel
     Context "Import As Text returns text values" {
-        $x = import-excel  $path -WorksheetName sheet3 -AsText | Select-Object -last 1
-        it "Had fields of type string, not date or int                                             " {
+        $x = import-excel  $path -WorksheetName sheet3 -AsText StartTime,hand* | Select-Object -last 1
+        it "Had fields of type string, not date or int, where specified as ASText                  " {
             $x.Handles.GetType().Name                                   | should     be "String"
             $x.StartTime.GetType().Name                                 | should     be "String"
+            $x.CPU.GetType().Name                                       | should not be "String"
         }
     }
 

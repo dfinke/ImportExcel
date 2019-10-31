@@ -60,19 +60,25 @@ else {
     Write-Warning 'PowerShell 5 is required for plot.ps1'
     Write-Warning 'PowerShell Excel is ready, except for that functionality'
 }
-if ($IsLinux -or $IsMacOS) {
+if (($IsLinux -or $IsMacOS) -and -not $env:AUTOSIZE) {
     $ExcelPackage = [OfficeOpenXml.ExcelPackage]::new()
     $Cells = ($ExcelPackage | Add-WorkSheet).Cells['A1']
     $Cells.Value = 'Test'
     try {
         $Cells.AutoFitColumns()
+        Write-Warning -Message ('The library needed for Autosize is present but the environment variable for it has not been set' + [environment]::newline +
+                               'Set $env:AUTOSIZE="True"')
     }
     catch {
         if ($IsLinux) {
-            Write-Warning -Message 'ImportExcel Module Cannot Autosize. Please run the following command to install dependencies: "sudo apt-get install -y --no-install-recommends libgdiplus libc6-dev"'
+            Write-Warning -Message ('ImportExcel Module Cannot Autosize. Please run the following command to install dependencies:' + [environment]::newline +
+            ' "sudo apt-get install -y --no-install-recommends libgdiplus libc6-dev"' +[environment]::newline +
+            'and then set the environment variable AUTOSIZE to True.')
         }
         if ($IsMacOS) {
-            Write-Warning -Message 'ImportExcel Module Cannot Autosize. Please run the following command to install dependencies: "brew install mono-libgdiplus"'
+            Write-Warning -Message ('ImportExcel Module Cannot Autosize. Please run the following command to install dependencies:' + [environment]::newline +
+            '"brew install mono-libgdiplus"' +[environment]::newline +
+            'and then set the environment variable AUTOSIZE to True.')
         }
     }
     finally {
@@ -128,7 +134,7 @@ function Import-Excel {
         By default the import reads up to the last populated column, -EndColumn tells the import to stop at an earlier number.
 
    .PARAMETER AsText
-       Normally Import-Excel returns the Cell values. If AsText is specified the data is returned as the text displayed in the cells.
+       Normally Import-Excel returns the Cell values. AsText allows selected columns to be returned as the text displayed in their cells. * is supported as a wildcard.
 
    .PARAMETER Password
        Accepts a string that will be used to open a password protected Excel file.
@@ -317,7 +323,7 @@ function Import-Excel {
         [Alias('RightColumn')]
         [Int]$EndColumn  ,
         [Switch]$DataOnly,
-        [switch]$AsText,
+        [string[]]$AsText,
         [ValidateNotNullOrEmpty()]
         [String]$Password
     )
@@ -437,13 +443,25 @@ function Import-Excel {
             }
             else {
                 #region Create one object per row
+                if ($AsText) {
+                    <#join items in AsText together with ~~~ . Escape any regex special characters...
+                    # which turns * into \* make it .*. Convert ~~~ to $|^ and top and tail with ^%;
+                    So if we get "Week", "[Time]" and "*date*" ; make the expression ^week$|^\[Time\]$|^.*Date.*$
+                    $make a regex for this which is case insensitive (option 1) and compiled (option 8)
+                    #>
+                    $TextColExpression = "^" + [regex]::Escape($AsText -join "~~~").replace("\*",".*").replace("~~~","$|^") +"$"
+                    $TextColRegEx = New-Object -TypeName regex -ArgumentList $TextColExpression , 9
+                }
                 foreach ($R in $Rows) {
                     #Disabled write-verbose for speed
                     #  Write-Verbose "Import row '$R'"
                     $NewRow = [Ordered]@{ }
-                    if ($AsText) {
+                    if ($TextColRegEx) {
                         foreach ($P in $PropertyNames) {
-                            $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Text
+                            if ($TextColRegEx.IsMatch($P.Value)) {
+                                  $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Text
+                            }
+                            else {$NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value}
                          }
                     }
                     else {
