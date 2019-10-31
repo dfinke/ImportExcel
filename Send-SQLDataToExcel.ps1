@@ -128,7 +128,7 @@
         return $paramDictionary
     }
     process {
-        #Dynamic params mean we can get passed parameter combination Export-Excel will reject, so throw here, rather than get data and then have Export-Excel error.
+      #region Dynamic params mean we can get passed parameter combination Export-Excel will reject, so throw here, rather than get data and then have Export-Excel error.
         if ($PSBoundParameters.Path -and $PSBoundParameters.ExcelPackage) {
             throw 'Parameter error: you cannot specify both a path and an Excel Package.'
             return
@@ -137,7 +137,8 @@
             Write-Warning "Tables are automatically auto-filtered, -AutoFilter will be ignored"
             $null = $PSBoundParameters.Remove('AutoFilter')
         }
-        #We were either given a session object or a connection string (with, optionally a MSSQLServer parameter)
+      #endregion
+      #region if we were either given a session object or a connection string (& optionally -MSSQLServer) make sure we can connect
         try {
             #If we got -MSSQLServer, create a SQL connection, if we didn't but we got -Connection create an ODBC connection
             if     ($MsSQLserver -and $Connection) {
@@ -154,10 +155,11 @@
             Write-Warning "An Error occured trying to connect to $Connection, the error was $([Environment]::NewLine + $_.Exception.InnerException))"
         }
         if ($Session -is [String] -and $Global:DbSessions[$Session]) {$Session = $Global:DbSessions[$Session]}
-
+      #endregion
+      #region we may have been given a table, but if there is a db session to connect to, send the query
         if     ($Session) {
             try {
-                #A session was either passed in or just created. If it's a SQL one make a SQL DataAdapter, otherwise make an ODBC one
+                #If the session a SQL one make a SQL DataAdapter, otherwise make an ODBC one
                 if ($Session.GetType().name -match "SqlConnection") {
                     $dataAdapter = New-Object -TypeName System.Data.SqlClient.SqlDataAdapter -ArgumentList (
                                 New-Object -TypeName System.Data.SqlClient.SqlCommand     -ArgumentList $SQL, $Session)
@@ -177,16 +179,26 @@
                 Write-Warning "An Error occured trying to run the query, the error was $([Environment]::NewLine + $_.Exception.InnerException))"
             }
         }
-        #if force was specified export even if there are no rows. If there are no columns, the query failed and export "null" if forced
-        if     ($Force -or $DataTable.Rows.Count) {
-            #Call export-excel removing parameters which relate to the SQL query, and keeping the rest.
-            'Connection' , 'Database'  , 'Session' , 'MsSQLserver' , 'SQL'  , 'DataTable'  , 'QueryTimeout' , 'Force' |
+      #endregion
+      #region send the table to Excel
+        #remove parameters which relate to querying SQL, leaving the ones used by Export-Excel
+        'Connection' , 'Database'  , 'Session' , 'MsSQLserver' , 'SQL'  , 'DataTable'  , 'QueryTimeout' , 'Force' |
                 ForEach-Object {$null = $PSBoundParameters.Remove($_) }
-                if ($DataTable.Columns.Count) { Export-Excel  @PSBoundParameters -InputObject $DataTable }
-                else                          { Export-Excel  @PSBoundParameters -InputObject $null }
+        #if force was specified export even if there are no rows. If there are no columns, the query failed and export "null" if forced
+        if     ($DataTable.Rows.Count) {
+             Export-Excel  @PSBoundParameters -InputObject $DataTable
         }
-        else   {Write-Warning -Message ' No Data to insert.' }
-        #If we were passed a connection and opened a session,  close that session.
+        elseif ($Force -and $DataTable.Columns.Count) {
+            Write-Warning -Message "Zero rows returned, and -Force was specified, sending empty table to Excel."
+            Export-Excel  @PSBoundParameters -InputObject $DataTable
+        }
+        elseif ($Force) {
+            Write-Warning -Message "-Force was specified but there is no data to send."
+            Export-Excel  @PSBoundParameters -InputObject $null
+        }
+        else   {Write-Warning -Message 'There is no Data to insert, and -Force was not specified.' }
+      #endregion
+      #If we were passed a connection and opened a session,  close that session.
         if     ($Connection)  {$Session.close() }
     }
 }
