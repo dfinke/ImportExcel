@@ -1,3 +1,5 @@
+#Requires -Modules Pester
+#Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
 
 $map = @{
     1024  = 'AMJ'
