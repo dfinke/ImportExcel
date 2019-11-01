@@ -909,7 +909,7 @@
             }
             catch {Write-Warning -Message "Failed setting the top row to bold in worksheet '$WorksheetName': $_"}
         }
-        if ($AutoSize -and ([environment]::OSVersion.Platform -like "win*" -or $env:AUTOSIZE)) {
+        if ($AutoSize -and -not $env:NoAutoSize) {
             try {
                 #Don't fit the all the columns in the sheet; if we are adding cells beside things with hidden columns, that unhides them
                 if ($MaxAutoSizeRows -and $MaxAutoSizeRows -lt $LastRow ) {

@@ -60,25 +60,23 @@ else {
     Write-Warning 'PowerShell 5 is required for plot.ps1'
     Write-Warning 'PowerShell Excel is ready, except for that functionality'
 }
-if (($IsLinux -or $IsMacOS) -and -not $env:AUTOSIZE) {
+if (($IsLinux -or $IsMacOS) -or $env:NoAutoSize) {
     $ExcelPackage = [OfficeOpenXml.ExcelPackage]::new()
     $Cells = ($ExcelPackage | Add-WorkSheet).Cells['A1']
     $Cells.Value = 'Test'
     try {
         $Cells.AutoFitColumns()
-        Write-Warning -Message ('The library needed for Autosize is present but the environment variable for it has not been set' + [environment]::newline +
-                               'Set $env:AUTOSIZE="True"')
+        if ($env:NoAutoSize) {Remove-Item Env:\NoAutoSize}
     }
     catch {
+        $env:NoAutoSize = $true
         if ($IsLinux) {
             Write-Warning -Message ('ImportExcel Module Cannot Autosize. Please run the following command to install dependencies:' + [environment]::newline +
-            ' "sudo apt-get install -y --no-install-recommends libgdiplus libc6-dev"' +[environment]::newline +
-            'and then set the environment variable AUTOSIZE to True.')
+            '"sudo apt-get install -y --no-install-recommends libgdiplus libc6-dev"')
         }
         if ($IsMacOS) {
             Write-Warning -Message ('ImportExcel Module Cannot Autosize. Please run the following command to install dependencies:' + [environment]::newline +
-            '"brew install mono-libgdiplus"' +[environment]::newline +
-            'and then set the environment variable AUTOSIZE to True.')
+            '"brew install mono-libgdiplus"')
         }
     }
     finally {

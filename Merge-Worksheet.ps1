@@ -512,7 +512,7 @@ Function Merge-MultipleSheets {
            Add-ConditionalFormatting @condFormattingParams -ConditionValue ("AND(" +(($sameChecks -join ",") -replace '<>"Same"','="Changed"') +")" )   -BackgroundColor $ChangeBackgroundColor
         }
         #We've made a bunch of things wider so now is the time to autofit columns. Any hiding has to come AFTER this, because it unhides things
-        if ([environment]::OSVersion.Platform -notlike "win*" -and -not $env:AUTOSIZE) {Write-Warning "Autofit is not available with this OS configuration."}
+        if ($env:NoAutoSize) {Write-Warning "Autofit is not available with this OS configuration."}
         else  {$sheet.Cells.AutoFitColumns()}
 
         #if we have a key field (we didn't concatenate all fields) use what we built up in $sameChecks to apply conditional formatting to it (Row no will be in column A, Key in Column B)

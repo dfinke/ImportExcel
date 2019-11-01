@@ -229,7 +229,7 @@
                 }
                 else {Write-Warning -Message ("Can set the height of a row or a range but not a {0} object" -f ($Range.GetType().name)) }
             }
-            if ($Autosize -and ([environment]::OSVersion.Platform -like "win*" -or $env:AUTOSIZE)) {
+            if ($Autosize -and -not $env:NoAutoSize) {
                 try {
                     if ($Range -is [OfficeOpenXml.ExcelColumn]) {$Range.AutoFit() }
                     elseif ($Range -is [OfficeOpenXml.ExcelRange] ) {
