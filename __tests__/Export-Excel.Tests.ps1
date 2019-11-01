@@ -1,7 +1,10 @@
 ﻿#Requires -Modules Pester
 
-#Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-
+if (-not (get-command Import-Excel -ErrorAction SilentlyContinue)) {
+    Import-Module $PSScriptRoot\..\ImportExcel.psd1
+}
+if ($null -eq $IsWindows) {$IsWindows = [environment]::OSVersion.Platform -like "win*"}
+$WarningAction = "SilentlyContinue"
 Describe ExportExcel {
     . "$PSScriptRoot\Samples\Samples.ps1"
     if (Get-process -Name Excel,xlim -ErrorAction SilentlyContinue) {
@@ -654,20 +657,21 @@ Describe ExportExcel {
         #Catch warning
         $warnvar = $null
         #Test create two data pages; as part of adding the second give both their own pivot table, test -autosize switch
-        Get-Service | Select-Object    -Property Status, Name, DisplayName, StartType, CanPauseAndContinue | Export-Excel -Path $path  -AutoSize                         -TableName "All Services"  -TableStyle Medium1 -WarningAction SilentlyContinue -WarningVariable warnvar
+        Get-Service | Select-Object    -Property Status, Name, DisplayName, StartType, CanPauseAndContinue | Export-Excel -Path $path  -AutoSize -TableName "All Services"  -TableStyle Medium1 -WarningVariable warnvar
         Get-Process | Select-Object    -Property Name, Company, Handles, CPU, VM      | Export-Excel -Path $path  -AutoSize -WorkSheetname 'sheet2' -TableName "Processes"     -TableStyle Light1 -Title "Processes" -TitleFillPattern Solid -TitleBackgroundColor ([System.Drawing.Color]::AliceBlue) -TitleBold -TitleSize 22 -PivotTableDefinition $ptDef
         $Excel = Open-ExcelPackage   $path
         $ws1 = $Excel.Workbook.Worksheets["Sheet1"]
         $ws2 = $Excel.Workbook.Worksheets["Sheet2"]
 
-
-        it "Set Column widths (with autosize)                                                      " {
+        if ($isWindows) {
+          it "Set Column widths (with autosize)                                                      " {
             $ws1.Column(2).Width                                        | Should not be $ws1.DefaultColWidth
             $ws2.Column(1).width                                        | Should not be $ws2.DefaultColWidth
+          }
         }
 
         it "Added tables to both sheets (handling illegal chars) and a title in sheet 2            " {
-            $warnvar.count                                              | Should     be 1
+            $warnvar.count                                              | Should     beGreaterThan 0
             $ws1.tables.Count                                           | Should     be 1
             $ws2.tables.Count                                           | Should     be 1
             $ws1.Tables[0].Address.Start.Row                            | Should     be 1
@@ -722,7 +726,8 @@ Describe ExportExcel {
         #Test freezing top row/first column, adding formats and a pivot table - from Add-Pivot table not a specification variable - after the export
         $excel = Get-Process | Select-Object -Property Name, Company, Handles, CPU, PM, NPM, WS | Export-Excel -Path $path -ClearSheet -WorkSheetname "Processes" -FreezeTopRowFirstColumn -PassThru
         $sheet = $excel.Workbook.Worksheets["Processes"]
-        $sheet.Column(1) | Set-ExcelRange -Bold -AutoFit
+        if ($isWindows) {$sheet.Column(1) | Set-ExcelRange -Bold -AutoFit }
+        else            {$sheet.Column(1) | Set-ExcelRange -Bold  }
         $sheet.Column(2) | Set-ExcelRange -Width 29 -WrapText
         $sheet.Column(3) | Set-ExcelRange -HorizontalAlignment Right -NFormat "#,###"
         Set-ExcelRange -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NFormat "#,###"
@@ -733,7 +738,7 @@ Describe ExportExcel {
         $rule = Add-ConditionalFormatting -passthru -Address $sheet.cells["C:C"] -RuleType TopPercent -ConditionValue 20 -Bold -StrikeThru
         Add-ConditionalFormatting -WorkSheet $sheet -Range "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600" -ForeGroundColor ([System.Drawing.Color]::Red) -Bold -Italic -Underline -BackgroundColor  ([System.Drawing.Color]::Beige) -BackgroundPattern LightUp -PatternColor  ([System.Drawing.Color]::Gray)
         #Test Set-ExcelRange with a column
-        foreach ($c in 5..9) {Set-ExcelRange $sheet.Column($c)  -AutoFit }
+        if ($isWindows) { foreach ($c in 5..9) {Set-ExcelRange $sheet.Column($c)  -AutoFit } }
         Add-PivotTable -PivotTableName "PT_Procs" -ExcelPackage $excel -SourceWorkSheet 1 -PivotRows Company -PivotData  @{'Name' = 'Count'} -IncludePivotChart -ChartType ColumnClustered -NoLegend
         Export-Excel -ExcelPackage $excel -WorksheetName "Processes" -AutoNameRange #Test adding named ranges seperately from adding data.
 
@@ -746,8 +751,10 @@ Describe ExportExcel {
         }
         it "Applied the formating                                                                  " {
             $sheet                                                      | Should not beNullOrEmpty
-            $sheet.Column(1).wdith                                      | Should not be  $sheet.DefaultColWidth
-            $sheet.Column(7).wdith                                      | Should not be  $sheet.DefaultColWidth
+            if ($isWindows) {
+                $sheet.Column(1).width                                  | Should not be  $sheet.DefaultColWidth
+                $sheet.Column(7).width                                  | Should not be  $sheet.DefaultColWidth
+            }
             $sheet.Column(1).style.font.bold                            | Should     be  $true
             $sheet.Column(2).style.wraptext                             | Should     be  $true
             $sheet.Column(2).width                                      | Should     be  29
@@ -1035,7 +1042,9 @@ Describe ExportExcel {
             $ExcelPackage.File | Should BeLike ([IO.Path]::GetTempPath() + '*')
             $Worksheet.Tables[0].Name | Should Be 'Table1'
             $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
-            $Worksheet.Column(5).Width | Should BeGreaterThan 9.5
+            if ($isWindows) {
+                $Worksheet.Column(5).Width | Should BeGreaterThan 9.5
+            }
         }
         it "Now allows override of Path and TableName".PadRight(87) {
             $ExcelPackage = $Processes | Export-Excel -Now -PassThru -Path $Path -TableName:$false
@@ -1044,7 +1053,9 @@ Describe ExportExcel {
             $ExcelPackage.File | Should Be $Path
             $Worksheet.Tables | Should BeNullOrEmpty
             $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
-            $Worksheet.Column(5).Width | Should BeGreaterThan 9.5
+            if ($isWindows) {
+                $Worksheet.Column(5).Width | Should BeGreaterThan 9.5
+            }
         }
         <# Mock looks unreliable need to check
         Mock -CommandName 'Invoke-Item'
@@ -1071,7 +1082,9 @@ Describe ExportExcel {
 
             $Worksheet.Tables[0].Name | Should Be 'Data'
             $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
-            $Worksheet.Column(5).Width | Should BeGreaterThan 9.5
+            if ($isWindows) {
+                $Worksheet.Column(5).Width | Should BeGreaterThan 9.5
+            }
         }
     }
 }

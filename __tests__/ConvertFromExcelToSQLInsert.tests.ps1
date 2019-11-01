@@ -1,5 +1,6 @@
-#Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-
+if (-not (get-command Import-Excel -ErrorAction SilentlyContinue)) {
+    Import-Module $PSScriptRoot\..\ImportExcel.psd1
+}
 $xlFile = "TestDrive:\testSQL.xlsx"
 
 Describe "ConvertFrom-ExcelToSQLInsert" {

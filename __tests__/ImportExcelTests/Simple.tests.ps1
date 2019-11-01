@@ -1,5 +1,6 @@
-﻿#Import-Module $PSScriptRoot\..\..\ImportExcel.psd1
-
+﻿if (-not (get-command Import-Excel -ErrorAction SilentlyContinue)) {
+     Import-Module $PSScriptRoot\..\..\ImportExcel.psd1
+}
 Describe "Tests" {
     BeforeAll {
         $data = $null

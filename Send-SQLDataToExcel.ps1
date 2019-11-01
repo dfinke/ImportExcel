@@ -29,6 +29,8 @@
         A System.Data.DataTable object containing the data to be inserted into the spreadsheet without running a query.
         This remains supported to avoid breaking older scripts, but if you have a DataTable object you can pass the it
         into Export-Excel using -InputObject.
+      .PARAMETER Force
+        If specified Export-Excel will be called with parameters specified, even if there is no data to send
       .EXAMPLE
         C:\> Send-SQLDataToExcel -MsSQLserver -Connection localhost -SQL  "select name,type,type_desc from [master].[sys].[all_objects]" -Path .\temp.xlsx -WorkSheetname master -AutoSize -FreezeTopRow -AutoFilter -BoldTopRow
 
@@ -108,7 +110,8 @@
         [string]$SQL,
         [int]$QueryTimeout,
         [Parameter(ParameterSetName="Pre-FetchedData", Mandatory=$true)]
-        [System.Data.DataTable]$DataTable
+        [System.Data.DataTable]$DataTable,
+        [switch]$Force
     )
 #Import the parameters from Export-Excel, we will pass InputObject, and we have the common parameters so exclude those,
 #and re-write the [Parmameter] attribute on each one to avoid parameterSetName here competing with the settings in Export excel.
@@ -125,7 +128,7 @@
         return $paramDictionary
     }
     process {
-        #Dynamic params mean we can get passed parameter combination Export-Excel will reject, so throw here, rather than get data and then have Export-Excel error.
+      #region Dynamic params mean we can get passed parameter combination Export-Excel will reject, so throw here, rather than get data and then have Export-Excel error.
         if ($PSBoundParameters.Path -and $PSBoundParameters.ExcelPackage) {
             throw 'Parameter error: you cannot specify both a path and an Excel Package.'
             return
@@ -134,42 +137,68 @@
             Write-Warning "Tables are automatically auto-filtered, -AutoFilter will be ignored"
             $null = $PSBoundParameters.Remove('AutoFilter')
         }
-        #We were either given a session object or a connection string (with, optionally a MSSQLServer parameter)
-        #If we got -MSSQLServer, create a SQL connection, if we didn't but we got -Connection create an ODBC connection
-        if     ($MsSQLserver -and $Connection) {
+      #endregion
+      #region if we were either given a session object or a connection string (& optionally -MSSQLServer) make sure we can connect
+        try {
+            #If we got -MSSQLServer, create a SQL connection, if we didn't but we got -Connection create an ODBC connection
+            if     ($MsSQLserver -and $Connection) {
                 if ($Connection -notmatch '=') {$Connection = "server=$Connection;trusted_connection=true;timeout=60"}
                 $Session     = New-Object -TypeName System.Data.SqlClient.SqlConnection  -ArgumentList $Connection
                 if ($Session.State -ne 'Open') {$Session.Open()}
                 if ($DataBase) {$Session.ChangeDatabase($DataBase) }
-        }
-        elseif ($Connection)  {
+            }
+            elseif ($Connection)  {
                 $Session     = New-Object -TypeName System.Data.Odbc.OdbcConnection      -ArgumentList $Connection ; $Session.ConnectionTimeout = 30
+            }
         }
+        catch {
+            Write-Warning "An Error occured trying to connect to $Connection, the error was $([Environment]::NewLine + $_.Exception.InnerException))"
+        }
+        if ($Session -is [String] -and $Global:DbSessions[$Session]) {$Session = $Global:DbSessions[$Session]}
+      #endregion
+      #region we may have been given a table, but if there is a db session to connect to, send the query
         if     ($Session) {
-            #A session was either passed in or just created. If it's a SQL one make a SQL DataAdapter, otherwise make an ODBC one
-            if ($Session -is [String] -and $Global:DbSessions[$Session]) {$Session = $Global:DbSessions[$Session]}
-            if ($Session.GetType().name -match "SqlConnection") {
-                $dataAdapter = New-Object -TypeName System.Data.SqlClient.SqlDataAdapter -ArgumentList (
-                               New-Object -TypeName System.Data.SqlClient.SqlCommand     -ArgumentList $SQL, $Session)
-            }
-            else {
-                $dataAdapter = New-Object -TypeName System.Data.Odbc.OdbcDataAdapter     -ArgumentList (
-                               New-Object -TypeName System.Data.Odbc.OdbcCommand         -ArgumentList $SQL, $Session )
-            }
-            if ($QueryTimeout) {$dataAdapter.SelectCommand.CommandTimeout = $QueryTimeout}
+            try {
+                #If the session a SQL one make a SQL DataAdapter, otherwise make an ODBC one
+                if ($Session.GetType().name -match "SqlConnection") {
+                    $dataAdapter = New-Object -TypeName System.Data.SqlClient.SqlDataAdapter -ArgumentList (
+                                New-Object -TypeName System.Data.SqlClient.SqlCommand     -ArgumentList $SQL, $Session)
+                }
+                else {
+                    $dataAdapter = New-Object -TypeName System.Data.Odbc.OdbcDataAdapter     -ArgumentList (
+                                New-Object -TypeName System.Data.Odbc.OdbcCommand         -ArgumentList $SQL, $Session )
+                }
+                if ($QueryTimeout) {$dataAdapter.SelectCommand.CommandTimeout = $QueryTimeout}
 
-            #Both adapter types output the same kind of table, create one and fill it from the adapter
-            $DataTable       = New-Object -TypeName System.Data.DataTable
-            $rowCount        = $dataAdapter.fill($dataTable)
-            Write-Verbose -Message "Query returned $rowCount row(s)"
+                #Both adapter types output the same kind of table, create one and fill it from the adapter
+                $DataTable       = New-Object -TypeName System.Data.DataTable
+                $rowCount        = $dataAdapter.fill($dataTable)
+                Write-Verbose -Message "Query returned $rowCount row(s)"
+            }
+            catch {
+                Write-Warning "An Error occured trying to run the query, the error was $([Environment]::NewLine + $_.Exception.InnerException))"
+            }
         }
+      #endregion
+      #region send the table to Excel
+        #remove parameters which relate to querying SQL, leaving the ones used by Export-Excel
+        'Connection' , 'Database'  , 'Session' , 'MsSQLserver' , 'SQL'  , 'DataTable'  , 'QueryTimeout' , 'Force' |
+                ForEach-Object {$null = $PSBoundParameters.Remove($_) }
+        #if force was specified export even if there are no rows. If there are no columns, the query failed and export "null" if forced
         if     ($DataTable.Rows.Count) {
-            #Call export-excel removing parameters which relate to the SQL query, and keeping the rest.
-            'Connection' , 'Database'  , 'Session' , 'MsSQLserver' , 'SQL'  , 'DataTable'  , 'QueryTimeout'  | ForEach-Object {$null = $PSBoundParameters.Remove($_) }
+             Export-Excel  @PSBoundParameters -InputObject $DataTable
+        }
+        elseif ($Force -and $DataTable.Columns.Count) {
+            Write-Warning -Message "Zero rows returned, and -Force was specified, sending empty table to Excel."
             Export-Excel  @PSBoundParameters -InputObject $DataTable
         }
-        else   {Write-Warning -Message ' No Data to insert.' }
-        #If we were passed a connection and opened a session,  close that session.
+        elseif ($Force) {
+            Write-Warning -Message "-Force was specified but there is no data to send."
+            Export-Excel  @PSBoundParameters -InputObject $null
+        }
+        else   {Write-Warning -Message 'There is no Data to insert, and -Force was not specified.' }
+      #endregion
+      #If we were passed a connection and opened a session,  close that session.
         if     ($Connection)  {$Session.close() }
     }
 }

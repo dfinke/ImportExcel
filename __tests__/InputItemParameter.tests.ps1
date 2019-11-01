@@ -1,8 +1,8 @@
-Describe "Exporting with -Inputobject" {
+Describe "Exporting with -Inputobject; table handling, Send SQL Data and import as " {
     BeforeAll {
         $path = "TestDrive:\Results.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
-        #Read race results, and group by race name : export 1 row to get headers, leaving enough rows aboce to put in a link for each race
+        . "$PSScriptRoot\Samples\Samples.ps1"
         $results = ((Get-Process) + (Get-Process -id $PID)) | Select-Object -last  10 -Property Name, cpu, pm, handles, StartTime
         $DataTable = [System.Data.DataTable]::new('Test')
         $null = $DataTable.Columns.Add('Name')
@@ -16,6 +16,9 @@ Describe "Exporting with -Inputobject" {
         export-excel        -Path $path -InputObject $results   -WorksheetName Sheet1 -RangeName "Whole"
         export-excel        -Path $path -InputObject $DataTable -WorksheetName Sheet2 -AutoNameRange
         Send-SQLDataToExcel -path $path -DataTable   $DataTable -WorkSheetname Sheet3  -TableName "Data"
+        $DataTable.Rows.Clear()
+        Send-SQLDataToExcel -path $path -DataTable   $DataTable -WorkSheetname Sheet4  -force -WarningVariable WVOne  -WarningAction SilentlyContinue
+        Send-SQLDataToExcel -path $path -DataTable  ([System.Data.DataTable]::new('Test2')) -WorkSheetname Sheet5  -force -WarningVariable wvTwo -WarningAction SilentlyContinue
         $excel = Open-ExcelPackage $path
         $sheet = $excel.Sheet1
     }
@@ -60,7 +63,7 @@ Describe "Exporting with -Inputobject" {
     }
     $sheet = $excel.Sheet3
     Context "Table of processes via Send-SQLDataToExcel" {
-        it "Put the correct rows and columns into the sheet                                        " {
+        it "Put the correct data rows and columns into the sheet                                   " {
             $sheet.Dimension.Rows                                       | should     be ($results.Count + 1)
             $sheet.Dimension.Columns                                    | should     be  5
             $sheet.cells["A1"].Value                                    | should     be "Name"
@@ -76,4 +79,33 @@ Describe "Exporting with -Inputobject" {
             $sheet.Cells["E11"].Style.Numberformat.NumFmtID             | should     be 22
         }
     }
+    $Sheet = $excel.Sheet4
+    Context "Zero-row Data Table sent with Send-SQLDataToExcel -Force" {
+        it "Raised a warning and put the correct data headers into the sheet                       " {
+            $sheet.Dimension.Rows                                       | should     be  1
+            $sheet.Dimension.Columns                                    | should     be  5
+            $sheet.cells["A1"].Value                                    | should     be "Name"
+            $sheet.cells["E1"].Value                                    | should     be "StartTime"
+            $sheet.cells["A3"].Value                                    | should     beNullOrEmpty
+            $wvone                                                      | should not beNullOrEmpty
+        }
+    }
+    $Sheet = $excel.Sheet5
+    Context "Zero-column Data Table handled by Send-SQLDataToExcel -Force" {
+        it "Put Created a blank Sheet and raised a warning                                         " {
+            $sheet.Dimension                                            | should     beNullOrEmpty
+            $wvTwo                                                      | should not beNullOrEmpty
+        }
+
+    }
+    Close-ExcelPackage $excel
+    Context "Import As Text returns text values" {
+        $x = import-excel  $path -WorksheetName sheet3 -AsText StartTime,hand* | Select-Object -last 1
+        it "Had fields of type string, not date or int, where specified as ASText                  " {
+            $x.Handles.GetType().Name                                   | should     be "String"
+            $x.StartTime.GetType().Name                                 | should     be "String"
+            $x.CPU.GetType().Name                                       | should not be "String"
+        }
+    }
+
 }

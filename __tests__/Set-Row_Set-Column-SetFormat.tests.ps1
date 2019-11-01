@@ -142,8 +142,10 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
         Set-ExcelRange -WorkSheet $ws -Range "E1"  -ResetFont -HorizontalAlignment General -FontName "Courier New" -fontSize 9
         Set-ExcelRange -Address   $ws.Cells["E7"]  -ResetFont -WrapText -BackgroundColor  ([System.Drawing.Color]::AliceBlue) -BackgroundPattern DarkTrellis -PatternColor  ([System.Drawing.Color]::Red)  -NumberFormat "£#,###.00"
         Set-ExcelRange -Address   $ws.Column(1)    -Width  0
-        Set-ExcelRange -Address   $ws.Column(2)    -AutoFit
-        Set-ExcelRange -Address   $ws.Cells["E:E"] -AutoFit
+        if (-not $env:NoAutoSize) {
+            Set-ExcelRange -Address   $ws.Column(2)    -AutoFit
+            Set-ExcelRange -Address   $ws.Cells["E:E"] -AutoFit
+        }
         #Test alias
         Set-Format     -Address   $ws.row(5)       -Height 0
         $rr = $r.row
@@ -323,36 +325,36 @@ Describe "AutoNameRange data with a single property name" {
         Remove-Item $xlfile -ErrorAction SilentlyContinue
     }
 
-    it "Should have a single item as a named range" {
-        $excel = ConvertFrom-Csv @"
+      it "Should have a single item as a named range                                               " {
+            $excel = ConvertFrom-Csv @"
 Sold
 1
 2
 3
 4
-"@ | Export-Excel $xlfile -PassThru -AutoNameRange
+"@          | Export-Excel $xlfile -PassThru -AutoNameRange
 
-        $ws = $excel.Workbook.Worksheets["Sheet1"]
+            $ws = $excel.Workbook.Worksheets["Sheet1"]
 
-        $ws.Names.Count | Should Be 1
-        $ws.Names[0].Name | Should Be 'Sold'
-    }
+            $ws.Names.Count | Should Be 1
+            $ws.Names[0].Name | Should Be 'Sold'
+      }
 
-    it "Should have a more than a single item as a named range" {
-        $excel = ConvertFrom-Csv @"
+      it "Should have a more than a single item as a named range                                   " {
+            $excel = ConvertFrom-Csv @"
 Sold,ID
 1,a
 2,b
 3,c
 4,d
-"@ | Export-Excel $xlfile -PassThru -AutoNameRange
+"@          |  Export-Excel $xlfile -PassThru -AutoNameRange
 
-        $ws = $excel.Workbook.Worksheets["Sheet1"]
+            $ws = $excel.Workbook.Worksheets["Sheet1"]
 
-        $ws.Names.Count | Should Be 2
-        $ws.Names[0].Name | Should Be 'Sold'
-        $ws.Names[1].Name | Should Be 'ID'
-    }
+            $ws.Names.Count | Should Be 2
+            $ws.Names[0].Name | Should Be 'Sold'
+            $ws.Names[1].Name | Should Be 'ID'
+      }
 }
 
 Describe "Table Formatting" {

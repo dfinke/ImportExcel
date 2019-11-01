@@ -1,6 +1,7 @@
 ﻿#Requires -Modules Pester
-#Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-
+if (-not (get-command Import-Excel -ErrorAction SilentlyContinue)) {
+    Import-Module $PSScriptRoot\..\ImportExcel.psd1
+}
 Describe "Compare Worksheet" {
     BeforeAll {
         if ($PSVersionTable.PSVersion.Major -gt 5) {
@@ -54,18 +55,9 @@ Describe "Compare Worksheet" {
         }
     }
 
-    Context "Setting the background to highlight different rows, use of grid view." {
+    Context "Setting the background to highlight different rows" {
         BeforeAll {
-            $useGrid =  ($PSVersionTable.PSVersion.Major -LE 5)
-            if ($useGrid) {
-                $ModulePath = (Get-Command -Name 'Compare-WorkSheet').Module.Path
-                $PowerShellExec = if ($PSEdition -eq 'Core') {'pwsh.exe'} else {'powershell.exe'}
-                $PowerShellPath = Join-Path -Path $PSHOME -ChildPath $PowerShellExec
-                . $PowerShellPath -Command ('Import-Module {0}; $null = Compare-WorkSheet "{1}server1.xlsx" "{1}server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView; Start-Sleep -sec 5' -f $ModulePath, (Resolve-Path 'TestDrive:').ProviderPath)
-            }
-            else {
-                $null = Compare-WorkSheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView:$useGrid
-            }
+            $null = Compare-WorkSheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen)
             $xl1  = Open-ExcelPackage -Path "TestDrive:\server1.xlsx"
             $xl2  = Open-ExcelPackage -Path "TestDrive:\server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets[1]

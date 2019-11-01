@@ -60,19 +60,23 @@ else {
     Write-Warning 'PowerShell 5 is required for plot.ps1'
     Write-Warning 'PowerShell Excel is ready, except for that functionality'
 }
-if ($IsLinux -or $IsMacOS) {
+if (($IsLinux -or $IsMacOS) -or $env:NoAutoSize) {
     $ExcelPackage = [OfficeOpenXml.ExcelPackage]::new()
     $Cells = ($ExcelPackage | Add-WorkSheet).Cells['A1']
     $Cells.Value = 'Test'
     try {
         $Cells.AutoFitColumns()
+        if ($env:NoAutoSize) {Remove-Item Env:\NoAutoSize}
     }
     catch {
+        $env:NoAutoSize = $true
         if ($IsLinux) {
-            Write-Warning -Message 'ImportExcel Module Cannot Autosize. Please run the following command to install dependencies: "sudo apt-get install -y --no-install-recommends libgdiplus libc6-dev"'
+            Write-Warning -Message ('ImportExcel Module Cannot Autosize. Please run the following command to install dependencies:' + [environment]::newline +
+            '"sudo apt-get install -y --no-install-recommends libgdiplus libc6-dev"')
         }
         if ($IsMacOS) {
-            Write-Warning -Message 'ImportExcel Module Cannot Autosize. Please run the following command to install dependencies: "brew install mono-libgdiplus"'
+            Write-Warning -Message ('ImportExcel Module Cannot Autosize. Please run the following command to install dependencies:' + [environment]::newline +
+            '"brew install mono-libgdiplus"')
         }
     }
     finally {
@@ -126,6 +130,9 @@ function Import-Excel {
 
    .PARAMETER EndColumn
         By default the import reads up to the last populated column, -EndColumn tells the import to stop at an earlier number.
+
+   .PARAMETER AsText
+       Normally Import-Excel returns the Cell values. AsText allows selected columns to be returned as the text displayed in their cells. * is supported as a wildcard.
 
    .PARAMETER Password
        Accepts a string that will be used to open a password protected Excel file.
@@ -314,6 +321,7 @@ function Import-Excel {
         [Alias('RightColumn')]
         [Int]$EndColumn  ,
         [Switch]$DataOnly,
+        [string[]]$AsText,
         [ValidateNotNullOrEmpty()]
         [String]$Password
     )
@@ -433,16 +441,33 @@ function Import-Excel {
             }
             else {
                 #region Create one object per row
+                if ($AsText) {
+                    <#join items in AsText together with ~~~ . Escape any regex special characters...
+                    # which turns * into \* make it .*. Convert ~~~ to $|^ and top and tail with ^%;
+                    So if we get "Week", "[Time]" and "*date*" ; make the expression ^week$|^\[Time\]$|^.*Date.*$
+                    $make a regex for this which is case insensitive (option 1) and compiled (option 8)
+                    #>
+                    $TextColExpression = "^" + [regex]::Escape($AsText -join "~~~").replace("\*",".*").replace("~~~","$|^") +"$"
+                    $TextColRegEx = New-Object -TypeName regex -ArgumentList $TextColExpression , 9
+                }
                 foreach ($R in $Rows) {
                     #Disabled write-verbose for speed
                     #  Write-Verbose "Import row '$R'"
                     $NewRow = [Ordered]@{ }
-
-                    foreach ($P in $PropertyNames) {
-                        $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value
-                        #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
+                    if ($TextColRegEx) {
+                        foreach ($P in $PropertyNames) {
+                            if ($TextColRegEx.IsMatch($P.Value)) {
+                                  $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Text
+                            }
+                            else {$NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value}
+                         }
                     }
-
+                    else {
+                        foreach ($P in $PropertyNames) {
+                            $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value
+                            #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
+                        }
+                    }
                     [PSCustomObject]$NewRow
                 }
                 #endregion

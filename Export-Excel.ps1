@@ -76,7 +76,7 @@
         .PARAMETER ConditionalText
             Applies a Conditional formatting rule defined with New-ConditionalText. When specific conditions are met the format is applied.
         .PARAMETER NoNumberConversion
-            By default we convert all values to numbers if possible, but this isn't always desirable. NoNumberConversion allows you to add exceptions for the conversion. Wildcards (like '*') are allowed.
+            By default we convert all values to numbers if possible, but this isn't always desirable. NoNumberConversion allows you to add exceptions for the conversion. The only Wildcard allowed is * for all properties
         .PARAMETER BoldTopRow
             Makes the top row boldface.
         .PARAMETER NoHeader
@@ -909,7 +909,7 @@
             }
             catch {Write-Warning -Message "Failed setting the top row to bold in worksheet '$WorksheetName': $_"}
         }
-        if ($AutoSize) {
+        if ($AutoSize -and -not $env:NoAutoSize) {
             try {
                 #Don't fit the all the columns in the sheet; if we are adding cells beside things with hidden columns, that unhides them
                 if ($MaxAutoSizeRows -and $MaxAutoSizeRows -lt $LastRow ) {
@@ -921,6 +921,7 @@
             }
             catch {  Write-Warning -Message "Failed autosizing columns of worksheet '$WorksheetName': $_"}
         }
+        elseif ($AutoSize) {Write-Warning -Message "Auto-fitting columns is not available with this OS configuration." }
 
         foreach ($Sheet in $HideSheet) {
             try {

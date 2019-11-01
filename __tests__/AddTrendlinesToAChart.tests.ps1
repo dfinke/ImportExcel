@@ -1,4 +1,7 @@
-﻿Describe "Test adding trendlines to charts" {
+﻿if (-not (get-command Import-Excel -ErrorAction SilentlyContinue)) {
+    Import-Module $PSScriptRoot\..\ImportExcel.psd1
+}
+Describe "Test adding trendlines to charts" {
     BeforeAll {
         $script:data = ConvertFrom-Csv @"
 Region,Item,TotalSold
