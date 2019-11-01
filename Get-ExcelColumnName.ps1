@@ -6,10 +6,15 @@ function Get-ExcelColumnName {
 
     Process {
         $dividend = $columnNumber
-        $columnName = @()
+        $columnName = New-Object System.Collections.ArrayList($null)
+        
         while($dividend -gt 0) {
             $modulo      = ($dividend - 1) % 26
-            $columnName += [char](65 + $modulo)
+            if ($columnName.length -eq 0) {
+                [char](65 + $modulo)
+            } else {
+                $columnName.insert(0,[char](65 + $modulo))
+            }
             $dividend    = [int](($dividend -$modulo)/26)
         }
 
