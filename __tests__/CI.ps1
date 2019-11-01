@@ -21,7 +21,7 @@ if ($Initialize) {
 }
 if ($Test) {
     function Get-EnvironmentInfo {
-        if ($null -eq $IsWindows -or $IsWindows) {
+        if ([environment]::OSVersion.Platform -like "win*") {
             # Get Windows Version
             try {
                 $WinRelease, $WinVer = Get-ItemPropertyValue "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" ReleaseId, CurrentMajorVersionNumber, CurrentMinorVersionNumber, CurrentBuildNumber, UBR
@@ -30,8 +30,18 @@ if ($Test) {
             catch {
                 $WindowsVersion = [System.Environment]::OSVersion.Version
             }
+#TODO FIXME BUG this gets the latest version of the .NET Framework on the machine (ok for powershell.exe), not the version of .NET CORE in use by PWSH.EXE
+<#
+$VersionFilePath =     (Get-Process -Id $PID | Select-Object -ExpandProperty Modules |
+                     Where-Object -Property modulename -eq "clrjit.dll").FileName
+if (-not $VersionFilePath) {
+    $VersionFilePath = [System.Reflection.Assembly]::LoadWithPartialName("System.Core").location
+ }
+ (Get-ItemProperty -Path $VersionFilePath).VersionInfo |
+                    Select-Object -Property @{n="Version"; e={$_.ProductName + " " + $_.FileVersion}}, ProductName, FileVersionRaw, FileName
+#>
 
-            # Get .Net Version
+        # Get .Net Version
             # https://stackoverflow.com/questions/3487265/powershell-script-to-return-versions-of-net-framework-on-a-machine
             $Lookup = @{
                 378389 = [version]'4.5'
