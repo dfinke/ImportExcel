@@ -52,6 +52,10 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
+# What's new 6.5.2
+
+- Added the example ReadAllSheets.ps1 based on the thread https://github.com/dfinke/ImportExcel/issues/678
+
 # What's new 6.5.0
 
 This is now using the latest version of EPPlus. Unit tests are updated and passing, if you hit problems, please open an issue.
