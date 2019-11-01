@@ -58,11 +58,11 @@ Thank you [uSlackr](https://github.com/uSlackr)
 - Fixes Column order issue (plus tests) for `Get-ExcelColumnName`
 
 Thank you [jhoneill](https://github.com/jhoneill)
+- Added -Force to Send-SQLDataToExcel so it sends something even if no rows are returned. (see [#703](https://github.com/dfinke/ImportExcel/issues/703))
+- Added -asText to import-Excel see (#164)[https://github.com/dfinke/ImportExcel/issues/164] and multiple others
 - Linux. Now set an environment variable if the support needed for Autosize is present, and use that Environment variable to decide to skip autosize operations.
 - Fixed tests which needed autosize to work so they skip of the environment variable is set.
 - Fixed another break where on azure the module never loaded.
-- Added -Force to Send-SQLDataToExcel so it sends something even if no rows are returned. (see [#703](https://github.com/dfinke/ImportExcel/issues/703))
-- Added -asText to import-Excel see (#164)[https://github.com/dfinke/ImportExcel/issues/164] and multiple others
 - Add a comment to ci.ps1 re better .NET version detection and left some commented out code.
 
 # What's new 6.5.2
