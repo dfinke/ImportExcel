@@ -52,7 +52,8 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
-# What's new 6.5.3
+
+# What's new 6.5.2
 
 Thank you [uSlackr](https://github.com/uSlackr)
 - Fixes Column order issue (plus tests) for `Get-ExcelColumnName`
@@ -65,9 +66,8 @@ Thank you [jhoneill](https://github.com/jhoneill)
 - Fixed another break where on azure the module never loaded.
 - Add a comment to ci.ps1 re better .NET version detection and left some commented out code.
 
-# What's new 6.5.2
-
-- Added the example ReadAllSheets.ps1 based on the thread https://github.com/dfinke/ImportExcel/issues/678
+Other
+- Added the example [ReadAllSheets.ps1](https://github.com/dfinke/ImportExcel/tree/master/Examples/ReadAllSheets) based on this thread https://github.com/dfinke/ImportExcel/issues/678
 
 # What's new 6.5.0
 
