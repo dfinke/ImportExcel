@@ -52,10 +52,17 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
+# Continuous Integration Updates
+
+Big thanks to [Illy](https://github.com/ili101) for taking the Azure DevOps CI to the next level. Improved badges, improved matrix for cross platform OS testing and more.
+
+Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfinke/ImportExcel/pull/590#issuecomment-488659081) we built into each run as an artifact.
+
+![](./images/ScriptAnalyzerReport.png)
 
 # What's new 6.5.2
 
-Thank you [uSlackr](https://github.com/uSlackr)
+Thank you [uSlackr](https://github.com/uSlackr)ill
 - Fixes Column order issue (plus tests) for `Get-ExcelColumnName`
 
 Thank you [jhoneill](https://github.com/jhoneill)
