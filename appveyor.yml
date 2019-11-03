@@ -28,20 +28,20 @@ install:
   - ps: 'Install-Module -Name Pester -Force -SkipPublisherCheck'
   - ps: 'Install-Module -Name Assert -Force'
   # PowerShell Core
-  - ps: '& .\__tests__\InstallPowerShell.ps1 -Version "7.0.0-preview.3"' # Install other PowerShell Core version (Optional)
+  - ps: '& .\CI\InstallPowerShell.ps1 -Version "7.0.0-preview.4"' # Install other PowerShell Core version (Optional)
   - pwsh: 'Install-Module -Name Pester -Force'
   - pwsh: 'Install-Module -Name Assert -Force'
 
 # To run your custom scripts instead of automatic tests
 test_script:
-  - ps: '& .\__tests__\CI.ps1 -Test'
-  - pwsh: '& .\__tests__\CI.ps1 -Test'
-  - ps: '& .\__tests__\CI.ps1 -Finalize' # Collect and upload results
+  - ps: '& .\CI\CI.ps1 -Test'
+  - pwsh: '& .\CI\CI.ps1 -Test'
+  - ps: '& .\CI\CI.ps1 -Finalize' # Collect and upload results
 
 # Deploy
 deploy_script:
-  - ps: '& .\__tests__\CI.ps1 -Artifact'
-  #- ps: '$null = Install-PackageProvider -Name NuGet -Force ; & .\__tests__\Publish.ps1'
+  - ps: '& .\CI\CI.ps1 -Artifact'
+  - ps: '$null = Install-PackageProvider -Name NuGet -Force ; & .\CI\Publish.ps1'
 
 # Linux setup
 for:
@@ -55,13 +55,13 @@ for:
       - sh: 'export LANG=en_US.UTF-8' # Fix for PowerShell 7.0.0-preview.2, Remove if using other version.
     # Scripts that run after cloning repository
     install:
-      - pwsh: '& .\__tests__\CI.ps1 -Initialize' # Set AppVeyor build version
+      - pwsh: '& .\CI\CI.ps1 -Initialize' # Set AppVeyor build version
       - pwsh: 'Install-Module -Name Pester -Force'
       - pwsh: 'Install-Module -Name Assert -Force'
     # To run your custom scripts instead of automatic tests
     test_script:
-      - pwsh: '& .\__tests__\CI.ps1 -Test'
-      - pwsh: '& .\__tests__\CI.ps1 -Finalize' # Collect and upload results
+      - pwsh: '& .\CI\CI.ps1 -Test'
+      - pwsh: '& .\CI\CI.ps1 -Finalize' # Collect and upload results
     # Skip Deploy
     deploy_script:
       - pwsh: '"Deploy skiped on Linux."'

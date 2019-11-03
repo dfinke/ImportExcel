@@ -2,6 +2,7 @@
     .SYNOPSIS
     Deploy module to PowerShellGallery.
 #>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "Success")]
 [CmdletBinding(DefaultParameterSetName = 'ModuleName')]
 Param
 (
