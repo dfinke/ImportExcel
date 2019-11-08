@@ -342,20 +342,21 @@ function Import-Excel {
             )
 
             Try {
-                if ($NoHeader) {
-                    $i = 0
-                    foreach ($C in $Columns) {
-                        $i++
-                        $C | Select-Object @{N = 'Column'; E = { $_ } }, @{N = 'Value'; E = { 'P' + $i } }
-                    }
-                }
-                elseif ($HeaderName) {
+                if ($HeaderName) {
                     $i = 0
                     foreach ($H in $HeaderName) {
                         $H | Select-Object @{N = 'Column'; E = { $Columns[$i] } }, @{N = 'Value'; E = { $H } }
                         $i++
                     }
                 }
+                elseif ($NoHeader) {
+                    $i = 0
+                    foreach ($C in $Columns) {
+                        $i++
+                        $C | Select-Object @{N = 'Column'; E = { $_ } }, @{N = 'Value'; E = { 'P' + $i } }
+                    }
+                }
+
                 else {
                     if ($StartRow -lt 1) {
                         throw 'The top row can never be less than 1 when we need to retrieve headers from the worksheet.' ; return
