@@ -4,15 +4,15 @@ if (-not (get-command Import-Excel -ErrorAction SilentlyContinue)) {
 }
 Describe "Compare Worksheet" {
     BeforeAll {
-        if ($PSVersionTable.PSVersion.Major -gt 5) {
+      <#  if ($PSVersionTable.PSVersion.Major -gt 5) {
             It "GridView Support" {
                 Set-ItResult -Pending -Because "Can't test grid view on V6 and later"
             }
         }
-        else { Add-Type -AssemblyName System.Windows.Forms }
+        else { Add-Type -AssemblyName System.Windows.Forms } #>
         . "$PSScriptRoot\Samples\Samples.ps1"
         Remove-Item -Path  "TestDrive:\server*.xlsx"
-        [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property Name, RequiredServices, CanPauseAndContinue, CanShutdown, CanStop, DisplayName, DependentServices, MachineName
+        [System.Collections.ArrayList]$s = Get-Service | Select-Object -first 25 -Property Name, RequiredServices, CanPauseAndContinue, CanShutdown, CanStop, DisplayName, DependentServices, MachineName
         $s | Export-Excel -Path TestDrive:\server1.xlsx
         #$s is a zero based array, excel rows are 1 based and excel has a header row so Excel rows will be 2 + index in $s
         $row4Displayname  = $s[2].DisplayName
@@ -177,8 +177,8 @@ Describe "Compare Worksheet" {
             $s2Sheet.Cells["F4"].Style.Font.Color.Rgb                     | Should     beNullOrEmpty
         }
         AfterAll {
-          #  Close-ExcelPackage -ExcelPackage $xl1 -NoSave -Show
-          #  Close-ExcelPackage -ExcelPackage $xl2 -NoSave -Show
+            Close-ExcelPackage -ExcelPackage $xl1 -NoSave  # -Show
+            Close-ExcelPackage -ExcelPackage $xl2 -NoSave # -Show
         }
     }
 }
