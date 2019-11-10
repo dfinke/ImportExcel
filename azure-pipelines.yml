@@ -22,7 +22,7 @@ jobs:
     steps:
     - powershell: 'Install-Module -Name Pester -Force -SkipPublisherCheck'
       displayName: 'Update Pester'
-    - powershell: './__tests__/CI.ps1 -Test'
+    - powershell: './CI/CI.ps1 -Test'
       displayName: 'Install and Test'
 
     - task: PublishTestResults@2
@@ -31,12 +31,14 @@ jobs:
         testResultsFiles: '**/TestResults*.xml'
         failTaskOnFailedTests: true
 
-    - powershell: './__tests__/CI.ps1 -Artifact'
+    - powershell: './CI/CI.ps1 -Artifact'
       displayName: 'Prepare Artifact'
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)'
         artifact: 'Modules'
+    - powershell: './CI/CI.ps1 -Analyzer'
+      displayName: 'Invoke ScriptAnalyzer'
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(Build.SourcesDirectory)'
@@ -49,7 +51,7 @@ jobs:
     steps:
     - pwsh: 'Install-Module -Name Pester -Force'
       displayName: 'Update Pester'
-    - pwsh: './__tests__/CI.ps1 -Test'
+    - pwsh: './CI/CI.ps1 -Test'
       displayName: 'Install and Test'
 
     - task: PublishTestResults@2
@@ -65,7 +67,7 @@ jobs:
     steps:
     - powershell: 'Install-Module -Name Pester -Force'
       displayName: 'Update Pester'
-    - powershell: './__tests__/CI.ps1 -Test'
+    - powershell: './CI/CI.ps1 -Test'
       displayName: 'Install and Test'
 
     - task: PublishTestResults@2
@@ -83,7 +85,7 @@ jobs:
       displayName: 'Install mono-libgdiplus'
     - powershell: 'Install-Module -Name Pester -Force'
       displayName: 'Update Pester'
-    - powershell: './__tests__/CI.ps1 -Test'
+    - powershell: './CI/CI.ps1 -Test'
       displayName: 'Install and Test'
 
     - task: PublishTestResults@2
