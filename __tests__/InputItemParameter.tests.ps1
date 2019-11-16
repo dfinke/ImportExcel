@@ -1,8 +1,8 @@
-Describe "Exporting with -Inputobject; table handling, Send SQL Data and import as " {
+Describe "Exporting with -Inputobject, table handling, Send-SQL-Data. Checking Import -asText" {
     BeforeAll {
         $path = "TestDrive:\Results.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
-        . "$PSScriptRoot\Samples\Samples.ps1"
+        if (Test-path "$PSScriptRoot\Samples\Samples.ps1") {. "$PSScriptRoot\Samples\Samples.ps1"}
         $results = ((Get-Process) + (Get-Process -id $PID)) | Select-Object -last  10 -Property Name, cpu, pm, handles, StartTime
         $DataTable = [System.Data.DataTable]::new('Test')
         $null = $DataTable.Columns.Add('Name')
@@ -13,11 +13,17 @@ Describe "Exporting with -Inputobject; table handling, Send SQL Data and import 
         foreach ($r in $results) {
             $null = $DataTable.Rows.Add($r.name, $r.CPU, $R.PM, $r.Handles, $r.StartTime)
         }
-        export-excel        -Path $path -InputObject $results   -WorksheetName Sheet1 -RangeName "Whole"
-        export-excel        -Path $path -InputObject $DataTable -WorksheetName Sheet2 -AutoNameRange
+        $NowPkg   =  Export-Excel -InputObject $DataTable -PassThru
+        $NowPath1 = $NowPkg.File.FullName
+        Close-ExcelPackage $NowPkg
+        $NowPkg   = Export-Excel -InputObject $DataTable -PassThru -table:$false
+        $NowPath2 = $NowPkg.File.FullName
+        Close-ExcelPackage $NowPkg
+        Export-Excel        -Path $path -InputObject $results   -WorksheetName Sheet1 -RangeName "Whole"
+        Export-Excel        -Path $path -InputObject $DataTable -WorksheetName Sheet2 -AutoNameRange
         Send-SQLDataToExcel -path $path -DataTable   $DataTable -WorkSheetname Sheet3 -TableName "Data"
         $DataTable.Rows.Clear()
-        Send-SQLDataToExcel -path $path -DataTable   $DataTable -WorkSheetname Sheet4  -force -WarningVariable WVOne  -WarningAction SilentlyContinue
+        Send-SQLDataToExcel -path $path -DataTable   $DataTable -WorkSheetname Sheet4  -force -TableName "Data" -WarningVariable WVOne  -WarningAction SilentlyContinue
         Send-SQLDataToExcel -path $path -DataTable  ([System.Data.DataTable]::new('Test2')) -WorkSheetname Sheet5  -force -WarningVariable wvTwo -WarningAction SilentlyContinue
         $excel = Open-ExcelPackage $path
         $sheet = $excel.Sheet1
@@ -61,6 +67,23 @@ Describe "Exporting with -Inputobject; table handling, Send SQL Data and import 
             $sheet.Cells["E11"].Style.Numberformat.NumFmtID             | should     be 22
         }
     }
+
+    Context "'Now' Mode behavior" {
+        $NowPkg = Open-ExcelPackage $NowPath1
+        $sheet = $NowPkg.Sheet1
+        it "Formatted data as a table by default                                                   " {
+            $sheet.Tables.Count                                         | should     be  1
+        }
+        Close-ExcelPackage -NoSave $NowPkg
+        Remove-Item $NowPath1
+        $NowPkg = Open-ExcelPackage $NowPath2
+        $sheet = $NowPkg.Sheet1
+        it "Did not data as a table when table:`$false was used                                     " {
+            $sheet.Tables.Count                                         | should     be  0
+        }
+        Close-ExcelPackage -NoSave $NowPkg
+        Remove-Item $NowPath2
+    }
     $sheet = $excel.Sheet3
     Context "Table of processes via Send-SQLDataToExcel" {
         it "Put the correct data rows and columns into the sheet                                   " {
@@ -89,9 +112,13 @@ Describe "Exporting with -Inputobject; table handling, Send SQL Data and import 
             $sheet.cells["A3"].Value                                    | should     beNullOrEmpty
             $wvone[0]                                                   | should     match "Zero"
         }
+        it "Applied table formatting                                                               " {
+            $sheet.Tables.Count                                         | should     be  1
+        }
         it "Handled two data tables with the same name                                             " {
             $wvone[1]                                                   | should     match "is not unique"
         }
+
     }
     $Sheet = $excel.Sheet5
     Context "Zero-column Data Table handled by Send-SQLDataToExcel -Force" {

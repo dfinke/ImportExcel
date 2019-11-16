@@ -422,11 +422,9 @@
     [OutputType([OfficeOpenXml.ExcelPackage])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
     Param(
-
         [Parameter(ParameterSetName = 'Default', Position = 0)]
         [String]$Path,
         [Parameter(Mandatory = $true, ParameterSetName = "Package")]
-
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [Parameter(ValueFromPipeline = $true)]
         [Alias('TargetData')]
@@ -462,8 +460,6 @@
         [Switch]$FreezeFirstColumn,
         [Switch]$FreezeTopRowFirstColumn,
         [Int[]]$FreezePane,
-
-
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
         [Switch]$NoHeader,
@@ -473,11 +469,8 @@
                 else { $true }
             })]
         [String]$RangeName,
-
-
+        [Alias('Table')]
         $TableName,
-
-
         [OfficeOpenXml.Table.TableStyles]$TableStyle =  [OfficeOpenXml.Table.TableStyles]::Medium6,
         [Switch]$Barchart,
         [Switch]$PieChart,
@@ -525,12 +518,14 @@
         #Open the file, get the worksheet, and decide where in the sheet we are writing, and if there is a number format to apply.
         try   {
             $script:Header = $null
-            if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
+            if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet." ; return}
+            #To force -Now not to format as a table, allow $false in -TableName to be "No table"
             $TableName = if ($null -eq $TableName -or ($TableName -is [bool] -and $false -eq $TableName)) { $null } else {[String]$TableName}
-            if ($PSBoundParameters.Keys.Count -eq 0 -Or $Now -or (-not $Path -and -not $ExcelPackage) ) {
+            if ($Now -or (-not $Path -and -not $ExcelPackage) ) {
                 if (-not $PSBoundParameters.ContainsKey("Path")) { $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx' }
                 if (-not $PSBoundParameters.ContainsKey("Show")) { $Show = $true }
                 if (-not $PSBoundParameters.ContainsKey("AutoSize")) { $AutoSize = $true }
+                #"Now" option will create a table, unless something passed in TableName/Table Style. False in TableName will block autocreation
                 if (-not $PSBoundParameters.ContainsKey("TableName") -and
                     -not $PSBoundParameters.ContainsKey("TableStyle") -and
                     -not $AutoFilter) {
@@ -622,18 +617,26 @@
         catch {throw "Failed preparing to export to worksheet '$WorksheetName' to '$Path': $_"}
         #region Special case -inputobject passed a dataTable object
         <# If inputObject was passed via the pipeline it won't be visible until the process block, we will only see it here if it was passed as a parameter
-          if it was passed it is a data table don't do foreach on it (slow) put the whole table in and set dates on date columns,
+          if it is a data table don't do foreach on it (slow) - put the whole table in and set dates on date columns,
           set things up for the end block, and skip the process block #>
         if ($InputObject -is  [System.Data.DataTable])  {
+            #don't leave caller with a renamed table, save the name and set it back later
+            $orginalTableName = $InputObject.TableName
             if ($TableName) {
                 $InputObject.TableName = $TableName
-                $TableName = $null
             }
             while ($InputObject.TableName -in $pkg.Workbook.Worksheets.Tables.name) {
                 Write-Warning "Table name $($InputObject.TableName) is not unique, adding '_' to it "
                 $InputObject.TableName += "_"
             }
-            $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader),$TableStyle )
+            if ($TableName -or $PSBoundParameters.ContainsKey("TableStyle")) {
+                $TableName = $null
+                $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader),$TableStyle )
+            }
+            else {
+                $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader) )
+            }
+            $InputObject.TableName = $orginalTableName
             foreach ($c in $InputObject.Columns.where({$_.datatype -eq [datetime]})) {
                 Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat 'Date-Time'
             }
