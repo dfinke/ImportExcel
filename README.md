@@ -60,6 +60,10 @@ Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfi
 
 ![](./images/ScriptAnalyzerReport.png)
 
+# What's new X.X.X
+
+- [Fix import excel headers](https://github.com/dfinke/ImportExcel/pull/713)
+
 # What's new 6.5.2
 
 Thank you [uSlackr](https://github.com/uSlackr)ill
