@@ -15,7 +15,7 @@ Describe "Exporting with -Inputobject; table handling, Send SQL Data and import 
         }
         export-excel        -Path $path -InputObject $results   -WorksheetName Sheet1 -RangeName "Whole"
         export-excel        -Path $path -InputObject $DataTable -WorksheetName Sheet2 -AutoNameRange
-        Send-SQLDataToExcel -path $path -DataTable   $DataTable -WorkSheetname Sheet3  -TableName "Data"
+        Send-SQLDataToExcel -path $path -DataTable   $DataTable -WorkSheetname Sheet3 -TableName "Data"
         $DataTable.Rows.Clear()
         Send-SQLDataToExcel -path $path -DataTable   $DataTable -WorkSheetname Sheet4  -force -WarningVariable WVOne  -WarningAction SilentlyContinue
         Send-SQLDataToExcel -path $path -DataTable  ([System.Data.DataTable]::new('Test2')) -WorkSheetname Sheet5  -force -WarningVariable wvTwo -WarningAction SilentlyContinue
@@ -87,12 +87,15 @@ Describe "Exporting with -Inputobject; table handling, Send SQL Data and import 
             $sheet.cells["A1"].Value                                    | should     be "Name"
             $sheet.cells["E1"].Value                                    | should     be "StartTime"
             $sheet.cells["A3"].Value                                    | should     beNullOrEmpty
-            $wvone                                                      | should not beNullOrEmpty
+            $wvone[0]                                                   | should     match "Zero"
+        }
+        it "Handled two data tables with the same name                                             " {
+            $wvone[1]                                                   | should     match "is not unique"
         }
     }
     $Sheet = $excel.Sheet5
     Context "Zero-column Data Table handled by Send-SQLDataToExcel -Force" {
-        it "Put Created a blank Sheet and raised a warning                                         " {
+        it "Created a blank Sheet and raised a warning                                             " {
             $sheet.Dimension                                            | should     beNullOrEmpty
             $wvTwo                                                      | should not beNullOrEmpty
         }

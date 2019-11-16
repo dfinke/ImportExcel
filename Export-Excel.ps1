@@ -478,7 +478,7 @@
         $TableName,
 
 
-        [OfficeOpenXml.Table.TableStyles]$TableStyle,
+        [OfficeOpenXml.Table.TableStyles]$TableStyle =  [OfficeOpenXml.Table.TableStyles]::Medium6,
         [Switch]$Barchart,
         [Switch]$PieChart,
         [Switch]$LineChart ,
@@ -534,7 +534,7 @@
                 if (-not $PSBoundParameters.ContainsKey("TableName") -and
                     -not $PSBoundParameters.ContainsKey("TableStyle") -and
                     -not $AutoFilter) {
-                    $TableName = ''
+                    $TableName = 'Table1'
                 }
             }
             if ($ExcelPackage) {
@@ -625,7 +625,15 @@
           if it was passed it is a data table don't do foreach on it (slow) put the whole table in and set dates on date columns,
           set things up for the end block, and skip the process block #>
         if ($InputObject -is  [System.Data.DataTable])  {
-            $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader) )
+            if ($TableName) {
+                $InputObject.TableName = $TableName
+                $TableName = $null
+            }
+            while ($InputObject.TableName -in $pkg.Workbook.Worksheets.Tables.name) {
+                Write-Warning "Table name $($InputObject.TableName) is not unique, adding '_' to it "
+                $InputObject.TableName += "_"
+            }
+            $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader),$TableStyle )
             foreach ($c in $InputObject.Columns.where({$_.datatype -eq [datetime]})) {
                 Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat 'Date-Time'
             }
@@ -808,10 +816,7 @@
 
         #Allow table to be inserted by specifying Name, or Style or both; only process autoFilter if there is no table (they clash).
         if     ($null -ne $TableName) {
-            if ($PSBoundParameters.ContainsKey('TableStyle')) {
-                  Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
-            }
-            else {Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName}
+                   Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $PSBoundParameters['TableName'] -TableStyle $TableStyle
         }
         elseif ($PSBoundParameters.ContainsKey('TableStyle')) {
                   Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName "" -TableStyle $TableStyle

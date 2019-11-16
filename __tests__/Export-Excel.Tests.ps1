@@ -614,7 +614,7 @@ Describe ExportExcel {
         $dataWs = $Excel.Workbook.Worksheets["NoOffset"]
 
         it "Created a new sheet and auto-extended a table and explicitly extended named ranges     " {
-            $dataWs.Tables["ProcTab"].Address.Address                   | Should     be "A1:E21"
+            $dataWs.Tables["ProcTab"].Address.Address                   | Should     be "A1:E11"
             $dataWs.Names["CPU"].Rows                                   | Should     be 20
             $dataWs.Names["CPU"].Columns                                | Should     be 1
         }
@@ -657,7 +657,7 @@ Describe ExportExcel {
         #Catch warning
         $warnvar = $null
         #Test create two data pages; as part of adding the second give both their own pivot table, test -autosize switch
-        Get-Service | Select-Object    -Property Status, Name, DisplayName, StartType, CanPauseAndContinue | Export-Excel -Path $path  -AutoSize -TableName "All Services"  -TableStyle Medium1 -WarningVariable warnvar
+        Get-Service | Select-Object    -Property Status, Name, DisplayName, StartType, CanPauseAndContinue | Export-Excel -Path $path  -AutoSize -TableName "All Services"  -TableStyle Medium1 -WarningVariable warnvar -WarningAction SilentlyContinue
         Get-Process | Select-Object    -Property Name, Company, Handles, CPU, VM      | Export-Excel -Path $path  -AutoSize -WorkSheetname 'sheet2' -TableName "Processes"     -TableStyle Light1 -Title "Processes" -TitleFillPattern Solid -TitleBackgroundColor ([System.Drawing.Color]::AliceBlue) -TitleBold -TitleSize 22 -PivotTableDefinition $ptDef
         $Excel = Open-ExcelPackage   $path
         $ws1 = $Excel.Workbook.Worksheets["Sheet1"]
@@ -1004,7 +1004,7 @@ Describe ExportExcel {
         Remove-Item -Path $Path -ErrorAction SilentlyContinue
         $Processes = Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company
 
-        it "Default Set with Path".PadRight(87) {
+        it "Allows the default parameter set with Path".PadRight(87) {
             $ExcelPackage = $Processes | Export-Excel -Path $Path -PassThru
             $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
 
@@ -1013,7 +1013,7 @@ Describe ExportExcel {
             $Worksheet.Tables | Should BeNullOrEmpty
             $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
         }
-        it "ExcelPackage Set. Path and (ExcelPackage or Now) should throw".PadRight(87) {
+        it "throws when the ExcelPackage is specified with either -path or -Now".PadRight(87) {
             $ExcelPackage = Export-Excel -Path $Path -PassThru
             {Export-Excel -ExcelPackage $ExcelPackage -Path $Path} | Should Throw 'Parameter set cannot be resolved using the specified named parameters'
             {Export-Excel -ExcelPackage $ExcelPackage -Now} | Should Throw 'Parameter set cannot be resolved using the specified named parameters'
@@ -1039,9 +1039,9 @@ Describe ExportExcel {
             $ExcelPackage = $Processes | Export-Excel -Now -PassThru
             $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
 
-            $ExcelPackage.File | Should BeLike ([IO.Path]::GetTempPath() + '*')
-            $Worksheet.Tables[0].Name | Should Be 'Table1'
-            $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
+            $ExcelPackage.File.FullName   | Should BeLike ([IO.Path]::GetTempPath() + '*')
+            $Worksheet.Tables[0].Name      | Should Be 'Table1'
+            $Worksheet.AutoFilterAddress  | Should BeNullOrEmpty
             if ($isWindows) {
                 $Worksheet.Column(5).Width | Should BeGreaterThan 9.5
             }
