@@ -21,18 +21,6 @@ Sebastian Vettel,/wiki/Sebastian_Vettel,1987-07-03
 
 
 Describe "Number format expansion and setting" {
-    Context "Argmument Completer for NumberFormat" {
-        it "Returned at least 20 items                                                             " {
-            (NumberFormatCompletion ).count  | Should beGreaterThan 20
-        }
-        It "Resolved percent to 'percentage'                                                       " {
-            $x = (NumberFormatCompletion -wordToComplete Percent)
-            $x.count                                                    | Should     be 1
-            $x.CompletionText                                           | Should  match "^'.*'$"
-            $x.ToolTip                                                  | Should     be "0.00%"
-            $x.ListItemText                                             | Should     be "Percentage"
-        }
-    }
     Context "Expand-NumberFormat function" {
         It "Expanded named number formats as expected                                              " {
             $r = [regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol)

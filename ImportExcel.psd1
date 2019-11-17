@@ -73,7 +73,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Close-ExcelPackage',
         'ColumnChart',
         'Compare-WorkSheet',
-        'Convert-XlRangeToImage',
+        'Convert-ExcelRangeToImage',
         'ConvertFrom-ExcelData',
         'ConvertFrom-ExcelSheet',
         'ConvertFrom-ExcelToSQLInsert',
@@ -107,7 +107,6 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'New-PivotTableDefinition',
         'New-Plot',
         'New-PSItem',
-        'NumberFormatCompletion',
         'Open-ExcelPackage',
         'PieChart',
         'Pivot',
@@ -135,6 +134,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
 
     # Aliases to export from this module
     AliasesToExport   = @(
+        'Convert-XlRangeToImage'
         'New-ExcelChart',
         'Set-Column',
         'Set-Format',
