@@ -40,4 +40,18 @@ Describe "Tests" {
             $data[0].p1 | Should be "a"
             $data[1].p1 | Should be "b"
     }
+
+    It "Should take Path from pipeline".PadRight(90) {
+        $data = "$PSScriptRoot\Simple.xlsx" | Import-Excel
+        $data.count | Should be 2
+        $data[0].p1 | Should be "a"
+        $data[1].p1 | Should be "b"
+    }
+
+    It "Should support PipelineVariable".PadRight(90) {
+        $data = Import-Excel $PSScriptRoot\Simple.xlsx -PipelineVariable 'Pv' | ForEach-Object { $Pv.p1 }
+        $data.count | Should be 2
+        $data[0] | Should be "a"
+        $data[1] | Should be "b"
+    }
 }
