@@ -529,7 +529,7 @@
                 if (-not $PSBoundParameters.ContainsKey("TableName") -and
                     -not $PSBoundParameters.ContainsKey("TableStyle") -and
                     -not $AutoFilter) {
-                    $TableName = ''
+                    $TableName = '' # later rely on distinction between NULL and ""
                 }
             }
             if ($ExcelPackage) {
@@ -620,7 +620,7 @@
           if it is a data table don't do foreach on it (slow) - put the whole table in and set dates on date columns,
           set things up for the end block, and skip the process block #>
         if ($InputObject -is  [System.Data.DataTable])  {
-            #don't leave caller with a renamed table, save the name and set it back later
+            #Change TableName if $TableName is non-empty; don't leave caller with a renamed table!
             $orginalTableName = $InputObject.TableName
             if ($TableName) {
                 $InputObject.TableName = $TableName
@@ -629,6 +629,7 @@
                 Write-Warning "Table name $($InputObject.TableName) is not unique, adding '_' to it "
                 $InputObject.TableName += "_"
             }
+            #Insert as a table, if Tablestyle didn't arrive as a default, or $TableName non-null - even if empty
             if ($null -ne $TableName -or $PSBoundParameters.ContainsKey("TableStyle")) {
                 $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader),$TableStyle )
             }
@@ -818,6 +819,7 @@
 
         #Allow table to be inserted by specifying Name, or Style or both; only process autoFilter if there is no table (they clash).
         if     ($null -ne $TableName -or $PSBoundParameters.ContainsKey('TableStyle')) {
+            #Already inserted Excel table if input was a DataTable
             if ($InputObject -isnot [System.Data.DataTable]) {
                 Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
             }
