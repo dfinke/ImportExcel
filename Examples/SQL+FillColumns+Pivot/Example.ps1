@@ -1,4 +1,4 @@
-﻿try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+﻿try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 $sql           = @"
   SELECT     rootfile.baseName     ,  rootfile.extension   , Image.fileWidth         AS width             ,  image.fileHeight AS height ,

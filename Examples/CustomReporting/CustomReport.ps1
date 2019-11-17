@@ -1,4 +1,4 @@
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 $f = "$env:temp\dashboard.xlsx"
 Remove-Item $f -ErrorAction Ignore

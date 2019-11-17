@@ -1,6 +1,6 @@
 ﻿#requires -modules "getSql"
 
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 #download f1Results from https://1drv.ms/f/s!AhfYu7-CJv4egbt5FD7Cdxi8jSz3aQ  and update the path below
 Get-SQL -Session f1 -Excel  -Connection C:\Users\mcp\OneDrive\Public\F1\f1Results.xlsx -showtables -Verbose
 

@@ -1,6 +1,6 @@
 param ($fibonacciDigits=10)
 
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 $file = "fib.xlsx"
 Remove-Item "fib.xlsx" -ErrorAction Ignore

@@ -1,4 +1,4 @@
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 #Define a "Contains blanks" rule. No format is specified so it default to dark-red text on light-pink background.
 $ContainsBlanks = New-ConditionalText -ConditionalType ContainsBlanks
