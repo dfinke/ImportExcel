@@ -614,7 +614,7 @@ Describe ExportExcel {
         $dataWs = $Excel.Workbook.Worksheets["NoOffset"]
 
         it "Created a new sheet and auto-extended a table and explicitly extended named ranges     " {
-            $dataWs.Tables["ProcTab"].Address.Address                   | Should     be "A1:E11"
+            $dataWs.Tables["ProcTab"].Address.Address                   | Should     be "A1:E21"
             $dataWs.Names["CPU"].Rows                                   | Should     be 20
             $dataWs.Names["CPU"].Columns                                | Should     be 1
         }

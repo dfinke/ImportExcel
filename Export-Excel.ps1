@@ -529,7 +529,7 @@
                 if (-not $PSBoundParameters.ContainsKey("TableName") -and
                     -not $PSBoundParameters.ContainsKey("TableStyle") -and
                     -not $AutoFilter) {
-                    $TableName = 'Table1'
+                    $TableName = ''
                 }
             }
             if ($ExcelPackage) {
@@ -629,8 +629,7 @@
                 Write-Warning "Table name $($InputObject.TableName) is not unique, adding '_' to it "
                 $InputObject.TableName += "_"
             }
-            if ($TableName -or $PSBoundParameters.ContainsKey("TableStyle")) {
-                $TableName = $null
+            if ($null -ne $TableName -or $PSBoundParameters.ContainsKey("TableStyle")) {
                 $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader),$TableStyle )
             }
             else {
@@ -818,11 +817,10 @@
         if ($RangeName) { Add-ExcelName  -Range $ws.Cells[$dataRange] -RangeName $RangeName}
 
         #Allow table to be inserted by specifying Name, or Style or both; only process autoFilter if there is no table (they clash).
-        if     ($null -ne $TableName) {
-                   Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $PSBoundParameters['TableName'] -TableStyle $TableStyle
-        }
-        elseif ($PSBoundParameters.ContainsKey('TableStyle')) {
-                  Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName "" -TableStyle $TableStyle
+        if     ($null -ne $TableName -or $PSBoundParameters.ContainsKey('TableStyle')) {
+            if ($InputObject -isnot [System.Data.DataTable]) {
+                Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
+            }
         }
         elseif ($AutoFilter) {
             try {
