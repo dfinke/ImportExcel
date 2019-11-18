@@ -6,10 +6,14 @@
 Param
 (
     # Version to install in the format from the .msi, for example "7.0.0-preview.1"
-    [Parameter(Mandatory)]
     [String]$Version
 )
 $ErrorActionPreference = 'Stop'
+
+if (-not $Version) {
+    $Version = (Invoke-RestMethod https://raw.githubusercontent.com/PowerShell/PowerShell/master/tools/metadata.json).StableReleaseTag
+}
+$Version = $Version -replace "^v",""
 
 '[Progress] Downloading PowerShell Core.'
 $MsiPath = Join-Path $env:TEMP "PowerShell-$Version-win-x64.msi"
