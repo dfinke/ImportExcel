@@ -631,6 +631,10 @@
             }
             if ($null -ne $TableName -or $PSBoundParameters.ContainsKey("TableStyle")) {
                 $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader),$TableStyle )
+                # Workaround for EPPlus not marking the empty row on an empty table as dummy row.
+                if ($InputObject.Rows.Count -eq 0) {
+                    ($ws.Tables | Select-Object -Last 1).TableXml.table.SetAttribute('insertRow', 1)
+                }
             }
             else {
                 $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader) )
