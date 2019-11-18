@@ -201,8 +201,8 @@
         <# If inputObject was passed via the pipeline it won't be visible until the process block, we will only see it here if it was passed as a parameter
           if it is a data table don't do foreach on it (slow) - put the whole table in and set dates on date columns,
           set things up for the end block, and skip the process block #>
-        if ($InputObject -is  [System.Data.DataTable])  {
-            #don't leave caller with a renamed table, save the name and set it back later
+          if ($InputObject -is  [System.Data.DataTable])  {
+            #Change TableName if $TableName is non-empty; don't leave caller with a renamed table!
             $orginalTableName = $InputObject.TableName
             if ($TableName) {
                 $InputObject.TableName = $TableName
@@ -211,8 +211,8 @@
                 Write-Warning "Table name $($InputObject.TableName) is not unique, adding '_' to it "
                 $InputObject.TableName += "_"
             }
-            if ($TableName -or $PSBoundParameters.ContainsKey("TableStyle")) {
-                $TableName = $null
+            #Insert as a table, if Tablestyle didn't arrive as a default, or $TableName non-null - even if empty
+            if ($null -ne $TableName -or $PSBoundParameters.ContainsKey("TableStyle")) {
                 $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader),$TableStyle )
             }
             else {
@@ -233,9 +233,9 @@
         }
         #endregion
         else  {$firstTimeThru = $true}
-    }
+        }
 
-    process { if ($PSBoundParameters.ContainsKey("InputObject")) {
+        process { if ($PSBoundParameters.ContainsKey("InputObject")) {
         try {
             if ($null -eq $InputObject) {$row += 1}
             foreach ($TargetData in $InputObject) {
@@ -346,9 +346,9 @@
         }
         catch {throw "Failed exporting data to worksheet '$WorksheetName' to '$Path': $_" }
 
-    }}
+        }}
 
-    end {
+        end {
         if ($firstTimeThru -and $ws.Dimension) {
               $LastRow        = $ws.Dimension.End.Row
               $LastCol        = $ws.Dimension.End.Column
@@ -400,11 +400,11 @@
         if ($RangeName) { Add-ExcelName  -Range $ws.Cells[$dataRange] -RangeName $RangeName}
 
         #Allow table to be inserted by specifying Name, or Style or both; only process autoFilter if there is no table (they clash).
-        if     ($null -ne $TableName) {
-                   Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $PSBoundParameters['TableName'] -TableStyle $TableStyle
-        }
-        elseif ($PSBoundParameters.ContainsKey('TableStyle')) {
-                  Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName "" -TableStyle $TableStyle
+        if     ($null -ne $TableName -or $PSBoundParameters.ContainsKey('TableStyle')) {
+            #Already inserted Excel table if input was a DataTable
+            if ($InputObject -isnot [System.Data.DataTable]) {
+                Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
+            }
         }
         elseif ($AutoFilter) {
             try {
@@ -413,7 +413,6 @@
             }
             catch {Write-Warning -Message "Failed adding autofilter to worksheet '$WorksheetName': $_"}
         }
-
         if ($PivotTableDefinition) {
             foreach ($item in $PivotTableDefinition.GetEnumerator()) {
                 $params = $item.value
