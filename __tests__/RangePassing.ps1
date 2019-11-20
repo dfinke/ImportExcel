@@ -1,3 +1,5 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases','',Justification='Testing for presence of alias')]
+param()
 $path = "TestDrive:\test.xlsx"
 describe "Consistent passing of ranges." {
     Context "Conditional Formatting"  {

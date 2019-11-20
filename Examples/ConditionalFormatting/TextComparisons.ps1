@@ -1,7 +1,7 @@
-try {ipmo ..\..\ImportExcel.psd1 -Force} catch {}
+try {Import-Module ..\..\ImportExcel.psd1 -Force} catch {throw ; return}
 
 $data = $(
-    New-PSItem 100 (echo test testx)
+    New-PSItem 100 @('test', 'testx')
     New-PSItem 200
     New-PSItem 300
     New-PSItem 400
@@ -11,8 +11,8 @@ $data = $(
 $file1 = "$env:Temp\tryComparison1.xlsx"
 $file2 = "$env:Temp\tryComparison2.xlsx"
 
-rm $file1 -ErrorAction Ignore
-rm $file2 -ErrorAction Ignore
+Remove-Item -Path $file1 -ErrorAction Ignore
+Remove-Item -Path  $file2 -ErrorAction Ignore
 
 $data | Export-Excel $file1 -Show -ConditionalText $(
     New-ConditionalText -ConditionalType GreaterThan 300

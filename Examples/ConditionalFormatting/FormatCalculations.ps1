@@ -6,7 +6,7 @@ Remove-Item $f -ErrorAction Ignore
 
 $data = $(
 
-    New-PSItem North 111 (echo Region Amount )
+    New-PSItem North 111 @( 'Region', 'Amount' )
     New-PSItem East 111
     New-PSItem West 122
     New-PSItem South 200

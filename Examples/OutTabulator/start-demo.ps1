@@ -3,10 +3,10 @@
 ## This is an overhaul of Jeffrey Snover's original Start-Demo script by Joel "Jaykul" Bennett
 ##
 ## I've switched it to using ReadKey instead of ReadLine (you don't have to hit Enter each time)
-## As a result, I've changed the names and keys for a lot of the operations, so that they make 
+## As a result, I've changed the names and keys for a lot of the operations, so that they make
 ## sense with only a single letter to tell them apart (sorry if you had them memorized).
 ##
-## I've also been adding features as I come across needs for them, and you'll contribute your 
+## I've also been adding features as I come across needs for them, and you'll contribute your
 ## improvements back to the PowerShell Script repository as well.
 ##################################################################################################
 ## Revision History (version 3.3)
@@ -32,12 +32,14 @@
 ##                 so you have a chance to "go back" after the last line of you demo
 ##################################################################################################
 ##
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification='Correct and desirable usage')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingInvokeExpression', '', Justification='Correct and desirable usage')]
 param(
-  $file=".\demo.txt", 
-  [int]$command=0, 
-  [System.ConsoleColor]$promptColor="Yellow", 
-  [System.ConsoleColor]$commandColor="White", 
-  [System.ConsoleColor]$commentColor="Green", 
+  $file=".\demo.txt",
+  [int]$command=0,
+  [System.ConsoleColor]$promptColor="Yellow",
+  [System.ConsoleColor]$commandColor="White",
+  [System.ConsoleColor]$commentColor="Green",
   [switch]$FullAuto,
   [int]$AutoSpeed = 3,
   [switch]$NoPauseAfterExecute
@@ -46,7 +48,7 @@ param(
 $RawUI = $Host.UI.RawUI
 $hostWidth = $RawUI.BufferSize.Width
 
-# A function for reading in a character 
+# A function for reading in a character
 function Read-Char() {
   $_OldColor = $RawUI.ForeGroundColor
   $RawUI.ForeGroundColor = "Red"
@@ -93,20 +95,20 @@ Write-Host -nonew -back black -fore $promptColor "for help.$(' ' * ($hostWidth -
 Write-Host -nonew -back black -fore $promptColor $(" " * $hostWidth)
 
 # We use a FOR and an INDEX ($_i) instead of a FOREACH because
-# it is possible to start at a different location and/or jump 
+# it is possible to start at a different location and/or jump
 # around in the order.
 for ($_i = $Command; $_i -lt $_lines.count; $_i++)
-{  
+{
 	# Put the current command in the Window Title along with the demo duration
 	$Dur = [DateTime]::Now - $_StartTime
-   $RawUI.WindowTitle = "$(if($dur.Hours -gt 0){'{0}h '})$(if($dur.Minutes -gt 0){'{1}m '}){2}s   {3}" -f 
+   $RawUI.WindowTitle = "$(if($dur.Hours -gt 0){'{0}h '})$(if($dur.Minutes -gt 0){'{1}m '}){2}s   {3}" -f
                         $dur.Hours, $dur.Minutes, $dur.Seconds, $($_Lines[$_i])
 
 	# Echo out the commmand to the console with a prompt as though it were real
 	Write-Host -nonew -fore $promptColor "[$_i]$([char]0x2265) "
-	if ($_lines[$_i].Trim(" ").StartsWith("#") -or $_lines[$_i].Trim(" ").Length -le 0) { 
+	if ($_lines[$_i].Trim(" ").StartsWith("#") -or $_lines[$_i].Trim(" ").Length -le 0) {
 		Write-Host -fore $commentColor "$($_Lines[$_i])  "
-		continue 
+		continue
 	} else {
 		Write-Host -nonew -fore $commandColor "$($_Lines[$_i])  "
 	}
@@ -119,7 +121,7 @@ for ($_i = $Command; $_i -lt $_lines.count; $_i++)
 
 Running demo: $file
 (n) Next       (p) Previous
-(q) Quit       (s) Suspend 
+(q) Quit       (s) Suspend
 (t) Timecheck  (v) View $(split-path $file -leaf)
 (g) Go to line by number
 (f) Find lines by string
@@ -148,15 +150,15 @@ Running demo: $file
 			break;
 		}
 		"v" { # View Source
-			$lines[0..($_i-1)] | Write-Host -Fore Yellow 
+			$lines[0..($_i-1)] | Write-Host -Fore Yellow
 			$lines[$_i]        | Write-Host -Fore Green
-			$lines[($_i+1)..$lines.Count] | Write-Host -Fore Yellow 
+			$lines[($_i+1)..$lines.Count] | Write-Host -Fore Yellow
 			$_i-- # back a line, we're gonna step forward when we loop
 		}
 		"t" { # Time Check
 			 $dur = [DateTime]::Now - $_StartTime
        Write-Host -Fore $promptColor $(
-          "{3} -- $(if($dur.Hours -gt 0){'{0}h '})$(if($dur.Minutes -gt 0){'{1}m '}){2}s" -f 
+          "{3} -- $(if($dur.Hours -gt 0){'{0}h '})$(if($dur.Minutes -gt 0){'{1}m '}){2}s" -f
           $dur.Hours, $dur.Minutes, $dur.Seconds, ([DateTime]::Now.ToShortTimeString()))
 			 $_i-- # back a line, we're gonna step forward when we loop
 		}
@@ -170,7 +172,7 @@ Running demo: $file
 			if($i -le $_lines.Count) {
 				if($i -gt 0) {
                # extra line back because we're gonna step forward when we loop
-               $_i = Rewind $_lines $_i (($_i-$i)+1)
+               $_i = Rewind -lines $_lines -index $_i -steps (($_i-$i)+1)
 				} else {
 					$_i = -1 # Start negative, because we step forward when we loop
 				}
@@ -178,18 +180,18 @@ Running demo: $file
 		}
 		"f" { # Find by pattern
 			$match = $_lines | Select-String (Read-Host "search string")
-			if($match -eq $null) {
+			if($null -eq $match) {
 				Write-Host -Fore Red "Can't find a matching line"
 			} else {
-				$match | % { Write-Host -Fore $promptColor $("[{0,2}] {1}" -f ($_.LineNumber - 1), $_.Line) }
+				$match | ForEach-Object { Write-Host -Fore $promptColor $("[{0,2}] {1}" -f ($_.LineNumber - 1), $_.Line) }
 				if($match.Count -lt 1) {
 					$_i = $match.lineNumber - 2  # back a line, we're gonna step forward when we loop
-				} else {               
+				} else {
 					$_i-- # back a line, we're gonna step forward when we loop
 				}
 			}
 		}
-      "c" { 
+      "c" {
          Clear-Host
          $_i-- # back a line, we're gonna step forward when we loop
       }
@@ -197,7 +199,7 @@ Running demo: $file
 			Write-Host
 			trap [System.Exception] {Write-Error $_; continue;}
 			Invoke-Expression ($_lines[$_i]) | out-default
-			if(-not $NoPauseAfterExecute -and -not $FullAuto) { 
+			if(-not $NoPauseAfterExecute -and -not $FullAuto) {
 				$null = $RawUI.ReadKey("NoEcho,IncludeKeyUp")  # Pause after output for no apparent reason... ;)
 			}
 		}
@@ -210,7 +212,7 @@ Running demo: $file
 }
 $dur = [DateTime]::Now - $_StartTime
 Write-Host -Fore $promptColor $(
-   "<Demo Complete -- $(if($dur.Hours -gt 0){'{0}h '})$(if($dur.Minutes -gt 0){'{1}m '}){2}s>" -f 
+   "<Demo Complete -- $(if($dur.Hours -gt 0){'{0}h '})$(if($dur.Minutes -gt 0){'{1}m '}){2}s>" -f
    $dur.Hours, $dur.Minutes, $dur.Seconds, [DateTime]::Now.ToLongTimeString())
 Write-Host -Fore $promptColor $([DateTime]::now)
 Write-Host

@@ -1,3 +1,5 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
+Param()
 Describe "Exporting with -Inputobject, table handling, Send-SQL-Data. Checking Import -asText" {
     BeforeAll {
         $path = "TestDrive:\Results.xlsx"

@@ -7,12 +7,9 @@ function Get-StockInfo {
     )
 
     $xlfile = "$env:TEMP\stocks.xlsx"
-    rm $xlfile -ErrorAction Ignore
+    Remove-Item -Path $xlfile -ErrorAction Ignore
 
     $result = Invoke-RestMethod "https://api.iextrading.com/1.0/stock/market/batch?symbols=$($symbols)&types=quote&last=1"
-
-    $symbolCount = $symbols.Split(",").count
-
 
     $ecd = New-ExcelChartDefinition -Row 1 -Column 1 -SeriesHeader $dataPlot `
         -XRange symbol -YRange $dataPlot `

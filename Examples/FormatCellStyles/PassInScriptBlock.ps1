@@ -11,7 +11,7 @@ $RandomStyle = {
     )
 
     2..$totalRows | ForEach-Object{
-        Set-CellStyle $workSheet $_ $LastColumn Solid (Write-Output LightGreen Gray Red|Get-Random)
+        Set-CellStyle $workSheet $_ $LastColumn Solid (Get-Random @("LightGreen", "Gray", "Red"))
     }
 }
 

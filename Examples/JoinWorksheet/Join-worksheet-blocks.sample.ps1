@@ -2,7 +2,7 @@
 $path = "$env:TEMP\Test.xlsx"
 Remove-item -Path $path -ErrorAction SilentlyContinue
 #Export disk volume, and Network adapter to their own sheets.
-Get-WmiObject -Class win32_logicaldisk |
+Get-CimInstance -ClassName Win32_LogicalDisk   |
     Select-Object -Property DeviceId,VolumeName, Size,Freespace |
         Export-Excel -Path $path -WorkSheetname Volumes -NumberFormat "0,000"
 Get-NetAdapter  |

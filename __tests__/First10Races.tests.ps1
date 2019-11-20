@@ -1,4 +1,6 @@
-﻿$scriptPath = Split-Path -Path $MyInvocation.MyCommand.path -Parent
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
+param()
+$scriptPath = Split-Path -Path $MyInvocation.MyCommand.path -Parent
 $dataPath = Join-Path  -Path $scriptPath -ChildPath "First10Races.csv"
 $WarningAction = "SilentlyContinue"
 
