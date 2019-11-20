@@ -108,7 +108,7 @@ function ConvertFrom-ExcelToSQLInsert {
                 'NULL'
             }
             else {
-                 "'" + (($record.$propertyName.ToString()) -replace "'","''") + "'"
+				"'" + (($record.$propertyName) -replace "'","''") + "'"
             }
         }
         $targetValues = ($values -join ", ")
