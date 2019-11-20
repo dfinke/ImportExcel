@@ -60,7 +60,8 @@ $tests = [ordered]@{
     TestString  = Get-Command Test-String
 }
 
-function Invoke-AllTests {
+function Invoke-TestSet {
+    [alias("Invoke-AllTests")]
     param(
         $target,
         [Switch]$OnlyPassing,

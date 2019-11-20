@@ -6,6 +6,8 @@
 }
 
 function ListFonts {
+    [cmdletbinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingEmptyCatchBlock", "")]
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
     if (-not $script:FontFamilies) {
         $script:FontFamilies = @("","")

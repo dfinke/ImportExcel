@@ -1,4 +1,6 @@
 function New-ExcelStyle {
+    [cmdletbinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'Does not change system State')]
     param (
         [Alias("Address")]
         $Range ,

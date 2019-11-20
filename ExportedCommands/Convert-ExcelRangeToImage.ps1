@@ -43,9 +43,9 @@ $myData        = Get-Process | Select-Object -Property Name,WS,CPU,Description,c
 $excelPackage  = $myData | Export-Excel -KillExcel -Path $Path -WorkSheetname $workSheetname -ClearSheet -AutoSize -AutoFilter -BoldTopRow -FreezeTopRow -PassThru
 $workSheet     = $excelPackage.Workbook.Worksheets[$workSheetname]
 $range         = $workSheet.Dimension.Address
-Set-Format                -WorkSheet $workSheet -Range "b:b"      -NumberFormat "#,###"            -AutoFit
-Set-Format                -WorkSheet $workSheet -Range "C:C"      -NumberFormat "#,##0.00"         -AutoFit
-Set-Format                -WorkSheet $workSheet -Range "F:F"      -NumberFormat "dd MMMM HH:mm:ss" -AutoFit
+Set-ExcelRange                -WorkSheet $workSheet -Range "b:b"      -NumberFormat "#,###"            -AutoFit
+Set-ExcelRange                -WorkSheet $workSheet -Range "C:C"      -NumberFormat "#,##0.00"         -AutoFit
+Set-ExcelRange                -WorkSheet $workSheet -Range "F:F"      -NumberFormat "dd MMMM HH:mm:ss" -AutoFit
 Add-ConditionalFormatting -WorkSheet $workSheet -Range "c2:c1000" -DataBarColor Blue
 Add-ConditionalFormatting -WorkSheet $workSheet -Range "b2:B1000" -RuleType GreaterThan -ConditionValue '104857600' -ForeGroundColor "Red" -Bold
 

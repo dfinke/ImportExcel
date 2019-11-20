@@ -1,5 +1,7 @@
 function Export-MultipleExcelSheets {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "", Justification="No suitable singular")]
+
     param(
         [Parameter(Mandatory = $true)]
         $Path,

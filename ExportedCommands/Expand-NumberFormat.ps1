@@ -1,4 +1,4 @@
-
+﻿
 function Expand-NumberFormat {
     <#
       .SYNOPSIS

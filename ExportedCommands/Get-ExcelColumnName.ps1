@@ -7,7 +7,7 @@ function Get-ExcelColumnName {
     Process {
         $dividend = $columnNumber
         $columnName = New-Object System.Collections.ArrayList($null)
-        
+
         while($dividend -gt 0) {
             $modulo      = ($dividend - 1) % 26
             if ($columnName.length -eq 0) {
