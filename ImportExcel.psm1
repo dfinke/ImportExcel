@@ -66,17 +66,17 @@ if (($IsLinux -or $IsMacOS) -or $env:NoAutoSize) {
     $Cells.Value = 'Test'
     try {
         $Cells.AutoFitColumns()
-        if ($env:NoAutoSize) {Remove-Item Env:\NoAutoSize}
+        if ($env:NoAutoSize) { Remove-Item Env:\NoAutoSize }
     }
     catch {
         $env:NoAutoSize = $true
         if ($IsLinux) {
             Write-Warning -Message ('ImportExcel Module Cannot Autosize. Please run the following command to install dependencies:' + [environment]::newline +
-            '"sudo apt-get install -y --no-install-recommends libgdiplus libc6-dev"')
+                '"sudo apt-get install -y --no-install-recommends libgdiplus libc6-dev"')
         }
         if ($IsMacOS) {
             Write-Warning -Message ('ImportExcel Module Cannot Autosize. Please run the following command to install dependencies:' + [environment]::newline +
-            '"brew install mono-libgdiplus"')
+                '"brew install mono-libgdiplus"')
         }
     }
     finally {
@@ -342,20 +342,21 @@ function Import-Excel {
             )
 
             Try {
-                if ($NoHeader) {
-                    $i = 0
-                    foreach ($C in $Columns) {
-                        $i++
-                        $C | Select-Object @{N = 'Column'; E = { $_ } }, @{N = 'Value'; E = { 'P' + $i } }
-                    }
-                }
-                elseif ($HeaderName) {
+                if ($HeaderName) {
                     $i = 0
                     foreach ($H in $HeaderName) {
                         $H | Select-Object @{N = 'Column'; E = { $Columns[$i] } }, @{N = 'Value'; E = { $H } }
                         $i++
                     }
                 }
+                elseif ($NoHeader) {
+                    $i = 0
+                    foreach ($C in $Columns) {
+                        $i++
+                        $C | Select-Object @{N = 'Column'; E = { $_ } }, @{N = 'Value'; E = { 'P' + $i } }
+                    }
+                }
+
                 else {
                     if ($StartRow -lt 1) {
                         throw 'The top row can never be less than 1 when we need to retrieve headers from the worksheet.' ; return
@@ -389,8 +390,8 @@ function Import-Excel {
 
             $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
             $ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage
-            if   ($Password) { $ExcelPackage.Load($stream,$Password)}
-            else             { $ExcelPackage.Load($stream) }
+            if ($Password) { $ExcelPackage.Load($stream, $Password) }
+            else { $ExcelPackage.Load($stream) }
         }
         try {
             #Select worksheet
@@ -424,6 +425,7 @@ function Import-Excel {
             else {
                 $Columns = $StartColumn .. $EndColumn  ; if ($StartColumn -gt $EndColumn) { Write-Warning -Message "Selecting columns $StartColumn to $EndColumn might give odd results." }
                 if ($NoHeader) { $Rows = $StartRow..$EndRow ; if ($StartRow -gt $EndRow) { Write-Warning -Message "Selecting rows $StartRow to $EndRow might give odd results." } }
+                elseif ($HeaderName) { $Rows = $StartRow..$EndRow }
                 else { $Rows = (1 + $StartRow)..$EndRow } # ; if ($StartRow -ge $EndRow) { Write-Warning -Message "Selecting $StartRow as the header with data in $(1+$StartRow) to $EndRow might give odd results." } }
             }
             #endregion
@@ -447,7 +449,7 @@ function Import-Excel {
                     So if we get "Week", "[Time]" and "*date*" ; make the expression ^week$|^\[Time\]$|^.*Date.*$
                     $make a regex for this which is case insensitive (option 1) and compiled (option 8)
                     #>
-                    $TextColExpression = "^" + [regex]::Escape($AsText -join "~~~").replace("\*",".*").replace("~~~","$|^") +"$"
+                    $TextColExpression = "^" + [regex]::Escape($AsText -join "~~~").replace("\*", ".*").replace("~~~", "$|^") + "$"
                     $TextColRegEx = New-Object -TypeName regex -ArgumentList $TextColExpression , 9
                 }
                 foreach ($R in $Rows) {
@@ -457,10 +459,10 @@ function Import-Excel {
                     if ($TextColRegEx) {
                         foreach ($P in $PropertyNames) {
                             if ($TextColRegEx.IsMatch($P.Value)) {
-                                  $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Text
+                                $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Text
                             }
-                            else {$NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value}
-                         }
+                            else { $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value }
+                        }
                     }
                     else {
                         foreach ($P in $PropertyNames) {
