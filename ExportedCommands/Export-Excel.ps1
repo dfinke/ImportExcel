@@ -13,7 +13,7 @@
         [Switch]$Calculate,
         [Switch]$Show,
         [String]$WorksheetName = 'Sheet1',
-        [Alias("P")]
+        [Alias("PW")]
         [String]$Password,
         [switch]$ClearSheet,
         [switch]$Append,
