@@ -555,6 +555,7 @@
                 $headerRange = $ws.Dimension.Address -replace "\d+$", $StartRow
                 #using a slightly odd syntax otherwise header ends up as a 2D array
                 $ws.Cells[$headerRange].Value | ForEach-Object -Begin {$Script:header = @()} -Process {$Script:header += $_ }
+                $NoHeader = $true
                 #if we did not get AutoNameRange, but headers have ranges of the same name make autoNameRange True, otherwise make it false
                 if (-not $AutoNameRange) {
                     $AutoNameRange  = $true ; foreach ($h in $header) {if ($ws.names.name -notcontains $h) {$AutoNameRange = $false} }
@@ -571,8 +572,10 @@
                 }
 
                 #if we did not get a table name but there is a table which covers the active part of the sheet, set table name to that, and don't do anything with autofilter
-                if ($null -eq $TableName -and $ws.Tables.Where({$_.address.address -eq $ws.dimension.address})) {
-                    $TableName  = $ws.Tables.Where({$_.address.address -eq $ws.dimension.address},'First', 1).Name
+                $existingTable = $ws.Tables.Where({$_.address.address -eq $ws.dimension.address},'First', 1)
+                if ($null -eq $TableName -and $existingTable) {
+                    $TableName  = $existingTable.Name
+                    $TableStyle = $existingTable.Tablestyle
                     $AutoFilter = $false
                 }
                 #if we did not get $autofilter but a filter range is set and it covers the right area, set autofilter to true
@@ -620,27 +623,36 @@
           if it is a data table don't do foreach on it (slow) - put the whole table in and set dates on date columns,
           set things up for the end block, and skip the process block #>
         if ($InputObject -is  [System.Data.DataTable])  {
-            #Change TableName if $TableName is non-empty; don't leave caller with a renamed table!
-            $orginalTableName = $InputObject.TableName
-            if ($TableName) {
-                $InputObject.TableName = $TableName
-            }
-            while ($InputObject.TableName -in $pkg.Workbook.Worksheets.Tables.name) {
-                Write-Warning "Table name $($InputObject.TableName) is not unique, adding '_' to it "
-                $InputObject.TableName += "_"
-            }
-            #Insert as a table, if Tablestyle didn't arrive as a default, or $TableName non-null - even if empty
-            if ($null -ne $TableName -or $PSBoundParameters.ContainsKey("TableStyle")) {
-                $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader),$TableStyle )
-                # Workaround for EPPlus not marking the empty row on an empty table as dummy row.
-                if ($InputObject.Rows.Count -eq 0) {
-                    ($ws.Tables | Select-Object -Last 1).TableXml.table.SetAttribute('insertRow', 1)
+            if ($Append) {
+                $row ++
+                $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, $false )
+                if ($TableName) {
+                    Add-ExcelTable -Range $ws.Cells[$ws.Dimension] -TableName $TableName -TableStyle $TableStyle
                 }
             }
-            else {
-                $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader) )
+            else  {
+                #Change TableName if $TableName is non-empty; don't leave caller with a renamed table!
+                $orginalTableName = $InputObject.TableName
+                if ($PSBoundParameters.ContainsKey("TableName")) {
+                    $InputObject.TableName = $TableName
+                }
+                while ($InputObject.TableName -in $pkg.Workbook.Worksheets.Tables.name) {
+                    Write-Warning "Table name $($InputObject.TableName) is not unique, adding '_' to it "
+                    $InputObject.TableName += "_"
+                }
+                #Insert as a table, if Tablestyle didn't arrive as a default, or $TableName non-null - even if empty
+                if ($null -ne $TableName -or $PSBoundParameters.ContainsKey("TableStyle")) {
+                    $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader),$TableStyle )
+                    # Workaround for EPPlus not marking the empty row on an empty table as dummy row.
+                    if ($InputObject.Rows.Count -eq 0) {
+                        ($ws.Tables | Select-Object -Last 1).TableXml.table.SetAttribute('insertRow', 1)
+                    }
+                }
+                else {
+                    $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader) )
+                }
+                $InputObject.TableName = $orginalTableName
             }
-            $InputObject.TableName = $orginalTableName
             foreach ($c in $InputObject.Columns.where({$_.datatype -eq [datetime]})) {
                 Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat 'Date-Time'
             }
