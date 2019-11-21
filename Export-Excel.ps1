@@ -575,7 +575,7 @@
                 $existingTable = $ws.Tables.Where({$_.address.address -eq $ws.dimension.address},'First', 1)
                 if ($null -eq $TableName -and $existingTable) {
                     $TableName  = $existingTable.Name
-                    $TableStyle = $existingTable.Tablestyle
+                    $TableStyle = $existingTable.StyleName -replace "^TableStyle",""
                     $AutoFilter = $false
                 }
                 #if we did not get $autofilter but a filter range is set and it covers the right area, set autofilter to true
@@ -623,10 +623,10 @@
           if it is a data table don't do foreach on it (slow) - put the whole table in and set dates on date columns,
           set things up for the end block, and skip the process block #>
         if ($InputObject -is  [System.Data.DataTable])  {
-            if ($Append) {
+            if ($Append -and $ws.dimension) {
                 $row ++
                 $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, $false )
-                if ($TableName) {
+                if ($TableName -or  $PSBoundParameters.ContainsKey('TableStyle')) {
                     Add-ExcelTable -Range $ws.Cells[$ws.Dimension] -TableName $TableName -TableStyle $TableStyle
                 }
             }
