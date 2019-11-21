@@ -19,6 +19,6 @@ Set-Row    -Worksheet $ws -Heading "Average"     -Value {"=Average($columnName`2
 Set-Column -Worksheet $ws -Heading "WinsToPoles" -Value {"=D$row/C$row"}           -Column 6            -AutoSize -AutoNameRange
 Set-Column -Worksheet $ws -Heading "WinsToFast"  -Value {"=E$row/C$row"}           -Column 7            -AutoSize -AutoNameRange
 
-Set-Format -WorkSheet $ws -Range "F2:G50" -NumberFormat "0.0%"
+Set-ExcelRange -WorkSheet $ws -Range "F2:G50" -NumberFormat "0.0%"
 $chart = New-ExcelChart -NoLegend -ChartType XYScatter -XRange WinsToFast -YRange WinsToPoles -Column 7 -Width 2000 -Height 700 -Title "Poles vs fastlaps"
 Export-Excel -ExcelPackage $Excel -WorkSheetname "Winners" -ExcelChartDefinition $chart -Show

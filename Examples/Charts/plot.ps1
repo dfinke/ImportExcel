@@ -25,4 +25,4 @@ function plot {
 
 function pi {[math]::pi}
 
-plot {[math]::Tan($args[0])} (pi) (3*(pi)/2-.01)
+plot -f {[math]::Tan($args[0])} -minx (pi) -maxx (3*(pi)/2-.01)

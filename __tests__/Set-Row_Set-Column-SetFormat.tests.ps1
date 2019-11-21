@@ -1,3 +1,8 @@
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases','',Justification='Testing for presence of alias')]
+
+param()
+
 $path = "TestDrive:\test.xlsx"
 
 $data = ConvertFrom-Csv -InputObject @"

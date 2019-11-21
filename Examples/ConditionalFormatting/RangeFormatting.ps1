@@ -8,7 +8,7 @@ function Get-DateOffset ($days=0) {
 }
 
 $(
-    New-PSItem (Get-DateOffset -1) (Get-DateOffset 1) (echo Start End)
+    New-PSItem (Get-DateOffset -1) (Get-DateOffset 1) @("Start", "End")
     New-PSItem (Get-DateOffset) (Get-DateOffset 7)
     New-PSItem (Get-DateOffset -10) (Get-DateOffset -1)
 ) |

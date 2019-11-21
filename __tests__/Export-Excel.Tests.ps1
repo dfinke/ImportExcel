@@ -1,5 +1,7 @@
 ﻿#Requires -Modules Pester
-
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidAssignmentToAutomaticVariable", "", Justification='Sets IsWindows on pre-6.0 only')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
+param()
 if (-not (get-command Import-Excel -ErrorAction SilentlyContinue)) {
     Import-Module $PSScriptRoot\..\ImportExcel.psd1
 }
@@ -20,7 +22,7 @@ Describe ExportExcel {
         $path = "TestDrive:\test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
         #Test with a maximum of 100 processes for speed; export all properties, then export smaller subsets.
-        $processes = Get-Process | where {$_.StartTime} | Select-Object -first 100 -Property * -excludeProperty  Parent
+        $processes = Get-Process | Where-Object {$_.StartTime} | Select-Object -First 100 -Property * -ExcludeProperty Parent
         $propertyNames = $Processes[0].psobject.properties.name
         $rowcount = $Processes.Count
         $Processes | Export-Excel $path  #-show
@@ -371,7 +373,7 @@ Describe ExportExcel {
         $path = "TestDrive:\test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue
         #Test -ConditionalText with a single conditional spec.
-        Write-Output 489 668 299 777 860 151 119 497 234 788 | Export-Excel -Path $path -ConditionalText $ct
+        489, 668, 299, 777, 860, 151, 119, 497, 234, 788 | Export-Excel -Path $path -ConditionalText $ct
 
         it "Created a new file                                                                     " {
             Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
@@ -612,9 +614,9 @@ Describe ExportExcel {
         Get-Process | Select-Object -last  10 -Property Name, cpu, pm, handles, company  | Export-Excel -Path $path                     -AutoNameRange   -WorkSheetname NoOffset -Append -Numberformat 'Number'
         $Excel = Open-ExcelPackage   $path
         $dataWs = $Excel.Workbook.Worksheets["NoOffset"]
-
+        #table should be 20 rows + header after extending the data. CPU range should be 1x20
         it "Created a new sheet and auto-extended a table and explicitly extended named ranges     " {
-            $dataWs.Tables["ProcTab"].Address.Address                   | Should     be "A1:E11"
+            $dataWs.Tables["ProcTab"].Address.Address                   | Should     be "A1:E21"
             $dataWs.Names["CPU"].Rows                                   | Should     be 20
             $dataWs.Names["CPU"].Columns                                | Should     be 1
         }

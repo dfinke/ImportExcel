@@ -1,9 +1,9 @@
-echo Last7Days LastMonth LastWeek NextMonth NextWeek ThisMonth ThisWeek Today Tomorrow Yesterday |
+"Last7Days", "LastMonth", "LastWeek", "NextMonth", "NextWeek", "ThisMonth", "ThisWeek", "Today", "Tomorrow", "Yesterday" |
     Foreach-Object {
     $text = @"
 `$f = ".\testExport.xlsx"
 
-rm `$f -ErrorAction Ignore
+remove-item `$f -ErrorAction Ignore
 
 .\GenDates.ps1 |
     Export-Excel `$f -Show -AutoSize -ConditionalText `$(

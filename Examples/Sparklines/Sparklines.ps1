@@ -41,8 +41,8 @@ Remove-Item $xlfile -ErrorAction SilentlyContinue
 $excel = $data | Export-Excel $xlfile -WorksheetName SEKRates -AutoSize -PassThru
 
 # Add a column sparkline for  all currencies
-Set-Format -WorkSheet $excel.SEKRates -Range "A2:A12" -NumberFormat "yyyy-mm-dd" -AutoSize
-Set-Format -WorkSheet $excel.SEKRates -Range A15 -Value Column -AutoSize
+Set-ExcelRange -WorkSheet $excel.SEKRates -Range "A2:A12" -NumberFormat "yyyy-mm-dd" -AutoSize
+Set-ExcelRange -WorkSheet $excel.SEKRates -Range A15 -Value Column -AutoSize
 
 $sparklineCol = $excel.SEKRates.SparklineGroups.Add(
     "Column",
@@ -54,7 +54,7 @@ $sparklineCol.High = $true
 $sparklineCol.ColorHigh.SetColor("Red")
 
 # Add a line sparkline for  all currencies
-Set-Format -WorkSheet $excel.SEKRates -Range A16 -Value Line -AutoSize
+Set-ExcelRange -WorkSheet $excel.SEKRates -Range A16 -Value Line -AutoSize
 $sparklineLine = $excel.SEKRates.SparklineGroups.Add(
     "Line",
     $excel.SEKRates.Cells["B16:Q16"],
@@ -64,7 +64,7 @@ $sparklineLine = $excel.SEKRates.SparklineGroups.Add(
 $sparklineLine.DateAxisRange = $excel.SEKRates.Cells["A2:A12"]
 
 # Add some more random values and add a stacked sparkline.
-Set-Format -WorkSheet $excel.SEKRates -Range A17 -Value Stacked -AutoSize
+Set-ExcelRange -WorkSheet $excel.SEKRates -Range A17 -Value Stacked -AutoSize
 
 $numbers = 2, -1, 3, -4, 8, 5, -12, 18, 99, 1, -4, 12, -8, 9, 0, -8
 
@@ -86,7 +86,7 @@ $sparklineStacked.ColorLow.SetColor("Green")
 $sparklineStacked.Negative = $true
 $sparklineStacked.ColorNegative.SetColor("Blue")
 
-Set-Format -WorkSheet $excel.SEKRates -Range "A15:A17" -Bold -Height 50 -AutoSize
+Set-ExcelRange -WorkSheet $excel.SEKRates -Range "A15:A17" -Bold -Height 50 -AutoSize
 
 $v = @"
 High - Red
@@ -94,6 +94,6 @@ Low - Green
 Negative - Blue
 "@
 
-Set-Format -WorkSheet $excel.SEKRates -Range S17 -Value $v -WrapText -Width 20 -HorizontalAlignment Center -VerticalAlignment Center
+Set-ExcelRange -WorkSheet $excel.SEKRates -Range S17 -Value $v -WrapText -Width 20 -HorizontalAlignment Center -VerticalAlignment Center
 
 Close-ExcelPackage $excel -Show

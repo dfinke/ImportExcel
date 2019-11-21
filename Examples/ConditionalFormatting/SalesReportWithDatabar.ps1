@@ -16,7 +16,7 @@ Jun,621
 $sheet = $excel.Workbook.Worksheets["Sheet1"]
 Add-ConditionalFormatting -WorkSheet $sheet -Range "B1:B7" -DataBarColor LawnGreen
 
-Set-Format -Address $sheet.Cells["A8"] -Value "Total"
-Set-Format -Address $sheet.Cells["B8"] -Formula "=Sum(Sales)"
+Set-ExcelRange -Address $sheet.Cells["A8"] -Value "Total"
+Set-ExcelRange -Address $sheet.Cells["B8"] -Formula "=Sum(Sales)"
 
 Close-ExcelPackage $excel -Show
