@@ -2,7 +2,7 @@
     [CmdletBinding(DefaultParameterSetName = 'Default')]
     [OutputType([OfficeOpenXml.ExcelPackage])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
-    Param(
+    param(
         [Parameter(ParameterSetName = 'Default', Position = 0)]
         [String]$Path,
         [Parameter(Mandatory = $true, ParameterSetName = "Package")]
@@ -111,7 +111,7 @@
                 if (-not $PSBoundParameters.ContainsKey("TableName") -and
                     -not $PSBoundParameters.ContainsKey("TableStyle") -and
                     -not $AutoFilter) {
-                    $TableName = 'Table1'
+                    $TableName = '' # later rely on distinction between NULL and ""
                 }
             }
             if ($ExcelPackage) {
@@ -137,6 +137,7 @@
                 $headerRange = $ws.Dimension.Address -replace "\d+$", $StartRow
                 #using a slightly odd syntax otherwise header ends up as a 2D array
                 $ws.Cells[$headerRange].Value | ForEach-Object -Begin {$Script:header = @()} -Process {$Script:header += $_ }
+                $NoHeader = $true
                 #if we did not get AutoNameRange, but headers have ranges of the same name make autoNameRange True, otherwise make it false
                 if (-not $AutoNameRange) {
                     $AutoNameRange  = $true ; foreach ($h in $header) {if ($ws.names.name -notcontains $h) {$AutoNameRange = $false} }
@@ -156,7 +157,7 @@
                 $existingTable = $ws.Tables.Where({$_.address.address -eq $ws.dimension.address},'First', 1)
                 if ($null -eq $TableName -and $existingTable) {
                     $TableName  = $existingTable.Name
-                    $TableStyle = $existingTable.Tablestyle
+                    $TableStyle = $existingTable.StyleName -replace "^TableStyle",""
                     $AutoFilter = $false
                 }
                 #if we did not get $autofilter but a filter range is set and it covers the right area, set autofilter to true
@@ -199,15 +200,15 @@
             else {  $setNumformat = ($Numberformat -ne $ws.Cells.Style.Numberformat.Format) }
         }
         catch {throw "Failed preparing to export to worksheet '$WorksheetName' to '$Path': $_"}
-                #region Special case -inputobject passed a dataTable object
+        #region Special case -inputobject passed a dataTable object
         <# If inputObject was passed via the pipeline it won't be visible until the process block, we will only see it here if it was passed as a parameter
           if it is a data table don't do foreach on it (slow) - put the whole table in and set dates on date columns,
           set things up for the end block, and skip the process block #>
-          if ($InputObject -is  [System.Data.DataTable])  {
-            if ($Append) {
+        if ($InputObject -is  [System.Data.DataTable])  {
+            if ($Append -and $ws.dimension) {
                 $row ++
                 $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, $false )
-                if ($TableName) {
+                if ($TableName -or  $PSBoundParameters.ContainsKey('TableStyle')) {
                     Add-ExcelTable -Range $ws.Cells[$ws.Dimension] -TableName $TableName -TableStyle $TableStyle
                 }
             }
@@ -248,9 +249,9 @@
         }
         #endregion
         else  {$firstTimeThru = $true}
-        }
+    }
 
-        process { if ($PSBoundParameters.ContainsKey("InputObject")) {
+    process { if ($PSBoundParameters.ContainsKey("InputObject")) {
         try {
             if ($null -eq $InputObject) {$row += 1}
             foreach ($TargetData in $InputObject) {
@@ -349,7 +350,6 @@
                             else {
                                 $ws.Cells[$Row, $ColumnIndex].Value  = $v
                             }
-
                         }
                     }
                     catch {Write-Warning -Message "Could not insert the '$Name' property at Row $Row, Column $ColumnIndex"}
@@ -360,10 +360,9 @@
             }
         }
         catch {throw "Failed exporting data to worksheet '$WorksheetName' to '$Path': $_" }
+    }}
 
-        }}
-
-        end {
+    end {
         if ($firstTimeThru -and $ws.Dimension) {
               $LastRow        = $ws.Dimension.End.Row
               $LastCol        = $ws.Dimension.End.Column
@@ -428,6 +427,7 @@
             }
             catch {Write-Warning -Message "Failed adding autofilter to worksheet '$WorksheetName': $_"}
         }
+
         if ($PivotTableDefinition) {
             foreach ($item in $PivotTableDefinition.GetEnumerator()) {
                 $params = $item.value
@@ -500,7 +500,7 @@
         }
         catch {Write-Warning -Message "Failed adding Freezing the panes in worksheet '$WorksheetName': $_"}
 
-        if  ($PSBoundParameters.ContainsKey("BoldTopRow")) { #it sets bold as far as there are populated cells: for whole row could do $ws.row($x).style.font.bold = $true
+        if ($PSBoundParameters.ContainsKey("BoldTopRow")) { #it sets bold as far as there are populated cells: for whole row could do $ws.row($x).style.font.bold = $true
             try {
                 if ($Title) {
                     $range = $ws.Dimension.Address -replace '\d+', ($StartRow + 1)
@@ -646,7 +646,6 @@
                 $ws.Protection.SetPassword($Password)
                 Write-Verbose -Message 'Set password on workbook'
             }
-
             catch {throw "Failed setting password for worksheet '$WorksheetName': $_"}
         }
 
@@ -654,8 +653,8 @@
         else {
             if ($ReturnRange) {$dataRange }
 
-            if ($Password) { $pkg.Save($Password) }
-            else           { $pkg.Save() }
+            if ($Password) {   $pkg.Save($Password) }
+            else           {   $pkg.Save() }
             Write-Verbose -Message "Saved workbook $($pkg.File)"
             if ($ReZip) {
                 Write-Verbose -Message "Re-Zipping $($pkg.file) using .NET ZIP library"
@@ -679,6 +678,5 @@
 
             if ($Show) { Invoke-Item $Path }
         }
-
     }
 }
