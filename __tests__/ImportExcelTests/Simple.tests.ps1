@@ -41,11 +41,18 @@ Describe "Tests" {
             $data[1].p1 | Should be "b"
     }
 
-    It "Should take Path from pipeline".PadRight(90) {
-        $data = "$PSScriptRoot\Simple.xlsx" | Import-Excel
-        $data.count | Should be 2
-        $data[0].p1 | Should be "a"
-        $data[1].p1 | Should be "b"
+    It "Should take Paths from parameter".PadRight(90) {
+        $data = Import-Excel -Path (Get-ChildItem -Path $PSScriptRoot -Filter "TestData?.xlsx").FullName
+        $data.count | Should be 4
+        $data[0].cola | Should be 1
+        $data[2].cola | Should be 5
+    }
+
+    It "Should take Paths from pipeline".PadRight(90) {
+        $data = (Get-ChildItem -Path $PSScriptRoot -Filter "TestData?.xlsx").FullName | Import-Excel
+        $data.count | Should be 4
+        $data[0].cola | Should be 1
+        $data[2].cola | Should be 5
     }
 
     It "Should support PipelineVariable".PadRight(90) {
