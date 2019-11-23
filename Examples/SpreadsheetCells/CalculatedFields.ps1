@@ -1,4 +1,4 @@
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 
 #. ..\New-PSItem.ps1
@@ -6,7 +6,7 @@ try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
 Remove-Item "$env:temp\functions.xlsx" -ErrorAction SilentlyContinue
 
 $(
-    New-PSItem 12001 Nails  37  3.99 =C2*D2 (echo ID Product Quantity Price Total)
+    New-PSItem 12001 Nails  37  3.99 =C2*D2 @("ID", "Product", "Quantity", "Price", "Total")
     New-PSItem 12002 Hammer  5 12.10 =C3*D3
     New-PSItem 12003 Saw    12 15.37 =C4*D4
     New-PSItem 12010 Drill  20  8    =C5*D5

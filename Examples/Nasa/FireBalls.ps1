@@ -1,16 +1,17 @@
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$header = echo `
-    'Date/Time - Peak Brightness (UT)' `
-    'Latitude (Deg)' `
-    'Longitude (Deg)' `
-    'Altitude (km)' `
-    'Velocity (km/s)' `
-    'Velocity Components (km/s) vx' `
-    'Velocity Components (km/s) vy' `
-    'Velocity Components (km/s) vz' `
-    'Total Radiated Energy (J)' `
+$header = @(
+    'Date/Time - Peak Brightness (UT)' ,
+    'Latitude (Deg)' ,
+    'Longitude (Deg)' ,
+    'Altitude (km)' ,
+    'Velocity (km/s)' ,
+    'Velocity Components (km/s) vx' ,
+    'Velocity Components (km/s) vy' ,
+    'Velocity Components (km/s) vz' ,
+    'Total Radiated Energy (J)' ,
     'Calculated Total Impact Energy (kt)'
+)
 
 $splat=@{
     url='http://neo.jpl.nasa.gov/fireballs/'

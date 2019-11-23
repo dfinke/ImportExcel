@@ -13,7 +13,7 @@
         * Add .01 in column F
 #>
 
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 $path = "$Env:TEMP\DataValidation.xlsx"
 Remove-Item $path -ErrorAction SilentlyContinue

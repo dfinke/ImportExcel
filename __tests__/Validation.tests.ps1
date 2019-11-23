@@ -1,3 +1,5 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
+param()
 $data = ConvertFrom-Csv -InputObject @"
 ID,Product,Quantity,Price
 12001,Nails,37,3.99

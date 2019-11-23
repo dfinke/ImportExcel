@@ -1,4 +1,5 @@
 function Test-APIReadXls {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "", Justification="False Positive")]
     param(
         [parameter(Mandatory)]
         $XlFilename,

@@ -1,5 +1,6 @@
 function New-PSItem {
-
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification='Does not change system state')]
+    param()
     $totalArgs = $args.Count
 
     if($args[-1] -is [array]) {

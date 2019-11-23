@@ -1,6 +1,6 @@
 ﻿#requires -modules "getSql"
 
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 #download f1Results from https://1drv.ms/f/s!AhfYu7-CJv4egbt5FD7Cdxi8jSz3aQ  and update the path below
 Get-SQL -Session f1 -Excel  -Connection C:\Users\mcp\OneDrive\Public\F1\f1Results.xlsx -showtables -Verbose
 
@@ -19,6 +19,6 @@ Set-Row    -Worksheet $ws -Heading "Average"     -Value {"=Average($columnName`2
 Set-Column -Worksheet $ws -Heading "WinsToPoles" -Value {"=D$row/C$row"}           -Column 6            -AutoSize -AutoNameRange
 Set-Column -Worksheet $ws -Heading "WinsToFast"  -Value {"=E$row/C$row"}           -Column 7            -AutoSize -AutoNameRange
 
-Set-Format -WorkSheet $ws -Range "F2:G50" -NumberFormat "0.0%"
+Set-ExcelRange -WorkSheet $ws -Range "F2:G50" -NumberFormat "0.0%"
 $chart = New-ExcelChart -NoLegend -ChartType XYScatter -XRange WinsToFast -YRange WinsToPoles -Column 7 -Width 2000 -Height 700 -Title "Poles vs fastlaps"
 Export-Excel -ExcelPackage $Excel -WorkSheetname "Winners" -ExcelChartDefinition $chart -Show

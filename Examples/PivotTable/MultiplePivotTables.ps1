@@ -20,11 +20,11 @@ $pivotTableParams = @{
     PivotTableName  = "ByRegion"
     Address         = $excel.Sheet1.cells["F1"]
     SourceWorkSheet = $excel.Sheet1
-    PivotRows       = echo Region Fruit Date
+    PivotRows       = @("Region", "Fruit", "Date")
     PivotData       = @{'sold' = 'sum'}
     PivotTableStyle = 'Light21'
     GroupDateRow    = "Date"
-    GroupDatePart   = echo Years Quarters
+    GroupDatePart   = @("Years", "Quarters")
 }
 
 $pt = Add-PivotTable @pivotTableParams -PassThru
@@ -33,21 +33,21 @@ $pt.RowHeaderCaption = "By " + ($pivotTableParams.PivotRows -join ",")
 
 $pivotTableParams.PivotTableName = "ByFruit"
 $pivotTableParams.Address = $excel.Sheet1.cells["J1"]
-$pivotTableParams.PivotRows = echo Fruit Region Date
+$pivotTableParams.PivotRows = @("Fruit", "Region", "Date")
 
 $pt = Add-PivotTable @pivotTableParams -PassThru
 $pt.RowHeaderCaption = "By Fruit,Region"
 
 $pivotTableParams.PivotTableName = "ByDate"
 $pivotTableParams.Address = $excel.Sheet1.cells["N1"]
-$pivotTableParams.PivotRows = echo Date Region Fruit
+$pivotTableParams.PivotRows = @("Date", "Region", "Fruit")
 
 $pt = Add-PivotTable @pivotTableParams -PassThru
 $pt.RowHeaderCaption = "By Date,Region,Fruit"
 
 $pivotTableParams.PivotTableName = "ByYears"
 $pivotTableParams.Address = $excel.Sheet1.cells["S1"]
-$pivotTableParams.GroupDatePart = echo Years
+$pivotTableParams.GroupDatePart = "Years"
 
 $pt = Add-PivotTable @pivotTableParams -PassThru
 $pt.RowHeaderCaption = "By Years,Region"

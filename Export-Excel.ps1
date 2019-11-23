@@ -422,11 +422,9 @@
     [OutputType([OfficeOpenXml.ExcelPackage])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
     Param(
-
         [Parameter(ParameterSetName = 'Default', Position = 0)]
         [String]$Path,
         [Parameter(Mandatory = $true, ParameterSetName = "Package")]
-
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [Parameter(ValueFromPipeline = $true)]
         [Alias('TargetData')]
@@ -462,8 +460,6 @@
         [Switch]$FreezeFirstColumn,
         [Switch]$FreezeTopRowFirstColumn,
         [Int[]]$FreezePane,
-
-
         [Switch]$AutoFilter,
         [Switch]$BoldTopRow,
         [Switch]$NoHeader,
@@ -473,12 +469,9 @@
                 else { $true }
             })]
         [String]$RangeName,
-
-
+        [Alias('Table')]
         $TableName,
-
-
-        [OfficeOpenXml.Table.TableStyles]$TableStyle,
+        [OfficeOpenXml.Table.TableStyles]$TableStyle =  [OfficeOpenXml.Table.TableStyles]::Medium6,
         [Switch]$Barchart,
         [Switch]$PieChart,
         [Switch]$LineChart ,
@@ -525,16 +518,18 @@
         #Open the file, get the worksheet, and decide where in the sheet we are writing, and if there is a number format to apply.
         try   {
             $script:Header = $null
-            if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet."}
+            if ($Append -and $ClearSheet) {throw "You can't use -Append AND -ClearSheet." ; return}
+            #To force -Now not to format as a table, allow $false in -TableName to be "No table"
             $TableName = if ($null -eq $TableName -or ($TableName -is [bool] -and $false -eq $TableName)) { $null } else {[String]$TableName}
-            if ($PSBoundParameters.Keys.Count -eq 0 -Or $Now -or (-not $Path -and -not $ExcelPackage) ) {
+            if ($Now -or (-not $Path -and -not $ExcelPackage) ) {
                 if (-not $PSBoundParameters.ContainsKey("Path")) { $Path = [System.IO.Path]::GetTempFileName() -replace '\.tmp', '.xlsx' }
                 if (-not $PSBoundParameters.ContainsKey("Show")) { $Show = $true }
                 if (-not $PSBoundParameters.ContainsKey("AutoSize")) { $AutoSize = $true }
+                #"Now" option will create a table, unless something passed in TableName/Table Style. False in TableName will block autocreation
                 if (-not $PSBoundParameters.ContainsKey("TableName") -and
                     -not $PSBoundParameters.ContainsKey("TableStyle") -and
                     -not $AutoFilter) {
-                    $TableName = ''
+                    $TableName = '' # later rely on distinction between NULL and ""
                 }
             }
             if ($ExcelPackage) {
@@ -560,6 +555,7 @@
                 $headerRange = $ws.Dimension.Address -replace "\d+$", $StartRow
                 #using a slightly odd syntax otherwise header ends up as a 2D array
                 $ws.Cells[$headerRange].Value | ForEach-Object -Begin {$Script:header = @()} -Process {$Script:header += $_ }
+                $NoHeader = $true
                 #if we did not get AutoNameRange, but headers have ranges of the same name make autoNameRange True, otherwise make it false
                 if (-not $AutoNameRange) {
                     $AutoNameRange  = $true ; foreach ($h in $header) {if ($ws.names.name -notcontains $h) {$AutoNameRange = $false} }
@@ -576,8 +572,10 @@
                 }
 
                 #if we did not get a table name but there is a table which covers the active part of the sheet, set table name to that, and don't do anything with autofilter
-                if ($null -eq $TableName -and $ws.Tables.Where({$_.address.address -eq $ws.dimension.address})) {
-                    $TableName  = $ws.Tables.Where({$_.address.address -eq $ws.dimension.address},'First', 1).Name
+                $existingTable = $ws.Tables.Where({$_.address.address -eq $ws.dimension.address},'First', 1)
+                if ($null -eq $TableName -and $existingTable) {
+                    $TableName  = $existingTable.Name
+                    $TableStyle = $existingTable.StyleName -replace "^TableStyle",""
                     $AutoFilter = $false
                 }
                 #if we did not get $autofilter but a filter range is set and it covers the right area, set autofilter to true
@@ -622,10 +620,39 @@
         catch {throw "Failed preparing to export to worksheet '$WorksheetName' to '$Path': $_"}
         #region Special case -inputobject passed a dataTable object
         <# If inputObject was passed via the pipeline it won't be visible until the process block, we will only see it here if it was passed as a parameter
-          if it was passed it is a data table don't do foreach on it (slow) put the whole table in and set dates on date columns,
+          if it is a data table don't do foreach on it (slow) - put the whole table in and set dates on date columns,
           set things up for the end block, and skip the process block #>
         if ($InputObject -is  [System.Data.DataTable])  {
-            $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader) )
+            if ($Append -and $ws.dimension) {
+                $row ++
+                $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, $false )
+                if ($TableName -or  $PSBoundParameters.ContainsKey('TableStyle')) {
+                    Add-ExcelTable -Range $ws.Cells[$ws.Dimension] -TableName $TableName -TableStyle $TableStyle
+                }
+            }
+            else  {
+                #Change TableName if $TableName is non-empty; don't leave caller with a renamed table!
+                $orginalTableName = $InputObject.TableName
+                if ($PSBoundParameters.ContainsKey("TableName")) {
+                    $InputObject.TableName = $TableName
+                }
+                while ($InputObject.TableName -in $pkg.Workbook.Worksheets.Tables.name) {
+                    Write-Warning "Table name $($InputObject.TableName) is not unique, adding '_' to it "
+                    $InputObject.TableName += "_"
+                }
+                #Insert as a table, if Tablestyle didn't arrive as a default, or $TableName non-null - even if empty
+                if ($null -ne $TableName -or $PSBoundParameters.ContainsKey("TableStyle")) {
+                    $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader),$TableStyle )
+                    # Workaround for EPPlus not marking the empty row on an empty table as dummy row.
+                    if ($InputObject.Rows.Count -eq 0) {
+                        ($ws.Tables | Select-Object -Last 1).TableXml.table.SetAttribute('insertRow', 1)
+                    }
+                }
+                else {
+                    $null = $ws.Cells[$row,$StartColumn].LoadFromDataTable($InputObject, (-not $noHeader) )
+                }
+                $InputObject.TableName = $orginalTableName
+            }
             foreach ($c in $InputObject.Columns.where({$_.datatype -eq [datetime]})) {
                 Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat 'Date-Time'
             }
@@ -807,14 +834,11 @@
         if ($RangeName) { Add-ExcelName  -Range $ws.Cells[$dataRange] -RangeName $RangeName}
 
         #Allow table to be inserted by specifying Name, or Style or both; only process autoFilter if there is no table (they clash).
-        if     ($null -ne $TableName) {
-            if ($PSBoundParameters.ContainsKey('TableStyle')) {
-                  Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
+        if     ($null -ne $TableName -or $PSBoundParameters.ContainsKey('TableStyle')) {
+            #Already inserted Excel table if input was a DataTable
+            if ($InputObject -isnot [System.Data.DataTable]) {
+                Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
             }
-            else {Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName}
-        }
-        elseif ($PSBoundParameters.ContainsKey('TableStyle')) {
-                  Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName "" -TableStyle $TableStyle
         }
         elseif ($AutoFilter) {
             try {

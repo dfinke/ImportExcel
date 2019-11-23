@@ -1,3 +1,6 @@
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
+param()
+
 Describe "Copy-Worksheet" {
     $path1 = "TestDrive:\Test1.xlsx"
     $path2 = "TestDrive:\Test2.xlsx"
@@ -94,7 +97,7 @@ Describe "Copy-Worksheet" {
             Remove-Item $xlfile -ErrorAction SilentlyContinue
             Remove-Item $xlfileArchive -ErrorAction SilentlyContinue
 
-            $sheets = echo 1.1.2019 1.2.2019 1.3.2019 1.4.2019 1.5.2019
+            $sheets = "1.1.2019", "1.2.2019", "1.3.2019", "1.4.2019", "1.5.2019"
 
             $sheets | ForEach-Object {
                 "Hello World" | Export-Excel $xlfile -WorksheetName $_
@@ -102,7 +105,7 @@ Describe "Copy-Worksheet" {
         }
 
         it "Should copy and remove sheets                                                          " {
-            $targetSheets = echo 1.1.2019 1.4.2019
+            $targetSheets = "1.1.2019", "1.4.2019"
 
             $targetSheets | ForEach-Object {
                 Copy-ExcelWorkSheet -SourceWorkbook $xlfile -DestinationWorkbook $xlfileArchive -SourceWorkSheet $_ -DestinationWorkSheet $_
@@ -122,7 +125,7 @@ Describe "Copy-Worksheet" {
             Remove-Item $xlfile -ErrorAction SilentlyContinue
             Remove-Item $xlfileArchive -ErrorAction SilentlyContinue
 
-            $sheets = echo 1.1.2019 1.2.2019 1.3.2019 1.4.2019 1.5.2019
+            $sheets = "1.1.2019", "1.2.2019", "1.3.2019", "1.4.2019", "1.5.2019"
 
             $sheets | ForEach-Object {
                 "Hello World" | Export-Excel $xlfile -WorksheetName $_
