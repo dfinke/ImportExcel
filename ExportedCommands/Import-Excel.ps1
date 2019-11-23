@@ -1,14 +1,13 @@
 ﻿function Import-Excel {
-
-    [CmdLetBinding()]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSPossibleIncorrectUsageOfAssignmentOperator', '', Justification = 'Intentional')]
-    Param (
+  [CmdLetBinding()]
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSPossibleIncorrectUsageOfAssignmentOperator', '', Justification = 'Intentional')]
+  param (
         [Alias('FullName')]
         [Parameter(ParameterSetName = "PathA", Mandatory, ValueFromPipelineByPropertyName, ValueFromPipeline, Position = 0 )]
         [Parameter(ParameterSetName = "PathB", Mandatory, ValueFromPipelineByPropertyName, ValueFromPipeline, Position = 0 )]
         [Parameter(ParameterSetName = "PathC", Mandatory, ValueFromPipelineByPropertyName, ValueFromPipeline, Position = 0 )]
-        [String]$Path,
+        [String[]]$Path,
         [Parameter(ParameterSetName = "PackageA", Mandatory)]
         [Parameter(ParameterSetName = "PackageB", Mandatory)]
         [Parameter(ParameterSetName = "PackageC", Mandatory)]
@@ -37,55 +36,61 @@
         [ValidateNotNullOrEmpty()]
         [String]$Password
     )
-    begin {
-        $sw = [System.Diagnostics.Stopwatch]::StartNew()
+  end {
+    $sw = [System.Diagnostics.Stopwatch]::StartNew()
+    if ($input) {
+        $Paths = $input
+    }
+    elseif ($Path) {
+        $Paths = $Path
+    }
+    else {
+        $Paths = ''
+    }
+    Function Get-PropertyNames {
+        <#
+        .SYNOPSIS
+            Create objects containing the column number and the column name for each of the different header types.
+        #>
+        [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = "Name would be incorrect, and command is not exported")]
+        Param (
+            [Parameter(Mandatory)]
+            [Int[]]$Columns,
+            [Parameter(Mandatory)]
+            [Int]$StartRow
+        )
 
-        Function Get-PropertyNames {
-            <#
-            .SYNOPSIS
-                Create objects containing the column number and the column name for each of the different header types.
-            #>
-            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = "Name would be incorrect, and command is not exported")]
-            Param (
-                [Parameter(Mandatory)]
-                [Int[]]$Columns,
-                [Parameter(Mandatory)]
-                [Int]$StartRow
-            )
-
-            Try {
-                if ($HeaderName) {
-                    $i = 0
-                    foreach ($H in $HeaderName) {
-                        $H | Select-Object @{N = 'Column'; E = { $Columns[$i] } }, @{N = 'Value'; E = { $H } }
-                        $i++
-                    }
-                }
-                elseif ($NoHeader) {
-                    $i = 0
-                    foreach ($C in $Columns) {
-                        $i++
-                        $C | Select-Object @{N = 'Column'; E = { $_ } }, @{N = 'Value'; E = { 'P' + $i } }
-                    }
-                }
-
-                else {
-                    if ($StartRow -lt 1) {
-                        throw 'The top row can never be less than 1 when we need to retrieve headers from the worksheet.' ; return
-                    }
-
-                    foreach ($C in $Columns) {
-                        $Worksheet.Cells[$StartRow, $C] | Where-Object { $_.Value } | Select-Object @{N = 'Column'; E = { $C } }, Value
-                    }
+        Try {
+            if ($HeaderName) {
+                $i = 0
+                foreach ($H in $HeaderName) {
+                    $H | Select-Object @{N = 'Column'; E = { $Columns[$i] } }, @{N = 'Value'; E = { $H } }
+                    $i++
                 }
             }
-            Catch {
-                throw "Failed creating property names: $_" ; return
+            elseif ($NoHeader) {
+                $i = 0
+                foreach ($C in $Columns) {
+                    $i++
+                    $C | Select-Object @{N = 'Column'; E = { $_ } }, @{N = 'Value'; E = { 'P' + $i } }
+                }
+            }
+
+            else {
+                if ($StartRow -lt 1) {
+                    throw 'The top row can never be less than 1 when we need to retrieve headers from the worksheet.' ; return
+                }
+
+                foreach ($C in $Columns) {
+                    $Worksheet.Cells[$StartRow, $C] | Where-Object { $_.Value } | Select-Object @{N = 'Column'; E = { $C } }, Value
+                }
             }
         }
+        Catch {
+            throw "Failed creating property names: $_" ; return
+        }
     }
-
-    process {
+    foreach ($Path in $Paths) {
         if ($path) {
             $extension = [System.IO.Path]::GetExtension($Path)
             if ($extension -notmatch '.xlsx$|.xlsm$') {
@@ -193,4 +198,5 @@
             if ($Path) { $stream.close(); $ExcelPackage.Dispose() }
         }
     }
+  }
 }

@@ -60,6 +60,19 @@ Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfi
 
 ![](./images/ScriptAnalyzerReport.png)
 
+# What's new 6.5.3
+
+Thanks again to the community for making this module even better.
+
+- [Fix import excel headers](https://github.com/dfinke/ImportExcel/pull/713)
+- Numerous improvements for DataTables and exporting it to Excel [James O'Neill](https://twitter.com/jamesoneill)
+	- Names, styles, proper appending
+- Handles marking the empty row on an empty table as dummy row
+- Re-work code based on linting recommendations
+- Update existing tests and add more
+- Support PipelineVariable thanks to [Luc Dekens](https://twitter.com/LucD22) for reporting and [Ili](https://twitter.com/ili_z) for the PR
+- Fix quoting in ConvertFromExcelToSQLInsert [beckerben](https://github.com/beckerben)
+
 # What's new 6.5.2
 
 Thank you [uSlackr](https://github.com/uSlackr)ill
