@@ -1,6 +1,6 @@
 
 function Add-ExcelChart {
-    [cmdletbinding(DefaultParameterSetName = 'Worksheet')]
+    [CmdletBinding(DefaultParameterSetName = 'Worksheet')]
     [OutputType([OfficeOpenXml.Drawing.Chart.ExcelChart])]
     param(
         [Parameter(ParameterSetName = 'Worksheet', Mandatory = $true)]

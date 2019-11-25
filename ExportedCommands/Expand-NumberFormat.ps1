@@ -1,34 +1,5 @@
-﻿
-function Expand-NumberFormat {
-    <#
-      .SYNOPSIS
-        Converts short names for number formats to the formatting strings used in Excel
-      .DESCRIPTION
-        Where you can type a number format you can write, for example, 'Short-Date'
-        and the module will translate it into the format string used by Excel.
-        Some formats, like Short-Date change how they are presented when Excel
-        loads (so date will use the local ordering of year, month and Day). Other
-        formats change how they appear when loaded with different cultures
-        (depending on the country "," or "." or " " may be the thousand seperator
-        although Excel always stores it as ",")
-      .EXAMPLE
-        Expand-NumberFormat percentage
-
-        Returns "0.00%"
-      .EXAMPLE
-        Expand-NumberFormat Currency
-
-        Returns the currency format specified in the local regional settings. This
-        may not be the same as Excel uses.  The regional settings set the currency
-        symbol and then whether it is before or after the number and separated with
-        a space or not; for negative numbers the number may be wrapped in parentheses
-        or a - sign might appear before or after the number and symbol.
-        So this returns $#,##0.00;($#,##0.00) for English US, #,##0.00 €;€#,##0.00-
-        for French. (Note some Eurozone countries write €1,23 and others 1,23€ )
-        In French the decimal point will be rendered as a "," and the thousand
-        separator as a space.
-    #>
-    [cmdletbinding()]
+﻿function Expand-NumberFormat {
+    [CmdletBinding()]
     [OutputType([String])]
     param  (
         #the format string to Expand

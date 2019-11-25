@@ -1,5 +1,5 @@
 function New-ConditionalText {
-    [cmdletbinding()]
+    [CmdletBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system State')]
     param(
         #[Parameter(Mandatory=$true)]

@@ -1,8 +1,8 @@
 ﻿function Set-ExcelRange {
-    [cmdletbinding()]
+    [CmdletBinding()]
     [Alias("Set-Format")]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system state')]
-    Param   (
+    param(
         [Parameter(ValueFromPipeline = $true,Position=0)]
         [Alias("Address")]
         $Range ,

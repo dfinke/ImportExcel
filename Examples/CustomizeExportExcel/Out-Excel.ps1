@@ -10,7 +10,7 @@
        Preset2 will set AutoFilter and add the Title "Daily Report".
        (see comments and code below).
 #>
-Function Out-Excel {
+function Out-Excel {
     [CmdletBinding(DefaultParameterSetName = 'Default')]
     param(
         [switch]

@@ -1,4 +1,4 @@
-Function Get-ExcelSheetInfo {
+function Get-ExcelSheetInfo {
     [CmdletBinding()]
     param(
         [Alias('FullName')]

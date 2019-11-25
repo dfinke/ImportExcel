@@ -1,6 +1,6 @@
-﻿Function Set-WorksheetProtection {
-    [Cmdletbinding()]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system state')]
+﻿function Set-WorksheetProtection {
+    [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingfunctions', '',Justification='Does not change system state')]
     param (
         [Parameter(Mandatory=$true)]
         [OfficeOpenXml.ExcelWorksheet]$Worksheet ,

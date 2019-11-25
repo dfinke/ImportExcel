@@ -1,4 +1,5 @@
 function Get-XYRange {
+    [CmdletBinding()]
     param($targetData)
 
     $record = $targetData | Select-Object -First 1

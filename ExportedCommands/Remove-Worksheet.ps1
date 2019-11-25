@@ -1,5 +1,5 @@
-﻿Function Remove-Worksheet {
-    [cmdletbinding(SupportsShouldProcess=$true)]
+﻿function Remove-Worksheet {
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param(
         #    [Parameter(ValueFromPipelineByPropertyName)]
         [Parameter(ValueFromPipelineByPropertyName)]

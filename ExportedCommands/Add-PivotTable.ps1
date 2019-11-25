@@ -1,5 +1,5 @@
 ﻿function Add-PivotTable {
-    [cmdletbinding(defaultParameterSetName = 'ChartbyParams')]
+    [CmdletBinding(defaultParameterSetName = 'ChartbyParams')]
     [OutputType([OfficeOpenXml.Table.PivotTable.ExcelPivotTable])]
     param (
         [Parameter(Mandatory = $true)]

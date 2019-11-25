@@ -1,5 +1,5 @@
 function Merge-MultipleSheets {
-     [cmdletbinding()]
+     [CmdletBinding()]
      [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification="False positives when initializing variable in begin block")]
      [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification="MultipleSheet would be incorrect")]
      #[Alias("Merge-MulipleSheets")] #There was a spelling error in the first release. This was there to ensure things didn't break but intelisense gave the alias first.

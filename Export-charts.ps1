@@ -10,7 +10,7 @@
         Exports the charts to PNG files in MyDocuments , and returns file objects representing the newly created files
 
 #>
-Param (
+param(
     #Path to the Excel file whose chars we will export.
     $Path          = "C:\Users\public\Documents\stats.xlsx",
     #If specified, output file objects representing the image files

@@ -2,6 +2,7 @@
 param()
 
 function Set-CellStyle {
+    [CmdletBinding()]
     param(
         $Worksheet,
         $Row,

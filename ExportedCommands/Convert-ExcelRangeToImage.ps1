@@ -1,6 +1,6 @@
-﻿Function Convert-ExcelRangeToImage {
+﻿function Convert-ExcelRangeToImage {
     [alias("Convert-XlRangeToImage")]
-    Param (
+    param (
         [parameter(Mandatory=$true)]
         $Path,
         $workSheetname = "Sheet1" ,

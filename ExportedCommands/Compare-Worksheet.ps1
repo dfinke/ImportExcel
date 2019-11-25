@@ -1,8 +1,8 @@
-﻿Function Compare-Worksheet {
-    [cmdletbinding(DefaultParameterSetName)]
+﻿function Compare-Worksheet {
+    [CmdletBinding(DefaultParameterSetName)]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification="Write host used for sub-warning level message to operator which does not form output")]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification="False positives when initializing variable in begin block")]
-    Param(
+    param(
         [parameter(Mandatory=$true,Position=0)]
         $Referencefile ,
         [parameter(Mandatory=$true,Position=1)]
@@ -29,7 +29,7 @@
 
     #if the filenames don't resolve, give up now.
     try    { $oneFile = ((Resolve-Path -Path $Referencefile -ErrorAction Stop).path -eq (Resolve-Path -Path $Differencefile  -ErrorAction Stop).path)}
-    Catch  { Write-Warning -Message "Could not Resolve the filenames." ; return }
+    catch  { Write-Warning -Message "Could not Resolve the filenames." ; return }
 
     #If we have one file , we must have two different worksheet names. If we have two files we can have a single string or two strings.
     if     ($onefile -and ( ($WorkSheetName.count -ne 2) -or $WorkSheetName[0] -eq $WorkSheetName[1] ) ) {
@@ -46,7 +46,7 @@
         $sheet1 = Import-Excel -Path $Referencefile  -WorksheetName $WorkSheet1 @params
         $sheet2 = Import-Excel -Path $Differencefile -WorksheetName $WorkSheet2 @Params
     }
-    Catch  {Write-Warning -Message "Could not read the worksheet from $Referencefile and/or $Differencefile." ; return }
+    catch  {Write-Warning -Message "Could not read the worksheet from $Referencefile and/or $Differencefile." ; return }
 
     #Get Column headings and create a hash table of Name to column letter.
     $headings = $Sheet1[-1].psobject.Properties.name # This preserves the sequence - using Get-member would sort them alphabetically!

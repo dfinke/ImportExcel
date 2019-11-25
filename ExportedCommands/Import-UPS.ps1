@@ -1,4 +1,5 @@
 ﻿function Import-UPS {
+    [CmdletBinding()]
     param(
         $TrackingNumber,
         [Switch]$UseDefaultCredentials

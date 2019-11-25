@@ -1,5 +1,5 @@
-﻿Function Add-ConditionalFormatting {
-    Param (
+﻿function Add-ConditionalFormatting {
+    param (
         [Parameter(Mandatory = $true, Position = 0)]
         [Alias("Range")]
         $Address ,
@@ -50,7 +50,7 @@
     )
 
     #Allow conditional formatting to work like Set-ExcelRange (with single ADDRESS parameter), split it to get worksheet and range of cells.
-    If ($Address -is [OfficeOpenXml.Table.ExcelTable]) {
+    if ($Address -is [OfficeOpenXml.Table.ExcelTable]) {
             $Worksheet = $Address.Address.Worksheet
             $Address   = $Address.Address.Address
     }

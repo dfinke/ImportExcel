@@ -1,13 +1,13 @@
-﻿Function Get-ExcelWorkbookInfo {
+﻿function Get-ExcelWorkbookInfo {
     [CmdletBinding()]
-    Param (
+    param (
         [Alias('FullName')]
         [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory=$true)]
         [String]$Path
     )
 
-    Process {
-        Try {
+    process {
+        try {
             $Path = (Resolve-Path $Path).ProviderPath
 
             $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,'Open','Read','ReadWrite'
@@ -20,7 +20,7 @@
             $xl.Dispose()
             $xl = $null
         }
-        Catch {
+        catch {
             throw "Failed retrieving Excel workbook information for '$Path': $_"
         }
     }

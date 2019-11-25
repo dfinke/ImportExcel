@@ -1,5 +1,5 @@
 function Import-USPS {
-
+    [CmdletBinding()]
     param(
         $TrackingNumber,
         [Switch]$UseDefaultCredentials

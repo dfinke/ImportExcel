@@ -403,7 +403,7 @@
                             Write-Warning -Message "AutoNameRange: Property name '$targetRangeName' is also a valid Excel address and may cause issues. Consider renaming the property."
                         }
                     }
-                    Catch {
+                    catch {
                         Write-Warning -Message "AutoNameRange: Testing '$targetRangeName' caused an error. This should be harmless, but a change of property name may be needed.."
                     }
                 }

@@ -4,7 +4,7 @@
     File must not have BOM for GitHub deploy to work.
 #>
 [CmdletBinding(DefaultParameterSetName = 'Default')]
-Param (
+param(
     # Path to install the module to, if not provided -Scope used.
     [Parameter(Mandatory, ParameterSetName = 'ModulePath')]
     [ValidateNotNullOrEmpty()]
@@ -106,7 +106,7 @@ function Invoke-MultiLike {
     }
 }
 
-Try {
+try {
     Write-Verbose -Message 'Module installation started'
 
     if (!$ModulePath) {
@@ -202,7 +202,7 @@ Try {
     Import-Module -Name $ModuleName -Force
     Write-Verbose -Message "Module installed"
 }
-Catch {
+catch {
     throw ('Failed installing module "{0}". Error: "{1}" in Line {2}' -f $ModuleName, $_, $_.InvocationInfo.ScriptLineNumber)
 }
 finally {

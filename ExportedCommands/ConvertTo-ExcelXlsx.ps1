@@ -1,13 +1,13 @@
-Function ConvertTo-ExcelXlsx {
+function ConvertTo-ExcelXlsx {
     [CmdletBinding()]
-    Param
+    param
     (
         [parameter(Mandatory = $true, ValueFromPipeline)]
         [string]$Path,
         [parameter(Mandatory = $false)]
         [switch]$Force
     )
-    Process {
+    process {
         if (-Not ($Path | Test-Path) ) {
             throw "File not found"
         }

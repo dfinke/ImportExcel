@@ -47,20 +47,20 @@
     else {
         $Paths = ''
     }
-    Function Get-PropertyNames {
+    function Get-PropertyNames {
         <#
         .SYNOPSIS
             Create objects containing the column number and the column name for each of the different header types.
         #>
         [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = "Name would be incorrect, and command is not exported")]
-        Param (
+        param(
             [Parameter(Mandatory)]
             [Int[]]$Columns,
             [Parameter(Mandatory)]
             [Int]$StartRow
         )
 
-        Try {
+        try {
             if ($HeaderName) {
                 $i = 0
                 foreach ($H in $HeaderName) {
@@ -86,7 +86,7 @@
                 }
             }
         }
-        Catch {
+        catch {
             throw "Failed creating property names: $_" ; return
         }
     }

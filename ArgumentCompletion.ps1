@@ -6,7 +6,7 @@
 }
 
 function ListFonts {
-    [cmdletbinding()]
+    [CmdletBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingEmptyCatchBlock", "")]
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
     if (-not $script:FontFamilies) {
@@ -77,7 +77,7 @@ function WorksheetArgumentCompleter {
     }
 }
 
-If (Get-Command -ErrorAction SilentlyContinue -name Register-ArgumentCompleter) {
+if   (Get-Command -ErrorAction SilentlyContinue -name Register-ArgumentCompleter) {
     Register-ArgumentCompleter -CommandName Export-Excel               -ParameterName TitleBackgroundColor   -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Add-ConditionalFormatting  -ParameterName BackgroundColor        -ScriptBlock $Function:ColorCompletion
     Register-ArgumentCompleter -CommandName Add-ConditionalFormatting  -ParameterName DataBarColor           -ScriptBlock $Function:ColorCompletion

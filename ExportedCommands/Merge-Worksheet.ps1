@@ -1,6 +1,6 @@
 ﻿function Merge-Worksheet {
-    [cmdletbinding(SupportsShouldProcess=$true)]
-    Param(
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    param(
          [parameter(ParameterSetName='A',Mandatory=$true,Position=0)]  #A = Compare two files default headers
          [parameter(ParameterSetName='B',Mandatory=$true,Position=0)]  #B = Compare two files user supplied headers
          [parameter(ParameterSetName='C',Mandatory=$true,Position=0)]  #C = Compare two files headers P1, P2, P3 etc
@@ -76,7 +76,7 @@
     if ($Referencefile -and $Differencefile) {
          #if the filenames don't resolve, give up now.
          try     { $oneFile = ((Resolve-Path -Path $Referencefile -ErrorAction Stop).path -eq (Resolve-Path -Path $Differencefile  -ErrorAction Stop).path)}
-         Catch   { Write-Warning -Message "Could not Resolve the filenames." ; return }
+         catch   { Write-Warning -Message "Could not Resolve the filenames." ; return }
 
          #If we have one file , we must have two different Worksheet names. If we have two files $WorksheetName can be a single string or two strings.
          if      ($onefile -and ( ($WorksheetName.count -ne 2) -or $WorksheetName[0] -eq $WorksheetName[1] ) ) {
@@ -94,7 +94,7 @@
              $ReferenceObject  = Import-Excel -Path $Referencefile  -WorksheetName $Worksheet1 @params
              $DifferenceObject = Import-Excel -Path $Differencefile -WorksheetName $Worksheet2 @Params
          }
-         Catch   {Write-Warning -Message "Could not read the Worksheet from $Referencefile::$Worksheet1 and/or $Differencefile::$Worksheet2." ; return }
+         catch   {Write-Warning -Message "Could not read the Worksheet from $Referencefile::$Worksheet1 and/or $Differencefile::$Worksheet2." ; return }
          if ($NoHeader) {$firstDataRow = $Startrow  } else {$firstDataRow = $Startrow + 1}
      }
      elseif (                $Differencefile) {
@@ -102,7 +102,7 @@
          $params     =  @{WorksheetName=$WorksheetName; Path=$Differencefile; ErrorAction=[System.Management.Automation.ActionPreference]::Stop }
          foreach ($p in @("HeaderName","NoHeader","StartRow")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
          try            {$DifferenceObject = Import-Excel   @Params }
-         Catch          {Write-Warning -Message "Could not read the Worksheet '$WorksheetName' from $Differencefile::$WorksheetName." ; return }
+         catch          {Write-Warning -Message "Could not read the Worksheet '$WorksheetName' from $Differencefile::$WorksheetName." ; return }
          if ($DiffPrefix -eq "=>" ) {
              $DiffPrefix  =  (Split-Path -Path $Differencefile -Leaf) -replace "\.xlsx$",""
          }

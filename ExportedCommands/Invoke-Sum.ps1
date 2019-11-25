@@ -1,4 +1,5 @@
 function Invoke-Sum {
+    [CmdletBinding()]
     param(
         $data,
         $dimension,

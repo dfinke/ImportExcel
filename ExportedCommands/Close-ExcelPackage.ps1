@@ -1,8 +1,7 @@
-
-Function Close-ExcelPackage {
+function Close-ExcelPackage {
     [CmdLetBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword","")]
-    Param (
+    param (
         [parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [switch]$Show,
@@ -16,7 +15,7 @@ Function Close-ExcelPackage {
     else {
         if ($Calculate) {
             try   { [OfficeOpenXml.CalculationExtension]::Calculate($ExcelPackage.Workbook) }
-            Catch { Write-Warning "One or more errors occured while calculating, save will continue, but there may be errors in the workbook."}
+            catch { Write-Warning "One or more errors occured while calculating, save will continue, but there may be errors in the workbook."}
         }
         if ($SaveAs) {
             $SaveAs = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($SaveAs)

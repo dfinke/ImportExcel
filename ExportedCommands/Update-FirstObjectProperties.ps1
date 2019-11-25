@@ -3,9 +3,10 @@
 
 param()
 
-Function Update-FirstObjectProperties {
-
-    Try {
+function Update-FirstObjectProperties {
+    [CmdletBinding()]
+    param()
+    try {
         $Union = @()
         $Input | ForEach-Object {
             If ($Union.Count) {
@@ -17,7 +18,7 @@ Function Update-FirstObjectProperties {
         }
         $Union
     }
-    Catch {
+    catch {
         throw "Failed updating the properties of the first object: $_"
     }
 }

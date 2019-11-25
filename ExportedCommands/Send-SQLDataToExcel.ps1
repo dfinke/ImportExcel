@@ -1,4 +1,4 @@
-﻿Function Send-SQLDataToExcel {
+﻿function Send-SQLDataToExcel {
     [CmdletBinding(DefaultParameterSetName="none")]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification="Allowed to use DBSessions Global variable from GETSQL Module")]
 

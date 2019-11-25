@@ -1,8 +1,8 @@
-﻿Function Open-ExcelPackage  {
+﻿function Open-ExcelPackage  {
     [CmdLetBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword","")]
     [OutputType([OfficeOpenXml.ExcelPackage])]
-    Param (
+    param(
         #The path to the file to open.
         [Parameter(Mandatory=$true)]$Path,
         #If specified, any running instances of Excel will be terminated before opening the file.

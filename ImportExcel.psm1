@@ -11,9 +11,9 @@ foreach ($directory in @('ExportedCommands','Charting','InferData','Pivot')) {
 if ($PSVersionTable.PSVersion.Major -ge 5) {
     . $PSScriptRoot\Plot.ps1
 
-    Function New-Plot {
-        [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'New-Plot does not change system state')]
-        Param()
+    function New-Plot {
+        [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingfunctions', '', Justification = 'New-Plot does not change system state')]
+        param()
 
         [PSPlot]::new()
     }

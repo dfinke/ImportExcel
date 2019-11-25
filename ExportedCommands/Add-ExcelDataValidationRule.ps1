@@ -1,6 +1,6 @@
-﻿Function Add-ExcelDataValidationRule {
+﻿function Add-ExcelDataValidationRule {
     [CmdletBinding()]
-    Param(
+    param(
         [Parameter(ValueFromPipeline = $true,Position=0)]
         [Alias("Address")]
         $Range ,

@@ -1,10 +1,10 @@
-﻿Function  Set-ExcelRow {
-    [cmdletbinding()]
+﻿function  Set-ExcelRow {
+    [CmdletBinding()]
     [Alias("Set-Row")]
     [OutputType([OfficeOpenXml.ExcelRow],[String])]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system state')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingfunctions', '',Justification='Does not change system state')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification="Variables created for script block which may be passed as a parameter, but not used in the script")]
-    Param (
+    param(
         [Parameter(ParameterSetName="Package",Mandatory=$true)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [Parameter(ParameterSetName="Package")]
