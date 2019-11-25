@@ -64,7 +64,7 @@
     else {
         try {
             if (-not $ExcelPackage) {Write-Warning -message "This combination of Parameters needs to include the ExcelPackage." ; return }
-            [OfficeOpenXml.ExcelWorksheet]$wsPivot = Add-WorkSheet -ExcelPackage $ExcelPackage -WorksheetName $pivotTableName -Activate:$Activate
+            [OfficeOpenXml.ExcelWorksheet]$wsPivot = Add-Worksheet -ExcelPackage $ExcelPackage -WorksheetName $pivotTableName -Activate:$Activate
             if ($wsPivot.Name -ne $PivotTableName) {Write-Warning -Message "The Worksheet name for the PivotTable does not match the table name '$PivotTableName'; probably because excess or illegal characters were removed." }
             if ($PivotFilter) {$Address = $wsPivot.Cells["A3"]} else { $Address = $wsPivot.Cells["A1"]}
         }

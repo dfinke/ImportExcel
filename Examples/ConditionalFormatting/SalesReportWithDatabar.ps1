@@ -14,7 +14,7 @@ Jun,621
      Export-Excel -Path .\test.xlsx -WorkSheetname Sheet1 -AutoNameRange -PassThru
 
 $sheet = $excel.Workbook.Worksheets["Sheet1"]
-Add-ConditionalFormatting -WorkSheet $sheet -Range "B1:B7" -DataBarColor LawnGreen
+Add-ConditionalFormatting -Worksheet $sheet -Range "B1:B7" -DataBarColor LawnGreen
 
 Set-ExcelRange -Address $sheet.Cells["A8"] -Value "Total"
 Set-ExcelRange -Address $sheet.Cells["B8"] -Formula "=Sum(Sales)"

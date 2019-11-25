@@ -1,4 +1,4 @@
-﻿Function Remove-WorkSheet {
+﻿Function Remove-Worksheet {
     [cmdletbinding(SupportsShouldProcess=$true)]
     param(
         #    [Parameter(ValueFromPipelineByPropertyName)]
@@ -11,7 +11,7 @@
 
     Process {
         if (!$FullName) {
-            throw "Remove-WorkSheet requires the and Excel file"
+            throw "Remove-Worksheet requires the and Excel file"
         }
 
         $pkg = Open-ExcelPackage -Path $FullName

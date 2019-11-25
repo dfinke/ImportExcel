@@ -181,7 +181,7 @@ Describe "Exporting with -Inputobject, table handling, Send-SQL-Data. Checking I
 
     Close-ExcelPackage $excel
     Context "Import As Text returns text values" {
-        $x = import-excel  $path -WorksheetName sheet3 -AsText StartTime,hand* | Select-Object -last 1
+        $x = Import-excel  $path -WorksheetName sheet3 -AsText StartTime,hand* | Select-Object -last 1
         it "Had fields of type string, not date or int, where specified as ASText                  " {
             $x.Handles.GetType().Name                                   | should     be "String"
             $x.StartTime.GetType().Name                                 | should     be "String"

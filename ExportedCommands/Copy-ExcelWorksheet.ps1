@@ -1,4 +1,4 @@
-﻿function Copy-ExcelWorkSheet {
+﻿function Copy-ExcelWorksheet {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true,ValueFromPipeline=$true)]
@@ -39,7 +39,7 @@
                     return
                 }
                 else {
-                    $null = Add-WorkSheet -ExcelPackage $excel -WorkSheetname $DestinationWorksheet -CopySource ($excel.Workbook.Worksheets[$SourceWorkSheet])
+                    $null = Add-Worksheet -ExcelPackage $excel -WorkSheetname $DestinationWorksheet -CopySource ($excel.Workbook.Worksheets[$SourceWorkSheet])
                     Close-ExcelPackage -ExcelPackage $excel -Show:$Show
                     return
                 }
@@ -76,7 +76,7 @@
                         $DestinationWorkbook.Worksheets.Delete($DestinationWorksheet)
                     }
                     Write-Verbose "Copying '$($sourcews.name)' from $($SourceObject) to '$($DestinationWorksheet)' in $($PSBoundParameters['DestinationWorkbook'])"
-                    $null = Add-WorkSheet -ExcelWorkbook $DestinationWorkbook -WorkSheetname $DestinationWorksheet -CopySource  $sourceWs
+                    $null = Add-Worksheet -ExcelWorkbook $DestinationWorkbook -WorkSheetname $DestinationWorksheet -CopySource  $sourceWs
                     #Leave the destination open but close the source - if we're copying more than one sheet we'll re-open it and live with the inefficiency
                     if ($stream)   {$stream.Close()                                        }
                     if ($package1) {Close-ExcelPackage -ExcelPackage $package1 -NoSave     }

@@ -5,7 +5,7 @@ function ConvertTo-PesterTest {
         $WorksheetName = 'Sheet1'
     )
 
-    $testFileName = "{0}.tests.ps1" -f (get-date).ToString("yyyyMMddHHmmss")
+    $testFileName = "{0}.tests.ps1" -f (Get-date).ToString("yyyyMMddHHmmss")
 
     $records = Import-Excel $XlFilename
 

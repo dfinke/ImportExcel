@@ -115,7 +115,7 @@
      #Make a list of properties/headings using the Property (default "*") and ExcludeProperty parameters
      $propList         = @()
      $DifferenceObject = $DifferenceObject | Update-FirstObjectProperties
-     $headings         = $DifferenceObject[0].psobject.Properties.Name # This preserves the sequence - using get-member would sort them alphabetically! There may be extra properties in
+     $headings         = $DifferenceObject[0].psobject.Properties.Name # This preserves the sequence - using Get-member would sort them alphabetically! There may be extra properties in
      if ($NoHeader     -and "Name" -eq $Key)  {$Key     = "p1"}
      if ($headings     -notcontains    $Key -and
                               ('*' -ne $Key)) {Write-Warning -Message "You need to specify one of the headings in the sheet '$Worksheet1' as a key." ; return }

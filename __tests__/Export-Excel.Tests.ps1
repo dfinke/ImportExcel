@@ -2,7 +2,7 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidAssignmentToAutomaticVariable", "", Justification='Sets IsWindows on pre-6.0 only')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
 param()
-if (-not (get-command Import-Excel -ErrorAction SilentlyContinue)) {
+if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
     Import-Module $PSScriptRoot\..\ImportExcel.psd1
 }
 if ($null -eq $IsWindows) {$IsWindows = [environment]::OSVersion.Platform -like "win*"}
@@ -397,7 +397,7 @@ Describe ExportExcel {
         }
     }
 
-    #Test adding mutliple conditional blocks and using the minimal syntax for new-ConditionalText
+    #Test adding mutliple conditional blocks and using the minimal syntax for New-ConditionalText
     $path = "TestDrive:\test.xlsx"
     Remove-item -Path $path -ErrorAction SilentlyContinue
 
@@ -523,15 +523,15 @@ Describe ExportExcel {
 
     Context "                # Add-Worksheet inserted sheets, moved them correctly, and copied a sheet" {
         $path = "TestDrive:\test.xlsx"
-        #Test the -CopySource and -Movexxxx parameters for Add-WorkSheet
+        #Test the -CopySource and -Movexxxx parameters for Add-Worksheet
         $Excel = Open-ExcelPackage  $path
         #At this point Sheets Should be in the order Sheet1, Processes, ProcessesPivotTable
-        $null = Add-WorkSheet -ExcelPackage $Excel -WorkSheetname "Processes" -MoveToEnd   # order now  Sheet1, ProcessesPivotTable, Processes
-        $null = Add-WorkSheet -ExcelPackage $Excel -WorkSheetname "NewSheet"  -MoveAfter "*" -CopySource ($excel.Workbook.Worksheets["Sheet1"]) # Now its NewSheet, Sheet1, ProcessesPivotTable, Processes
-        $null = Add-WorkSheet -ExcelPackage $Excel -WorkSheetname "Sheet1"    -MoveAfter "Processes"  # Now its NewSheet, ProcessesPivotTable, Processes, Sheet1
-        $null = Add-WorkSheet -ExcelPackage $Excel -WorkSheetname "Another"   -MoveToStart    # Now its Another, NewSheet, ProcessesPivotTable, Processes, Sheet1
-        $null = Add-WorkSheet -ExcelPackage $Excel -WorkSheetname "NearDone"  -MoveBefore 5   # Now its  Another, NewSheet, ProcessesPivotTable, Processes, NearDone ,Sheet1
-        $null = Add-WorkSheet -ExcelPackage $Excel -WorkSheetname "OneLast"   -MoveBefore "ProcessesPivotTable"   # Now its Another, NewSheet, Onelast, ProcessesPivotTable, Processes,NearDone ,Sheet1
+        $null = Add-Worksheet -ExcelPackage $Excel -WorkSheetname "Processes" -MoveToEnd   # order now  Sheet1, ProcessesPivotTable, Processes
+        $null = Add-Worksheet -ExcelPackage $Excel -WorkSheetname "NewSheet"  -MoveAfter "*" -CopySource ($excel.Workbook.Worksheets["Sheet1"]) # Now its NewSheet, Sheet1, ProcessesPivotTable, Processes
+        $null = Add-Worksheet -ExcelPackage $Excel -WorkSheetname "Sheet1"    -MoveAfter "Processes"  # Now its NewSheet, ProcessesPivotTable, Processes, Sheet1
+        $null = Add-Worksheet -ExcelPackage $Excel -WorkSheetname "Another"   -MoveToStart    # Now its Another, NewSheet, ProcessesPivotTable, Processes, Sheet1
+        $null = Add-Worksheet -ExcelPackage $Excel -WorkSheetname "NearDone"  -MoveBefore 5   # Now its  Another, NewSheet, ProcessesPivotTable, Processes, NearDone ,Sheet1
+        $null = Add-Worksheet -ExcelPackage $Excel -WorkSheetname "OneLast"   -MoveBefore "ProcessesPivotTable"   # Now its Another, NewSheet, Onelast, ProcessesPivotTable, Processes,NearDone ,Sheet1
         Close-ExcelPackage $Excel
 
         $Excel = Open-ExcelPackage  $path
@@ -735,10 +735,10 @@ Describe ExportExcel {
         Set-ExcelRange -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NFormat "#,###"
         Set-ExcelRange -Address $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#,##0.0" -Bold
         Set-ExcelRange -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
-        Add-ConditionalFormatting -WorkSheet $sheet -Range "D2:D1048576" -DataBarColor ([System.Drawing.Color]::Red)
+        Add-ConditionalFormatting -Worksheet $sheet -Range "D2:D1048576" -DataBarColor ([System.Drawing.Color]::Red)
         #test Add-ConditionalFormatting -passthru and using a range (and no worksheet)
         $rule = Add-ConditionalFormatting -passthru -Address $sheet.cells["C:C"] -RuleType TopPercent -ConditionValue 20 -Bold -StrikeThru
-        Add-ConditionalFormatting -WorkSheet $sheet -Range "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600" -ForeGroundColor ([System.Drawing.Color]::Red) -Bold -Italic -Underline -BackgroundColor  ([System.Drawing.Color]::Beige) -BackgroundPattern LightUp -PatternColor  ([System.Drawing.Color]::Gray)
+        Add-ConditionalFormatting -Worksheet $sheet -Range "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600" -ForeGroundColor ([System.Drawing.Color]::Red) -Bold -Italic -Underline -BackgroundColor  ([System.Drawing.Color]::Beige) -BackgroundPattern LightUp -PatternColor  ([System.Drawing.Color]::Gray)
         #Test Set-ExcelRange with a column
         if ($isWindows) { foreach ($c in 5..9) {Set-ExcelRange $sheet.Column($c)  -AutoFit } }
         Add-PivotTable -PivotTableName "PT_Procs" -ExcelPackage $excel -SourceWorkSheet 1 -PivotRows Company -PivotData  @{'Name' = 'Count'} -IncludePivotChart -ChartType ColumnClustered -NoLegend
@@ -810,8 +810,8 @@ Describe ExportExcel {
         Remove-Item -Path   $path -ErrorAction SilentlyContinue
         #Test we haven't missed any parameters on New-ChartDefinition which are on add chart or vice versa.
 
-        $ParamChk1 =  (get-command Add-ExcelChart          ).Parameters.Keys.where({-not (get-command New-ExcelChartDefinition).Parameters.ContainsKey($_) }) | Sort-Object
-        $ParamChk2 =  (get-command New-ExcelChartDefinition).Parameters.Keys.where({-not (get-command Add-ExcelChart          ).Parameters.ContainsKey($_) })
+        $ParamChk1 =  (Get-command Add-ExcelChart          ).Parameters.Keys.where({-not (Get-command New-ExcelChartDefinition).Parameters.ContainsKey($_) }) | Sort-Object
+        $ParamChk2 =  (Get-command New-ExcelChartDefinition).Parameters.Keys.where({-not (Get-command Add-ExcelChart          ).Parameters.ContainsKey($_) })
         it "Found the same parameters for Add-ExcelChart and New-ExcelChartDefinintion             " {
             $ParamChk1.count                                            | Should     be 3
             $ParamChk1[0]                                               | Should     be "PassThru"
@@ -872,7 +872,7 @@ Describe ExportExcel {
                        -Column 2 -ColumnOffSetPixels 35 -Width 800 -XAxisTitleText "Degrees" -XAxisTitleBold -XAxisTitleSize 12 -XMajorUnit 30 -XMinorUnit 10 -XMinValue 0 -XMaxValue 361  -XAxisNumberformat "000" `
                        -YMinValue -1.25 -YMaxValue 1.25 -YMajorUnit 0.25 -YAxisNumberformat "0.00" -YAxisTitleText "Sine" -YAxisTitleBold -YAxisTitleSize 12 `
                        -LegendSize 8 -legendBold  -LegendPosition Bottom
-        Add-ConditionalFormatting -WorkSheet $excel.Workbook.Worksheets["Sinx"] -Range "B2:B362" -RuleType LessThan -ConditionValue "=B1" -ForeGroundColor ([System.Drawing.Color]::Red)
+        Add-ConditionalFormatting -Worksheet $excel.Workbook.Worksheets["Sinx"] -Range "B2:B362" -RuleType LessThan -ConditionValue "=B1" -ForeGroundColor ([System.Drawing.Color]::Red)
         $ws = $Excel.Workbook.Worksheets["Sinx"]
         $d  = $ws.Drawings[0]
         It "Controled the axes and title and legend of the chart                                   " {

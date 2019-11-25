@@ -1,5 +1,5 @@
 ﻿#Requires -Modules Pester
-if (-not (get-command Import-Excel -ErrorAction SilentlyContinue)) {
+if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
     Import-Module $PSScriptRoot\..\ImportExcel.psd1
 }
 Describe "Remove Worksheet" {
@@ -29,11 +29,11 @@ John,20
         }
 
         it "Should throw about the Path".PadRight(87)  {
-            {Remove-WorkSheet} | Should throw 'Remove-WorkSheet requires the and Excel file'
+            {Remove-Worksheet} | Should throw 'Remove-Worksheet requires the and Excel file'
         }
 
         it "Should delete Target2".PadRight(87)  {
-            Remove-WorkSheet -Path $xlFile1 -WorksheetName Target2
+            Remove-Worksheet -Path $xlFile1 -WorksheetName Target2
 
             $actual = Get-ExcelSheetInfo -Path $xlFile1
 
@@ -44,7 +44,7 @@ John,20
         }
 
         it "Should delete Sheet1".PadRight(87)  {
-            Remove-WorkSheet -Path $xlFile1
+            Remove-Worksheet -Path $xlFile1
 
             $actual = Get-ExcelSheetInfo -Path $xlFile1
 
@@ -55,7 +55,7 @@ John,20
         }
 
         it "Should delete multiple sheets".PadRight(87)  {
-            Remove-WorkSheet -Path $xlFile1 -WorksheetName Target1, Sheet1
+            Remove-Worksheet -Path $xlFile1 -WorksheetName Target1, Sheet1
 
             $actual = Get-ExcelSheetInfo -Path $xlFile1
 
@@ -66,7 +66,7 @@ John,20
 
         it "Should delete sheet from multiple workbooks".PadRight(87)  {
 
-            Get-ChildItem "TestDrive:\RemoveWorsheet*.xlsx" | Remove-WorkSheet
+            Get-ChildItem "TestDrive:\RemoveWorsheet*.xlsx" | Remove-Worksheet
 
             $actual = Get-ExcelSheetInfo -Path $xlFile1
 

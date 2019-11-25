@@ -1,4 +1,4 @@
-if (-not (get-command Import-Excel -ErrorAction SilentlyContinue)) {
+if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
     Import-Module $PSScriptRoot\..\ImportExcel.psd1
 }
 $xlFile = "TestDrive:\testSQL.xlsx"

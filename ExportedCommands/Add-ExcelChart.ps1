@@ -49,7 +49,7 @@ function Add-ExcelChart {
     )
     try {
         if ($PivotTable) {
-            $Worksheet = $PivotTable.WorkSheet
+            $Worksheet = $PivotTable.Worksheet
             $chart = $Worksheet.Drawings.AddChart(("Chart" + $PivotTable.Name ), $ChartType, $PivotTable)
         }
         else {
@@ -138,5 +138,5 @@ function Add-ExcelChart {
 
         if ($PassThru) { return $chart }
     }
-    catch { Write-Warning -Message "Failed adding Chart to worksheet '$($WorkSheet).name': $_" }
+    catch { Write-Warning -Message "Failed adding Chart to worksheet '$($Worksheet).name': $_" }
 }

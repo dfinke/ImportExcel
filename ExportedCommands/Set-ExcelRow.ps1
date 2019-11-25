@@ -113,7 +113,7 @@
         }
         if ($params.Count) {
             $theRange = New-Object -TypeName OfficeOpenXml.ExcelAddress @($Row, $StartColumn, $Row, $endColumn)
-            Set-ExcelRange -WorkSheet $Worksheet -Range $theRange @params
+            Set-ExcelRange -Worksheet $Worksheet -Range $theRange @params
         }
         #endregion
         if ($PSBoundParameters.ContainsKey('Hide')) {$workSheet.Row($Row).Hidden = [bool]$Hide}

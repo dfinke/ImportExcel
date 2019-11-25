@@ -4,7 +4,7 @@
         [Parameter(ValueFromPipeline = $true,Position=0)]
         [Alias("Address")]
         $Range ,
-        [OfficeOpenXml.ExcelWorksheet]$WorkSheet ,
+        [OfficeOpenXml.ExcelWorksheet]$Worksheet ,
         [ValidateSet('Any','Custom','DateTime','Decimal','Integer','List','TextLength','Time')]
         $ValidationType,
         [OfficeOpenXml.DataValidation.ExcelDataValidationOperator]$Operator = [OfficeOpenXml.DataValidation.ExcelDataValidationOperator]::equal ,
@@ -28,13 +28,13 @@
     }
     else {
         #We should accept, a worksheet and a name of a range or a cell address; a table; the address of a table; a named range; a row, a column or .Cells[ ]
-        if      (-not $WorkSheet -and $Range.worksheet) {$WorkSheet = $Range.worksheet}
+        if      (-not $Worksheet -and $Range.worksheet) {$Worksheet = $Range.worksheet}
         if      ($Range.Address)   {$Range = $Range.Address}
 
-        if      ($Range -isnot [string] -or -not $WorkSheet) {Write-Warning -Message "You need to provide a worksheet and range of cells." ;return}
+        if      ($Range -isnot [string] -or -not $Worksheet) {Write-Warning -Message "You need to provide a worksheet and range of cells." ;return}
        #else we assume Range is a range.
 
-        $validation = $WorkSheet.DataValidations."Add$ValidationType`Validation"($Range)
+        $validation = $Worksheet.DataValidations."Add$ValidationType`Validation"($Range)
         if     ($validation.AllowsOperator) {$validation.Operator = $Operator}
         if     ($PSBoundParameters.ContainsKey('value')) {
                             $validation.Formula.Value          = $Value

@@ -1,4 +1,4 @@
-﻿Function Compare-WorkSheet {
+﻿Function Compare-Worksheet {
     [cmdletbinding(DefaultParameterSetName)]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification="Write host used for sub-warning level message to operator which does not form output")]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification="False positives when initializing variable in begin block")]
@@ -49,7 +49,7 @@
     Catch  {Write-Warning -Message "Could not read the worksheet from $Referencefile and/or $Differencefile." ; return }
 
     #Get Column headings and create a hash table of Name to column letter.
-    $headings = $Sheet1[-1].psobject.Properties.name # This preserves the sequence - using get-member would sort them alphabetically!
+    $headings = $Sheet1[-1].psobject.Properties.name # This preserves the sequence - using Get-member would sort them alphabetically!
     $headings | ForEach-Object -Begin {$columns  = @{}  ; $i= 1 } -Process  {$Columns[$_] = [OfficeOpenXml.ExcelAddress]::GetAddress(1,($i ++)) -replace "\d","" }
 
     #Make a list of property headings using the Property (default "*") and ExcludeProperty parameters
@@ -88,13 +88,13 @@
                     $ws =  $xl.Workbook.Worksheets[$_]
                     if ($headerName) {$range = "A" +  $startrow      + ":" + $ws.dimension.end.address}
                     else             {$range = "A" + ($startrow + 1) + ":" + $ws.dimension.end.address}
-                    Set-ExcelRange -WorkSheet $ws -BackgroundColor $AllDataBackgroundColor -Range $Range
+                    Set-ExcelRange -Worksheet $ws -BackgroundColor $AllDataBackgroundColor -Range $Range
                 }
             }
             foreach ($row in $file.group)  {
                 $ws    = $xl.Workbook.Worksheets[$row._Sheet]
                 $range = $ws.Dimension -replace "\d+",$row._row
-                Set-ExcelRange -WorkSheet $ws -Range $range -BackgroundColor $BackgroundColor
+                Set-ExcelRange -Worksheet $ws -Range $range -BackgroundColor $BackgroundColor
             }
             if  ($PSBoundParameters.ContainsKey("TabColor")) {
                 if ($TabColor -is [string])         {$TabColor = [System.Drawing.Color]::$TabColor }
@@ -123,8 +123,8 @@
                         $ws2 =  $xl1.Workbook.Worksheets[$u.Group[1]._sheet]
                     }
                     if($u.Group[0].$p -ne $u.Group[1].$p ) {
-                        Set-ExcelRange -WorkSheet $ws1 -Range ($Columns[$p] + $u.Group[0]._Row) -FontColor $FontColor
-                        Set-ExcelRange -WorkSheet $ws2 -Range ($Columns[$p] + $u.Group[1]._Row) -FontColor $FontColor
+                        Set-ExcelRange -Worksheet $ws1 -Range ($Columns[$p] + $u.Group[0]._Row) -FontColor $FontColor
+                        Set-ExcelRange -Worksheet $ws2 -Range ($Columns[$p] + $u.Group[1]._Row) -FontColor $FontColor
                     }
                 }
             }

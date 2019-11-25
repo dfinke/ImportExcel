@@ -1,7 +1,7 @@
 Remove-Item -Path  "$env:temp\server*.xlsx" , "$env:temp\Combined*.xlsx" -ErrorAction SilentlyContinue
 
 #Get a subset of services into $s and export them
-[System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property *
+[System.Collections.ArrayList]$s = Get-service | Select-Object -first 25 -Property *
 $s | Export-Excel -Path $env:temp\server1.xlsx
 
 #$s is a zero based array, excel rows are 1 based and excel has a header row so Excel rows will be 2 + index in $s.

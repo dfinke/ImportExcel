@@ -116,7 +116,7 @@
         }
         if ($params.Count) {
             $theRange =   "$columnName$StartRow`:$columnName$endRow"
-            Set-ExcelRange -WorkSheet $Worksheet -Range $theRange @params
+            Set-ExcelRange -Worksheet $Worksheet -Range $theRange @params
         }
         #endregion
         if      ($PSBoundParameters.ContainsKey('Hide')) {$workSheet.Column($Column).Hidden = [bool]$Hide}

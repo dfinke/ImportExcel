@@ -55,7 +55,7 @@
     )
     #region get target worksheet, select it and move it to the end.
     if ($Path -and -not $ExcelPackage) {$ExcelPackage = Open-ExcelPackage -path $Path  }
-    $destinationSheet = Add-WorkSheet -ExcelPackage $ExcelPackage -WorkSheetname $WorkSheetName -ClearSheet:$Clearsheet
+    $destinationSheet = Add-Worksheet -ExcelPackage $ExcelPackage -WorkSheetname $WorkSheetName -ClearSheet:$Clearsheet
     foreach ($w in $ExcelPackage.Workbook.Worksheets) {$w.view.TabSelected = $false}
     $destinationSheet.View.TabSelected = $true
     $ExcelPackage.Workbook.Worksheets.MoveToEnd($WorkSheetName)
@@ -117,7 +117,7 @@
         if ($HideSource) {$sourceWorksheet.Hidden = [OfficeOpenXml.eWorkSheetHidden]::Hidden}
     }
 
-    #We accept a bunch of parameters work to pass on to Export-excel ( Autosize, Autofilter, boldtopRow Freeze ); if we have any of those call export-excel otherwise close the package here.
+    #We accept a bunch of parameters work to pass on to Export-excel ( Autosize, Autofilter, boldtopRow Freeze ); if we have any of those call Export-excel otherwise close the package here.
     $params = @{} + $PSBoundParameters
     'Path', 'Clearsheet', 'NoHeader', 'FromLabel', 'LabelBlocks', 'HideSource',
     'Title', 'TitleFillPattern', 'TitleBackgroundColor', 'TitleBold', 'TitleSize' | ForEach-Object {$null = $params.Remove($_)}

@@ -6,7 +6,7 @@
         [Parameter(ValueFromPipeline = $true,Position=0)]
         [Alias("Address")]
         $Range ,
-        [OfficeOpenXml.ExcelWorksheet]$WorkSheet ,
+        [OfficeOpenXml.ExcelWorksheet]$Worksheet ,
         [Alias("NFormat")]
         $NumberFormat,
         [OfficeOpenXml.Style.ExcelBorderStyle]$BorderAround,
@@ -54,8 +54,8 @@
         else {
             #We should accept, a worksheet and a name of a range or a cell address; a table; the address of a table; a named range; a row, a column or .Cells[ ]
             if ($Range -is [OfficeOpenXml.Table.ExcelTable]) {$Range = $Range.Address}
-            elseif ($WorkSheet -and ($Range -is [string] -or $Range -is [OfficeOpenXml.ExcelAddress])) {
-                $Range = $WorkSheet.Cells[$Range]
+            elseif ($Worksheet -and ($Range -is [string] -or $Range -is [OfficeOpenXml.ExcelAddress])) {
+                $Range = $Worksheet.Cells[$Range]
             }
             elseif ($Range -is [string]) {Write-Warning -Message "The range pararameter you have specified also needs a worksheet parameter." ;return}
             #else we assume $Range is a range.
@@ -159,7 +159,7 @@
                 if ($Range -is [OfficeOpenXml.ExcelRow]   ) {$Range.Height = $Height }
                 elseif ($Range -is [OfficeOpenXml.ExcelRange] ) {
                     ($Range.Start.Row)..($Range.Start.Row + $Range.Rows) |
-                        ForEach-Object {$Range.WorkSheet.Row($_).Height = $Height }
+                        ForEach-Object {$Range.Worksheet.Row($_).Height = $Height }
                 }
                 else {Write-Warning -Message ("Can set the height of a row or a range but not a {0} object" -f ($Range.GetType().name)) }
             }

@@ -16,11 +16,11 @@ describe "Consistent passing of ranges." {
             $warnvar                                                                                                                   | should not beNullOrEmpty
             $excel.Services.ConditionalFormatting.Count                                                                                | Should     be 2
             $warnvar = $null
-            Add-ConditionalFormatting $excel.Services.Column(3) -WorkSheet $excel.Services`
+            Add-ConditionalFormatting $excel.Services.Column(3) -Worksheet $excel.Services`
             -underline -RuleType ContainsText -ConditionValue "Windows" -WarningVariable warnvar -WarningAction SilentlyContinue
             $warnvar                                                                                                                   | should     beNullOrEmpty
             $excel.Services.ConditionalFormatting.Count                                                                                | Should     be 3
-            {Add-ConditionalFormatting "Status"  -WorkSheet $excel.Services `
+            {Add-ConditionalFormatting "Status"  -Worksheet $excel.Services `
                 -ForeGroundColor ([System.Drawing.Color]::Green) -RuleType ContainsText -ConditionValue "Running"}                     | Should not throw
             $excel.Services.ConditionalFormatting.Count                                                                                | Should     be 4
         }
@@ -33,36 +33,36 @@ describe "Consistent passing of ranges." {
             {Add-ConditionalFormatting $excel.Services.Tables["ServiceTable"].Address `
                 -Bold -RuleType ContainsText -ConditionValue "windows"                                                               } | Should not throw
             $excel.Services.ConditionalFormatting.Count                                                                                | Should     be 2
-            {Add-ConditionalFormatting -WorkSheet $excel.Services -Address "a:a" `
+            {Add-ConditionalFormatting -Worksheet $excel.Services -Address "a:a" `
                 -RuleType ContainsText -ConditionValue "stopped" -ForeGroundColor ([System.Drawing.Color]::Red)                      } | Should not throw
             $excel.Services.ConditionalFormatting.Count                                                                                | Should     be 3
         }
         Close-ExcelPackage -NoSave $excel
     }
 
-    Context "Formating (Set-ExcelRange or its alias set-Format) " {
+    Context "Formating (Set-ExcelRange or its alias Set-Format) " {
         it "accepts Named Range, cells['Name'], cells['A1:Z9'], row, Worksheet + 'A1:Z9'" {
             $excel = Get-Service | Export-Excel -Path test2.xlsx -WorksheetName Services -PassThru -AutoSize -DisplayPropertySet -RangeName servicerange -Title "Services on $Env:COMPUTERNAME"
-            {set-format $excel.Services.Names["serviceRange"] -Bold                                                                  } | Should Not Throw
+            {Set-format $excel.Services.Names["serviceRange"] -Bold                                                                  } | Should Not Throw
             $excel.Services.cells["B2"].Style.Font.Bold                                                                                | Should     be $true
             {Set-ExcelRange -Range $excel.Services.Cells["serviceRange"] -italic:$true                                               } | Should not throw
             $excel.Services.cells["C3"].Style.Font.Italic                                                                              | Should     be $true
-            {set-format $excel.Services.Row(4) -underline -Bold:$false                                                               } | Should not throw
+            {Set-format $excel.Services.Row(4) -underline -Bold:$false                                                               } | Should not throw
             $excel.Services.cells["A4"].Style.Font.UnderLine                                                                           | Should     be $true
             $excel.Services.cells["A4"].Style.Font.Bold                                                                                | Should not be $true
             {Set-ExcelRange $excel.Services.Cells["A3:B3"] -StrikeThru                                                               } | Should not throw
             $excel.Services.cells["B3"].Style.Font.Strike                                                                              | Should     be $true
-            {Set-ExcelRange -WorkSheet $excel.Services -Range "A5:B6" -FontSize 8                                                    } | Should not throw
+            {Set-ExcelRange -Worksheet $excel.Services -Range "A5:B6" -FontSize 8                                                    } | Should not throw
             $excel.Services.cells["A5"].Style.Font.Size                                                                                | Should     be 8
         }
         Close-ExcelPackage -NoSave $excel
         it "Accepts Table, Table.Address , worksheet + Name, Column," {
             $excel = Get-Service | Export-Excel -Path test2.xlsx -WorksheetName Services -PassThru -AutoNameRange -AutoSize -DisplayPropertySet -TableName servicetable -Title "Services on $Env:COMPUTERNAME"
-            {set-ExcelRange $excel.Services.Tables[0] -Italic                                                                        } | Should not throw
+            {Set-ExcelRange $excel.Services.Tables[0] -Italic                                                                        } | Should not throw
             $excel.Services.cells["C3"].Style.Font.Italic                                                                              | Should     be $true
-            {set-format $excel.Services.Tables["ServiceTable"].Address -Underline                                                    } | Should not throw
+            {Set-format $excel.Services.Tables["ServiceTable"].Address -Underline                                                    } | Should not throw
             $excel.Services.cells["C3"].Style.Font.UnderLine                                                                           | Should     be $true
-            {Set-ExcelRange -WorkSheet $excel.Services -Range "Name" -Bold                                                           } | Should not throw
+            {Set-ExcelRange -Worksheet $excel.Services -Range "Name" -Bold                                                           } | Should not throw
             $excel.Services.cells["B4"].Style.Font.Bold                                                                                | Should     be $true
            {$excel.Services.Column(3) | Set-ExcelRange -FontColor ([System.Drawing.Color]::Red)                                      } | Should not throw
             $excel.Services.cells["C4"].Style.Font.Color.Rgb                                                                           | Should     be "FFFF0000"

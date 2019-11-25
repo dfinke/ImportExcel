@@ -21,8 +21,8 @@ $data = $(
     New-PSItem Westerly 120
     New-PSItem SouthWest 118
 )
-# in this example instead of doing $variable = New-Conditional text <parameters> .... ; Export-excel -conditionalText $variable <other parameters>
-# the syntax is used is Export-excel -conditionalText (New-Conditional text <parameters>) <other parameters>
+# in this example instead of doing $variable = New-Conditional text <parameters> .... ; Export-excel -ConditionalText $variable <other parameters>
+# the syntax is used is Export-excel -ConditionalText (New-Conditional text <parameters>) <other parameters>
 
 
 #$data  | Export-Excel $f -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType AboveAverage)

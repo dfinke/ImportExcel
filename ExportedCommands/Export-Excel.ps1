@@ -124,7 +124,7 @@
         try   {
             $params = @{WorksheetName=$WorksheetName}
             foreach ($p in @("ClearSheet", "MoveToStart", "MoveToEnd", "MoveBefore", "MoveAfter", "Activate")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
-            $ws = $pkg | Add-WorkSheet @params
+            $ws = $pkg | Add-Worksheet @params
             if ($ws.Name -ne $WorksheetName) {
                 Write-Warning -Message "The Worksheet name has been changed from $WorksheetName to $($ws.Name), this may cause errors later."
                 $WorksheetName = $ws.Name
@@ -609,27 +609,27 @@
                            ForeGroundColor = $c.ConditionalTextColor}
                     if ($c.Range) {$cfParams.Range = $c.Range}
                     else          {$cfParams.Range = $ws.Dimension.Address }
-                    Add-ConditionalFormatting -WorkSheet $ws @cfParams
+                    Add-ConditionalFormatting -Worksheet $ws @cfParams
                     Write-Verbose -Message "Added conditional formatting to range $($c.range)"
                 }
                 elseif ($c.formatter)  {
                     switch ($c.formatter) {
-                        "ThreeIconSet" {Add-ConditionalFormatting -WorkSheet $ws -ThreeIconsSet $c.IconType -range $c.range -reverse:$c.reverse  }
-                        "FourIconSet"  {Add-ConditionalFormatting -WorkSheet $ws  -FourIconsSet $c.IconType -range $c.range -reverse:$c.reverse  }
-                        "FiveIconSet"  {Add-ConditionalFormatting -WorkSheet $ws  -FiveIconsSet $c.IconType -range $c.range -reverse:$c.reverse  }
+                        "ThreeIconSet" {Add-ConditionalFormatting -Worksheet $ws -ThreeIconsSet $c.IconType -range $c.range -reverse:$c.reverse  }
+                        "FourIconSet"  {Add-ConditionalFormatting -Worksheet $ws  -FourIconsSet $c.IconType -range $c.range -reverse:$c.reverse  }
+                        "FiveIconSet"  {Add-ConditionalFormatting -Worksheet $ws  -FiveIconsSet $c.IconType -range $c.range -reverse:$c.reverse  }
                     }
                     Write-Verbose -Message "Added conditional formatting to range $($c.range)"
                 }
                 elseif ($c -is [hashtable] -or  $c -is[System.Collections.Specialized.OrderedDictionary]) {
                     if (-not $c.Range -or $c.Address) {$c.Address = $ws.Dimension.Address }
-                    Add-ConditionalFormatting -WorkSheet $ws @c
+                    Add-ConditionalFormatting -Worksheet $ws @c
                 }
             }
             catch {throw "Error applying conditional formatting to worksheet $_"}
         }
         foreach ($s in $Style) {
             if (-not $s.Range) {$s["Range"] = $ws.Dimension.Address }
-            Set-ExcelRange -WorkSheet $ws @s
+            Set-ExcelRange -Worksheet $ws @s
         }
         if ($CellStyleSB) {
             try {

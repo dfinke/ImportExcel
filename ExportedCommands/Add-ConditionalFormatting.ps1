@@ -3,7 +3,7 @@
         [Parameter(Mandatory = $true, Position = 0)]
         [Alias("Range")]
         $Address ,
-        [OfficeOpenXml.ExcelWorksheet]$WorkSheet ,
+        [OfficeOpenXml.ExcelWorksheet]$Worksheet ,
         [Parameter(Mandatory = $true, ParameterSetName = "NamedRule", Position = 1)]
         [OfficeOpenXml.ConditionalFormatting.eExcelConditionalFormattingRuleType]$RuleType ,
         [Parameter(ParameterSetName = "NamedRule")]
@@ -51,18 +51,18 @@
 
     #Allow conditional formatting to work like Set-ExcelRange (with single ADDRESS parameter), split it to get worksheet and range of cells.
     If ($Address -is [OfficeOpenXml.Table.ExcelTable]) {
-            $WorkSheet = $Address.Address.Worksheet
+            $Worksheet = $Address.Address.Worksheet
             $Address   = $Address.Address.Address
     }
-    elseif  ($Address.Address -and $Address.Worksheet -and -not $WorkSheet) { #Address is a rangebase or similar
-        $WorkSheet = $Address.Worksheet[0]
+    elseif  ($Address.Address -and $Address.Worksheet -and -not $Worksheet) { #Address is a rangebase or similar
+        $Worksheet = $Address.Worksheet[0]
         $Address   = $Address.Address
     }
-    elseif ($Address -is [String] -and $WorkSheet -and $WorkSheet.Names[$Address] ) { #Address is the name of a named range.
-        $Address = $WorkSheet.Names[$Address].Address
+    elseif ($Address -is [String] -and $Worksheet -and $Worksheet.Names[$Address] ) { #Address is the name of a named range.
+        $Address = $Worksheet.Names[$Address].Address
     }
-    if (($Address -is [OfficeOpenXml.ExcelRow]    -and -not $WorkSheet) -or
-        ($Address -is [OfficeOpenXml.ExcelColumn] -and -not $WorkSheet) ){  #EPPLUs Can't get the worksheet object from a row or column object, so bail if that was tried
+    if (($Address -is [OfficeOpenXml.ExcelRow]    -and -not $Worksheet) -or
+        ($Address -is [OfficeOpenXml.ExcelColumn] -and -not $Worksheet) ){  #EPPLUs Can't get the worksheet object from a row or column object, so bail if that was tried
         Write-Warning -Message "Add-ConditionalFormatting does not support Row or Column objects as an address; use a worksheet and/or specify 'R:R' or 'C:C' instead. "; return
     }
     elseif ($Address -is [OfficeOpenXml.ExcelRow]) {  #But if we have a column or row object and a worksheet (I don't know *why*) turn them into a string for the range
@@ -74,16 +74,16 @@
     }
     if ( $Address -is [string] -and $Address -match "!") {$Address = $Address -replace '^.*!',''}
     #By this point we should have a worksheet object whose ConditionalFormatting collection we will add to. If not, bail.
-    if (-not $worksheet -or $WorkSheet -isnot [OfficeOpenXml.ExcelWorksheet]) {write-warning "You need to provide a worksheet object." ; return}
+    if (-not $worksheet -or $Worksheet -isnot [OfficeOpenXml.ExcelWorksheet]) {write-warning "You need to provide a worksheet object." ; return}
     #region create a rule of the right type
     if     ($RuleType -match 'IconSet$') {Write-warning -Message "You cannot configure a Icon-Set rule in this way; please use -$RuleType <SetName>." ; return}
     if ($PSBoundParameters.ContainsKey("DataBarColor"  )      ) {if ($DataBarColor -is [string]) {$DataBarColor = [System.Drawing.Color]::$DataBarColor }
-                                                                     $rule =  $WorkSheet.ConditionalFormatting.AddDatabar(     $Address , $DataBarColor )
+                                                                     $rule =  $Worksheet.ConditionalFormatting.AddDatabar(     $Address , $DataBarColor )
     }
-    elseif ($PSBoundParameters.ContainsKey("ThreeIconsSet" )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddThreeIconSet($Address , $ThreeIconsSet)}
-    elseif ($PSBoundParameters.ContainsKey("FourIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFourIconSet( $Address , $FourIconsSet )}
-    elseif ($PSBoundParameters.ContainsKey("FiveIconsSet"  )      ) {$rule =  $WorkSheet.ConditionalFormatting.AddFiveIconSet( $Address , $FiveIconsSet )}
-    else                                                            {$rule = ($WorkSheet.ConditionalFormatting)."Add$RuleType"($Address )                }
+    elseif ($PSBoundParameters.ContainsKey("ThreeIconsSet" )      ) {$rule =  $Worksheet.ConditionalFormatting.AddThreeIconSet($Address , $ThreeIconsSet)}
+    elseif ($PSBoundParameters.ContainsKey("FourIconsSet"  )      ) {$rule =  $Worksheet.ConditionalFormatting.AddFourIconSet( $Address , $FourIconsSet )}
+    elseif ($PSBoundParameters.ContainsKey("FiveIconsSet"  )      ) {$rule =  $Worksheet.ConditionalFormatting.AddFiveIconSet( $Address , $FiveIconsSet )}
+    else                                                            {$rule = ($Worksheet.ConditionalFormatting)."Add$RuleType"($Address )                }
     if     ($Reverse)  {
             if     ($rule.type -match 'IconSet$'   )                {$rule.reverse = $true}
             elseif ($rule.type -match 'ColorScale$')                {$temp =$rule.LowValue.Color ; $rule.LowValue.Color = $rule.HighValue.Color; $rule.HighValue.Color = $temp}

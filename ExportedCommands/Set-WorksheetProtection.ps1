@@ -1,9 +1,9 @@
-﻿Function Set-WorkSheetProtection {
+﻿Function Set-WorksheetProtection {
     [Cmdletbinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system state')]
     param (
         [Parameter(Mandatory=$true)]
-        [OfficeOpenXml.ExcelWorksheet]$WorkSheet ,
+        [OfficeOpenXml.ExcelWorksheet]$Worksheet ,
         [switch]$IsProtected,
         [switch]$AllowAll,
         [switch]$BlockSelectLockedCells,
@@ -44,12 +44,12 @@
     Else {Write-Warning -Message "You haven't said if you want to turn protection off, or on." }
 
     if ($LockAddress) {
-        Set-ExcelRange     -Range $WorkSheet.cells[$LockAddress] -Locked
+        Set-ExcelRange     -Range $Worksheet.cells[$LockAddress] -Locked
     }
     elseif ($IsProtected) {
-        Set-ExcelRange     -Range $WorkSheet.Cells -Locked
+        Set-ExcelRange     -Range $Worksheet.Cells -Locked
     }
     if ($UnlockAddress) {
-        Set-ExcelRange     -Range $WorkSheet.cells[$UnlockAddress] -Locked:$false
+        Set-ExcelRange     -Range $Worksheet.cells[$UnlockAddress] -Locked:$false
     }
 }

@@ -1,14 +1,4 @@
-﻿function Import-USPS {
-    param(
-        $TrackingNumber,
-        [Switch]$UseDefaultCredentials
-
-    )
-
-    Import-Html "https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=$($TrackingNumber)" 0 -UseDefaultCredentials: $UseDefaultCredentials
-}
-
-function Import-UPS {
+﻿function Import-UPS {
     param(
         $TrackingNumber,
         [Switch]$UseDefaultCredentials

@@ -32,7 +32,7 @@ else {
 
 if (($IsLinux -or $IsMacOS) -or $env:NoAutoSize) {
     $ExcelPackage = [OfficeOpenXml.ExcelPackage]::new()
-    $Cells = ($ExcelPackage | Add-WorkSheet).Cells['A1']
+    $Cells = ($ExcelPackage | Add-Worksheet).Cells['A1']
     $Cells.Value = 'Test'
     try {
         $Cells.AutoFitColumns()
