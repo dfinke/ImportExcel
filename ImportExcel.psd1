@@ -1,4 +1,7 @@
 @{
+    # Assemblies that must be loaded prior to importing this module
+    RequiredAssemblies = @('.\EPPlus.dll')
+
 
     # Script module or binary module file associated with this manifest.
     RootModule        = 'ImportExcel.psm1'
@@ -44,9 +47,6 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
 
     # Modules that must be imported into the global environment prior to importing this module
     # RequiredModules = @()
-
-    # Assemblies that must be loaded prior to importing this module
-    # RequiredAssemblies = @()
 
     # Script files (.ps1) that are run in the caller's environment prior to importing this module.
     # ScriptsToProcess = @()

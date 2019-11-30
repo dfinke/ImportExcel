@@ -1,6 +1,4 @@
 ﻿#region import everything we need
-Add-Type -Path "$($PSScriptRoot)\EPPlus.dll"
-
 try   {[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")}
 catch {Write-Warning -Message "System.Drawing could not be loaded. Color and font look-ups may not be available."}
 
