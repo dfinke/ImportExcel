@@ -1,10 +1,17 @@
 ﻿#region import everything we need
+$culture= $host.CurrentCulture.Name -replace '-\w*$',''
+Import-LocalizedData  -UICulture $culture -BindingVariable Strings -FileName Strings -ErrorAction Ignore
+if (-not $Strings) {
+    Import-LocalizedData  -UICulture "en" -BindingVariable Strings -FileName Strings -ErrorAction Ignore
+}
 try   {[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")}
-catch {Write-Warning -Message "System.Drawing could not be loaded. Color and font look-ups may not be available."}
+catch {Write-Warning -Message $Strings.SystemDrawingAvaialable}
 
-foreach ($directory in @('ExportedCommands','Charting','InferData','Pivot')) {
+foreach ($directory in @('Public','Private', 'Charting','InferData','Pivot')) {
     Get-ChildItem -Path "$PSScriptRoot\$directory\*.ps1" | ForEach-Object {. $_.FullName}
 }
+
+. $PSScriptRoot\ArgumentCompletion.ps1
 
 if ($PSVersionTable.PSVersion.Major -ge 5) {
     . $PSScriptRoot\Plot.ps1
@@ -18,15 +25,11 @@ if ($PSVersionTable.PSVersion.Major -ge 5) {
 
 }
 else {
-    Write-Warning 'PowerShell 5 is required for plot.ps1'
-    Write-Warning 'PowerShell Excel is ready, except for that functionality'
+    Write-Warning $Strings.PS5NeededForPlot
+    Write-Warning $Strings.ModuleReadyExceptPlot
 }
 
-
-. $PSScriptRoot\ArgumentCompletion.ps1
-
 #endregion
-
 
 if (($IsLinux -or $IsMacOS) -or $env:NoAutoSize) {
     $ExcelPackage = [OfficeOpenXml.ExcelPackage]::new()

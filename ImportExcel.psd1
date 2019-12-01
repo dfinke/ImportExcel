@@ -145,7 +145,25 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
     # ModuleList = @()
 
     # List of all files packaged with this module
-    # FileList = @()
+    FileList = @(
+        '.\EPPlus.dll',
+        '.\Export-charts.ps1',
+        '.\GetExcelTable.ps1',
+        '.\ImportExcel.psd1',
+        '.\ImportExcel.psm1',
+        '.\LICENSE.txt',
+        '.\README.md',
+        '.\en\ImportExcel-help.xml',
+        '.\en\Strings.psd1',
+        '.\Charting\Charting.ps1',
+        '.\InferData\InferData.ps1',
+        '.\Pivot\Pivot.ps1',
+        '.\spikes\ConvertFrom-ExcelColumnName.ps1',
+        '.\Testimonials\t1.png',
+        '.\images\*.gif',
+        '.\images\*.png',
+        '.\Examples\*.*'
+    )
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess
     PrivateData       = @{
