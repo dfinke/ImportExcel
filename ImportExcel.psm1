@@ -7,7 +7,7 @@ if (-not $Strings) {
 try   {[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")}
 catch {Write-Warning -Message $Strings.SystemDrawingAvaialable}
 
-foreach ($directory in @('Public','Private', 'Charting','InferData','Pivot')) {
+foreach ($directory in @('Public','Charting','InferData','Pivot')) {
     Get-ChildItem -Path "$PSScriptRoot\$directory\*.ps1" | ForEach-Object {. $_.FullName}
 }
 
