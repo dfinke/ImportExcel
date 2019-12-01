@@ -48,7 +48,7 @@ $reg2  = [Regex]::new(@"
     #    elseif ($reg2.IsMatch($m[0].Value))             {return "function $name has comment-based help"}
         elseif ($m[0] -inotmatch "\[CmdletBinding\(" -and
                 $m[0] -inotmatch "\[parameter\("   )    {return "$name has is not an advanced function"}
-        elseif (-not (& $Name -?).synopsis)             {return "$name has no help"}
+        #elseif (-not (& $Name -?).synopsis)             {return "$name has no help"}
         else   {Write-Verbose "$name OK"}
     }
 }

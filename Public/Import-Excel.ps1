@@ -162,7 +162,7 @@
                 #region Create one object per row
                 if ($AsText) {
                     <#join items in AsText together with ~~~ . Escape any regex special characters...
-                    # which turns * into \* make it .*. Convert ~~~ to $|^ and top and tail with ^%;
+                    # which turns "*" into "\*" make it ".*". Convert ~~~ to $|^ and top and tail with ^%;
                     So if we get "Week", "[Time]" and "*date*" ; make the expression ^week$|^\[Time\]$|^.*Date.*$
                     $make a regex for this which is case insensitive (option 1) and compiled (option 8)
                     #>
