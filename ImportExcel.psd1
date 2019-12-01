@@ -159,10 +159,8 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         '.\InferData\InferData.ps1',
         '.\Pivot\Pivot.ps1',
         '.\spikes\ConvertFrom-ExcelColumnName.ps1',
-        '.\Testimonials\t1.png',
-        '.\images\*.gif',
-        '.\images\*.png',
-        '.\Examples\*.*'
+        '.\Examples', '.\images', '.\Testimonials' ,'.\Public' , ".\Private"
+
     )
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess
