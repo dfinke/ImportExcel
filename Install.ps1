@@ -29,7 +29,8 @@ $IncludeFiles = @(
     'Charting',
     'en-US',
     'Examples',
-    'ExportedCommands',
+    'Public',
+    'Private'
     'images',
     'InferData',
     'InternalFunctions',
