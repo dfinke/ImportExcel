@@ -30,7 +30,7 @@ $IncludeFiles = @(
     'en-US',
     'Examples',
     'Public',
-    'Private'
+    'Private',
     'images',
     'InferData',
     'InternalFunctions',
