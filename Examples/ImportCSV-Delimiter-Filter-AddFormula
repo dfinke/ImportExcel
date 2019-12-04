@@ -1,0 +1,33 @@
+Clear
+# Nombre de archivo excel con mas hojas y se busca archivo dinamico "Informe_04122019.xlsx"
+$fileName = "Informe_" +(Get-Date).ToString("ddMMyyyy_") + ".xlsx"
+
+# Archivo CSV con nombre dinamico "20191204.csv"
+$filePath = (Get-Date).ToString("yyyyMMdd") + "*.csv"
+
+# Datos de Cabecera, del archivo "20191204.csv"
+$header = 'ID_PAYROLL','PAYMENT_DATE','MedioRespaldo','ArchivoDistribuido','TOTAL_AMOUNT','ESTADO', 'APP'
+
+# Lectura de archivo CSV y filtar por fecha de pago (n+1) y columna ArchivoDistribuido distinto de vacio
+$excel = Import-Csv -Path $filePath -Delimiter "|" | select $header | Where { $_.PAYMENT_DATE -eq (Get-Date).AddDays(1).ToString("yyyy-MM-dd 00:00:00")} | Where { $_.ArchivoDistribuido -ne '' }
+
+# El archivo ya filtrado, se formatea en tabla y se formatea nuevamente en CSV
+$excel | Format-Table | ConvertFrom-Csv 
+
+# Se agrega estilo para dibujar en una o varias hojas del excel
+$style = $(New-ExcelStyle -BackgroundColor Orange -Range "A1:H1" -Bold -FontColor White)
+
+# Se exporta los datos filtrados a una hoja y queda al princio del excel
+$excel = $excel | Export-Excel $fileName -AutoSize -AutoNameRange -Style $style -AutoFilter -FreezeTopRow -MoveToStart -WorkSheetname "Nóminas Efec. Distribuidas" -PassThru
+
+# Se selecciona una hoja particular del mismo excel
+$sheet = $excel.Workbook.Worksheets["Nóminas Efec. Distribuidas"]
+
+# Marcar nóminas que son diferidas, agregar una formula en todo el rango de registros.
+Set-Column -Worksheet $sheet -Column 8 -Heading "Es Pago Diferido" -AutoSize -Value { "=IFERROR(VLOOKUP(TEXT(A$row,`"@`"),'Panel de Control'!I:P,8,FALSE),`"NO`")" } 
+
+# Cerrar objecto excel y abrir el resultado obtenido.
+Close-ExcelPackage $excel -Show
+
+# Eliminar Archivos
+Remove-Item -Path $filePath -ErrorAction SilentlyContinue
