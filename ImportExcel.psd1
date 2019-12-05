@@ -3,25 +3,25 @@
     RequiredAssemblies = @('.\EPPlus.dll')
 
     # Script module or binary module file associated with this manifest.
-    RootModule        = 'ImportExcel.psm1'
+    RootModule         = 'ImportExcel.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '6.5.3'
+    ModuleVersion      = '7.0.0'
 
     # ID used to uniquely identify this module
-    GUID              = '60dd4136-feff-401a-ba27-a84458c57ede'
+    GUID               = '60dd4136-feff-401a-ba27-a84458c57ede'
 
     # Author of this module
-    Author            = 'Douglas Finke'
+    Author             = 'Douglas Finke'
 
     # Company or vendor of this module
-    CompanyName       = 'Doug Finke'
+    CompanyName        = 'Doug Finke'
 
     # Copyright statement for this module
-    Copyright         = 'c 2019 All rights reserved.'
+    Copyright          = 'c 2019 All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description       = @'
+    Description        = @'
 PowerShell module to import/export Excel spreadsheets, without Excel.
 Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq
 '@
@@ -60,7 +60,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
     # NestedModules = @()
 
     # Functions to export from this module
-    FunctionsToExport = @(
+    FunctionsToExport  = @(
         'Add-ConditionalFormatting',
         'Add-ExcelChart',
         'Add-ExcelDataValidationRule',
@@ -132,7 +132,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
     #VariablesToExport = '*'
 
     # Aliases to export from this module
-    AliasesToExport   = @(
+    AliasesToExport    = @(
         'Convert-XlRangeToImage'
         'New-ExcelChart',
         'Set-Column',
@@ -145,7 +145,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
     # ModuleList = @()
 
     # List of all files packaged with this module
-    FileList = @(
+    FileList           = @(
         '.\EPPlus.dll',
         '.\Export-charts.ps1',
         '.\GetExcelTable.ps1',
@@ -159,12 +159,12 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         '.\InferData\InferData.ps1',
         '.\Pivot\Pivot.ps1',
         '.\spikes\ConvertFrom-ExcelColumnName.ps1',
-        '.\Examples', '.\images', '.\Testimonials' ,'.\Public' , ".\Private"
+        '.\Examples', '.\images', '.\Testimonials' , '.\Public' , ".\Private"
 
     )
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess
-    PrivateData       = @{
+    PrivateData        = @{
         # PSData is module packaging and gallery metadata embedded in PrivateData
         # It's for rebuilding PowerShellGet (and PoshCode) NuGet-style packages
         # We had to do this because it's the only place we're allowed to extend the manifest
