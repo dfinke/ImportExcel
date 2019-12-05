@@ -1,5 +1,5 @@
 ﻿#requires -modules "Get-IndexedItem"
-[cmdletbinding()]
+[CmdletBinding()]
 Param()
 Remove-Item ~\documents\music.xlsx -ErrorAction SilentlyContinue
 [System.Diagnostics.Stopwatch]$stopwatch = [System.Diagnostics.Stopwatch]::StartNew()

@@ -13,7 +13,7 @@ Timestamp,Tenant
 10/29/2018 3:01:40.989,1
 10/29/2018 3:01:50.545,1
 10/29/2018 3:02:00.999,1
-"@ | Select-Object @{n = 'Timestamp'; e = {get-date $_.timestamp}}, tenant, @{n = 'Bucket'; e = { - (get-date $_.timestamp).Second % 30}}
+"@ | Select-Object @{n = 'Timestamp'; e = {Get-date $_.timestamp}}, tenant, @{n = 'Bucket'; e = { - (Get-date $_.timestamp).Second % 30}}
 
 $f = "$env:temp\pivottest.xlsx"
 Remove-Item $f -ErrorAction SilentlyContinue

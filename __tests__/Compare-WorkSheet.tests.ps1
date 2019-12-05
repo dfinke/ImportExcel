@@ -1,7 +1,7 @@
 ﻿#Requires -Modules Pester
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
 param()
-if (-not (get-command Import-Excel -ErrorAction SilentlyContinue)) {
+if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
     Import-Module $PSScriptRoot\..\ImportExcel.psd1
 }
 Describe "Compare Worksheet" {
@@ -27,7 +27,7 @@ Describe "Compare Worksheet" {
         $s.RemoveAt(5)
         $s | Export-Excel -Path TestDrive:\server2.xlsx
         #Assume default worksheet name, (sheet1) and column header for key ("name")
-        $comp = compare-WorkSheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" | Sort-Object -Property _row, _file
+        $comp = Compare-Worksheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" | Sort-Object -Property _row, _file
     }
     Context "Simple comparison output" {
         it "Found the right number of differences                                                  " {
@@ -59,7 +59,7 @@ Describe "Compare Worksheet" {
 
     Context "Setting the background to highlight different rows" {
         BeforeAll {
-            $null = Compare-WorkSheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen)
+            $null = Compare-Worksheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen)
             $xl1  = Open-ExcelPackage -Path "TestDrive:\server1.xlsx"
             $xl2  = Open-ExcelPackage -Path "TestDrive:\server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets[1]
@@ -85,7 +85,7 @@ Describe "Compare Worksheet" {
 
     Context "Setting the forgound to highlight changed properties" {
         BeforeAll {
-            $null = compare-WorkSheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" -AllDataBackgroundColor([System.Drawing.Color]::white) -BackgroundColor ([System.Drawing.Color]::LightGreen)  -FontColor ([System.Drawing.Color]::DarkRed)
+            $null = Compare-Worksheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" -AllDataBackgroundColor([System.Drawing.Color]::white) -BackgroundColor ([System.Drawing.Color]::LightGreen)  -FontColor ([System.Drawing.Color]::DarkRed)
             $xl1  = Open-ExcelPackage -Path "TestDrive:\server1.xlsx"
             $xl2  = Open-ExcelPackage -Path "TestDrive:\server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets[1]
@@ -114,7 +114,7 @@ Describe "Compare Worksheet" {
 
     Context "More complex comparison: output check and different worksheet names " {
         BeforeAll {
-            [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property RequiredServices, CanPauseAndContinue, CanShutdown, CanStop,
+            [System.Collections.ArrayList]$s = Get-service | Select-Object -first 25 -Property RequiredServices, CanPauseAndContinue, CanShutdown, CanStop,
             DisplayName, DependentServices, MachineName, ServiceName, ServicesDependedOn, ServiceHandle, Status, ServiceType, StartType  -ExcludeProperty Name
             $s | Export-Excel -Path TestDrive:\server1.xlsx  -WorkSheetname server1
             #$s is a zero based array, excel rows are 1 based and excel has a header row so Excel rows will be 2 + index in $s
@@ -130,7 +130,7 @@ Describe "Compare Worksheet" {
 
             $s | Select-Object -Property ServiceName, DisplayName, StartType, ServiceType | Export-Excel -Path TestDrive:\server2.xlsx -WorkSheetname server2
             #Assume default worksheet name, (sheet1) and column header for key ("name")
-            $comp = compare-WorkSheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" -WorkSheetName server1,server2 -Key ServiceName -Property DisplayName,StartType -AllDataBackgroundColor ([System.Drawing.Color]::AliceBlue) -BackgroundColor ([System.Drawing.Color]::White) -FontColor ([System.Drawing.Color]::Red)   | Sort-Object _row,_file
+            $comp = Compare-Worksheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" -WorkSheetName server1,server2 -Key ServiceName -Property DisplayName,StartType -AllDataBackgroundColor ([System.Drawing.Color]::AliceBlue) -BackgroundColor ([System.Drawing.Color]::White) -FontColor ([System.Drawing.Color]::Red)   | Sort-Object _row,_file
             $xl1  = Open-ExcelPackage -Path "TestDrive:\server1.xlsx"
             $xl2  = Open-ExcelPackage -Path "TestDrive:\server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets["server1"]
@@ -188,7 +188,7 @@ Describe "Compare Worksheet" {
 Describe "Merge Worksheet" {
     BeforeAll {
         Remove-Item -Path  "TestDrive:\server*.xlsx" , "TestDrive:\combined*.xlsx" -ErrorAction SilentlyContinue
-        [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property *
+        [System.Collections.ArrayList]$s = Get-service | Select-Object -first 25 -Property *
 
         $s | Export-Excel -Path TestDrive:\server1.xlsx
 
@@ -255,7 +255,7 @@ Describe "Merge Multiple sheets" {
     Context "Merge 3 sheets with 3 properties" {
         BeforeAll {
             Remove-Item -Path  "TestDrive:\server*.xlsx" , "TestDrive:\combined*.xlsx" -ErrorAction SilentlyContinue
-            [System.Collections.ArrayList]$s = get-service | Select-Object -first 25 -Property Name,DisplayName,StartType
+            [System.Collections.ArrayList]$s = Get-service | Select-Object -first 25 -Property Name,DisplayName,StartType
             $s | Export-Excel -Path TestDrive:\server1.xlsx
 
             #$s is a zero based array, excel rows are 1 based and excel has a header row so Excel rows will be 2 + index in $s

@@ -22,9 +22,9 @@ Set-ExcelRange -Range   $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#
 Set-ExcelRange -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
 
 #Create a Red Data-bar for the values in Column D
-Add-ConditionalFormatting -WorkSheet $sheet -Address "D2:D1048576" -DataBarColor Red
+Add-ConditionalFormatting -Worksheet $sheet -Address "D2:D1048576" -DataBarColor Red
 # Conditional formatting applies to "Addreses" aliases allow either "Range" or "Address" to be used in Set-ExcelRange or Add-Conditional formatting.
-Add-ConditionalFormatting -WorkSheet $sheet -Range  "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600"  -ForeGroundColor Red
+Add-ConditionalFormatting -Worksheet $sheet -Range  "G2:G1048576" -RuleType GreaterThan -ConditionValue "104857600"  -ForeGroundColor Red
 
 foreach ($c in 5..9) {Set-ExcelRange -Address $sheet.Column($c)  -AutoFit }
 

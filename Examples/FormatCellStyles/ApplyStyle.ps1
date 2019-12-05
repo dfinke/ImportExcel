@@ -16,9 +16,9 @@ $pkg = $data | Export-Excel -Path $f -AutoSize -PassThru
 
 $ws = $pkg.Workbook.Worksheets["Sheet1"]
 
-Set-ExcelRange -WorkSheet $ws -Range "A2:C6" -BackgroundColor PeachPuff -FontColor Purple        -FontSize 12 -Width 12
-Set-ExcelRange -WorkSheet $ws -Range "D2:D6" -BackgroundColor WhiteSmoke -FontColor Orange -Bold -FontSize 12 -Width 12
-Set-ExcelRange -WorkSheet $ws -Range "A1:D1" -BackgroundColor BlueViolet -FontColor Wheat        -FontSize 12 -Width 12
-Set-ExcelRange -WorkSheet $ws -Range "A:A"                                                                    -Width 15
+Set-ExcelRange -Worksheet $ws -Range "A2:C6" -BackgroundColor PeachPuff -FontColor Purple        -FontSize 12 -Width 12
+Set-ExcelRange -Worksheet $ws -Range "D2:D6" -BackgroundColor WhiteSmoke -FontColor Orange -Bold -FontSize 12 -Width 12
+Set-ExcelRange -Worksheet $ws -Range "A1:D1" -BackgroundColor BlueViolet -FontColor Wheat        -FontSize 12 -Width 12
+Set-ExcelRange -Worksheet $ws -Range "A:A"                                                                    -Width 15
 
 Close-ExcelPackage -ExcelPackage $pkg -Show

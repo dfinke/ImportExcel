@@ -4,7 +4,7 @@
     File must not have BOM for GitHub deploy to work.
 #>
 [CmdletBinding(DefaultParameterSetName = 'Default')]
-Param (
+param(
     # Path to install the module to, if not provided -Scope used.
     [Parameter(Mandatory, ParameterSetName = 'ModulePath')]
     [ValidateNotNullOrEmpty()]
@@ -22,53 +22,28 @@ Param (
 )
 # Set Files and Folders patterns to Include/Exclude.
 $IncludeFiles = @(
-    '*.dll',
+    'EPPlus.dll',
     '*.psd1',
     '*.psm1',
-    'AddConditionalFormatting.ps1',
-    'AddDataValidation.ps1',
-    'Charting.ps1',
-    'ColorCompletion.ps1',
-    'Compare-WorkSheet.ps1',
-    'ConvertExcelToImageFile.ps1',
-    'ConvertFromExcelData.ps1',
-    'ConvertFromExcelToSQLInsert.ps1',
-    'ConvertToExcelXlsx.ps1',
-    'Copy-ExcelWorkSheet.ps1',
-    'Export-Excel.ps1',
-    'Export-ExcelSheet.ps1',
-    'Export-StocksToExcel.ps1',
-    'Get-ExcelColumnName.ps1',
-    'Get-ExcelSheetInfo.ps1',
-    'Get-ExcelWorkbookInfo.ps1',
-    'Get-HtmlTable.ps1',
-    'Get-Range.ps1',
-    'Get-XYRange.ps1',
-    'Import-Html.ps1',
-    'InferData.ps1',
-    'Invoke-Sum.ps1',
-    'Join-Worksheet.ps1',
-    'Merge-Worksheet.ps1',
-    'New-ConditionalFormattingIconSet.ps1',
-    'New-ConditionalText.ps1',
-    'New-ExcelChart.ps1',
-    'New-PSItem.ps1',
-    'Open-ExcelPackage.ps1',
-    'Pivot.ps1',
-    'PivotTable.ps1',
-    'Plot.ps1',
-    'RemoveWorksheet.ps1',
-    'Send-SQLDataToExcel.ps1',
-    'Set-CellStyle.ps1',
-    'Set-Column.ps1',
-    'Set-Row.ps1',
-    'Set-WorkSheetProtection.ps1',
-    'SetFormat.ps1',
-    'TrackingUtils.ps1',
-    'Update-FirstObjectProperties.ps1'
-)
+    '*.ps1'
+    'Charting',
+    'en-US',
+    'Examples',
+    'Public',
+    'Private',
+    'images',
+    'InferData',
+    'InternalFunctions',
+    'Pivot',
+    'spikes',
+    'Testimonials',
+    'README.md',
+    'LICENSE.txt'
+    )
 $ExcludeFiles = @(
-    'Install.ps1'
+    'Install.ps1',
+    'InstallModule.ps1',
+    'PublishToGallery.PS1'
 )
 
 
@@ -106,7 +81,7 @@ function Invoke-MultiLike {
     }
 }
 
-Try {
+try {
     Write-Verbose -Message 'Module installation started'
 
     if (!$ModulePath) {
@@ -202,7 +177,7 @@ Try {
     Import-Module -Name $ModuleName -Force
     Write-Verbose -Message "Module installed"
 }
-Catch {
+catch {
     throw ('Failed installing module "{0}". Error: "{1}" in Line {2}' -f $ModuleName, $_, $_.InvocationInfo.ScriptLineNumber)
 }
 finally {

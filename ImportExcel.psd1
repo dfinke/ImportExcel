@@ -1,4 +1,6 @@
 @{
+    # Assemblies that must be loaded prior to importing this module
+    RequiredAssemblies = @('.\EPPlus.dll')
 
     # Script module or binary module file associated with this manifest.
     RootModule        = 'ImportExcel.psm1'
@@ -45,9 +47,6 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
     # Modules that must be imported into the global environment prior to importing this module
     # RequiredModules = @()
 
-    # Assemblies that must be loaded prior to importing this module
-    # RequiredAssemblies = @()
-
     # Script files (.ps1) that are run in the caller's environment prior to importing this module.
     # ScriptsToProcess = @()
 
@@ -68,17 +67,17 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Add-ExcelName',
         'Add-ExcelTable',
         'Add-PivotTable',
-        'Add-WorkSheet',
+        'Add-Worksheet',
         'BarChart',
         'Close-ExcelPackage',
         'ColumnChart',
-        'Compare-WorkSheet',
-        'Convert-XlRangeToImage',
+        'Compare-Worksheet',
+        'Convert-ExcelRangeToImage',
         'ConvertFrom-ExcelData',
         'ConvertFrom-ExcelSheet',
         'ConvertFrom-ExcelToSQLInsert',
         'ConvertTo-ExcelXlsx',
-        'Copy-ExcelWorkSheet',
+        'Copy-ExcelWorksheet',
         'DoChart',
         'Expand-NumberFormat',
         'Export-Excel',
@@ -107,18 +106,17 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'New-PivotTableDefinition',
         'New-Plot',
         'New-PSItem',
-        'NumberFormatCompletion',
         'Open-ExcelPackage',
         'PieChart',
         'Pivot',
-        'Remove-WorkSheet'
+        'Remove-Worksheet'
         'Select-Worksheet',
         'Send-SQLDataToExcel',
         'Set-CellStyle',
         'Set-ExcelColumn',
         'Set-ExcelRange',
         'Set-ExcelRow',
-        'Set-WorkSheetProtection',
+        'Set-WorksheetProtection',
         'Test-Boolean',
         'Test-Date',
         'Test-Integer',
@@ -135,6 +133,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
 
     # Aliases to export from this module
     AliasesToExport   = @(
+        'Convert-XlRangeToImage'
         'New-ExcelChart',
         'Set-Column',
         'Set-Format',
@@ -146,7 +145,23 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
     # ModuleList = @()
 
     # List of all files packaged with this module
-    # FileList = @()
+    FileList = @(
+        '.\EPPlus.dll',
+        '.\Export-charts.ps1',
+        '.\GetExcelTable.ps1',
+        '.\ImportExcel.psd1',
+        '.\ImportExcel.psm1',
+        '.\LICENSE.txt',
+        '.\README.md',
+        '.\en\ImportExcel-help.xml',
+        '.\en\Strings.psd1',
+        '.\Charting\Charting.ps1',
+        '.\InferData\InferData.ps1',
+        '.\Pivot\Pivot.ps1',
+        '.\spikes\ConvertFrom-ExcelColumnName.ps1',
+        '.\Examples', '.\images', '.\Testimonials' ,'.\Public' , ".\Private"
+
+    )
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess
     PrivateData       = @{

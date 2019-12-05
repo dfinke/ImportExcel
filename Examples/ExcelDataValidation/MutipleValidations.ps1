@@ -39,7 +39,7 @@ $excelPackage = @('Chisel', 'Crowbar', 'Drill', 'Hammer', 'Nails', 'Saw', 'Screw
 
 #region Creating a list using a PowerShell array
 $ValidationParams = @{
-    WorkSheet        = $excelPackage.sales
+    Worksheet        = $excelPackage.sales
     ShowErrorMessage = $true
     ErrorStyle       = 'stop'
     ErrorTitle       = 'Invalid Data'

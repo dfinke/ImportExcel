@@ -25,7 +25,7 @@ Describe "Password Support" {
             {Import-Excel $Path }                                       | should     throw
         }
         it "Could read the file when the password was included                                     " {
-            (import-excel $path -Password $password).count              | should     be 20
+            (Import-excel $path -Password $password).count              | should     be 20
         }
     }
 }

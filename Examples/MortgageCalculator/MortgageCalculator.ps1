@@ -17,7 +17,7 @@ function New-CellData {
     )
 
     $setFormatParams = @{
-        WorkSheet    = $ws
+        Worksheet    = $ws
         Range        = $Range
         NumberFormat = $Format
     }

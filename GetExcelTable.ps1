@@ -1,5 +1,5 @@
-Function Get-ExcelTableName {
-    Param (
+function Get-ExcelTableName {
+    param(
         $Path,
         $WorksheetName
     )
@@ -28,8 +28,8 @@ Function Get-ExcelTableName {
     $Excel = $null
 }
 
-Function Get-ExcelTable {
-    Param (
+function Get-ExcelTable {
+    param(
         $Path,
         $TableName,
         $WorksheetName

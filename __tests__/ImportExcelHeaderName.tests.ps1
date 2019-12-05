@@ -3,19 +3,19 @@ $xlfile = "TestDrive:\testImportExcel.xlsx"
 Describe "Import-Excel on a sheet with no headings" {
     BeforeAll {
 
-        $xl = "" | export-excel $xlfile -PassThru
+        $xl = "" | Export-excel $xlfile -PassThru
 
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range A1 -Value 'A'
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range B1 -Value 'B'
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range C1 -Value 'C'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range A1 -Value 'A'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range B1 -Value 'B'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range C1 -Value 'C'
 
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range A2 -Value 'D'
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range B2 -Value 'E'
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range C2 -Value 'F'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range A2 -Value 'D'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range B2 -Value 'E'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range C2 -Value 'F'
 
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range A3 -Value 'G'
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range B3 -Value 'H'
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range C3 -Value 'I'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range A3 -Value 'G'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range B3 -Value 'H'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range C3 -Value 'I'
 
         Close-ExcelPackage $xl
     }
@@ -158,22 +158,22 @@ Describe "Import-Excel on a sheet with no headings" {
 
     It "Should" {
         $xlfile = "TestDrive:\testImportExcelSparse.xlsx"
-        $xl = "" | export-excel $xlfile -PassThru
+        $xl = "" | Export-excel $xlfile -PassThru
 
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range A1 -Value 'Chuck'
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range B1 -Value ''
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range C1 -Value 'Norris'
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range D1 -Value 'California'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range A1 -Value 'Chuck'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range B1 -Value ''
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range C1 -Value 'Norris'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range D1 -Value 'California'
 
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range A2 -Value ''
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range B2 -Value ''
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range C2 -Value ''
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range D2 -Value ''
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range A2 -Value ''
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range B2 -Value ''
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range C2 -Value ''
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range D2 -Value ''
 
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range A3 -Value 'Jean-Claude'
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range B3 -Value ''
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range C3 -Value 'Vandamme'
-        Set-ExcelRange -WorkSheet $xl.Sheet1 -Range D3 -Value 'Brussels'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range A3 -Value 'Jean-Claude'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range B3 -Value ''
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range C3 -Value 'Vandamme'
+        Set-ExcelRange -Worksheet $xl.Sheet1 -Range D3 -Value 'Brussels'
 
         Close-ExcelPackage $xl
 
