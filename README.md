@@ -60,6 +60,9 @@ Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfi
 
 ![](./images/ScriptAnalyzerReport.png)
 
+# What's new 7.0.0
+## Refactor
+
 # What's new 6.5.3
 
 Thanks again to the community for making this module even better.
