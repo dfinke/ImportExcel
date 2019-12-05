@@ -66,7 +66,7 @@ Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfi
 - Remove all functions from the `psm1`
 - Move functions into public subdirectory
 - Align TDD and continuous integration workflow
-- Move help from functions to mdHelp and use PlatyPS to generate external help file
+- Move help from functions to mdHelp and use [PlatyPS](https://www.powershellgallery.com/packages/platyPS) to generate external help file
 
 Thanks to [James O'Neill](https://twitter.com/jamesoneill) for the refactor and [Illy](https://twitter.com/ili_z) on the continuous integration.
 
