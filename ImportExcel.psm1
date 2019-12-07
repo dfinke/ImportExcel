@@ -1,14 +1,14 @@
 ﻿#region import everything we need
-$culture= $host.CurrentCulture.Name -replace '-\w*$',''
+$culture = $host.CurrentCulture.Name -replace '-\w*$', ''
 Import-LocalizedData  -UICulture $culture -BindingVariable Strings -FileName Strings -ErrorAction Ignore
 if (-not $Strings) {
     Import-LocalizedData  -UICulture "en" -BindingVariable Strings -FileName Strings -ErrorAction Ignore
 }
-try   {[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")}
-catch {Write-Warning -Message $Strings.SystemDrawingAvaialable}
+try { [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") }
+catch { Write-Warning -Message $Strings.SystemDrawingAvaialable }
 
-foreach ($directory in @('Public','Charting','InferData','Pivot')) {
-    Get-ChildItem -Path "$PSScriptRoot\$directory\*.ps1" | ForEach-Object {. $_.FullName}
+foreach ($directory in @('Public', 'Charting', 'InferData', 'Pivot')) {
+    Get-ChildItem -Path "$PSScriptRoot\$directory\*.ps1" | ForEach-Object { . $_.FullName }
 }
 
 . $PSScriptRoot\ArgumentCompletion.ps1
@@ -42,15 +42,20 @@ if (($IsLinux -or $IsMacOS) -or $env:NoAutoSize) {
     catch {
         $env:NoAutoSize = $true
         if ($IsLinux) {
-            Write-Warning -Message ('ImportExcel Module Cannot Autosize. Please run the following command to install dependencies:' + [environment]::newline +
-                '"sudo apt-get install -y --no-install-recommends libgdiplus libc6-dev"')
+            $msg = @"
+ImportExcel Module Cannot Autosize. Please run the following command to install dependencies:
+apt-get -y update && apt-get install -y --no-install-recommends libgdiplus libc6-dev
+"@
+            Write-Warning -Message $msg
         }
         if ($IsMacOS) {
-            Write-Warning -Message ('ImportExcel Module Cannot Autosize. Please run the following command to install dependencies:' + [environment]::newline +
-                '"brew install mono-libgdiplus"')
+            $msg = @"
+ImportExcel Module Cannot Autosize. Please run the following command to install dependencies:
+brew install mono-libgdiplus
+"@
+            Write-Warning -Message $msg
+        }
+        finally {
+            $ExcelPackage | Close-ExcelPackage -NoSave
         }
     }
-    finally {
-        $ExcelPackage | Close-ExcelPackage -NoSave
-    }
-}
