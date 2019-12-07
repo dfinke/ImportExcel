@@ -59,3 +59,4 @@ brew install mono-libgdiplus
             $ExcelPackage | Close-ExcelPackage -NoSave
         }
     }
+}
