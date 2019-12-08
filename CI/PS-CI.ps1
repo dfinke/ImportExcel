@@ -131,13 +131,13 @@ try     {
     # Clean-up / Create Directory
     if (-not  (Test-Path -Path $ModulePath)) {
         $null = New-Item -Path $ModulePath -ItemType Directory -ErrorAction Stop
-        Write-verbose -verbose -Message ('Created module folder: "{0}"' -f $ModulePath)
+        'Created module folder: "{0}"' -f $ModulePath
     }
     elseif ($CleanModuleDir) {
-        Write-verbose -verbose "$ModulePath exists - cleaning before copy"
+       '{0} exists - cleaning before copy' -f $ModulePath
         Get-ChildItem -Path $ModulePath | Remove-Item -Force -Recurse
     }
-    Write-verbose -verbose -Message ('Copying files to "{0}"' -f $ModulePath)
+    'Copying files to:      "{0}"' -f $ModulePath
     $outputFile = $psdpath | Copy-Item -Destination $ModulePath -PassThru
     foreach ($file in $Settings.FileList) {
         if  ($file -like '.\*') {
@@ -152,12 +152,12 @@ try     {
 
     if (Test-Path -PathType Container "mdHelp") {
         if (-not (Get-Module -ListAvailable platyPS)) {
-            Write-Verbose -Verbose -Message ('Installing Platyps to build help files')
+            'Installing Platyps to build help files'
             Install-Module -Name platyPS -Force -SkipPublisherCheck
         }
         Import-Module platyPS
         Get-ChildItem .\mdHelp -Directory | ForEach-Object {
-            Write-verbose -verbose "Building help for language '$($_.Name)' "
+           'Building help for language ''{0}''.' -f $_.Name
             $Null = New-ExternalHelp -Path $_.FullName  -OutputPath (Join-Path $ModulePath $_.Name) -Force
         }
     }
@@ -168,14 +168,13 @@ catch   {
             if ($PSScriptRoot) { Pop-Location }
             throw ('Failed installing module "{0}". Error: "{1}" in Line {2}' -f $ModuleName, $_, $_.InvocationInfo.ScriptLineNumber)
 }
-finally {   Write-verbose -verbose -Message 'Module installation end'
-            if (-not $outputFile -or -not (Test-Path $outputFile)) {
+finally {   if (-not $outputFile -or -not (Test-Path $outputFile)) {
                 throw "Failed to create module"
             }
 }
 #endregion
 
-Copy-Item -Path $ModulePath -Destination $env:Build_ArtifactStagingDirectory -Recurse
+Copy-Item -Path (split-path -Parent $ModulePath) -Destination $env:Build_ArtifactStagingDirectory -Recurse
 
 
 #Check valid command names, help, run script analyzer over the files in the module directory
@@ -183,14 +182,15 @@ if (-not $SkipPostChecks) {
     try   {$outputFile | Import-Module -Force -ErrorAction stop }
     catch {
             if ($PSScriptRoot) { Pop-Location }
-            throw "New module failed to load"}
+            throw "New module failed to load"
+    }
     $commands = Get-Command -Module $ModuleName -CommandType function,Cmdlet
     $commands.where({$_.name -notmatch "(\w+)-\w+" -or $Matches[1] -notin $approvedVerbs}) | ForEach-Object {
         Write-Host -ForegroundColor yellow  "##vso[task.logissue type=Warning]$($_.name) does not meet the ApprovedVerb-Noun naming rules"
     }
     $helpless = $commands | Get-Help | Where-Object {$_.Synopsis -match "^\s+$($_.name)\s+\["} | Select-Object -ExpandProperty name
     foreach ($command in $helpless ) {
-        Write-Warning -Message "On-line help is missing for $command"
+        '##vso[task.logissue type=Warning]On-line help is missing for {0}.' -f $command
     }
     if (-not (Get-Module -Name PSScriptAnalyzer -ListAvailable)) {
         Install-Module -Name PSScriptAnalyzer -Force
@@ -206,7 +206,7 @@ if (-not $SkipPostChecks) {
         }
         $chartDef = New-ExcelChartDefinition -ChartType 'BarClustered' -Column 2 -Title "Script analysis" -LegendBold
         $ExcelParams = @{
-            Path                 = "$PWD\ScriptAnalyzer.xlsx"
+            Path                 = "$env:Build_ArtifactStagingDirectory\ScriptAnalyzer.xlsx"
             WorksheetName        = 'FullResults'
             TableStyle           = 'Medium6'
             AutoSize             = $true
@@ -219,7 +219,7 @@ if (-not $SkipPostChecks) {
         }
         Remove-Item -Path $ExcelParams['Path'] -ErrorAction SilentlyContinue
         $AnalyzerResults | Export-Excel @ExcelParams
-        Write-Verbose -verbose "Analysis exported to '$($ExcelParams['Path'])'"
+        "##vso[task.uploadfile]$($ExcelParams['Path'])"
     }
 }
 
