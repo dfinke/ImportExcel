@@ -49,10 +49,10 @@ if (-not $psdpath -or $psdpath.count -gt 1) {
     throw "Did not find a unique PSD file "
 }
 else {
-    try   {$settings    = Test-ModuleManifest -Path $psdpath -ErrorAction stop}
+    try   {$null        = Test-ModuleManifest -Path $psdpath -ErrorAction stop}
     catch {throw $_ ; return}
     $ModuleName         = $psdpath.Name -replace '\.psd1$' , ''
-   # $Settings           = $(& ([scriptblock]::Create(($psdpath | Get-Content -Raw))))
+    $Settings           = $(& ([scriptblock]::Create(($psdpath | Get-Content -Raw))))
     $approvedVerbs      = Get-Verb | Select-Object -ExpandProperty verb
     $script:warningfile = Join-Path -Path $pwd -ChildPath "warnings.txt"
 }
@@ -87,7 +87,7 @@ if (-not $SkipPreChecks) {
         $name = $file.name -replace(".ps1","")
         if ($name -notmatch ("(\w+)-\w+"))         {Show-Warning "$name in the public folder is not a verb-noun name"}
         elseif ($Matches[1] -notin $approvedVerbs) {Show-Warning "$name in the public folder does not start with an approved verb"}
-        if(-not ($Settings.ExportedFunctions.Keys -ceq $name)) {
+        if(-not ($Settings.FunctionsToExport -ceq $name)) {
             Show-Warning ('File {0} in the public folder does not match an exported function in the manifest' -f $file.name)
         }
         else {
@@ -104,7 +104,7 @@ if (-not $SkipPreChecks) {
                 if ($m2.value -match "(?<!#\s*)\[\s*Alias\(\s*.([\w-]+).\s*\)\s*\]") {
                     foreach ($a in  ($Matches[1] -split '\s*,\s*')) {
                         $a = $a -replace "'",""  -replace '"',''
-                        if (-not ($Settings.ExportedAliases.Keys -eq $a)) {
+                        if (-not ($Settings.AliasesToExport   -eq $a)) {
                             Show-Warning "Function $name has alias $a which is not in the manifest"
                         }
                      }
@@ -117,7 +117,7 @@ if (-not $SkipPreChecks) {
     }
 
     #Warn about functions which are exported but not found in public
-    $notFromPublic = $Settings.ExportedFunctions.Keys.Where({-not (Test-Path ".\public\$_.ps1")})
+    $notFromPublic = $Settings.FunctionsToExport.Where({-not (Test-Path ".\public\$_.ps1")})
     If ($notFromPublic) {Show-Warning ('Exported function(s) {0} are not loaded from the Public folder' -f ($notFromPublic -join ', '))}
 }
 
@@ -133,7 +133,7 @@ try     {
         else                          { $dir =  [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::ProgramFiles) }
         $ModulePath = ($env:PSModulePath -split $ModulePathSeparator).where({$_ -like "$dir*"},"First",1)
         $ModulePath = Join-Path -Path $ModulePath -ChildPath $ModuleName
-        $ModulePath = Join-Path -Path $ModulePath -ChildPath $Settings.Version.ToString()
+        $ModulePath = Join-Path -Path $ModulePath -ChildPath $Settings..ModuleVersion
     }
 
     # Clean-up / Create Directory
