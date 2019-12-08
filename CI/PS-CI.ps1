@@ -231,10 +231,6 @@ if (-not $SkipPostChecks) {
     }
 }
 
-if (Test-Path $ExcelParams['Path']) {
-    "Try to uploadfile     {0}" -f $ExcelParams['Path']
-    "##vso[task.uploadfile]{0}" -f $ExcelParams['Path']
-}
 if (Test-Path $script:warningfile) {
     "Try to uploadfile     {0}" -f $script:warningfile
     "##vso[task.uploadfile]{0}" -f $script:warningfile

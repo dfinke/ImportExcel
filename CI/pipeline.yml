@@ -35,7 +35,8 @@ jobs:
       vmImage: 'windows-latest'
     steps:
     - pwsh: 'Install-Module -Name Pester -Force'
-      displayName: 'Update Pester'
+      display
+      Name: 'Update Pester'
     - pwsh: '.\CI\PS-CI.ps1 -SkipPreChecks -SkipHelp -SkipPostChecks'
       displayName: 'Install and Test'
     - task: PublishTestResults@2
@@ -66,7 +67,7 @@ jobs:
       displayName: 'Install mono-libgdiplus'
     - powershell: 'Install-Module -Name Pester -Force'
       displayName: 'Update Pester'
-    - powershell: './CI/PS-CI.ps1 -Test'
+    - powershell: './CI/PS-CI.ps1 -SkipPreChecks -SkipHelp -SkipPostChecks'
       displayName: 'Install and Test'
     - task: PublishTestResults@2
       inputs:
