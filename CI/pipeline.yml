@@ -28,6 +28,6 @@ jobs:
         testResultsFiles: '**/TestResults*.xml'
         failTaskOnFailedTests: true
     - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: '$(Build.ArtifactStagingDirectory)'
-          artifact: 'ImportExcel'
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        artifact: 'ImportExcel'
