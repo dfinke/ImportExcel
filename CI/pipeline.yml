@@ -1,4 +1,3 @@
-# Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
 trigger:
@@ -16,9 +15,8 @@ jobs:
   - job: Windows
     pool:
       vmImage: 'windows-latest'
-
     steps:
-    - powershell: 'Install-Module -Name Pester,PlatyPS,platyPS,PSScriptAnalyzer -Force -SkipPublisherCheck'
+    - powershell: 'Install-Module -Name Pester -Force -SkipPublisherCheck'
       displayName: 'Update Modules'
     - powershell: './CI/PS-CI.ps1'
       displayName: 'Check Build Check Pack Test'
@@ -31,3 +29,47 @@ jobs:
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)/ImportExcel'
         artifact: 'ImportExcel'
+
+  - job: WindowsPSCore
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    - pwsh: 'Install-Module -Name Pester -Force'
+      displayName: 'Update Pester'
+    - pwsh: .\ci\PS-CI.ps1 -SkipPreChecks -SkipHelp -SkipPostChecks'
+      displayName: 'Install and Test'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'NUnit'
+        testResultsFiles: '**/TestResults*.xml'
+        failTaskOnFailedTests: true
+
+  - job: Ubuntu
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - powershell: 'Install-Module -Name Pester -Force'
+      displayName: 'Update Pester'
+    - powershell: '.\ci\PS-CI.ps1 -SkipPreChecks -SkipHelp -SkipPostChecks   '
+      displayName: 'Install and Test'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'NUnit'
+        testResultsFiles: '**/TestResults*.xml'
+        failTaskOnFailedTests: true
+
+  - job: macOS
+    pool:
+      vmImage: 'macOS-latest'
+    steps:
+    - script: brew install mono-libgdiplus
+      displayName: 'Install mono-libgdiplus'
+    - powershell: 'Install-Module -Name Pester -Force'
+      displayName: 'Update Pester'
+    - powershell: './CI/CI.ps1 -Test'
+      displayName: 'Install and Test'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'NUnit'
+        testResultsFiles: '**/TestResults*.xml'
+        failTaskOnFailedTests: true

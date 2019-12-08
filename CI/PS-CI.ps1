@@ -23,18 +23,36 @@ Param(
     [switch]$SkipPesterTests,
     [Parameter(ParameterSetName = 'ModulePath')]
     [Parameter(ParameterSetName = 'Scope')]
+    [switch]$SkipHelp,
+    [Parameter(ParameterSetName = 'ModulePath')]
+    [Parameter(ParameterSetName = 'Scope')]
     [switch]$CleanModuleDir
 )
-if ($PSScriptRoot) { Push-Location "$PSScriptRoot\.."}
+Function Show-warning {
+    param(
+        [Parameter(Position=0,ValueFromPipeline=$true)]
+        $message
+    )
+    process {
+        write-output "##vso[task.logissue type=warning]File $message"
+        $message >> $script:warningfile
+    }
+}
+
+if ($PSScriptRoot) {
+    $workingdir = Split-Path -Parent $PSScriptRoot
+    Push-Location $workingdir
+}
 $psdpath = Get-Item "*.psd1"
 if (-not $psdpath -or $psdpath.count -gt 1) {
     if ($PSScriptRoot) { Pop-Location }
     throw "Did not find a unique PSD file "
 }
 else {
-    $ModuleName = $psdpath.Name -replace '\.psd1$' , ''
-    $Settings   = $(& ([scriptblock]::Create(($psdpath | Get-Content -Raw))))
-    $approvedVerbs = Get-Verb | Select-Object -ExpandProperty verb
+    $ModuleName         = $psdpath.Name -replace '\.psd1$' , ''
+    $Settings           = $(& ([scriptblock]::Create(($psdpath | Get-Content -Raw))))
+    $approvedVerbs      = Get-Verb | Select-Object -ExpandProperty verb
+    $script:warningfile = Join-Path -Path $pwd -ChildPath "warnings.txt"
 }
 
 #pre-build checks - manifest found, files in it found, public functions and aliases loaded in it. Public functions correct.
@@ -43,7 +61,7 @@ if (-not $SkipPreChecks) {
     #Check files in the manifest are present
     foreach ($file in $Settings.FileList) {
         if (-not (Test-Path $file)) {
-           "##vso[task.logissue type=warning]File $file in the manifest file list is not present"
+           show-warning "File $file in the manifest file list is not present"
         }
     }
 
@@ -65,32 +83,32 @@ if (-not $SkipPreChecks) {
 "@, 57)  # 57 = compile,multi-line ignore case and white space.
     foreach ($file in (Get-Item .\Public\*.ps1)) {
         $name = $file.name -replace(".ps1","")
-        if ($name -notmatch ("(\w+)-\w+"))         {"##vso[task.logissue type=Warning]$name in the public folder is not a verb-noun name"}
-        elseif ($Matches[1] -notin $approvedVerbs) {"##vso[task.logissue type=Warning]$name in the public folder does not start with an approved verb"}
+        if ($name -notmatch ("(\w+)-\w+"))         {Show-Warning "$name in the public folder is not a verb-noun name"}
+        elseif ($Matches[1] -notin $approvedVerbs) {Show-Warning "$name in the public folder does not start with an approved verb"}
         if(-not ($Settings.FunctionsToExport -ceq $name)) {
-            "##vso[task.logissue type=Warning]File $($file.name) in the public folder does not match an exported function in the manifest"
+            Show-Warning ('File {0} in the public folder does not match an exported function in the manifest' -f $file.name)
         }
         else {
             $fileContent = Get-Content $file -Raw
             $m    = $reg.Matches($fileContent)
-            if     ($m.Count -eq 0)                         {"##vso[task.logissue type=Warning]Could not find $name function in $($file.name)"; continue}
-            elseif ($m.Count -ge 2)                         {"##vso[task.logissue type=Warning]Multiple functions in $($item.name)"; Continue}
+            if     ($m.Count -eq 0)                         {Show-Warning ('Could not find {0} function in {1}'  -f $name, $file.name); continue}
+            elseif ($m.Count -ge 2)                         {Show-Warning ('Multiple functions in {0}' -f $item.name)         ; Continue}
             elseif ($m[0] -imatch "^\function\s" -and
-                    $m[0] -cnotmatch "^\w+\s+$name")        {"##vso[task.logissue type=Warning]function name does not match file name for $($file.name)"}
+                    $m[0] -cnotmatch "^\w+\s+$name")        {Show-Warning ('function name does not match file name for {0}' -f $file.name)}
             #$m[0] runs form the f of function to its final }  -find the section up to param, check for aliases & comment-based help
             $m2 = [regex]::Match($m[0],"^.*?param",17) # 17 = multi-line, ignnore case
-            if (-not $m2.Success)                           {"##vso[task.logissue type=Warning]function $name has no param() block"}
+            if (-not $m2.Success)                           {Show-Warning "function $name has no param() block"}
             else {
                 if ($m2.value -match "\[\s*Alias\(\s*.([\w-]+).\s*\)\s*\]") {
                     foreach ($a in  ($Matches[1] -split '\s*,\s*')) {
                         $a = $a -replace "'",""  -replace '"',''
                         if (-not ($Settings.AliasesToExport -eq $a)) {
-                            "##vso[task.logissue type=Warning]Function $name has alias $a which is not in the manifest"
+                            Show-Warning "Function $name has alias $a which is not in the manifest"
                         }
                      }
                 }
                 if ($m2.value -match "\.syopsis|\.Description|\.Example") {
-                            "##vso[task.logissue type=Warning]Function $name appears to have comment based help."
+                            Show-Warning "Function $name appears to have comment based help."
                 }
             }
         }
@@ -98,7 +116,7 @@ if (-not $SkipPreChecks) {
 
     #Warn about functions which are exported but not found in public
     $notFromPublic = $Settings.FunctionsToExport.where({-not (Test-Path ".\public\$_.ps1")})
-    If ($notFromPublic) {"##vso[task.logissue type=Warning]Exported function(s) $($notFromPublic -join ', ') are not loaded from Public"}
+    If ($notFromPublic) {Show-Warning ('Exported function(s) {0} are not loaded from the Public folder' -f ($notFromPublic -join ', '))}
 }
 
 if ($PreCheckOnly) {return}
@@ -138,14 +156,14 @@ try     {
         Copy-Item -Path $file  -Destination $dest -Force -Recurse
     }
 
-    if (Test-Path -PathType Container "mdHelp") {
+    if (Test-Path -PathType Container "mdHelp" -and not $SkipHelp) {
         if (-not (Get-Module -ListAvailable platyPS)) {
             'Installing Platyps to build help files'
             Install-Module -Name platyPS -Force -SkipPublisherCheck
         }
-        Import-Module platyPS
+        $platypsInfo = Import-Module platyPS  -PassThru -force | Format-Table name,version -HideTableHeaders | Out-String
         Get-ChildItem .\mdHelp -Directory | ForEach-Object {
-           'Building help for language ''{0}''.' -f $_.Name
+           'Building help for language ''{0}'', using {1} .' -f $_.Name,$platypsInfo
             $Null = New-ExternalHelp -Path $_.FullName  -OutputPath (Join-Path $ModulePath $_.Name) -Force
         }
     }
@@ -164,7 +182,6 @@ finally {   if (-not $outputFile -or -not (Test-Path $outputFile)) {
 
 Copy-Item -Path (split-path -Parent $ModulePath) -Destination $env:Build_ArtifactStagingDirectory -Recurse
 
-
 #Check valid command names, help, run script analyzer over the files in the module directory
 if (-not $SkipPostChecks) {
     try   {$outputFile | Import-Module -Force -ErrorAction stop }
@@ -174,17 +191,17 @@ if (-not $SkipPostChecks) {
     }
     $commands = Get-Command -Module $ModuleName -CommandType function,Cmdlet
     $commands.where({$_.name -notmatch "(\w+)-\w+" -or $Matches[1] -notin $approvedVerbs}) | ForEach-Object {
-        "##vso[task.logissue type=Warning]$($_.name) does not meet the ApprovedVerb-Noun naming rules"
+        Show-Warning ('{0} does not meet the ApprovedVerb-Noun naming rules' -f $_.name)
     }
     $helpless = $commands | Get-Help | Where-Object {$_.Synopsis -match "^\s+$($_.name)\s+\["} | Select-Object -ExpandProperty name
     foreach ($command in $helpless ) {
-        '##vso[task.logissue type=Warning]On-line help is missing for {0}.' -f $command
+        Show-Warning ('On-line help is missing for {0}.' -f $command)
     }
     if (-not (Get-Module -Name PSScriptAnalyzer -ListAvailable)) {
         Install-Module -Name PSScriptAnalyzer -Force
     }
-    Import-module -Name PSScriptAnalyzer
-    "Running script analyzer against '{0}' " -f $ModulePath
+    $PSSAInfo = Import-module -Name PSScriptAnalyzer  -PassThru -force | Format-Table name,version -HideTableHeaders | Out-String
+    "Running {1} against '{0}' " -f $ModulePath , $PSSAInfo
     $AnalyzerResults = Invoke-ScriptAnalyzer -Path $ModulePath -Recurse -ErrorAction SilentlyContinue
     if ($AnalyzerResults) {
         if (-not (Get-Module -Name ImportExcel -ListAvailable)) {
@@ -194,7 +211,7 @@ if (-not $SkipPostChecks) {
         }
         $chartDef = New-ExcelChartDefinition -ChartType 'BarClustered' -Column 2 -Title "Script analysis" -LegendBold
         $ExcelParams = @{
-            Path                 = "$env:Build_ArtifactStagingDirectory\ScriptAnalyzer.xlsx"
+            Path                 = (Join-Path $pwd  'ScriptAnalyzer.xlsx')
             WorksheetName        = 'FullResults'
             TableStyle           = 'Medium6'
             AutoSize             = $true
@@ -207,9 +224,20 @@ if (-not $SkipPostChecks) {
         }
         Remove-Item -Path $ExcelParams['Path'] -ErrorAction SilentlyContinue
         $AnalyzerResults | Export-Excel @ExcelParams
-        "Try to uploadfile     {0}" -f $ExcelParams['Path']
-        "##vso[task.uploadfile]{0}" -f $ExcelParams['Path']
+        if (Test-Path $ExcelParams['Path']) {
+            "Try to uploadfile     {0}" -f $ExcelParams['Path']
+            "##vso[task.uploadfile]{0}" -f $ExcelParams['Path']
+        }
     }
+}
+
+if (Test-Path $ExcelParams['Path']) {
+    "Try to uploadfile     {0}" -f $ExcelParams['Path']
+    "##vso[task.uploadfile]{0}" -f $ExcelParams['Path']
+}
+if (Test-Path $script:warningfile) {
+    "Try to uploadfile     {0}" -f $script:warningfile
+    "##vso[task.uploadfile]{0}" -f $script:warningfile
 }
 
 #if there are test files, run pester (unless told not to)
@@ -219,7 +247,8 @@ if (-not $SkipPesterTests -and (Get-ChildItem -Recurse *.tests.ps1)) {
         Install-Module Pester -Force -SkipPublisherCheck
     }
     Import-Module Pester
+    $PesterOutputPath = Join-Path $pwd  -ChildPath ('TestResultsPS{0}.xml' -f $PSVersionTable.PSVersion)
     if ($PSScriptRoot) { Pop-Location }
-    Invoke-Pester -OutputFile ("$PSScriptRoot\..\TestResultsPS{0}.xml" -f $PSVersionTable.PSVersion)
+    Invoke-Pester -OutputFile $PesterOutputPath
 }
 elseif ($PSScriptRoot) { Pop-Location }
