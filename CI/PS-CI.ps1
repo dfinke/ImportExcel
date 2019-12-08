@@ -156,7 +156,7 @@ try     {
         Copy-Item -Path $file  -Destination $dest -Force -Recurse
     }
 
-    if (Test-Path -PathType Container "mdHelp" -and not $SkipHelp) {
+    if ((Test-Path -PathType Container "mdHelp") -and -not $SkipHelp) {
         if (-not (Get-Module -ListAvailable platyPS)) {
             'Installing Platyps to build help files'
             Install-Module -Name platyPS -Force -SkipPublisherCheck
