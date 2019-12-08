@@ -22,12 +22,12 @@ jobs:
       displayName: 'Update Modules'
     - powershell: './CI/PS-CI.ps1'
       displayName: 'Check Build Check Pack Test'
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        artifact: 'Modules'
     - task: PublishTestResults@2
       inputs:
         testResultsFormat: 'NUnit'
         testResultsFiles: '**/TestResults*.xml'
         failTaskOnFailedTests: true
-    - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: '$(Build.ArtifactStagingDirectory)/ImportExcel'
-          artifact: 'Module'
