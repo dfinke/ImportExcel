@@ -35,8 +35,7 @@ jobs:
       vmImage: 'windows-latest'
     steps:
     - pwsh: 'Install-Module -Name Pester -Force'
-      display
-      Name: 'Update Pester'
+      displayName: 'Update Pester'
     - pwsh: '.\CI\PS-CI.ps1 -SkipPreChecks -SkipHelp -SkipPostChecks'
       displayName: 'Install and Test'
     - task: PublishTestResults@2
