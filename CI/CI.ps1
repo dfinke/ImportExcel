@@ -95,7 +95,7 @@ if (-not $VersionFilePath) {
     '[Info] Testing On:'
     Get-EnvironmentInfo
     '[Progress] Installing Module.'
-    . .\ci\Install.ps1
+    . .\CI\Install.ps1
     '[Progress] Invoking Pester.'
     Invoke-Pester -OutputFile ('TestResultsPS{0}.xml' -f $PSVersionTable.PSVersion)
 }
