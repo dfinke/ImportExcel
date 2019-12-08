@@ -207,8 +207,8 @@ if (-not $SkipPostChecks) {
         }
         Remove-Item -Path $ExcelParams['Path'] -ErrorAction SilentlyContinue
         $AnalyzerResults | Export-Excel @ExcelParams
-        "Try to uploadfile$($ExcelParams['Path'])"
-        "##vso[task.uploadfile]$($ExcelParams['Path'])"
+        "Try to uploadfile     {0}" -f $ExcelParams['Path']
+        "##vso[task.uploadfile]{0}" -f $ExcelParams['Path']
     }
 }
 
