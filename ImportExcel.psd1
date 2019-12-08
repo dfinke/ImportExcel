@@ -153,14 +153,16 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         '.\ImportExcel.psm1',
         '.\LICENSE.txt',
         '.\README.md',
-        '.\Plot.ps1'
+        '.\Plot.ps1',
+        '.\Private',
+        '.\Public',
         '.\en\ImportExcel-help.xml',
         '.\en\Strings.psd1',
         '.\Charting\Charting.ps1',
         '.\InferData\InferData.ps1',
         '.\Pivot\Pivot.ps1',
         '.\spikes\ConvertFrom-ExcelColumnName.ps1',
-        '.\Examples', '.\images', '.\Testimonials' , '.\Public'
+        '.\Examples', '.\images', '.\Testimonials'
 
     )
 

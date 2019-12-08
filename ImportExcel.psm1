@@ -11,8 +11,6 @@ foreach ($directory in @('Private', 'Public','Charting','InferData','Pivot')) {
     Get-ChildItem -Path "$PSScriptRoot\$directory\*.ps1" | ForEach-Object {. $_.FullName}
 }
 
-# . $PSScriptRoot\ArgumentCompletion.ps1
-
 if ($PSVersionTable.PSVersion.Major -ge 5) {
     . $PSScriptRoot\Plot.ps1
 
