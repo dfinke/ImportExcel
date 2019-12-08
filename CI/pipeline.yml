@@ -18,7 +18,7 @@ jobs:
     steps:
     - powershell: 'Install-Module -Name Pester -Force -SkipPublisherCheck'
       displayName: 'Update Modules'
-    - powershell: './CI/PS-CI.ps1'
+    - powershell: './CI/PS-CI.ps1 '
       displayName: 'Check Build Check Pack Test'
     - task: PublishTestResults@2
       inputs:
@@ -36,7 +36,7 @@ jobs:
     steps:
     - pwsh: 'Install-Module -Name Pester -Force'
       displayName: 'Update Pester'
-    - pwsh: .\ci\PS-CI.ps1 -SkipPreChecks -SkipHelp -SkipPostChecks'
+    - pwsh: '.\CI\PS-CI.ps1 -SkipPreChecks -SkipHelp -SkipPostChecks'
       displayName: 'Install and Test'
     - task: PublishTestResults@2
       inputs:
@@ -50,7 +50,7 @@ jobs:
     steps:
     - powershell: 'Install-Module -Name Pester -Force'
       displayName: 'Update Pester'
-    - powershell: '.\ci\PS-CI.ps1 -SkipPreChecks -SkipHelp -SkipPostChecks   '
+    - powershell: './CI/PS-CI.ps1 -SkipPreChecks -SkipHelp -SkipPostChecks   '
       displayName: 'Install and Test'
     - task: PublishTestResults@2
       inputs:
@@ -66,7 +66,7 @@ jobs:
       displayName: 'Install mono-libgdiplus'
     - powershell: 'Install-Module -Name Pester -Force'
       displayName: 'Update Pester'
-    - powershell: './CI/CI.ps1 -Test'
+    - powershell: './CI/PS-CI.ps1 -Test'
       displayName: 'Install and Test'
     - task: PublishTestResults@2
       inputs:
