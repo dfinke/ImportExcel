@@ -153,6 +153,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         '.\ImportExcel.psm1',
         '.\LICENSE.txt',
         '.\README.md',
+        '.\Plot.ps1'
         '.\en\ImportExcel-help.xml',
         '.\en\Strings.psd1',
         '.\Charting\Charting.ps1',

@@ -10,11 +10,10 @@ param(
     [ValidateSet('CurrentUser', 'AllUsers')]
     [string]
     $Scope = 'CurrentUser',
-    [switch]$Passthru,
-    [switch]$Tests
+    [switch]$Passthru
 )
 
-if ($PSScriptRoot) { Push-Location $PSScriptRoot }
+if ($PSScriptRoot) { Push-Location "$PSScriptRoot\.." }
 
 $psdpath = Get-Item "*.psd1"
 if (-not $psdpath -or $psdpath.count -gt 1) {
@@ -76,5 +75,6 @@ catch {
     throw ('Failed installing module "{0}". Error: "{1}" in Line {2}' -f $ModuleName, $_, $_.InvocationInfo.ScriptLineNumber)
 }
 finally {
+    if ($PSScriptRoot) { Pop-Location }
     Write-Verbose -Message 'Module installation end'
 }

@@ -81,8 +81,9 @@ function Invoke-MultiLike {
     }
 }
 
+Push-Location "$PSScriptRoot\.."
 try {
-    Write-Verbose -Message 'Module installation started'
+    Write-Verbose -Message "Module installation started. Installing from $PWD"
 
     if (!$ModulePath) {
         if ($Scope -eq 'CurrentUser') {
@@ -99,6 +100,7 @@ try {
         }
         $ModulePath = ($env:PSModulePath -split $ModulePathSeparator)[$ModulePathIndex]
     }
+    Write-Verbose -Message "Installing to $ModulePath"
 
     # Get $ModuleName, $TargetPath, [$Links]
     if ($FromGitHub) {
@@ -115,8 +117,8 @@ try {
         $ModuleVersion = (. ([Scriptblock]::Create((Invoke-WebRequest -Uri ($Links | Where-Object { $_.name -eq "$ModuleName.psd1" }).download_url)))).ModuleVersion
     }
     else {
-        $ModuleName = [System.IO.Path]::GetFileNameWithoutExtension((Get-ChildItem -File -Filter *.psm1 -Name -Path $PSScriptRoot))
-        $ModuleVersion = (. ([Scriptblock]::Create((Get-Content -Path (Join-Path $PSScriptRoot "$ModuleName.psd1") | Out-String)))).ModuleVersion
+        $ModuleName = [System.IO.Path]::GetFileNameWithoutExtension((Get-ChildItem -File -Filter *.psm1 -Name -Path $PWD))
+        $ModuleVersion = (. ([Scriptblock]::Create((Get-Content -Path (Join-Path $PWD "$ModuleName.psd1") | Out-String)))).ModuleVersion
     }
     $TargetPath = Join-Path -Path $ModulePath -ChildPath $ModuleName
     $TargetPath = Join-Path -Path $TargetPath -ChildPath $ModuleVersion
@@ -160,7 +162,7 @@ try {
         }
     }
     else {
-        Get-ChildItem -Path $PSScriptRoot -Exclude $ExcludeFiles | Where-Object { LikeAny $_.Name $IncludeFiles } | ForEach-Object {
+        Get-ChildItem -Path $PWD -Exclude $ExcludeFiles | Where-Object { LikeAny $_.Name $IncludeFiles } | ForEach-Object {
             if ($_.Attributes -ne 'Directory') {
                 Copy-Item -Path $_ -Destination $TargetPath
                 Write-Verbose -Message ('Installed module file "{0}"' -f $_)
@@ -185,4 +187,5 @@ finally {
     #    [Net.ServicePointManager]::SecurityProtocol = $SecurityProtocol
     #}
     Write-Verbose -Message 'Module installation end'
+    Pop-Location
 }
