@@ -15,10 +15,10 @@ $Excel   =  Send-SQLDataToExcel -SQL $sql -Session $session -path .\demo3.xlsx -
 
 $ws = $Excel.Workbook.Worksheets["Winners"]
 
-Set-Row    -Worksheet $ws -Heading "Average"     -Value {"=Average($columnName`2:$columnName$endrow)"}  -NumberFormat "0.0"  -Bold
-Set-Column -Worksheet $ws -Heading "WinsToPoles" -Value {"=D$row/C$row"}           -Column 6            -AutoSize -AutoNameRange
-Set-Column -Worksheet $ws -Heading "WinsToFast"  -Value {"=E$row/C$row"}           -Column 7            -AutoSize -AutoNameRange
+Set-ExcelRow    -Worksheet $ws -Heading "Average"     -Value {"=Average($columnName`2:$columnName$endrow)"}  -NumberFormat "0.0"  -Bold
+Set-ExcelColumn  -Worksheet $ws -Heading "WinsToPoles" -Value {"=D$row/C$row"}           -Column 6            -AutoSize -AutoNameRange
+Set-ExcelColumn -Worksheet $ws -Heading "WinsToFast"  -Value {"=E$row/C$row"}           -Column 7            -AutoSize -AutoNameRange
 
 Set-ExcelRange -Worksheet $ws -Range "F2:G50" -NumberFormat "0.0%"
-$chart = New-ExcelChart -NoLegend -ChartType XYScatter -XRange WinsToFast -YRange WinsToPoles -Column 7 -Width 2000 -Height 700 -Title "Poles vs fastlaps"
+$chart = New-ExcelChartDefinition  -NoLegend -ChartType XYScatter -XRange WinsToFast -YRange WinsToPoles -Column 7 -Width 2000 -Height 700 -Title "Poles vs fastlaps"
 Export-Excel -ExcelPackage $Excel -WorkSheetname "Winners" -ExcelChartDefinition $chart -Show

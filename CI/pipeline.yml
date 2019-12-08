@@ -29,5 +29,5 @@ jobs:
         failTaskOnFailedTests: true
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(Build.ArtifactStagingDirectory)'
+        targetPath: '$(Build.ArtifactStagingDirectory)/ImportExcel'
         artifact: 'ImportExcel'
