@@ -99,7 +99,7 @@ if (-not $SkipPreChecks) {
             $m2 = [regex]::Match($m[0],"^.*?param",17) # 17 = multi-line, ignnore case
             if (-not $m2.Success)                           {Show-Warning "function $name has no param() block"}
             else {
-                if ($m2.value -match "\[\s*Alias\(\s*.([\w-]+).\s*\)\s*\]") {
+                if ($m2.value -match "(?<!#\s*)\[\s*Alias\(\s*.([\w-]+).\s*\)\s*\]") {
                     foreach ($a in  ($Matches[1] -split '\s*,\s*')) {
                         $a = $a -replace "'",""  -replace '"',''
                         if (-not ($Settings.AliasesToExport -eq $a)) {
@@ -161,9 +161,9 @@ try     {
             'Installing Platyps to build help files'
             Install-Module -Name platyPS -Force -SkipPublisherCheck
         }
-        $platypsInfo = Import-Module platyPS  -PassThru -force | Format-Table name,version -HideTableHeaders | Out-String
+        $platypsInfo = Import-Module platyPS  -PassThru -force
         Get-ChildItem .\mdHelp -Directory | ForEach-Object {
-           'Building help for language ''{0}'', using {1} .' -f $_.Name,$platypsInfo
+           'Building help for language ''{0}'', using {1} V{2}.' -f $_.Name,$platypsInfo.Name, $platypsInfo.Version
             $Null = New-ExternalHelp -Path $_.FullName  -OutputPath (Join-Path $ModulePath $_.Name) -Force
         }
     }
@@ -200,8 +200,8 @@ if (-not $SkipPostChecks) {
     if (-not (Get-Module -Name PSScriptAnalyzer -ListAvailable)) {
         Install-Module -Name PSScriptAnalyzer -Force
     }
-    $PSSAInfo = Import-module -Name PSScriptAnalyzer  -PassThru -force | Format-Table name,version -HideTableHeaders | Out-String
-    "Running {1} against '{0}' " -f $ModulePath , $PSSAInfo
+    $PSSAInfo = Import-module -Name PSScriptAnalyzer  -PassThru -force
+    "Running {1} V{2} against '{0}' " -f $ModulePath , $PSSAInfo.name, $PSSAInfo.Version
     $AnalyzerResults = Invoke-ScriptAnalyzer -Path $ModulePath -Recurse -ErrorAction SilentlyContinue
     if ($AnalyzerResults) {
         if (-not (Get-Module -Name ImportExcel -ListAvailable)) {
