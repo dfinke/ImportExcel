@@ -12,7 +12,7 @@ trigger:
     - CHANGELOG.md
 
 jobs:
-  - job: 'Windows powershell all options'
+  - job: 'Windows_PowerShell_all_options'
     pool:
       vmImage: 'windows-latest'
     steps:
@@ -30,7 +30,7 @@ jobs:
         targetPath: '$(Build.ArtifactStagingDirectory)/ImportExcel'
         artifact: 'ImportExcel'
 
-  - job: 'PowerShell Core on Windows Build and Pester only'
+  - job: 'PowerShell_Core_on_Windows_Build_and_Pester_only'
     pool:
       vmImage: 'windows-latest'
     steps:
@@ -44,7 +44,7 @@ jobs:
         testResultsFiles: '**/TestResults*.xml'
         failTaskOnFailedTests: true
 
-  - job: 'Ubuntu Build and Pester Only'
+  - job: 'Ubuntu_Build_and_Pester_Only'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -58,7 +58,7 @@ jobs:
         testResultsFiles: '**/TestResults*.xml'
         failTaskOnFailedTests: true
 
-  - job: 'macOS Build and Pester Only'
+  - job: 'macOS_Build_and_Pester_Only'
     pool:
       vmImage: 'macOS-latest'
     steps:
