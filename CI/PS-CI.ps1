@@ -147,7 +147,7 @@ try     {
         Get-ChildItem -Path $ModulePath | Remove-Item -Force -Recurse
     }
     'Copying files to:      "{0}"' -f $ModulePath
-    $outputFile = $psdpath | Copy-Item -Destination $ModulePath -PassThru
+    $outputFile = $psdpath | Copy-Item -Destination $ModulePath -PassThru -Verbose
     $outputFile.fullname
     foreach ($file in $Settings.FileList) {
         if  ($file -like '.\*') {
@@ -178,10 +178,7 @@ catch   {
             if ($PSScriptRoot) { Pop-Location }
             throw ('Failed installing module "{0}". Error: "{1}" in Line {2}' -f $ModuleName, $_, $_.InvocationInfo.ScriptLineNumber)
 }
-finally {   if (-not $outputFile ) {
-                throw "Failed to create module"
-            }
-            if (-not (Test-Path $outputFile)) { throw "$outputfile doesn't exist"}
+finally {
 }
 #endregion
 
