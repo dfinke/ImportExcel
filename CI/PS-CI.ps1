@@ -125,24 +125,25 @@ if ($PreCheckOnly) {return}
 
 #region build, determine module path if necessary, create target directory if necessary, copy files based on manifest, build help
 try     {
-        if (-not $ModulePath) {
-        if ($IsLinux -or $IsMacOS) {$ModulePathSeparator = ':' }
-        else                       {$ModulePathSeparator = ';' }
-
-        if ($Scope -eq 'CurrentUser') { $dir =  [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::UserProfile) }
-        else                          { $dir =  [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::ProgramFiles) }
+    if ($ModulePath) {
+        $ModulePath = $ModulePath -replace "\\$|/$",""
+    }
+    else {
+        if ($IsLinux -or $IsMacOS)      {$ModulePathSeparator = ':' }
+        else                            {$ModulePathSeparator = ';' }
+        if ($Scope   -eq 'CurrentUser') {$dir =  [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::UserProfile) }
+        else                            {$dir =  [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::ProgramFiles) }
         $ModulePath = ($env:PSModulePath -split $ModulePathSeparator).where({$_ -like "$dir*"},"First",1)
         $ModulePath = Join-Path -Path $ModulePath -ChildPath $ModuleName
         $ModulePath = Join-Path -Path $ModulePath -ChildPath $Settings..ModuleVersion
     }
-
     # Clean-up / Create Directory
     if (-not  (Test-Path -Path $ModulePath)) {
         $null = New-Item -Path $ModulePath -ItemType Directory -ErrorAction Stop
         'Created module folder: "{0}"' -f $ModulePath
     }
     elseif ($CleanModuleDir) {
-       '{0} exists - cleaning before copy' -f $ModulePath
+        '{0} exists - cleaning before copy' -f $ModulePath
         Get-ChildItem -Path $ModulePath | Remove-Item -Force -Recurse
     }
     'Copying files to:      "{0}"' -f $ModulePath
@@ -182,7 +183,9 @@ finally {   if (-not $outputFile -or -not (Test-Path $outputFile)) {
 }
 #endregion
 
-Copy-Item -Path (split-path -Parent $ModulePath) -Destination $env:Build_ArtifactStagingDirectory -Recurse
+if ($env:Build_ArtifactStagingDirectory) {
+    Copy-Item -Path (split-path -Parent $ModulePath) -Destination $env:Build_ArtifactStagingDirectory -Recurse
+}
 
 #Check valid command names, help, run script analyzer over the files in the module directory
 if (-not $SkipPostChecks) {
