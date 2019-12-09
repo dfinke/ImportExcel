@@ -147,7 +147,7 @@ try     {
         Get-ChildItem -Path $ModulePath | Remove-Item -Force -Recurse
     }
     'Copying files to:      "{0}"' -f $ModulePath
-    $outputFile = $psdpath | Copy-Item -Destination $ModulePath -PassThru -Verbose
+    $outputFile = $psdpath | Copy-Item -Destination $ModulePath -PassThru
     $outputFile.fullname
     foreach ($file in $Settings.FileList) {
         if  ($file -like '.\*') {
@@ -157,7 +157,7 @@ try     {
              }
         }
         else  {$dest = $ModulePath }
-        Copy-Item -Path $file  -Destination $dest -Force -Recurse -Verbose
+        Copy-Item -Path $file  -Destination $dest -Force -Recurse
     }
 
     if ((Test-Path -PathType Container "mdHelp") -and -not $SkipHelp) {
