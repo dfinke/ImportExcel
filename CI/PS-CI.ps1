@@ -135,7 +135,7 @@ try     {
         else                            {$dir =  [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::ProgramFiles) }
         $ModulePath = ($env:PSModulePath -split $ModulePathSeparator).where({$_ -like "$dir*"},"First",1)
         $ModulePath = Join-Path -Path $ModulePath -ChildPath $ModuleName
-        $ModulePath = Join-Path -Path $ModulePath -ChildPath $Settings..ModuleVersion
+        $ModulePath = Join-Path -Path $ModulePath -ChildPath $Settings.ModuleVersion
     }
     # Clean-up / Create Directory
     if (-not  (Test-Path -Path $ModulePath)) {
