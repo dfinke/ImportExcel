@@ -148,6 +148,7 @@ try     {
     }
     'Copying files to:      "{0}"' -f $ModulePath
     $outputFile = $psdpath | Copy-Item -Destination $ModulePath -PassThru
+    $outputFile.fullname
     foreach ($file in $Settings.FileList) {
         if  ($file -like '.\*') {
              $dest = ($file -replace '\.\\',"$ModulePath\")
@@ -156,10 +157,10 @@ try     {
              }
         }
         else  {$dest = $ModulePath }
-        Copy-Item -Path $file  -Destination $dest -Force -Recurse
+        Copy-Item -Path $file  -Destination $dest -Force -Recurse -Verbose
     }
 
-    if ((Test-Path -PathType Container "mdHelp") -and -not $SkipHelp) {
+    if ((Test-Path -PathType Container "mdHelp") -and -not $true) {
         if (-not (Get-Module -ListAvailable platyPS)) {
             'Installing Platyps to build help files'
             Install-Module -Name platyPS -Force -SkipPublisherCheck
@@ -177,9 +178,10 @@ catch   {
             if ($PSScriptRoot) { Pop-Location }
             throw ('Failed installing module "{0}". Error: "{1}" in Line {2}' -f $ModuleName, $_, $_.InvocationInfo.ScriptLineNumber)
 }
-finally {   if (-not $outputFile -or -not (Test-Path $outputFile)) {
+finally {   if (-not $outputFile ) {
                 throw "Failed to create module"
             }
+            if (-not (Test-Path $outputFile)) { throw "$outputfile doesn't exist"}
 }
 #endregion
 
