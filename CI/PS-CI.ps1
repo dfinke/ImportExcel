@@ -160,7 +160,7 @@ try     {
         Copy-Item -Path $file  -Destination $dest -Force -Recurse -Verbose
     }
 
-    if ((Test-Path -PathType Container "mdHelp") -and -not $true) {
+    if ((Test-Path -PathType Container "mdHelp") -and -not $SkipHelp) {
         if (-not (Get-Module -ListAvailable platyPS)) {
             'Installing Platyps to build help files'
             Install-Module -Name platyPS -Force -SkipPublisherCheck
@@ -175,10 +175,11 @@ try     {
     $env:PSNewBuildModule = $ModulePath
 }
 catch   {
-            if ($PSScriptRoot) { Pop-Location }
-            throw ('Failed installing module "{0}". Error: "{1}" in Line {2}' -f $ModuleName, $_, $_.InvocationInfo.ScriptLineNumber)
+    if ($PSScriptRoot) { Pop-Location }
+    throw ('Failed installing module "{0}". Error: "{1}" in Line {2}' -f $ModuleName, $_, $_.InvocationInfo.ScriptLineNumber)
 }
 finally {
+    if (-not $outputFile -or -not (Test-Path $outputFile)) { throw "Failed to create module"}
 }
 #endregion
 
