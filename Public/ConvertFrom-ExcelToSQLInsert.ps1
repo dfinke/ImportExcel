@@ -27,6 +27,11 @@ function ConvertFrom-ExcelToSQLInsert {
     .PARAMETER ConvertEmptyStringsToNull
       If specified, cells without any data are replaced with NULL, instead of an empty string.
       This is to address behviors in certain DBMS where an empty string is insert as 0 for INT column, instead of a NULL value.
+    .PARAMETER UseMSSQLSyntax
+      If specified, column names are wrapped with square brackets, e.g., [columnname]. This handles thos containing illegal characters such as
+      space or single quote.
+      Otherwise,  column names are wrapped with single quotes.
+
 
     .EXAMPLE
       Generate SQL insert statements from Movies.xlsx file, leaving blank cells as empty strings:
@@ -98,9 +103,13 @@ function ConvertFrom-ExcelToSQLInsert {
   ConvertFrom-ExcelData @params {
       param($propertyNames, $record)
 
-      $ColumnNames = "'" + ($PropertyNames -join "', '") + "'"
+
       if($UseMSSQLSyntax) {
-          $ColumnNames = "[" + ($PropertyNames -join "], [") + "]"
+        $ColumnNames = "[" + ($PropertyNames -join "], [") + "]"
+      }
+      else {
+        #Note, the replace on single-quote to escape them. Similar to https://github.com/dfinke/ImportExcel/issues/512
+        $ColumnNames = "'" + (($PropertyNames -replace "'","''") -join "', '") + "'"
       }
 
       $values = foreach ($propertyName in $PropertyNames) {
@@ -108,7 +117,7 @@ function ConvertFrom-ExcelToSQLInsert {
               'NULL'
           }
           else {
-      "'" + (($record.$propertyName) -replace "'","''") + "'"
+              "'" + (($record.$propertyName) -replace "'","''") + "'"
           }
       }
       $targetValues = ($values -join ", ")
