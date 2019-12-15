@@ -21,7 +21,10 @@ Describe 'ConvertFrom-ExcelSheet / Export-ExcelSheet' {
         }
         it "Applied ASText and Properties correctly                                                " {
             $firstText[1]                                       | should     match '^"\w+","\d{5}","\d{1,2}","\w+ \w+","[1-9]\d?","\w+","\d{1,2}"$'
-            $secondText[1]                                      | should     match '^"\w+","\d\d \w{3,} \d{4}","\d","\w+ \w+","0\d","\w+","\d{1,2}"$'
+            $date =  $firstText[1] -replace '^.*(\d{5}).*$', '$1'
+            $date = [datetime]::FromOADate($date).toString("D")
+            $secondText[1]                                      | should    belike "*$date*"
+            $secondText[1]                                      | should     match '"0\d","\w+","\d{1,2}"$'
             $ThirdText[1]                                       | should     match '^"\w+ \w+","#\d\d/\d\d/\d{4}#","\d","0\d"$'
         }
     }
