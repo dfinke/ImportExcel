@@ -1,8 +1,8 @@
 ﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
 Param()
-if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
-     Import-Module $PSScriptRoot\..\..\ImportExcel.psd1
-}
+
+Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 -Force
+
 Describe "Tests" {
     BeforeAll {
         $data = $null

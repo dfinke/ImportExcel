@@ -26,38 +26,7 @@ PowerShell module to import/export Excel spreadsheets, without Excel.
 Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq
 '@
 
-    # Minimum version of the Windows PowerShell engine required by this module
-    # PowerShellVersion = ''
 
-    # Name of the Windows PowerShell host required by this module
-    # PowerShellHostName = ''
-
-    # Minimum version of the Windows PowerShell host required by this module
-    # PowerShellHostVersion = ''
-
-    # Minimum version of Microsoft .NET Framework required by this module
-    # DotNetFrameworkVersion = ''
-
-    # Minimum version of the common language runtime (CLR) required by this module
-    # CLRVersion = ''
-
-    # Processor architecture (None, X86, Amd64) required by this module
-    # ProcessorArchitecture = ''
-
-    # Modules that must be imported into the global environment prior to importing this module
-    # RequiredModules = @()
-
-    # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-    # ScriptsToProcess = @()
-
-    # Type files (.ps1xml) to be loaded when importing this module
-    # TypesToProcess = @()
-
-    # Format files (.ps1xml) to be loaded when importing this module
-    # FormatsToProcess = @()
-
-    # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-    # NestedModules = @()
 
     # Functions to export from this module
     FunctionsToExport  = @(
@@ -125,15 +94,10 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Update-FirstObjectProperties'
     )
 
-    # Cmdlets to export from this module
-    #CmdletsToExport   = '*'
-
-    # Variables to export from this module
-    #VariablesToExport = '*'
-
     # Aliases to export from this module
     AliasesToExport    = @(
-        'Convert-XlRangeToImage'
+        'Convert-XlRangeToImage',
+        'Export-ExcelSheet',
         'New-ExcelChart',
         'Set-Column',
         'Set-Format',
@@ -141,10 +105,9 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Use-ExcelData'
     )
 
-    # List of all modules packaged with this module
-    # ModuleList = @()
+    # Cmdlets to export from this module
+    CmdletsToExport   = @()
 
-    # List of all files packaged with this module
     FileList           = @(
         '.\EPPlus.dll',
         '.\Export-charts.ps1',
@@ -198,6 +161,46 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
             IsPrerelease = 'False'
         }
     }
+
+    # Minimum version of the Windows PowerShell engine required by this module
+    # PowerShellVersion = ''
+
+    # Name of the Windows PowerShell host required by this module
+    # PowerShellHostName = ''
+
+    # Minimum version of the Windows PowerShell host required by this module
+    # PowerShellHostVersion = ''
+
+    # Minimum version of Microsoft .NET Framework required by this module
+    # DotNetFrameworkVersion = ''
+
+    # Minimum version of the common language runtime (CLR) required by this module
+    # CLRVersion = ''
+
+    # Processor architecture (None, X86, Amd64) required by this module
+    # ProcessorArchitecture = ''
+
+    # Modules that must be imported into the global environment prior to importing this module
+    # RequiredModules = @()
+
+    # Script files (.ps1) that are run in the caller's environment prior to importing this module.
+    # ScriptsToProcess = @()
+
+    # Type files (.ps1xml) to be loaded when importing this module
+    # TypesToProcess = @()
+
+    # Format files (.ps1xml) to be loaded when importing this module
+    # FormatsToProcess = @()
+
+    # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
+    # NestedModules = @()
+
+    # List of all modules packaged with this module
+    # ModuleList = @()
+
+    # List of all files packaged with this module
+    # Variables to export from this module
+    #VariablesToExport = '*'
 
     # HelpInfo URI of this module
     # HelpInfoURI = ''
