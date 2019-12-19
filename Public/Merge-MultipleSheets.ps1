@@ -89,7 +89,7 @@ function Merge-MultipleSheets {
          if ($filesToProcess.Count -ge 2) {
                $refPrefix       = (Split-Path -Path $filestoProcess[0] -Leaf) -replace "\.xlsx$"," "
          }
-         else {$refPrefix       = $WorksheetName[0] }
+         else {$refPrefix       = $WorksheetName[0] + " "}
          Write-Progress -Activity "Merging sheets" -CurrentOperation "applying formatting to sheet '$OutputSheetName' in $OutputFile"
          #Find the column headings which are in the form "diffFile  is"; which will hold 'Same', 'Added' or 'Changed'
          foreach ($cell in $sheet.Cells[($sheet.Dimension.Address -replace "\d+$","1")].Where({$_.value -match "\sIS$"}) ) {
