@@ -5,13 +5,11 @@ if (-not $Strings) {
     Import-LocalizedData  -UICulture "en" -BindingVariable Strings -FileName Strings -ErrorAction Ignore
 }
 try { [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") }
-catch { Write-Warning -Message $Strings.SystemDrawingAvaialable }
+catch { Write-Warning -Message $Strings.SystemDrawingAvailable }
 
-foreach ($directory in @('Public', 'Charting', 'InferData', 'Pivot')) {
-    Get-ChildItem -Path "$PSScriptRoot\$directory\*.ps1" | ForEach-Object { . $_.FullName }
+foreach ($directory in @('Private', 'Public','Charting','InferData','Pivot')) {
+    Get-ChildItem -Path "$PSScriptRoot\$directory\*.ps1" | ForEach-Object {. $_.FullName}
 }
-
-. $PSScriptRoot\ArgumentCompletion.ps1
 
 if ($PSVersionTable.PSVersion.Major -ge 5) {
     . $PSScriptRoot\Plot.ps1

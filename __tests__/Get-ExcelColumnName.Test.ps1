@@ -17,11 +17,11 @@ $map = @{
     16384 = 'XFD'
 }
 
-(Get-ExcelColumnName 26).columnName | Should be 'Z'
-(Get-ExcelColumnName 27).columnName | Should be 'AA'
+(Get-ExcelColumnName 26).columnName  | Should be 'Z'
+(Get-ExcelColumnName 27).columnName  | Should be 'AA'
 (Get-ExcelColumnName 28).columnNamee | Should be 'AB'
-(Get-ExcelColumnName 30).columnName | Should be 'AD'
-(Get-ExcelColumnName 48).columnName | Should be 'AV'
+(Get-ExcelColumnName 30).columnName  | Should be 'AD'
+(Get-ExcelColumnName 48).columnName  | Should be 'AV'
 
 1..16 | ForEach-Object {
     $number = $_ * 1024

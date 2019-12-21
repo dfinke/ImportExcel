@@ -1,48 +1,42 @@
 function ConvertFrom-ExcelSheet {
     [CmdletBinding()]
-    param
-    (
-        [Alias("FullName")]
+    [Alias("Export-ExcelSheet")]
+    param (
         [Parameter(Mandatory = $true)]
-        [String]
-        $Path,
-        [String]
-        $OutputPath = '.\',
-        [String]
-        $SheetName = "*",
-        [ValidateSet('ASCII', 'BigEndianUniCode', 'Default', 'OEM', 'UniCode', 'UTF32', 'UTF7', 'UTF8')]
-        [string]
-        $Encoding = 'UTF8',
-        [ValidateSet('.txt', '.log', '.csv')]
-        [string]
-        $Extension = '.csv',
+        [String]$Path,
+        [String]$OutputPath = '.\',
+        [String]$SheetName = "*",
+        [ValidateSet('ASCII', 'BigEndianUniCode','Default','OEM','UniCode','UTF32','UTF7','UTF8')]
+        [string]$Encoding = 'UTF8',
+        [ValidateSet('.txt', '.log','.csv')]
+        [string]$Extension = '.csv',
         [ValidateSet(';', ',')]
-        [string]
-        $Delimiter = ';'
+        [string]$Delimiter ,
+        $Property = "*",
+        $ExcludeProperty = @(),
+        [switch]$Append,
+        [string[]]$AsText = @()
     )
 
     $Path = (Resolve-Path $Path).Path
-    $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, "Open", "Read", "ReadWrite"
-    $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
+    $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
     $workbook = $xl.Workbook
 
-    $targetSheets = $workbook.Worksheets | Where-Object { $_.Name -like $SheetName }
+    $targetSheets = $workbook.Worksheets | Where-Object {$_.Name -Like $SheetName}
 
-    $params = @{ } + $PSBoundParameters
-    $params.Remove("OutputPath")
-    $params.Remove("SheetName")
-    $params.Remove('Extension')
-    $params.NoTypeInformation = $true
+    $csvParams = @{NoTypeInformation = $true} + $PSBoundParameters
+    foreach ($p in 'OutputPath', 'SheetName', 'Extension', 'Property','ExcludeProperty', 'AsText') {
+        $csvParams.Remove($p)
+    }
 
     Foreach ($sheet in $targetSheets) {
         Write-Verbose "Exporting sheet: $($sheet.Name)"
 
-        $params.Path = "$OutputPath\$($Sheet.Name)$Extension"
+        $csvParams.Path = "$OutputPath\$($Sheet.Name)$Extension"
 
-        Import-Excel $Path -Sheet $($sheet.Name) | Export-Csv @params
-    }
+        Import-Excel -ExcelPackage $xl -Sheet $($sheet.Name) -AsText:$AsText |
+            Select-Object -Property $Property | Export-Csv @csvparams
+     }
 
-    $Stream.Close()
-    $Stream.Dispose()
     $xl.Dispose()
 }

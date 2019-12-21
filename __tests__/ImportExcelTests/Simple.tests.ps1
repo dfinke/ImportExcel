@@ -1,8 +1,8 @@
 ﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
 Param()
-if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
-     Import-Module $PSScriptRoot\..\..\ImportExcel.psd1
-}
+
+Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 -Force
+
 Describe "Tests" {
     BeforeAll {
         $data = $null
@@ -10,17 +10,20 @@ Describe "Tests" {
             $data = Import-Excel $PSScriptRoot\Simple.xlsx
         }
     }
-
-    It "Should have two items".PadRight(90) {
+    It "Should have a valid manifest".PadRight(90){
+        {try {Test-ModuleManifest -Path $PSScriptRoot\..\..\ImportExcel.psd1 -ErrorAction stop}
+         catch {throw}  } | should not throw
+    }
+    It "Should have two items in the imported simple data".PadRight(90) {
         $data.count | Should be 2
     }
 
-    It "Should have items a and b".PadRight(90) {
+    It "Should have items a and b in the imported simple data".PadRight(90) {
         $data[0].p1 | Should be "a"
         $data[1].p1 | Should be "b"
     }
 
-    It "Should read fast < 2100 milliseconds".PadRight(90) {
+    It "Should read the simple xlsx in < 2100 milliseconds".PadRight(90) {
         $timer.TotalMilliseconds | should BeLessThan 2100
     }
 

@@ -59,7 +59,16 @@ Describe "Compare Worksheet" {
 
     Context "Setting the background to highlight different rows" {
         BeforeAll {
-            $null = Compare-Worksheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen)
+            if ($PSVersionTable.PSVersion.Major -ne 5) {
+                $null = Compare-Worksheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen)
+            }
+            else {
+                $cmdline = 'Import-Module {0}; $null = Compare-WorkSheet "{1}" "{2}" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView; Start-Sleep -sec 5; exit'
+                $cmdline = $cmdline -f  (Resolve-Path "$PSScriptRoot\..\importExcel.psd1" ) ,
+                                        (Join-Path (Get-PSDrive TestDrive).root "server1.xlsx"),
+                                        (Join-Path (Get-PSDrive TestDrive).root "server2.xlsx")
+                powershell.exe -Command  $cmdline
+            }
             $xl1  = Open-ExcelPackage -Path "TestDrive:\server1.xlsx"
             $xl2  = Open-ExcelPackage -Path "TestDrive:\server2.xlsx"
             $s1Sheet = $xl1.Workbook.Worksheets[1]
