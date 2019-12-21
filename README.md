@@ -60,6 +60,14 @@ Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfi
 
 ![](./images/ScriptAnalyzerReport.png)
 
+# What's new 7.0.1
+
+More infrastructure improvements.
+
+- Refine pipeline script analysis
+- Improve artifacts published
+- Add manifest (psd1) checks
+
 # What's new 7.0.0
 ## Refactor
 

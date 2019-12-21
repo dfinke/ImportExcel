@@ -6,7 +6,7 @@
     RootModule         = 'ImportExcel.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '7.0.0'
+    ModuleVersion      = '7.0.1'
 
     # ID used to uniquely identify this module
     GUID               = '60dd4136-feff-401a-ba27-a84458c57ede'
@@ -106,7 +106,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
     )
 
     # Cmdlets to export from this module
-    CmdletsToExport   = @()
+    CmdletsToExport    = @()
 
     FileList           = @(
         '.\EPPlus.dll',
