@@ -442,7 +442,7 @@
                 Add-PivotTable -ExcelPackage $pkg -PivotTableName $item.key @Params
             }
         }
-        if ($IncludePivotTable -or $IncludePivotChart) {
+        if ($IncludePivotTable -or $IncludePivotChart -or $PivotData) {
             $params = @{
                 'SourceRange' = $dataRange
             }
@@ -461,7 +461,8 @@
             if   ($NoTotalsInPivot) {$params.PivotTotals       = "None"    }
             Elseif   ($PivotTotals) {$params.PivotTotals       = $PivotTotals}
             if ($PivotDataToColumn) {$params.PivotDataToColumn = $true}
-            if ($IncludePivotChart) {
+            if ($IncludePivotChart -or
+                $PSBoundParameters.ContainsKey('ChartType')) {
                                      $params.IncludePivotChart = $true
                                      $Params.ChartType         = $ChartType
                 if ($ShowCategory)  {$params.ShowCategory      = $true}

@@ -62,6 +62,9 @@ function New-PivotTableDefinition {
         $parameters.Remove('NoTotalsInPivot')
         $parameters["PivotTotals"] = "None"
     }
+    if  ($PSBoundParameters.ContainsKey('ChartType') -and -not $PSBoundParameters.ContainsKey('IncludePivotChart')) {
+        $parameters['IncludePivotChart'] = $true
+    }
     $parameters.Remove('PivotTableName')
     if ($PivotChartDefinition) {
         $parameters.PivotChartDefinition.XRange = $null
