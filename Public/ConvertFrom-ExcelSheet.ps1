@@ -15,7 +15,8 @@ function ConvertFrom-ExcelSheet {
         $Property = "*",
         $ExcludeProperty = @(),
         [switch]$Append,
-        [string[]]$AsText = @()
+        [string[]]$AsText = @(),
+        [string[]]$AsDate = @()
     )
 
     $Path = (Resolve-Path $Path).Path
@@ -25,7 +26,7 @@ function ConvertFrom-ExcelSheet {
     $targetSheets = $workbook.Worksheets | Where-Object {$_.Name -Like $SheetName}
 
     $csvParams = @{NoTypeInformation = $true} + $PSBoundParameters
-    foreach ($p in 'OutputPath', 'SheetName', 'Extension', 'Property','ExcludeProperty', 'AsText') {
+    foreach ($p in 'OutputPath', 'SheetName', 'Extension', 'Property','ExcludeProperty', 'AsText','AsDate') {
         $csvParams.Remove($p)
     }
 
@@ -34,7 +35,7 @@ function ConvertFrom-ExcelSheet {
 
         $csvParams.Path = "$OutputPath\$($Sheet.Name)$Extension"
 
-        Import-Excel -ExcelPackage $xl -Sheet $($sheet.Name) -AsText:$AsText |
+        Import-Excel -ExcelPackage $xl -Sheet $($sheet.Name) -AsText:$AsText -AsDate:$AsDate |
             Select-Object -Property $Property | Export-Csv @csvparams
      }
 

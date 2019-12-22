@@ -33,6 +33,7 @@
         [Int]$EndColumn  ,
         [Switch]$DataOnly,
         [string[]]$AsText,
+        [string[]]$AsDate,
         [ValidateNotNullOrEmpty()]
         [String]$Password
     )
@@ -160,25 +161,39 @@
             }
             else {
                 #region Create one object per row
-                if ($AsText) {
+                if ($AsText -or $AsDate) {
                     <#join items in AsText together with ~~~ . Escape any regex special characters...
                     # which turns "*" into "\*" make it ".*". Convert ~~~ to $|^ and top and tail with ^%;
                     So if we get "Week", "[Time]" and "*date*" ; make the expression ^week$|^\[Time\]$|^.*Date.*$
                     $make a regex for this which is case insensitive (option 1) and compiled (option 8)
                     #>
-                    $TextColExpression = "^" + [regex]::Escape($AsText -join "~~~").replace("\*", ".*").replace("~~~", "$|^") + "$"
+                    $TextColExpression = ''
+                    if ($AsText) {
+                        $TextColExpression += '(?<astext>^' + [regex]::Escape($AsText -join '~~~').replace('\*', '.*').replace('~~~', '$|^') + '$)'
+                    }
+                    if ($AsText -and $AsDate) {
+                        $TextColExpression += "|"
+                    }
+                    if ($AsDate) {
+                        $TextColExpression += '(?<asDate>^' + [regex]::Escape($AsDate -join '~~~').replace('\*', '.*').replace('~~~', '$|^') + '$)'
+                    }
                     $TextColRegEx = New-Object -TypeName regex -ArgumentList $TextColExpression , 9
                 }
+                else {$TextColRegEx = $null}
                 foreach ($R in $Rows) {
                     #Disabled write-verbose for speed
                     #  Write-Verbose "Import row '$R'"
                     $NewRow = [Ordered]@{ }
                     if ($TextColRegEx) {
                         foreach ($P in $PropertyNames) {
-                            if ($TextColRegEx.IsMatch($P.Value)) {
-                                $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Text
+                            $MatchTest = $TextColRegEx.Match($P.value)
+                            if ($MatchTest.groups.name -eq "astext") {
+                                    $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Text
                             }
-                            else { $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value }
+                            elseif ($MatchTest.groups.name -eq "asdate" -and $Worksheet.Cells[$R, $P.Column].Value -is [System.ValueType]) {
+                                    $NewRow[$P.Value] = [datetime]::FromOADate(($Worksheet.Cells[$R, $P.Column].Value))
+                            }
+                            else {  $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value }
                         }
                     }
                     else {
