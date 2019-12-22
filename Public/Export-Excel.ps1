@@ -22,6 +22,7 @@
         [Switch]$TitleBold,
         [Int]$TitleSize = 22,
         $TitleBackgroundColor,
+        [parameter(DontShow=$true)]
         [Switch]$IncludePivotTable,
         [String]$PivotTableName,
         [String[]]$PivotRows,
@@ -31,7 +32,8 @@
         [Switch]$PivotDataToColumn,
         [Hashtable]$PivotTableDefinition,
         [Switch]$IncludePivotChart,
-        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = 'Pie',
+        [Alias('ChartType')]
+        [OfficeOpenXml.Drawing.Chart.eChartType]$PivotChartType = 'Pie',
         [Switch]$NoLegend,
         [Switch]$ShowCategory,
         [Switch]$ShowPercent,
@@ -462,9 +464,9 @@
             Elseif   ($PivotTotals) {$params.PivotTotals       = $PivotTotals}
             if ($PivotDataToColumn) {$params.PivotDataToColumn = $true}
             if ($IncludePivotChart -or
-                $PSBoundParameters.ContainsKey('ChartType')) {
+                $PSBoundParameters.ContainsKey('PivotChartType')) {
                                      $params.IncludePivotChart = $true
-                                     $Params.ChartType         = $ChartType
+                                     $Params.ChartType         = $PivotChartType
                 if ($ShowCategory)  {$params.ShowCategory      = $true}
                 if ($ShowPercent)   {$params.ShowPercent       = $true}
                 if ($NoLegend)      {$params.NoLegend          = $true}
