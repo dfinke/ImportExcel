@@ -43,6 +43,7 @@
         [Switch]$AutoSize,
         [float]$Width,
         [Switch]$AutoNameRange,
+        [Alias('Hidden')]
         [Switch]$Hide,
         [Switch]$Specified,
         [Switch]$PassThru

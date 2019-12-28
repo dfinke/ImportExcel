@@ -42,6 +42,7 @@
         [Switch]$AutoSize,
         [float]$Width,
         [float]$Height,
+        [Alias('Hide')]
         [Switch]$Hidden,
         [Switch]$Locked,
         [Switch]$Merge
