@@ -32,7 +32,7 @@ South,avocado,73
         $excel = Open-ExcelPackage -Path $xlfile
         $ws = $excel.Workbook.Worksheets["Sheet1"]
 
-        $ws.Drawings[0].Series.TrendLines.Type | Should Be 'Linear'
+        $ws.Drawings[0].Series.TrendLines.Type | Should -Be 'Linear'
 
         Close-ExcelPackage $excel
     }
@@ -45,7 +45,7 @@ South,avocado,73
         $excel = Open-ExcelPackage -Path $xlfile
         $ws = $excel.Workbook.Worksheets["Sheet1"]
 
-        $ws.Drawings[0].Series.TrendLines.Type | Should Be 'MovingAvgerage'
+        $ws.Drawings[0].Series.TrendLines.Type | Should -Be 'MovingAvgerage'
 
         Close-ExcelPackage $excel
     }

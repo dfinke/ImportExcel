@@ -29,7 +29,7 @@ function ConvertTo-PesterTest {
 
         `$target.psobject.Properties.name | ForEach-Object {`$p=@{}} {`$p.`$_=`$(`$target.`$_)}
 
-        Invoke-RestMethod @p | Should Be '$($record.ExpectedResult)'
+        Invoke-RestMethod @p | Should -Be '$($record.ExpectedResult)'
     }
 
 "@

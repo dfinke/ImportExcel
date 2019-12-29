@@ -22,45 +22,45 @@ Apple, New York, 1200,700
     $ws2  = $excel.Workbook.Worksheets[2]
     Context "Data Page" {
         It "Inserted the data and created the table                                                " {
-            $ws1.Tables[0]                                              | Should not beNullOrEmpty
-            $ws1.Tables[0].Address.Address                              | Should     be "A1:D7"
-            $ws1.Tables[0].StyleName                                    | Should     be "TableStyleMedium13"
+            $ws1.Tables[0]                                              | Should -Not -BeNullOrEmpty
+            $ws1.Tables[0].Address.Address                              | Should      -Be "A1:D7"
+            $ws1.Tables[0].StyleName                                    | Should      -Be "TableStyleMedium13"
         }
         It "Applied conditional formatting                                                         " {
-            $ws1.ConditionalFormatting[0]                               | Should not beNullOrEmpty
-            $ws1.ConditionalFormatting[0].type.ToString()               | Should     be "DataBar"
-            $ws1.ConditionalFormatting[0].Color.G                       | Should     beGreaterThan 100
-            $ws1.ConditionalFormatting[0].Color.R                       | Should     beLessThan    100
-            $ws1.ConditionalFormatting[0].Address.Address               | Should     be "C2:C7"
+            $ws1.ConditionalFormatting[0]                               | Should -Not -BeNullOrEmpty
+            $ws1.ConditionalFormatting[0].type.ToString()               | Should      -Be "DataBar"
+            $ws1.ConditionalFormatting[0].Color.G                       | Should      -BeGreaterThan 100
+            $ws1.ConditionalFormatting[0].Color.R                       | Should      -BeLessThan    100
+            $ws1.ConditionalFormatting[0].Address.Address               | Should      -Be "C2:C7"
         }
         It "Added the chart                                                                        " {
-            $ws1.Drawings[0]                                            | Should not beNullOrEmpty
-            $ws1.Drawings[0].ChartType.ToString()                       | Should     be "DoughNut"
-            $ws1.Drawings[0].Series[0].Series                           | Should     be "'Sheet1'!C2:C7"
+            $ws1.Drawings[0]                                            | Should -Not -BeNullOrEmpty
+            $ws1.Drawings[0].ChartType.ToString()                       | Should      -Be "DoughNut"
+            $ws1.Drawings[0].Series[0].Series                           | Should      -Be "'Sheet1'!C2:C7"
         }
     }
     Context "PivotTable"    {
         it "Created the PivotTable on a new page                                                   " {
-            $ws2                                                        | Should not beNullOrEmpty
-            $ws2.PivotTables[0]                                         | Should not beNullOrEmpty
-            $ws2.PivotTables[0].Fields.Count                            | Should     be 4
-            $ws2.PivotTables[0].DataFields[0].Format                    | Should     be "$#,##0.00"
-            $ws2.PivotTables[0].RowFields[0].Name                       | Should     be "City"
-            $ws2.PivotTables[0].ColumnFields[0].Name                    | Should     be "Product"
-            $ws2.PivotTables[0].RowGrandTotals                          | Should     be $true
-            $ws2.PivotTables[0].ColumGrandTotals                        | Should     be $true   #Epplus's mis-spelling of column not mine
+            $ws2                                                        | Should -Not -BeNullOrEmpty
+            $ws2.PivotTables[0]                                         | Should -Not -BeNullOrEmpty
+            $ws2.PivotTables[0].Fields.Count                            | Should      -Be 4
+            $ws2.PivotTables[0].DataFields[0].Format                    | Should      -Be "$#,##0.00"
+            $ws2.PivotTables[0].RowFields[0].Name                       | Should      -Be "City"
+            $ws2.PivotTables[0].ColumnFields[0].Name                    | Should      -Be "Product"
+            $ws2.PivotTables[0].RowGrandTotals                          | Should      -Be $true
+            $ws2.PivotTables[0].ColumGrandTotals                        | Should      -Be $true   #Epplus's mis-spelling of column not mine
         }
         it "Made the PivotTable page active                                                        " {
             Set-ItResult -Pending -Because "Bug in EPPLus 4.5"
-            $ws2.View.TabSelected                                       | Should     be $true
+            $ws2.View.TabSelected                                       | Should      -Be $true
         }
         it "Created the Pivot Chart                                                                " {
-            $ws2.Drawings[0]                                            | Should not beNullOrEmpty
-            $ws2.Drawings[0].ChartType.ToString()                       | Should     be ColumnClustered
-            $ws2.Drawings[0].YAxis.MajorUnit                            | Should     be 500
-            $ws2.Drawings[0].YAxis.MinorUnit                            | Should     be 100
-            $ws2.Drawings[0].YAxis.Format                               | Should     be "$#,##0"
-            $ws2.Drawings[0].Legend.Position.ToString()                 | Should     be "Bottom"
+            $ws2.Drawings[0]                                            | Should -Not -BeNullOrEmpty
+            $ws2.Drawings[0].ChartType.ToString()                       | Should      -Be ColumnClustered
+            $ws2.Drawings[0].YAxis.MajorUnit                            | Should      -Be 500
+            $ws2.Drawings[0].YAxis.MinorUnit                            | Should      -Be 100
+            $ws2.Drawings[0].YAxis.Format                               | Should      -Be "$#,##0"
+            $ws2.Drawings[0].Legend.Position.ToString()                 | Should      -Be "Bottom"
         }
 
     }

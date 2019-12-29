@@ -10,29 +10,29 @@
 
     It "Should read local file".PadRight(90) {
         $actual = Import-Excel -Path ".\$($script:xlfileName)"
-        $actual | Should Not Be $null
-        $actual.Count | Should Be 1
+        $actual | Should -Not -Be $null
+        $actual.Count | Should -Be 1
     }
 
     It "Should read with pwd".PadRight(90){
         $actual = Import-Excel -Path (Join-Path $PWD  "$($script:xlfileName)")
-        $actual | Should Not Be $null
+        $actual | Should -Not -Be $null
     }
 
     It "Should read with just a file name and resolve to cwd".PadRight(90){
         $actual = Import-Excel -Path "$($script:xlfileName)"
-        $actual | Should Not Be $null
+        $actual | Should -Not -Be $null
     }
 
     It "Should fail for not found".PadRight(90){
-        { Import-Excel -Path "ExcelFileDoesNotExist.xlsx" } | Should Throw "'ExcelFileDoesNotExist.xlsx' file not found"
+        { Import-Excel -Path "ExcelFileDoesNotExist.xlsx" } | Should  -Throw "'ExcelFileDoesNotExist.xlsx' file not found"
     }
 
     It "Should fail for xls extension".PadRight(90){
-        { Import-Excel -Path "ExcelFileDoesNotExist.xls" } | Should Throw "Import-Excel does not support reading this extension type .xls"
+        { Import-Excel -Path "ExcelFileDoesNotExist.xls" } | Should  -Throw "Import-Excel does not support reading this extension type .xls"
     }
 
     It "Should fail for xlsxs extension".PadRight(90){
-        { Import-Excel -Path "ExcelFileDoesNotExist.xlsxs" } | Should Throw "Import-Excel does not support reading this extension type .xlsxs"
+        { Import-Excel -Path "ExcelFileDoesNotExist.xlsxs" } | Should  -Throw "Import-Excel does not support reading this extension type .xlsxs"
     }
 }
