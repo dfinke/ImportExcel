@@ -29,7 +29,7 @@ Describe 'ConvertFrom-ExcelSheet / Export-ExcelSheet' {
             $secondText[1]                                      | Should      -Belike "*$date*"
             $secondText[1]                                      | Should      -Match  '"0\d","\w+","\d{1,2}"$'
             $ThirdText[1]                                       | Should      -Match  '^"\w+ \w+","#\d\d/\d\d/\d{4}#","\d","0\d"$'
-            $FourthText[1]                                       | Should      -Match  '^"\w+","[012]\d'
+            $FourthText[1]                                      | Should      -Match  '^"\w+","([012]\d/|[1-9]/)'
         }
     }
     Context "Export aliased to ConvertFrom"  {
