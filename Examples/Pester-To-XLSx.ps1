@@ -1,5 +1,4 @@
-﻿
-[CmdletBinding(DefaultParameterSetName = 'Default')]
+﻿[CmdletBinding(DefaultParameterSetName = 'Default')]
 param(
     [Parameter(Position=0)]
     [string]$XLFile,
@@ -94,10 +93,12 @@ $testResults = foreach ($test in $resultXML.'test-suite'.results.'test-suite') {
                 New-Object -TypeName psobject -Property ([ordered]@{
                    Machine  = $machine    ; OS       = $os
                    Date     = $startDate  ; Time     = $startTime
-                   Executed = $_.executed ; Result   = $_.result ; Duration = $_.time
-                   File     = $testPs1File; Group    = $Describe ; SubGroup = $Context
-                   Test     =($_.Description -replace '\s{2,}', ' ')
-                   FullDesc = '=Group&" "&SubGroup&" "&Test'})
+                   Executed = $(if ($_.executed -eq 'True') {1})
+                   Success  = $(if ($_.success  -eq 'True') {1})
+                   Duration = $_.time
+                   File     = $testPs1File; Group    = $Describe
+                   SubGroup = $Context    ; Name     =($_.Description -replace '\s{2,}', ' ')
+                   Result   = $_.result   ; FullDesc = '=Group&" "&SubGroup&" "&Test'})
               }
             }
         }
@@ -109,10 +110,12 @@ $testResults = foreach ($test in $resultXML.'test-suite'.results.'test-suite') {
                 New-Object -TypeName psobject -Property ([ordered]@{
                    Machine  = $machine    ; OS       = $os
                    Date     = $startDate  ; Time     = $startTime
-                   Executed = $_.executed ; Result   = $_.result ; Duration = $_.time
-                   File     = $testPs1File; Group    = $Describe ; SubGroup = $null
-                   Test     =($_.Description -replace '\s{2,}', ' ')
-                   FullDesc = '=Group&" "&Test'})
+                   Executed = $(if ($_.executed -eq 'True') {1})
+                   Success  = $(if ($_.success  -eq 'True') {1})
+                   Duration = $_.time
+                   File     = $testPs1File; Group    = $Describe
+                   SubGroup = $null       ; Name     =($_.Description -replace '\s{2,}', ' ')
+                   Result   = $_.result   ; FullDesc = '=Group&" "&Test'})
             }
         }
     }
@@ -122,20 +125,20 @@ $clearSheet = -not $Append
 $excel      =  $testResults | Export-Excel  -Path $xlFile -WorkSheetname $WorkSheetName -ClearSheet:$clearSheet -Append:$append -PassThru  -BoldTopRow -FreezeTopRow -AutoSize -AutoFilter -AutoNameRange
 $ws         =  $excel.Workbook.Worksheets[$WorkSheetName]
 
-<#  Worksheet should look like ...
-  |A        |B             |C      D      |E        |F       |G          |H       |I        |J        |K    |L
- 1|Machine  |OS            |Date   Time   |Executed |Result  |Duration   |File    |Group    |SubGroup |Test |FullDescription
- 2|Flatfish |Name_Version  |[run started] |Boolean  |Success |In seconds |xx.ps1  |Describe |Context  |It   |Desc_Context_It
+<#  Worksheet should look like ..
+  |A        |B             |C      D      |E        |F       |G          |H       |I        |J        |K    |L       |M
+ 1|Machine  |OS            |Date   Time   |Executed |Success |Duration   |File    |Group    |SubGroup |Name |Result  |FullDescription
+ 2|Flatfish |Name_Version  |[run started] |Boolean  |Boolean |In seconds |xx.ps1  |Describe |Context  |It   |Success |Desc_Context_It
 #>
 
 #Display Date as a date, not a date time
 Set-Column -Worksheet $ws -Column 3 -NumberFormat 'Short Date' # -AutoSize
 
-#Hide columns G to K (the file and the parts of the description, and the duration)5
-(7..10) + 5 | ForEach-Object {Set-ExcelColumn -Worksheet $ws -Column $_ -Hide }
+#Hide columns E to J (Executed, Success, Duration, File, Group and Subgroup)
+(5..10)   | ForEach-Object {Set-ExcelColumn -Worksheet $ws -Column $_ -Hide }
 
 #Use conditional formatting to make Failures red, and Successes green (skipped remains black ) ... and save
 $endRow = $ws.Dimension.End.Row
-Add-ConditionalFormatting -WorkSheet $ws -range "f2:f$endrow" -RuleType ContainsText -ConditionValue "Failure" -BackgroundPattern None -ForegroundColor Red   -Bold
-Add-ConditionalFormatting -WorkSheet $ws -range "f2:f$endRow" -RuleType ContainsText -ConditionValue "Success" -BackgroundPattern None -ForeGroundColor Green
+Add-ConditionalFormatting -WorkSheet $ws -range "L2:L$endrow" -RuleType ContainsText -ConditionValue "Failure" -BackgroundPattern None -ForegroundColor Red   -Bold
+Add-ConditionalFormatting -WorkSheet $ws -range "L2:L$endRow" -RuleType ContainsText -ConditionValue "Success" -BackgroundPattern None -ForeGroundColor Green
 Close-ExcelPackage -ExcelPackage $excel  -Show:$show
