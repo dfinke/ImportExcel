@@ -1,5 +1,5 @@
 ﻿#requires -modules "Get-IndexedItem"
-[cmdletbinding()]
+[CmdletBinding()]
 Param()
 Remove-Item ~\documents\music.xlsx -ErrorAction SilentlyContinue
 [System.Diagnostics.Stopwatch]$stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
@@ -22,7 +22,7 @@ $ws    = $excel.Music
 Set-ExcelRow    -Worksheet $ws -Row 1 -Value {($worksheet.cells[$row,$column].value -replace '^SYSTEM\.','') -replace '^MEDIA\.|^AUDIO\.|^MUSIC\.','' }
 Set-ExcelColumn -Worksheet $ws -Column 5 -NumberFormat 'mm:ss.0' -StartRow 2 -Value {$worksheet.cells[$row,$column].value / 864000000000 }
 Write-Verbose -Message ("Cells Reset: " + $stopwatch.Elapsed.TotalSeconds)
-Set-Column      -Worksheet $ws -Column 6 -NumberFormat '#.#,,"MB"'
+Set-ExcelColumn -Worksheet $ws -Column 6 -NumberFormat '#.#,,"MB"'
 Set-ExcelColumn -Worksheet $ws -Column 7 -NumberFormat '0.0,"KHz"'
 $ws.Cells[$ws.Dimension].AutoFitColumns()
 

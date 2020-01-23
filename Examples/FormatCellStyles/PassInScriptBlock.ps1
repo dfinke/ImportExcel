@@ -1,4 +1,4 @@
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 $xlfile = "$env:temp\testFmt.xlsx"
 Remove-Item $xlfile -ErrorAction Ignore
@@ -11,7 +11,7 @@ $RandomStyle = {
     )
 
     2..$totalRows | ForEach-Object{
-        Set-CellStyle $workSheet $_ $LastColumn Solid (Write-Output LightGreen Gray Red|Get-Random)
+        Set-CellStyle $workSheet $_ $LastColumn Solid (Get-Random @("LightGreen", "Gray", "Red"))
     }
 }
 

@@ -6,7 +6,7 @@ function ConvertFrom-ExcelColumnName {
         ForEach-Object {
             $sum*=26
             $sum+=[char]$_.tostring().toupper()-[char]'A'+1
-        } 
+        }
     $sum
 }
 

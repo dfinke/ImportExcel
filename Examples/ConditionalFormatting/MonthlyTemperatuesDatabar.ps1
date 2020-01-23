@@ -1,4 +1,4 @@
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 Remove-Item -Path .\test.xlsx -ErrorAction Ignore
 
@@ -20,6 +20,6 @@ Dec,44,63,46
     Export-Excel -Path .\test.xlsx -WorkSheetname Sheet1 -AutoNameRange -AutoSize -Title "Monthly Temperatures" -PassThru
 
 $sheet = $excel.Workbook.Worksheets["Sheet1"]
-Add-ConditionalFormatting -WorkSheet $sheet -Range "B1:D14" -DataBarColor CornflowerBlue
+Add-ConditionalFormatting -Worksheet $sheet -Range "B1:D14" -DataBarColor CornflowerBlue
 
 Close-ExcelPackage $excel -Show

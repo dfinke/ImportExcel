@@ -1,4 +1,4 @@
-﻿try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+﻿try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 $sql           = @"
   SELECT     rootfile.baseName     ,  rootfile.extension   , Image.fileWidth         AS width             ,  image.fileHeight AS height ,
@@ -44,17 +44,17 @@ Remove-Item -Path "~\Documents\temp.xlsx" -ErrorAction SilentlyContinue
 $e = Send-SQLDataToExcel   -Path "~\Documents\temp.xlsx" -WorkSheetname "Sheet1" -Connection "DSN=LR" -SQL $sql -AutoSize -Passthru
 
 #Add columns, then format them and hide the ones which aren't of interest.
-Set-Column   -Worksheet    $e.workbook.Worksheets["sheet1"] -Column 21  -Value $Avalue  -Heading "Apperture"
-Set-Column   -Worksheet    $e.workbook.Worksheets["sheet1"] -Column 22  -Value $Svalue  -Heading "Shutter"
-Set-Column   -Worksheet    $e.workbook.Worksheets["sheet1"] -Column 23  -Value $Evvalue -Heading "Ev"
-Set-Format   -Address      $e.workbook.Worksheets["sheet1" ].Column(21) -HorizontalAlignment Left  -AutoFit
-Set-Format   -Address      $e.workbook.Worksheets["sheet1" ].Column(22) -HorizontalAlignment Right -AutoFit
+Set-ExcelColumn   -Worksheet    $e.workbook.Worksheets["sheet1"] -Column 21  -Value $Avalue  -Heading "Apperture"
+Set-ExcelColumn   -Worksheet    $e.workbook.Worksheets["sheet1"] -Column 22  -Value $Svalue  -Heading "Shutter"
+Set-ExcelColumn   -Worksheet    $e.workbook.Worksheets["sheet1"] -Column 23  -Value $Evvalue -Heading "Ev"
+Set-ExcelRange   -Address      $e.workbook.Worksheets["sheet1" ].Column(21) -HorizontalAlignment Left  -AutoFit
+Set-ExcelRange   -Address      $e.workbook.Worksheets["sheet1" ].Column(22) -HorizontalAlignment Right -AutoFit
 @(5,6,7,13,15,16,17,18) | ForEach-Object {
-  Set-Format -Address      $e.workbook.Worksheets["sheet1" ].Column($_) -Hidden
+  Set-ExcelRange -Address      $e.workbook.Worksheets["sheet1" ].Column($_) -Hidden
 }
 
 #Center the column labels.
-Set-Format   -Address      $e.workbook.Worksheets["sheet1" ].Row(1)     -HorizontalAlignment Center
+Set-ExcelRange   -Address      $e.workbook.Worksheets["sheet1" ].Row(1)     -HorizontalAlignment Center
 
 #Format the data as a nice Table, Create the pivot table & chart defined above, show the file in Excel in excel after saving.
 Export-Excel -ExcelPackage $e      -WorkSheetname "sheet1"  -TableName  "Table" -PivotTableDefinition $pt -Show
@@ -78,11 +78,11 @@ $SQL     =  @"
 #Run the query and put the results in workshet "Winners", autosize the columns and hold on to the ExcelPackage object
 $Excel   =  Send-SQLDataToExcel -SQL $sql -Session $session -path .\demo3.xlsx -WorkSheetname "Winners"   -AutoSize -Passthru
 #Create and format columns for the ratio of Wins to poles and fast laps.
-Set-Column   -ExcelPackage $Excel -WorkSheetname "Winners" -column 6  -Heading "WinsToPoles" -Value {"=D$row/C$row"}
-Set-Column   -ExcelPackage $Excel -WorkSheetname "Winners" -column 7  -Heading "WinsToFast"  -Value {"=E$row/C$row"}
+Set-ExcelColumn   -ExcelPackage $Excel -WorkSheetname "Winners" -column 6  -Heading "WinsToPoles" -Value {"=D$row/C$row"}
+Set-ExcelColumn   -ExcelPackage $Excel -WorkSheetname "Winners" -column 7  -Heading "WinsToFast"  -Value {"=E$row/C$row"}
 6..7 | ForEach-Object {
-    Set-Format -Address    $Excel.Workbook.Worksheets["Winners"].column($_) -NumberFormat "0.0%" -AutoFit }
+    Set-ExcelRange -Address    $Excel.Workbook.Worksheets["Winners"].column($_) -NumberFormat "0.0%" -AutoFit }
 #Define a chart to show the relationship of lest on an XY Grid, create the ranges required in the, add the chart and show the file in Excel in excel after saving.
-$chart = New-ExcelChart -NoLegend -ChartType XYScatter -XRange WinsToFast -YRange WinsToPoles -ShowCategory -Column 7 -Width 2000 -Height 700
+$chart = New-ExcelChartDefinition -NoLegend -ChartType XYScatter -XRange WinsToFast -YRange WinsToPoles -ShowCategory -Column 7 -Width 2000 -Height 700
 Export-Excel -ExcelPackage $Excel -WorkSheetname "Winners" -AutoNameRange -ExcelChartDefinition $chart -Show
 

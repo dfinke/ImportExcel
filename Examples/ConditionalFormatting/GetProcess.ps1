@@ -1,4 +1,4 @@
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 Remove-Item "$env:TEMP\testExport.xlsx" -ErrorAction Ignore
 

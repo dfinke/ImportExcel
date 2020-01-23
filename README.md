@@ -60,9 +60,36 @@ Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfi
 
 ![](./images/ScriptAnalyzerReport.png)
 
-# What's new X.X.X
+# What's new 7.0.1
+
+More infrastructure improvements.
+
+- Refine pipeline script analysis
+- Improve artifacts published
+- Add manifest (psd1) checks
+
+# What's new 7.0.0
+## Refactor
+
+- Remove all functions from the `psm1`
+- Move functions into public subdirectory
+- Align TDD and continuous integration workflow for this refactor
+- Move help from functions to mdHelp and use [PlatyPS](https://www.powershellgallery.com/packages/platyPS) to generate external help file
+
+Thanks to [James O'Neill](https://twitter.com/jamesoneill) for the refactor and [Illy](https://twitter.com/ili_z) on the continuous integration.
+
+# What's new 6.5.3
+
+Thanks again to the community for making this module even better.
 
 - [Fix import excel headers](https://github.com/dfinke/ImportExcel/pull/713)
+- Numerous improvements for DataTables and exporting it to Excel [James O'Neill](https://twitter.com/jamesoneill)
+	- Names, styles, proper appending
+- Handles marking the empty row on an empty table as dummy row
+- Re-work code based on linting recommendations
+- Update existing tests and add more
+- Support PipelineVariable thanks to [Luc Dekens](https://twitter.com/LucD22) for reporting and [Ili](https://twitter.com/ili_z) for the PR
+- Fix quoting in ConvertFromExcelToSQLInsert [beckerben](https://github.com/beckerben)
 
 # What's new 6.5.2
 

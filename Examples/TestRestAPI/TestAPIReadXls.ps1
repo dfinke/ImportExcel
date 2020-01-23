@@ -1,11 +1,12 @@
 function Test-APIReadXls {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "", Justification="False Positive")]
     param(
         [parameter(Mandatory)]
         $XlFilename,
         $WorksheetName = 'Sheet1'
     )
 
-    $testFileName = "{0}.tests.ps1" -f (get-date).ToString("yyyyMMddHHmmss")
+    $testFileName = "{0}.tests.ps1" -f (Get-date).ToString("yyyyMMddHHmmss")
 
     $records = Import-Excel $XlFilename
 

@@ -1,84 +1,52 @@
 @{
+    # Assemblies that must be loaded prior to importing this module
+    RequiredAssemblies = @('.\EPPlus.dll')
 
     # Script module or binary module file associated with this manifest.
-    RootModule        = 'ImportExcel.psm1'
+    RootModule         = 'ImportExcel.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '6.5.2'
+    ModuleVersion      = '7.0.1'
 
     # ID used to uniquely identify this module
-    GUID              = '60dd4136-feff-401a-ba27-a84458c57ede'
+    GUID               = '60dd4136-feff-401a-ba27-a84458c57ede'
 
     # Author of this module
-    Author            = 'Douglas Finke'
+    Author             = 'Douglas Finke'
 
     # Company or vendor of this module
-    CompanyName       = 'Doug Finke'
+    CompanyName        = 'Doug Finke'
 
     # Copyright statement for this module
-    Copyright         = 'c 2019 All rights reserved.'
+    Copyright          = 'c 2019 All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description       = @'
+    Description        = @'
 PowerShell module to import/export Excel spreadsheets, without Excel.
 Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq
 '@
 
-    # Minimum version of the Windows PowerShell engine required by this module
-    # PowerShellVersion = ''
 
-    # Name of the Windows PowerShell host required by this module
-    # PowerShellHostName = ''
-
-    # Minimum version of the Windows PowerShell host required by this module
-    # PowerShellHostVersion = ''
-
-    # Minimum version of Microsoft .NET Framework required by this module
-    # DotNetFrameworkVersion = ''
-
-    # Minimum version of the common language runtime (CLR) required by this module
-    # CLRVersion = ''
-
-    # Processor architecture (None, X86, Amd64) required by this module
-    # ProcessorArchitecture = ''
-
-    # Modules that must be imported into the global environment prior to importing this module
-    # RequiredModules = @()
-
-    # Assemblies that must be loaded prior to importing this module
-    # RequiredAssemblies = @()
-
-    # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-    # ScriptsToProcess = @()
-
-    # Type files (.ps1xml) to be loaded when importing this module
-    # TypesToProcess = @()
-
-    # Format files (.ps1xml) to be loaded when importing this module
-    # FormatsToProcess = @()
-
-    # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-    # NestedModules = @()
 
     # Functions to export from this module
-    FunctionsToExport = @(
+    FunctionsToExport  = @(
         'Add-ConditionalFormatting',
         'Add-ExcelChart',
         'Add-ExcelDataValidationRule',
         'Add-ExcelName',
         'Add-ExcelTable',
         'Add-PivotTable',
-        'Add-WorkSheet',
+        'Add-Worksheet',
         'BarChart',
         'Close-ExcelPackage',
         'ColumnChart',
-        'Compare-WorkSheet',
-        'Convert-XlRangeToImage',
+        'Compare-Worksheet',
+        'Convert-ExcelRangeToImage',
         'ConvertFrom-ExcelData',
         'ConvertFrom-ExcelSheet',
         'ConvertFrom-ExcelToSQLInsert',
         'ConvertTo-ExcelXlsx',
-        'Copy-ExcelWorkSheet',
+        'Copy-ExcelWorksheet',
         'DoChart',
         'Expand-NumberFormat',
         'Export-Excel',
@@ -107,18 +75,17 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'New-PivotTableDefinition',
         'New-Plot',
         'New-PSItem',
-        'NumberFormatCompletion',
         'Open-ExcelPackage',
         'PieChart',
         'Pivot',
-        'Remove-WorkSheet'
+        'Remove-Worksheet'
         'Select-Worksheet',
         'Send-SQLDataToExcel',
         'Set-CellStyle',
         'Set-ExcelColumn',
         'Set-ExcelRange',
         'Set-ExcelRow',
-        'Set-WorkSheetProtection',
+        'Set-WorksheetProtection',
         'Test-Boolean',
         'Test-Date',
         'Test-Integer',
@@ -127,14 +94,10 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Update-FirstObjectProperties'
     )
 
-    # Cmdlets to export from this module
-    #CmdletsToExport   = '*'
-
-    # Variables to export from this module
-    #VariablesToExport = '*'
-
     # Aliases to export from this module
-    AliasesToExport   = @(
+    AliasesToExport    = @(
+        'Convert-XlRangeToImage',
+        'Export-ExcelSheet',
         'New-ExcelChart',
         'Set-Column',
         'Set-Format',
@@ -142,14 +105,32 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Use-ExcelData'
     )
 
-    # List of all modules packaged with this module
-    # ModuleList = @()
+    # Cmdlets to export from this module
+    CmdletsToExport    = @()
 
-    # List of all files packaged with this module
-    # FileList = @()
+    FileList           = @(
+        '.\EPPlus.dll',
+        '.\Export-charts.ps1',
+        '.\GetExcelTable.ps1',
+        '.\ImportExcel.psd1',
+        '.\ImportExcel.psm1',
+        '.\LICENSE.txt',
+        '.\README.md',
+        '.\Plot.ps1',
+        '.\Private',
+        '.\Public',
+        '.\en\ImportExcel-help.xml',
+        '.\en\Strings.psd1',
+        '.\Charting\Charting.ps1',
+        '.\InferData\InferData.ps1',
+        '.\Pivot\Pivot.ps1',
+        '.\spikes\ConvertFrom-ExcelColumnName.ps1',
+        '.\Examples', '.\images', '.\Testimonials'
+
+    )
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess
-    PrivateData       = @{
+    PrivateData        = @{
         # PSData is module packaging and gallery metadata embedded in PrivateData
         # It's for rebuilding PowerShellGet (and PoshCode) NuGet-style packages
         # We had to do this because it's the only place we're allowed to extend the manifest
@@ -180,6 +161,46 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
             IsPrerelease = 'False'
         }
     }
+
+    # Minimum version of the Windows PowerShell engine required by this module
+    # PowerShellVersion = ''
+
+    # Name of the Windows PowerShell host required by this module
+    # PowerShellHostName = ''
+
+    # Minimum version of the Windows PowerShell host required by this module
+    # PowerShellHostVersion = ''
+
+    # Minimum version of Microsoft .NET Framework required by this module
+    # DotNetFrameworkVersion = ''
+
+    # Minimum version of the common language runtime (CLR) required by this module
+    # CLRVersion = ''
+
+    # Processor architecture (None, X86, Amd64) required by this module
+    # ProcessorArchitecture = ''
+
+    # Modules that must be imported into the global environment prior to importing this module
+    # RequiredModules = @()
+
+    # Script files (.ps1) that are run in the caller's environment prior to importing this module.
+    # ScriptsToProcess = @()
+
+    # Type files (.ps1xml) to be loaded when importing this module
+    # TypesToProcess = @()
+
+    # Format files (.ps1xml) to be loaded when importing this module
+    # FormatsToProcess = @()
+
+    # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
+    # NestedModules = @()
+
+    # List of all modules packaged with this module
+    # ModuleList = @()
+
+    # List of all files packaged with this module
+    # Variables to export from this module
+    #VariablesToExport = '*'
 
     # HelpInfo URI of this module
     # HelpInfoURI = ''

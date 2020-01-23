@@ -9,6 +9,7 @@ param(
 )
 
 function New-CellData {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification='Does not change system state')]
     param(
         $Range,
         $Value,
@@ -16,7 +17,7 @@ function New-CellData {
     )
 
     $setFormatParams = @{
-        WorkSheet    = $ws
+        Worksheet    = $ws
         Range        = $Range
         NumberFormat = $Format
     }
@@ -28,7 +29,7 @@ function New-CellData {
         $setFormatParams.Value = $Value
     }
 
-    Set-Format @setFormatParams
+    Set-ExcelRange @setFormatParams
 }
 
 $f = "$PSScriptRoot\mortgage.xlsx"
@@ -37,19 +38,19 @@ Remove-Item $f -ErrorAction SilentlyContinue
 $pkg = "" | Export-Excel $f -Title 'Fixed Rate Loan Payments' -PassThru -AutoSize
 $ws = $pkg.Workbook.Worksheets["Sheet1"]
 
-New-CellData A3 'Amount'
-New-CellData B3 $Amount '$#,##0'
+New-CellData -Range A3 -Value 'Amount'
+New-CellData -Range B3 -Value $Amount -Format '$#,##0'
 
-New-CellData A4 "Interest Rate"
-New-CellData B4 $InterestRate 'Percentage'
+New-CellData -Range A4 -Value "Interest Rate"
+New-CellData -Range B4 -Value $InterestRate -Format 'Percentage'
 
-New-CellData A5 "Term (Years)"
-New-CellData B5 $Term
+New-CellData -Range A5 -Value "Term (Years)"
+New-CellData -Range B5 -Value $Term
 
-New-CellData D3 "Monthly Payment"
-New-CellData F3 "=-PMT(F4, B5*12, B3)" '$#,##0.#0'
+New-CellData -Range D3 -Value "Monthly Payment"
+New-CellData -Range F3 -Value "=-PMT(F4, B5*12, B3)" -Format '$#,##0.#0'
 
-New-CellData D4 "Monthly Rate"
-New-CellData F4 "=((1+B4)^(1/12))-1" 'Percentage'
+New-CellData -Range D4 -Value "Monthly Rate"
+New-CellData -Range F4 -Value "=((1+B4)^(1/12))-1" -Format 'Percentage'
 
 Close-ExcelPackage $pkg -Show

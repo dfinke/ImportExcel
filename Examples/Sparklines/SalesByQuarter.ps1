@@ -1,4 +1,4 @@
-try { . $PSScriptRoot\..\..\LoadPSD1.ps1 } catch { }
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 $xlfile = "$env:TEMP\SalesByQuarter.xlsx"
 Remove-Item $xlfile -ErrorAction SilentlyContinue
@@ -15,7 +15,7 @@ $excel = $data | Export-Excel $xlfile -Passthru -AutoSize -TableName SalesByQuar
 
 $ws = $excel.Sheet1
 
-Set-Format -WorkSheet $ws -Range "B2:E5" -NumberFormat "$#,##0" -AutoSize
+Set-ExcelRange -Worksheet $ws -Range "B2:E5" -NumberFormat "$#,##0" -AutoSize
 $sparkLineType = "line"
 $null = $ws.SparklineGroups.Add( $sparkLineType, $ws.Cells["F2"], $ws.Cells["B2:E2"] )
 $null = $ws.SparklineGroups.Add( $sparkLineType, $ws.Cells["F3"], $ws.Cells["B3:E3"] )

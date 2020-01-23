@@ -1,3 +1,6 @@
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
+param()
+
 Describe "Copy-Worksheet" {
     $path1 = "TestDrive:\Test1.xlsx"
     $path2 = "TestDrive:\Test2.xlsx"
@@ -33,7 +36,7 @@ Describe "Copy-Worksheet" {
     } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2 -WorkSheetname MixedTypes -Path $path2
     Context "Simplest copy" {
         BeforeAll {
-            Copy-ExcelWorkSheet -SourceWorkbook $path1 -DestinationWorkbook $path2
+            Copy-ExcelWorksheet -SourceWorkbook $path1 -DestinationWorkbook $path2
             $excel = Open-ExcelPackage -Path $path2
             $ws = $excel.Workbook.Worksheets["Processes"]
         }
@@ -45,7 +48,7 @@ Describe "Copy-Worksheet" {
     }
     Context "Mixed types using a package object" {
         BeforeAll {
-            Copy-ExcelWorkSheet -SourceWorkbook $excel -DestinationWorkbook $excel -DestinationWorkSheet "CopyOfMixedTypes"
+            Copy-ExcelWorksheet -SourceWorkbook $excel -DestinationWorkbook $excel -DestinationWorkSheet "CopyOfMixedTypes"
             Close-ExcelPackage -ExcelPackage $excel
             $excel = Open-ExcelPackage -Path $path2
             $ws = $Excel.Workbook.Worksheets[3]
@@ -94,7 +97,7 @@ Describe "Copy-Worksheet" {
             Remove-Item $xlfile -ErrorAction SilentlyContinue
             Remove-Item $xlfileArchive -ErrorAction SilentlyContinue
 
-            $sheets = echo 1.1.2019 1.2.2019 1.3.2019 1.4.2019 1.5.2019
+            $sheets = "1.1.2019", "1.2.2019", "1.3.2019", "1.4.2019", "1.5.2019"
 
             $sheets | ForEach-Object {
                 "Hello World" | Export-Excel $xlfile -WorksheetName $_
@@ -102,13 +105,13 @@ Describe "Copy-Worksheet" {
         }
 
         it "Should copy and remove sheets                                                          " {
-            $targetSheets = echo 1.1.2019 1.4.2019
+            $targetSheets = "1.1.2019", "1.4.2019"
 
             $targetSheets | ForEach-Object {
-                Copy-ExcelWorkSheet -SourceWorkbook $xlfile -DestinationWorkbook $xlfileArchive -SourceWorkSheet $_ -DestinationWorkSheet $_
+                Copy-ExcelWorksheet -SourceWorkbook $xlfile -DestinationWorkbook $xlfileArchive -SourceWorkSheet $_ -DestinationWorkSheet $_
             }
 
-            $targetSheets | ForEach-Object { Remove-WorkSheet -FullName $xlfile -WorksheetName $_ }
+            $targetSheets | ForEach-Object { Remove-Worksheet -FullName $xlfile -WorksheetName $_ }
 
             (Get-ExcelSheetInfo -Path $xlfile ).Count | Should Be 3
         }
@@ -122,13 +125,13 @@ Describe "Copy-Worksheet" {
             Remove-Item $xlfile -ErrorAction SilentlyContinue
             Remove-Item $xlfileArchive -ErrorAction SilentlyContinue
 
-            $sheets = echo 1.1.2019 1.2.2019 1.3.2019 1.4.2019 1.5.2019
+            $sheets = "1.1.2019", "1.2.2019", "1.3.2019", "1.4.2019", "1.5.2019"
 
             $sheets | ForEach-Object {
                 "Hello World" | Export-Excel $xlfile -WorksheetName $_
             }
             $e = Open-ExcelPackage $xlfile
-            $e.Workbook.Worksheets | Copy-ExcelWorkSheet -DestinationWorkbook $xlfileArchive
+            $e.Workbook.Worksheets | Copy-ExcelWorksheet -DestinationWorkbook $xlfileArchive
             Close-ExcelPackage -NoSave $e
         }
         it "Should copy sheets piped into the command                                              " {

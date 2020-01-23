@@ -1,5 +1,5 @@
 # https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/NewExcelStyle.png
-try { . $PSScriptRoot\..\..\LoadPSD1.ps1 } catch { }
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 $xlfile = "$env:TEMP\test.xlsx"
 Remove-Item $xlfile -ErrorAction SilentlyContinue

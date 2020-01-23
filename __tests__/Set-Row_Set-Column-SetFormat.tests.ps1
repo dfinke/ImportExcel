@@ -1,3 +1,8 @@
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases','',Justification='Testing for presence of alias')]
+
+param()
+
 $path = "TestDrive:\test.xlsx"
 
 $data = ConvertFrom-Csv -InputObject @"
@@ -21,18 +26,6 @@ Sebastian Vettel,/wiki/Sebastian_Vettel,1987-07-03
 
 
 Describe "Number format expansion and setting" {
-    Context "Argmument Completer for NumberFormat" {
-        it "Returned at least 20 items                                                             " {
-            (NumberFormatCompletion ).count  | Should beGreaterThan 20
-        }
-        It "Resolved percent to 'percentage'                                                       " {
-            $x = (NumberFormatCompletion -wordToComplete Percent)
-            $x.count                                                    | Should     be 1
-            $x.CompletionText                                           | Should  match "^'.*'$"
-            $x.ToolTip                                                  | Should     be "0.00%"
-            $x.ListItemText                                             | Should     be "Percentage"
-        }
-    }
     Context "Expand-NumberFormat function" {
         It "Expanded named number formats as expected                                              " {
             $r = [regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol)
@@ -55,27 +48,27 @@ Describe "Number format expansion and setting" {
 
             $excel = 1..32 | ForEach-Object {$n} | Export-Excel -Path $path -show -WorksheetName s2 -PassThru
             $ws = $excel.Workbook.Worksheets[1]
-            Set-ExcelRange -WorkSheet $ws -Range "A1"   -numberFormat 'General'
-            Set-ExcelRange -WorkSheet $ws -Range "A2"   -numberFormat 'Number'
-            Set-ExcelRange -WorkSheet $ws -Range "A3"   -numberFormat 'Percentage'
-            Set-ExcelRange -WorkSheet $ws -Range "A4"   -numberFormat 'Scientific'
-            Set-ExcelRange -WorkSheet $ws -Range "A5"   -numberFormat 'Fraction'
-            Set-ExcelRange -WorkSheet $ws -Range "A6"   -numberFormat 'Short Date'
-            Set-ExcelRange -WorkSheet $ws -Range "A7"   -numberFormat 'Short Time'
-            Set-ExcelRange -WorkSheet $ws -Range "A8"   -numberFormat 'Long Time'
-            Set-ExcelRange -WorkSheet $ws -Range "A9"   -numberFormat 'Date-Time'
-            Set-ExcelRange -WorkSheet $ws -Range "A10"  -numberFormat 'Currency'
-            Set-ExcelRange -WorkSheet $ws -Range "A11"  -numberFormat 'Text'
-            Set-ExcelRange -WorkSheet $ws -Range "A12"  -numberFormat 'h:mm AM/PM'
-            Set-ExcelRange -WorkSheet $ws -Range "A13"  -numberFormat 'h:mm:ss AM/PM'
-            Set-ExcelRange -WorkSheet $ws -Range "A14"  -numberFormat 'mm:ss'
-            Set-ExcelRange -WorkSheet $ws -Range "A15"  -numberFormat '[h]:mm:ss'
-            Set-ExcelRange -WorkSheet $ws -Range "A16"  -numberFormat 'mmss.0'
-            Set-ExcelRange -WorkSheet $ws -Range "A17"  -numberFormat 'd-mmm-yy'
-            Set-ExcelRange -WorkSheet $ws -Range "A18"  -numberFormat 'd-mmm'
-            Set-ExcelRange -WorkSheet $ws -Range "A19"  -numberFormat 'mmm-yy'
-            Set-ExcelRange -WorkSheet $ws -Range "A20"  -numberFormat '0'
-            Set-ExcelRange -WorkSheet $ws -Range "A21"  -numberFormat '0.00'
+            Set-ExcelRange -Worksheet $ws -Range "A1"   -numberFormat 'General'
+            Set-ExcelRange -Worksheet $ws -Range "A2"   -numberFormat 'Number'
+            Set-ExcelRange -Worksheet $ws -Range "A3"   -numberFormat 'Percentage'
+            Set-ExcelRange -Worksheet $ws -Range "A4"   -numberFormat 'Scientific'
+            Set-ExcelRange -Worksheet $ws -Range "A5"   -numberFormat 'Fraction'
+            Set-ExcelRange -Worksheet $ws -Range "A6"   -numberFormat 'Short Date'
+            Set-ExcelRange -Worksheet $ws -Range "A7"   -numberFormat 'Short Time'
+            Set-ExcelRange -Worksheet $ws -Range "A8"   -numberFormat 'Long Time'
+            Set-ExcelRange -Worksheet $ws -Range "A9"   -numberFormat 'Date-Time'
+            Set-ExcelRange -Worksheet $ws -Range "A10"  -numberFormat 'Currency'
+            Set-ExcelRange -Worksheet $ws -Range "A11"  -numberFormat 'Text'
+            Set-ExcelRange -Worksheet $ws -Range "A12"  -numberFormat 'h:mm AM/PM'
+            Set-ExcelRange -Worksheet $ws -Range "A13"  -numberFormat 'h:mm:ss AM/PM'
+            Set-ExcelRange -Worksheet $ws -Range "A14"  -numberFormat 'mm:ss'
+            Set-ExcelRange -Worksheet $ws -Range "A15"  -numberFormat '[h]:mm:ss'
+            Set-ExcelRange -Worksheet $ws -Range "A16"  -numberFormat 'mmss.0'
+            Set-ExcelRange -Worksheet $ws -Range "A17"  -numberFormat 'd-mmm-yy'
+            Set-ExcelRange -Worksheet $ws -Range "A18"  -numberFormat 'd-mmm'
+            Set-ExcelRange -Worksheet $ws -Range "A19"  -numberFormat 'mmm-yy'
+            Set-ExcelRange -Worksheet $ws -Range "A20"  -numberFormat '0'
+            Set-ExcelRange -Worksheet $ws -Range "A21"  -numberFormat '0.00'
             Set-ExcelRange -Address   $ws.Cells[ "A22"] -NumberFormat '#,##0'
             Set-ExcelRange -Address   $ws.Cells[ "A23"] -NumberFormat '#,##0.00'
             Set-ExcelRange -Address   $ws.Cells[ "A24"] -NumberFormat '#,'
@@ -138,8 +131,8 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
         $r = Set-ExcelRow    -PassThru -Worksheet $ws -StartColumn 3 -BorderAround Thin -Italic -Underline -FontSize 14 -Value {"=sum($columnName`2:$columnName$endrow)" } -VerticalAlignment Bottom
         Set-ExcelRange -Address   $excel.Workbook.Worksheets["Sheet1"].Cells["b3"] -HorizontalAlignment Right -VerticalAlignment Center -BorderAround Thick -BorderColor  ([System.Drawing.Color]::Red) -StrikeThru
         Set-ExcelRange -Address   $excel.Workbook.Worksheets["Sheet1"].Cells["c3"] -BorderColor  ([System.Drawing.Color]::Red) -BorderTop DashDot -BorderLeft DashDotDot -BorderBottom Dashed -BorderRight Dotted
-        Set-ExcelRange -WorkSheet $ws -Range "E3"  -Bold:$false -FontShift Superscript -HorizontalAlignment Left
-        Set-ExcelRange -WorkSheet $ws -Range "E1"  -ResetFont -HorizontalAlignment General -FontName "Courier New" -fontSize 9
+        Set-ExcelRange -Worksheet $ws -Range "E3"  -Bold:$false -FontShift Superscript -HorizontalAlignment Left
+        Set-ExcelRange -Worksheet $ws -Range "E1"  -ResetFont -HorizontalAlignment General -FontName "Courier New" -fontSize 9
         Set-ExcelRange -Address   $ws.Cells["E7"]  -ResetFont -WrapText -BackgroundColor  ([System.Drawing.Color]::AliceBlue) -BackgroundPattern DarkTrellis -PatternColor  ([System.Drawing.Color]::Red)  -NumberFormat "£#,###.00"
         Set-ExcelRange -Address   $ws.Column(1)    -Width  0
         if (-not $env:NoAutoSize) {
@@ -149,11 +142,11 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
         #Test alias
         Set-Format     -Address   $ws.row(5)       -Height 0
         $rr = $r.row
-        Set-ExcelRange -WorkSheet $ws -Range "B$rr" -Value "Total"
+        Set-ExcelRange -Worksheet $ws -Range "B$rr" -Value "Total"
         $BadHideWarnvar = $null
-        Set-ExcelRange -WorkSheet $ws -Range "D$rr" -Formula "=E$rr/C$rr" -Hidden -WarningVariable "BadHideWarnvar" -WarningAction SilentlyContinue
+        Set-ExcelRange -Worksheet $ws -Range "D$rr" -Formula "=E$rr/C$rr" -Hidden -WarningVariable "BadHideWarnvar" -WarningAction SilentlyContinue
         $rr ++
-        Set-ExcelRange -WorkSheet $ws -Range "B$rr" -Value ([datetime]::Now)
+        Set-ExcelRange -Worksheet $ws -Range "B$rr" -Value ([datetime]::Now)
         Close-ExcelPackage $excel -Calculate
 
 

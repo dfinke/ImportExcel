@@ -15,7 +15,7 @@ Apple, New York, 1200,700
 
         $ws = $excel.sheet1
 
-        Set-WorkSheetProtection -WorkSheet $ws -IsProtected -BlockEditObject -AllowFormatRows -UnLockAddress "1:1"
+        Set-WorksheetProtection -Worksheet $ws -IsProtected -BlockEditObject -AllowFormatRows -UnLockAddress "1:1"
 
         Close-ExcelPackage -ExcelPackage $excel
         $excel = Open-ExcelPackage -Path $path

@@ -13,7 +13,7 @@
         * Add .01 in column F
 #>
 
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 $path = "$Env:TEMP\DataValidation.xlsx"
 Remove-Item $path -ErrorAction SilentlyContinue
@@ -39,7 +39,7 @@ $excelPackage = @('Chisel', 'Crowbar', 'Drill', 'Hammer', 'Nails', 'Saw', 'Screw
 
 #region Creating a list using a PowerShell array
 $ValidationParams = @{
-    WorkSheet        = $excelPackage.sales
+    Worksheet        = $excelPackage.sales
     ShowErrorMessage = $true
     ErrorStyle       = 'stop'
     ErrorTitle       = 'Invalid Data'
