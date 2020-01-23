@@ -12,7 +12,7 @@ function ConvertFrom-ExcelToSQLInsert {
         [Alias('HeaderRow', 'TopRow')]
         [ValidateRange(1, 9999)]
         [Int]$StartRow,
-        [string[]]$Header,
+        [string[]]$HeaderName,
         [switch]$NoHeader,
         [switch]$DataOnly,
         [switch]$ConvertEmptyStringsToNull,

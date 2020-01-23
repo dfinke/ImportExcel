@@ -8,8 +8,9 @@ function ConvertFrom-ExcelData {
         [ScriptBlock]$scriptBlock,
         [Alias("Sheet")]
         $WorkSheetname = 1,
+		[Alias('StartRow', 'TopRow')]
         [int]$HeaderRow = 1,
-        [string[]]$Header,
+        [string[]]$HeaderName,
         [switch]$NoHeader,
         [switch]$DataOnly
     )
