@@ -194,7 +194,7 @@ Accept wildcard characters: False
 ```
 
 ### -GroupDateRow
-The name of a row field which should be grouped by parts of the date/time (ignored if GroupDateRow is not specified)
+The name of a row field which should be grouped by parts of the date/time (ignored if GroupDatePart is not specified)
 
 ```yaml
 Type: String
