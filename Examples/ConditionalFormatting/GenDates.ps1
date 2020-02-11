@@ -1,6 +1,6 @@
 function Get-DateOffset {
     param($days=0)
-    
+
     (Get-Date).AddDays($days).ToShortDateString()
 }
 
@@ -8,7 +8,7 @@ function Get-Number {
     Get-Random -Minimum 10 -Maximum 100
 }
 
-New-PSItem (Get-DateOffset -7)  (Get-Number) 'LastWeek,Last7Days,ThisMonth' (echo Date Amount Label)
+New-PSItem (Get-DateOffset -7)  (Get-Number) 'LastWeek,Last7Days,ThisMonth' @('Date', 'Amount', 'Label')
 New-PSItem (Get-DateOffset)     (Get-Number) 'Today,ThisMonth,ThisWeek'
 New-PSItem (Get-DateOffset -30) (Get-Number) LastMonth
 New-PSItem (Get-DateOffset -1)  (Get-Number) 'Yesterday,ThisMonth,ThisWeek'

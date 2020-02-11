@@ -1,6 +1,6 @@
-Import-Module ..\..\ImportExcel.psd1 -Force
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$f = ".\dashboard.xlsx"
+$f = "$env:temp\dashboard.xlsx"
 Remove-Item $f -ErrorAction Ignore
 
 $data = @"
@@ -22,51 +22,51 @@ $sheet1 = $excel.Workbook.Worksheets["sheet1"]
 $sheet1.View.ShowGridLines = $false
 $sheet1.View.ShowHeaders = $false
 
-Set-Format -Address $sheet1.Cells["C:C"] -NumberFormat "$#,##0" -WrapText -HorizontalAlignment Center
-Set-Format -Address $sheet1.Cells["D:D"] -NumberFormat "#.#0%"  -WrapText -HorizontalAlignment Center
+Set-ExcelRange -Address $sheet1.Cells["C:C"] -NumberFormat "$#,##0" -WrapText -HorizontalAlignment Center
+Set-ExcelRange -Address $sheet1.Cells["D:D"] -NumberFormat "#.#0%"  -WrapText -HorizontalAlignment Center
 
-Set-Format -Address $sheet1.Cells["E:E"] -NumberFormat "$#,##0" -WrapText -HorizontalAlignment Center
-Set-Format -Address $sheet1.Cells["F:F"] -NumberFormat "#.#0%"  -WrapText -HorizontalAlignment Center
+Set-ExcelRange -Address $sheet1.Cells["E:E"] -NumberFormat "$#,##0" -WrapText -HorizontalAlignment Center
+Set-ExcelRange -Address $sheet1.Cells["F:F"] -NumberFormat "#.#0%"  -WrapText -HorizontalAlignment Center
 
-Set-Format -Address $sheet1.Cells["G:H"] -WrapText -HorizontalAlignment Center
+Set-ExcelRange -Address $sheet1.Cells["G:H"] -WrapText -HorizontalAlignment Center
 
 ## Insert Rows/Columns
 $sheet1.InsertRow(1, 1)
 
-foreach ($col in Write-Output 2 4 6 8 10 12 14) {
+foreach ($col in @(2, 4, 6, 8, 10, 12, 14)) {
     $sheet1.InsertColumn($col, 1)
     $sheet1.Column($col).width = .75
 }
 
-Set-Format -Address $sheet1.Cells["E:E"] -Width 12
-Set-Format -Address $sheet1.Cells["I:I"] -Width 12
+Set-ExcelRange -Address $sheet1.Cells["E:E"] -Width 12
+Set-ExcelRange -Address $sheet1.Cells["I:I"] -Width 12
 
 $BorderBottom = "Thick"
 $BorderColor = "Black"
 
-Set-Format -Address $sheet1.Cells["A2"]    -BorderBottom $BorderBottom -BorderColor $BorderColor
+Set-ExcelRange -Address $sheet1.Cells["A2"]    -BorderBottom $BorderBottom -BorderColor $BorderColor
 
-Set-Format -Address $sheet1.Cells["C2"]    -BorderBottom $BorderBottom -BorderColor $BorderColor
-Set-Format -Address $sheet1.Cells["E2:G2"] -BorderBottom $BorderBottom -BorderColor $BorderColor
-Set-Format -Address $sheet1.Cells["I2:K2"] -BorderBottom $BorderBottom -BorderColor $BorderColor
-Set-Format -Address $sheet1.Cells["M2:O2"] -BorderBottom $BorderBottom -BorderColor $BorderColor
+Set-ExcelRange -Address $sheet1.Cells["C2"]    -BorderBottom $BorderBottom -BorderColor $BorderColor
+Set-ExcelRange -Address $sheet1.Cells["E2:G2"] -BorderBottom $BorderBottom -BorderColor $BorderColor
+Set-ExcelRange -Address $sheet1.Cells["I2:K2"] -BorderBottom $BorderBottom -BorderColor $BorderColor
+Set-ExcelRange -Address $sheet1.Cells["M2:O2"] -BorderBottom $BorderBottom -BorderColor $BorderColor
 
-Set-Format -Address $sheet1.Cells["A2:C8"] -FontColor GrayText
+Set-ExcelRange -Address $sheet1.Cells["A2:C8"] -FontColor Gray
 
 $HorizontalAlignment = "Center"
-Set-Format -Address $sheet1.Cells["F1"] -HorizontalAlignment $HorizontalAlignment -Bold -Value Revenue
-Set-Format -Address $sheet1.Cells["J1"] -HorizontalAlignment $HorizontalAlignment -Bold -Value Margin
-Set-Format -Address $sheet1.Cells["N1"] -HorizontalAlignment $HorizontalAlignment -Bold -Value Passenger
+Set-ExcelRange -Address $sheet1.Cells["F1"] -HorizontalAlignment $HorizontalAlignment -Bold -Value Revenue
+Set-ExcelRange -Address $sheet1.Cells["J1"] -HorizontalAlignment $HorizontalAlignment -Bold -Value Margin
+Set-ExcelRange -Address $sheet1.Cells["N1"] -HorizontalAlignment $HorizontalAlignment -Bold -Value Passenger
 
-Set-Format -Address $sheet1.Cells["E2"] -Value '($)'
-Set-Format -Address $sheet1.Cells["G2"] -Value '%'
-Set-Format -Address $sheet1.Cells["I2"] -Value '($)'
-Set-Format -Address $sheet1.Cells["K2"] -Value '%'
+Set-ExcelRange -Address $sheet1.Cells["E2"] -Value '($)'
+Set-ExcelRange -Address $sheet1.Cells["G2"] -Value '%'
+Set-ExcelRange -Address $sheet1.Cells["I2"] -Value '($)'
+Set-ExcelRange -Address $sheet1.Cells["K2"] -Value '%'
 
-Set-Format -Address $sheet1.Cells["C10"] -HorizontalAlignment Right -Bold -Value "Grand Total Calculation"
-Set-Format -Address $sheet1.Cells["E10"] -Formula "=Sum(E3:E8)" -Bold
-Set-Format -Address $sheet1.Cells["I10"] -Formula "=Sum(I3:I8)" -Bold
-Set-Format -Address $sheet1.Cells["M10"] -Formula "=Sum(M3:M8)" -Bold
-Set-Format -Address $sheet1.Cells["O10"] -Formula "=Sum(O3:O8)" -Bold
+Set-ExcelRange -Address $sheet1.Cells["C10"] -HorizontalAlignment Right -Bold -Value "Grand Total Calculation"
+Set-ExcelRange -Address $sheet1.Cells["E10"] -Formula "=Sum(E3:E8)" -Bold
+Set-ExcelRange -Address $sheet1.Cells["I10"] -Formula "=Sum(I3:I8)" -Bold
+Set-ExcelRange -Address $sheet1.Cells["M10"] -Formula "=Sum(M3:M8)" -Bold
+Set-ExcelRange -Address $sheet1.Cells["O10"] -Formula "=Sum(O3:O8)" -Bold
 
 Close-ExcelPackage $excel -Show

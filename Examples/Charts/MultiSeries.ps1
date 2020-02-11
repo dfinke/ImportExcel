@@ -1,12 +1,14 @@
-rm temp.xlsx -ErrorAction Ignore
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$data = invoke-sum (ps) company handles,pm,VirtualMemorySize
+Remove-Item temp.xlsx -ErrorAction Ignore
 
-$c = New-ExcelChart -Title Stats `
+$data = Invoke-Sum -data (Get-Process) -dimension Company -measure Handles, PM, VirtualMemorySize
+
+$c = New-ExcelChartDefinition -Title "ProcessStats" `
     -ChartType LineMarkersStacked `
-    -Header "Stuff" `
-    -XRange "Processes[Company]" `
-    -YRange "Processes[PM]","Processes[VirtualMemorySize]"
- 
-$data | 
-    Export-Excel temp.xlsx -AutoSize -TableName Processes -Show -ExcelChartDefinition $c
+    -XRange "Processes[Name]" `
+    -YRange "Processes[PM]","Processes[VirtualMemorySize]" `
+    -SeriesHeader "PM","VM"
+
+$data |
+    Export-Excel -Path temp.xlsx -AutoSize -TableName Processes -ExcelChartDefinition $c  -Show

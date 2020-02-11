@@ -1,6 +1,8 @@
-$file = "disks.xlsx"
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-rm $file -ErrorAction Ignore
+$file = "$env:temp\disks.xlsx"
+
+Remove-Item $file -ErrorAction Ignore
 
 $data = $(
     New-PSItem 100 -100
@@ -10,6 +12,5 @@ $data = $(
     New-PSItem -5.2 6.1
     New-PSItem 1000 -2000
 )
-
-$data | Export-Excel -Path $file -Show -AutoSize -NumberFormat '[Blue]$#,##0.00;[Red]-$#,##0.00'
-
+#Number format can expand terms like Currency, to the local currency format
+$data | Export-Excel -Path $file -Show -AutoSize -NumberFormat 'Currency'

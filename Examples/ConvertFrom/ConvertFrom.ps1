@@ -1,3 +1,4 @@
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 ConvertFrom-ExcelToSQLInsert People .\testSQLGen.xlsx
 

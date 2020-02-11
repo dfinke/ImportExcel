@@ -1,11 +1,13 @@
-$f = ".\testExport.xlsx"
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-rm $f -ErrorAction Ignore
+$f = "$env:TEMP\testExport.xlsx"
+
+Remove-Item $f -ErrorAction Ignore
 
 $data = $(
 
-    New-PSItem North 111 (echo Region Amount )
-    New-PSItem East 111 
+    New-PSItem North 111 @( 'Region', 'Amount' )
+    New-PSItem East 111
     New-PSItem West 122
     New-PSItem South 200
 
@@ -14,11 +16,13 @@ $data = $(
     New-PSItem SouthWest 136
     New-PSItem South 127
 
-    New-PSItem NorthByNory 100 
-    New-PSItem NothEast 110 
-    New-PSItem Westerly 120 
+    New-PSItem NorthByNory 100
+    New-PSItem NothEast 110
+    New-PSItem Westerly 120
     New-PSItem SouthWest 118
-) 
+)
+# in this example instead of doing $variable = New-Conditional text <parameters> .... ; Export-excel -ConditionalText $variable <other parameters>
+# the syntax is used is Export-excel -ConditionalText (New-Conditional text <parameters>) <other parameters>
 
 
 #$data  | Export-Excel $f -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType AboveAverage)

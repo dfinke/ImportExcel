@@ -1,5 +1,5 @@
-Function Get-ExcelTableName {
-    Param (
+function Get-ExcelTableName {
+    param(
         $Path,
         $WorksheetName
     )
@@ -25,11 +25,11 @@ Function Get-ExcelTableName {
     $Stream.Close()
     $Stream.Dispose()
     $Excel.Dispose()
-    $Excel = $null    
+    $Excel = $null
 }
 
-Function Get-ExcelTable {
-    Param (
+function Get-ExcelTable {
+    param(
         $Path,
         $TableName,
         $WorksheetName
@@ -66,7 +66,7 @@ Function Get-ExcelTable {
     $propertyNames = for($col=$startCol; $col -lt ($startCol+$colCount); $col+= 1) {
         $Worksheet.Cells[$startRow, $col].value
     }
-    
+
     $startRow++
     for($row=$startRow; $row -lt ($startRow+$rowCount); $row += 1) {
         $nr=[ordered]@{}
@@ -89,16 +89,14 @@ function ConvertFrom-ExcelColumnName {
 
     $sum=0
     $columnName.ToCharArray() |
-        ForEach {
+        ForEach-Object {
             $sum*=26
             $sum+=[char]$_.tostring().toupper()-[char]'A'+1
-        } 
+        }
     $sum
 }
 
-cls
+Import-Module .\ImportExcel.psd1 -Force
 
-ipmo .\ImportExcel.psd1 -Force
-
-#Get-ExcelTableName .\testTable.xlsx | Get-ExcelTable .\testTable.xlsx 
+#Get-ExcelTableName .\testTable.xlsx | Get-ExcelTable .\testTable.xlsx
 Get-ExcelTable .\testTable.xlsx Table3

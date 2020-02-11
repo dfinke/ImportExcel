@@ -1,6 +1,6 @@
-﻿Import-Module ..\..\ImportExcel.psd1 -Force
+﻿try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$xlFile=".\testPivot.xlsx"
+$xlFile="$env:TEMP\testPivot.xlsx"
 Remove-Item $xlFile -ErrorAction Ignore
 
 $data =@"
@@ -18,4 +18,18 @@ $data |
         -AutoSize -AutoFilter `
         -IncludePivotTable `
         -PivotRows Product `
-        -PivotData @{"Units"="sum"} -PivotFilter Region, Area
+        -PivotData @{"Units"="sum"} -PivotFilter Region, Area -Activate
+
+<#
+Creates a Pivot table that looks like
+Region          All^
+Area            All^
+
+Sum of Units
+Row Labels	   Total
+Apple	         100
+Pear	         240
+Grape	         280
+Banana	         160
+Grand Total	     780
+#>

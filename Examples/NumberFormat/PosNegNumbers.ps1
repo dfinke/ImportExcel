@@ -1,6 +1,8 @@
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
+
 $file = "disks.xlsx"
 
-rm $file -ErrorAction Ignore
+Remove-Item $file -ErrorAction Ignore
 
 $data = $(
     New-PSItem 100 -100
