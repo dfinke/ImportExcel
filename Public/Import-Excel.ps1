@@ -117,7 +117,6 @@
                 throw "Worksheet '$WorksheetName' not found, the workbook only contains the worksheets '$($ExcelPackage.Workbook.Worksheets)'. If you only wish to select the first worksheet, please remove the '-WorksheetName' parameter." ; return
             }
 
-            Write-Debug $sw.Elapsed.TotalMilliseconds
             #region Get rows and columns
             #If we are doing dataonly it is quicker to work out which rows to ignore before processing the cells.
             if (-not $EndRow   ) { $EndRow = $Worksheet.Dimension.End.Row }
@@ -154,7 +153,6 @@
                 throw "Duplicate column headers found on row '$StartRow' in columns '$($Duplicates.Group.Column)'. Column headers must be unique, if this is not a requirement please use the '-NoHeader' or '-HeaderName' parameter."; return
             }
             #endregion
-            Write-Debug $sw.Elapsed.TotalMilliseconds
             if (-not $Rows) {
                 Write-Warning "Worksheet '$WorksheetName' in workbook '$Path' contains no data in the rows after top row '$StartRow'"
             }
@@ -191,7 +189,6 @@
                 }
                 #endregion
             }
-            Write-Debug $sw.Elapsed.TotalMilliseconds
         }
         catch { throw "Failed importing the Excel workbook '$Path' with worksheet '$Worksheetname': $_"; return }
         finally {
