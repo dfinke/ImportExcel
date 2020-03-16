@@ -6578,6 +6578,346 @@ Boston,2/18/2018,1000
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
+      <command:name>ConvertFrom-ExcelSheet</command:name>
+      <command:verb>ConvertFrom</command:verb>
+      <command:noun>ExcelSheet</command:noun>
+      <maml:description>
+        <maml:para>Exports Sheets from Excel Workbooks to CSV files.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>This command provides a convenient way to run Import-Excel @ImportParameters | Select-Object @selectParameters | export-Csv @ ExportParameters It can take the parameters -AsText , as used in Import-Excel, )Properties &amp; -ExcludeProperties as used in Select-Object and -Append, -Delimiter and -Encoding as used in Export-CSV</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>ConvertFrom-ExcelSheet</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="0" aliases="none">
+          <maml:name>Path</maml:name>
+          <maml:Description>
+            <maml:para>The path to the .XLSX file which will be exported.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>OutputPath</maml:name>
+          <maml:Description>
+            <maml:para>The directory where the output file(s) will be created. The file name(s) will match the name of the workbook page which contained the data.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+          <maml:name>SheetName</maml:name>
+          <maml:Description>
+            <maml:para>The name of a sheet to export, or a regular expression which is used to identify sheets</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
+          <maml:name>Encoding</maml:name>
+          <maml:Description>
+            <maml:para>Sets the text encoding for the output data file; UTF8 bu default</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">Encoding</command:parameterValue>
+          <dev:type>
+            <maml:name>Encoding</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
+          <maml:name>Extension</maml:name>
+          <maml:Description>
+            <maml:para>Sets the file extension for the exported data, defaults to CSV</maml:para>
+          </maml:Description>
+          <command:parameterValueGroup>
+            <command:parameterValue required="false" command:variableLength="false">.txt</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">.log</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false">.csv</command:parameterValue>
+          </command:parameterValueGroup>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
+          <maml:name>Delimiter</maml:name>
+          <maml:Description>
+            <maml:para>Selects , or ; as the delimeter for the exported data - if not specified , is used by default.</maml:para>
+          </maml:Description>
+          <command:parameterValueGroup>
+            <command:parameterValue required="false" command:variableLength="false">;</command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false"></command:parameterValue>
+            <command:parameterValue required="false" command:variableLength="false"></command:parameterValue>
+          </command:parameterValueGroup>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="6" aliases="none">
+          <maml:name>Property</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the properties to select. Wildcards are permitted - the default is "*". The value of the Property parameter can be a new calculated property, and follows the same pattern as Select-Item</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+          <dev:type>
+            <maml:name>Object</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="7" aliases="none">
+          <maml:name>ExcludeProperty</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the properties that to exclude from the export. Wildcards are permitted. This parameter is effective only when the command also includes the Property parameter.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+          <dev:type>
+            <maml:name>Object</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="none">
+          <maml:name>AsText</maml:name>
+          <maml:Description>
+            <maml:para>AsText allows selected columns to be returned as the text displayed in their cells, instead of their value. (* is supported as a wildcard.)</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="none">
+          <maml:name>AsDate</maml:name>
+          <maml:Description>
+            <maml:para>Not all date formats are recognized as indicating the number in the cell represents a date  AsDate forces the number which would be returned to be converted to a date. (* is supported as a wildcard.)</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Append</maml:name>
+          <maml:Description>
+            <maml:para>Use this parameter to have the export add output to the end of the file. Without this parameter,  the command replaces the file contents without warning.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Append</maml:name>
+        <maml:Description>
+          <maml:para>Use this parameter to have the export add output to the end of the file. Without this parameter,  the command replaces the file contents without warning.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="none">
+        <maml:name>AsText</maml:name>
+        <maml:Description>
+          <maml:para>AsText allows selected columns to be returned as the text displayed in their cells, instead of their value. (* is supported as a wildcard.)</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="none">
+        <maml:name>AsDate</maml:name>
+        <maml:Description>
+          <maml:para>Not all date formats are recognized as indicating the number in the cell represents a date  AsDate forces the number which would be returned to be converted to a date. (* is supported as a wildcard.)</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
+        <maml:name>Delimiter</maml:name>
+        <maml:Description>
+          <maml:para>Selects , or ; as the delimeter for the exported data - if not specified , is used by default.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
+        <maml:name>Encoding</maml:name>
+        <maml:Description>
+          <maml:para>Sets the text encoding for the output data file; UTF8 bu default</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">Encoding</command:parameterValue>
+        <dev:type>
+          <maml:name>Encoding</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="7" aliases="none">
+        <maml:name>ExcludeProperty</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the properties that to exclude from the export. Wildcards are permitted. This parameter is effective only when the command also includes the Property parameter.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+        <dev:type>
+          <maml:name>Object</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
+        <maml:name>Extension</maml:name>
+        <maml:Description>
+          <maml:para>Sets the file extension for the exported data, defaults to CSV</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>OutputPath</maml:name>
+        <maml:Description>
+          <maml:para>The directory where the output file(s) will be created. The file name(s) will match the name of the workbook page which contained the data.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="0" aliases="none">
+        <maml:name>Path</maml:name>
+        <maml:Description>
+          <maml:para>The path to the .XLSX file which will be exported.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="6" aliases="none">
+        <maml:name>Property</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the properties to select. Wildcards are permitted - the default is "*". The value of the Property parameter can be a new calculated property, and follows the same pattern as Select-Item</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+        <dev:type>
+          <maml:name>Object</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+        <maml:name>SheetName</maml:name>
+        <maml:Description>
+          <maml:para>The name of a sheet to export, or a regular expression which is used to identify sheets</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- Example 1 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; ConvertFrom-ExcelSheet Path .\__tests__\First10Races.xlsx -OutputPath .. -AsText GridPosition,date</dev:code>
+        <dev:remarks>
+          <maml:para>First10Races.xlsx contains information about Motor races. The race date and grid (starting) position are stored with custom formats. The command specifies the path to the file, and the directory to create the output file, and specifies that the columns "GridPosition" and "Date" should be treated as text to preserve their formatting</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 2 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; ConvertFrom-ExcelSheet Path .\__tests__\First10Races.xlsx -OutputPath .. -AsText "GridPosition" -Property driver, @{n="date"; e={[datetime]::FromOADate($_.Date).tostring("#MM/dd/yyyy#")}} , FinishPosition, GridPosition</dev:code>
+        <dev:remarks>
+          <maml:para>This uses the same file as example 1. Because the race date has a custom format, it imports as a number, The requirement is to create a CSV file with the Driver, a specially formatted Date, FinishPostion and GridPostion (keeping its custom formatting). The command specifies the path to the file, and the directory to create the output file, specifies that the column "GridPosition" should be treated as text instead of a number, and the output properties should be Driver, a calculated "date" field, FinishPosition and GridPsition. FromOADate converts the dates used by Excel (Days since Jan 1 1900) to a datetime object.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/dfinke/ImportExcel</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
       <command:name>ConvertFrom-ExcelToSQLInsert</command:name>
       <command:verb>ConvertFrom</command:verb>
       <command:noun>ExcelToSQLInsert</command:noun>
@@ -10500,6 +10840,18 @@ PS\&gt; Export-Excel -ExcelPackage $excel -WorksheetName "Processes" -IncludePiv
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>AsDate</maml:name>
+          <maml:Description>
+            <maml:para>Not all date formats are recognized as indicating the number in the cell represents a date  AsDate forces the number which would be returned to be converted to a date. (* is supported as a wildcard.)</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Password</maml:name>
           <maml:Description>
             <maml:para>Accepts a string that will be used to open a password protected Excel file.</maml:para>
@@ -10625,6 +10977,18 @@ PS\&gt; Export-Excel -ExcelPackage $excel -WorksheetName "Processes" -IncludePiv
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>AsDate</maml:name>
+          <maml:Description>
+            <maml:para>Not all date formats are recognized as indicating the number in the cell represents a date  AsDate forces the number which would be returned to be converted to a date. (* is supported as a wildcard.)</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Password</maml:name>
           <maml:Description>
             <maml:para>Accepts a string that will be used to open a password protected Excel file.</maml:para>
@@ -10727,6 +11091,18 @@ PS\&gt; Export-Excel -ExcelPackage $excel -WorksheetName "Processes" -IncludePiv
           <maml:name>AsText</maml:name>
           <maml:Description>
             <maml:para>Normally Import-Excel returns the Cell values. AsText allows selected columns to be returned as the text displayed in their cells. (* is supported as a wildcard.)</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>AsDate</maml:name>
+          <maml:Description>
+            <maml:para>Not all date formats are recognized as indicating the number in the cell represents a date  AsDate forces the number which would be returned to be converted to a date. (* is supported as a wildcard.)</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -10860,6 +11236,18 @@ PS\&gt; Export-Excel -ExcelPackage $excel -WorksheetName "Processes" -IncludePiv
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>AsDate</maml:name>
+          <maml:Description>
+            <maml:para>Not all date formats are recognized as indicating the number in the cell represents a date  AsDate forces the number which would be returned to be converted to a date. (* is supported as a wildcard.)</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Password</maml:name>
           <maml:Description>
             <maml:para>Accepts a string that will be used to open a password protected Excel file.</maml:para>
@@ -10986,6 +11374,18 @@ PS\&gt; Export-Excel -ExcelPackage $excel -WorksheetName "Processes" -IncludePiv
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>AsDate</maml:name>
+          <maml:Description>
+            <maml:para>Not all date formats are recognized as indicating the number in the cell represents a date  AsDate forces the number which would be returned to be converted to a date. (* is supported as a wildcard.)</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Password</maml:name>
           <maml:Description>
             <maml:para>Accepts a string that will be used to open a password protected Excel file.</maml:para>
@@ -11089,6 +11489,18 @@ PS\&gt; Export-Excel -ExcelPackage $excel -WorksheetName "Processes" -IncludePiv
           <maml:name>AsText</maml:name>
           <maml:Description>
             <maml:para>Normally Import-Excel returns the Cell values. AsText allows selected columns to be returned as the text displayed in their cells. (* is supported as a wildcard.)</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>AsDate</maml:name>
+          <maml:Description>
+            <maml:para>Not all date formats are recognized as indicating the number in the cell represents a date  AsDate forces the number which would be returned to be converted to a date. (* is supported as a wildcard.)</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -11241,6 +11653,18 @@ PS\&gt; Export-Excel -ExcelPackage $excel -WorksheetName "Processes" -IncludePiv
         <maml:name>AsText</maml:name>
         <maml:Description>
           <maml:para>Normally Import-Excel returns the Cell values. AsText allows selected columns to be returned as the text displayed in their cells. (* is supported as a wildcard.)</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>AsDate</maml:name>
+        <maml:Description>
+          <maml:para>Not all date formats are recognized as indicating the number in the cell represents a date  AsDate forces the number which would be returned to be converted to a date. (* is supported as a wildcard.)</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>

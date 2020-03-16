@@ -22,6 +22,7 @@
         [Switch]$TitleBold,
         [Int]$TitleSize = 22,
         $TitleBackgroundColor,
+        [parameter(DontShow=$true)]
         [Switch]$IncludePivotTable,
         [String]$PivotTableName,
         [String[]]$PivotRows,
@@ -31,7 +32,8 @@
         [Switch]$PivotDataToColumn,
         [Hashtable]$PivotTableDefinition,
         [Switch]$IncludePivotChart,
-        [OfficeOpenXml.Drawing.Chart.eChartType]$ChartType = 'Pie',
+        [Alias('ChartType')]
+        [OfficeOpenXml.Drawing.Chart.eChartType]$PivotChartType = 'Pie',
         [Switch]$NoLegend,
         [Switch]$ShowCategory,
         [Switch]$ShowPercent,
@@ -442,7 +444,7 @@
                 Add-PivotTable -ExcelPackage $pkg -PivotTableName $item.key @Params
             }
         }
-        if ($IncludePivotTable -or $IncludePivotChart) {
+        if ($IncludePivotTable -or $IncludePivotChart -or $PivotData) {
             $params = @{
                 'SourceRange' = $dataRange
             }
@@ -461,9 +463,10 @@
             if   ($NoTotalsInPivot) {$params.PivotTotals       = "None"    }
             Elseif   ($PivotTotals) {$params.PivotTotals       = $PivotTotals}
             if ($PivotDataToColumn) {$params.PivotDataToColumn = $true}
-            if ($IncludePivotChart) {
+            if ($IncludePivotChart -or
+                $PSBoundParameters.ContainsKey('PivotChartType')) {
                                      $params.IncludePivotChart = $true
-                                     $Params.ChartType         = $ChartType
+                                     $Params.ChartType         = $PivotChartType
                 if ($ShowCategory)  {$params.ShowCategory      = $true}
                 if ($ShowPercent)   {$params.ShowPercent       = $true}
                 if ($NoLegend)      {$params.NoLegend          = $true}
@@ -474,12 +477,24 @@
         try {
             #Allow single switch or two seperate ones.
             if ($FreezeTopRowFirstColumn -or ($FreezeTopRow -and $FreezeFirstColumn)) {
-                $ws.View.FreezePanes(2, 2)
-                Write-Verbose -Message "Froze top row and first column"
+                if ($Title) {
+                    $ws.View.FreezePanes(3, 2)
+                    Write-Verbose -Message "Froze title and header rows and first column"
+                }
+                else {
+                    $ws.View.FreezePanes(2, 2)
+                    Write-Verbose -Message "Froze top row and first column"
+                }
             }
             elseif ($FreezeTopRow) {
-                $ws.View.FreezePanes(2, 1)
-                Write-Verbose -Message "Froze top row"
+                if ($Title) {
+                    $ws.View.FreezePanes(2, 1)
+                    Write-Verbose -Message "Froze title and header rows"
+                }
+                else {
+                    $ws.View.FreezePanes(2, 1)
+                    Write-Verbose -Message "Froze top row"
+                }
             }
             elseif ($FreezeFirstColumn) {
                 $ws.View.FreezePanes(1, 2)

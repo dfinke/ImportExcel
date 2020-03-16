@@ -28,30 +28,30 @@ Describe "Data validation and protection" {
             $ws           = $excelPackage.Sales
         }
         It "Created the expected number of rules                                                   " {
-            $ws.DataValidations.count                                   | Should     be 2
+            $ws.DataValidations.count                                   | Should      -Be 2
         }
         It "Created a List validation rule against a range of Cells                                " {
-            $ws.DataValidations[0].ValidationType.Type.tostring()       | Should     be 'List'
-            $ws.DataValidations[0].Formula.ExcelFormula                 | Should     be 'values!$a$1:$a$10'
-            $ws.DataValidations[0].Formula2                             | Should     benullorempty
+            $ws.DataValidations[0].ValidationType.Type.tostring()       | Should      -Be 'List'
+            $ws.DataValidations[0].Formula.ExcelFormula                 | Should      -Be 'values!$a$1:$a$10'
+            $ws.DataValidations[0].Formula2                             | Should      -Benullorempty
         }
         It "Created an integer validation rule for values between X and Y                          " {
-            $ws.DataValidations[1].ValidationType.Type.tostring()       | Should     be 'Whole'
-            $ws.DataValidations[1].Formula.Value                        | Should     be 0
-            $ws.DataValidations[1].Formula2.value                       | Should not benullorempty
-            $ws.DataValidations[1].Operator.tostring()                  | should     be 'between'
+            $ws.DataValidations[1].ValidationType.Type.tostring()       | Should      -Be 'Whole'
+            $ws.DataValidations[1].Formula.Value                        | Should      -Be 0
+            $ws.DataValidations[1].Formula2.value                       | Should -Not -Benullorempty
+            $ws.DataValidations[1].Operator.tostring()                  | Should      -Be 'between'
         }
         It "Set Error behaviors for both rules                                                     " {
-            $ws.DataValidations[0].ErrorStyle.tostring()                | Should     be 'stop'
-            $ws.DataValidations[1].ErrorStyle.tostring()                | Should     be 'stop'
-            $ws.DataValidations[0].AllowBlank                           | Should     be $true
-            $ws.DataValidations[1].AllowBlank                           | Should     be $true
-            $ws.DataValidations[0].ShowErrorMessage                     | Should     be $true
-            $ws.DataValidations[1].ShowErrorMessage                     | Should     be $true
-            $ws.DataValidations[0].ErrorTitle                           | Should not benullorempty
-            $ws.DataValidations[1].ErrorTitle                           | Should not benullorempty
-            $ws.DataValidations[0].Error                                | Should not benullorempty
-            $ws.DataValidations[1].Error                                | Should not benullorempty
+            $ws.DataValidations[0].ErrorStyle.tostring()                | Should      -Be 'stop'
+            $ws.DataValidations[1].ErrorStyle.tostring()                | Should      -Be 'stop'
+            $ws.DataValidations[0].AllowBlank                           | Should      -Be $true
+            $ws.DataValidations[1].AllowBlank                           | Should      -Be $true
+            $ws.DataValidations[0].ShowErrorMessage                     | Should      -Be $true
+            $ws.DataValidations[1].ShowErrorMessage                     | Should      -Be $true
+            $ws.DataValidations[0].ErrorTitle                           | Should -Not -Benullorempty
+            $ws.DataValidations[1].ErrorTitle                           | Should -Not -Benullorempty
+            $ws.DataValidations[0].Error                                | Should -Not -Benullorempty
+            $ws.DataValidations[1].Error                                | Should -Not -Benullorempty
         }
     }
 

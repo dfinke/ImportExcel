@@ -45,6 +45,7 @@
         [ValidateRange(-90, 90)]
         [int]$TextRotation ,
         [float]$Height,
+        [Alias('Hidden')]
         [Switch]$Hide,
         [Switch]$ReturnRange,
         [Switch]$PassThru

@@ -22,15 +22,15 @@ Apple, New York, 1200,700
         $ws = $ws = $excel.sheet1
     }
     it "Turned on protection for the sheet                                                        " {
-        $ws.Protection.IsProtected                                  | should     be  $true
+        $ws.Protection.IsProtected                                  | Should      -Be  $true
     }
     it "Set sheet-wide protection options                                                         " {
-        $ws.Protection.AllowEditObject                              | should     be  $false
-        $ws.Protection.AllowFormatRows                              | should     be  $true
-        $ws.cells["a2"].Style.Locked                                | should     be  $true
+        $ws.Protection.AllowEditObject                              | Should      -Be  $false
+        $ws.Protection.AllowFormatRows                              | Should      -Be  $true
+        $ws.cells["a2"].Style.Locked                                | Should      -Be  $true
     }
     it "Unprotected some cells                                                                    " {
-        $ws.cells["a1"].Style.Locked                                | should     be  $false
+        $ws.cells["a1"].Style.Locked                                | Should      -Be  $false
     }
 }
 

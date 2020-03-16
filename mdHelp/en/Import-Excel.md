@@ -395,6 +395,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -AsDate
+Not all date formats are recognized as indicating the number in the cell represents a date  AsDate forces the number which would be returned to be converted to a date. (* is supported as a wildcard.)
+
+```yaml
+Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -Password
 Accepts a string that will be used to open a password protected Excel file.
 

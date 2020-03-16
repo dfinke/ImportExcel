@@ -29,7 +29,7 @@ John,20
         }
 
         it "Should throw about the Path".PadRight(87)  {
-            {Remove-Worksheet} | Should throw 'Remove-Worksheet requires the and Excel file'
+            {Remove-Worksheet} | Should  -Throw 'Remove-Worksheet requires the and Excel file'
         }
 
         it "Should delete Target2".PadRight(87)  {
@@ -37,10 +37,10 @@ John,20
 
             $actual = Get-ExcelSheetInfo -Path $xlFile1
 
-            $actual.Count   | Should Be 3
-            $actual[0].Name | Should Be "Target1"
-            $actual[1].Name | Should Be "Target3"
-            $actual[2].Name | Should Be "Sheet1"
+            $actual.Count   | Should -Be 3
+            $actual[0].Name | Should -Be "Target1"
+            $actual[1].Name | Should -Be "Target3"
+            $actual[2].Name | Should -Be "Sheet1"
         }
 
         it "Should delete Sheet1".PadRight(87)  {
@@ -48,10 +48,10 @@ John,20
 
             $actual = Get-ExcelSheetInfo -Path $xlFile1
 
-            $actual.Count   | Should Be 3
-            $actual[0].Name | Should Be "Target1"
-            $actual[1].Name | Should Be "Target2"
-            $actual[2].Name | Should Be "Target3"
+            $actual.Count   | Should -Be 3
+            $actual[0].Name | Should -Be "Target1"
+            $actual[1].Name | Should -Be "Target2"
+            $actual[2].Name | Should -Be "Target3"
         }
 
         it "Should delete multiple sheets".PadRight(87)  {
@@ -59,9 +59,9 @@ John,20
 
             $actual = Get-ExcelSheetInfo -Path $xlFile1
 
-            $actual.Count   | Should Be 2
-            $actual[0].Name | Should Be "Target2"
-            $actual[1].Name | Should Be "Target3"
+            $actual.Count   | Should -Be 2
+            $actual[0].Name | Should -Be "Target2"
+            $actual[1].Name | Should -Be "Target3"
         }
 
         it "Should delete sheet from multiple workbooks".PadRight(87)  {
@@ -70,10 +70,10 @@ John,20
 
             $actual = Get-ExcelSheetInfo -Path $xlFile1
 
-            $actual.Count   | Should Be 3
-            $actual[0].Name | Should Be "Target1"
-            $actual[1].Name | Should Be "Target2"
-            $actual[2].Name | Should Be "Target3"
+            $actual.Count   | Should -Be 3
+            $actual[0].Name | Should -Be "Target1"
+            $actual[1].Name | Should -Be "Target2"
+            $actual[2].Name | Should -Be "Target3"
         }
     }
 }

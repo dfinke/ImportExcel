@@ -28,11 +28,11 @@ Describe ExportExcel {
         $Processes | Export-Excel $path  #-show
 
         it "Created a new file                                                                     " {
-            Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
+            Test-Path -Path $path -ErrorAction SilentlyContinue         | Should      -Be $true
         }
 
        # it "Started Excel to display the file                                                      " {
-       #     Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should not beNullOrEmpty
+       #     Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should -Not -BeNullOrEmpty
        # }
        #Start-Sleep -Seconds 5 ;
 
@@ -41,42 +41,42 @@ Describe ExportExcel {
         #TODO Need to test opening pre-existing file with no -create switch (and graceful failure when file does not exist) somewhere else
         $Excel = Open-ExcelPackage -Path $path -KillExcel
         it "Killed Excel when Open-Excelpackage was told to                                        " {
-            Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should     beNullOrEmpty
+            Get-process -Name Excel, xlim -ErrorAction SilentlyContinue  | Should      -BeNullOrEmpty
         }
 
         it "Created 1 worksheet, named 'Sheet1'                                                    " {
-            $Excel.Workbook.Worksheets.count                            | Should     be 1
-            $Excel.Workbook.Worksheets["Sheet1"]                        | Should not beNullOrEmpty
+            $Excel.Workbook.Worksheets.count                            | Should      -Be 1
+            $Excel.Workbook.Worksheets["Sheet1"]                        | Should -Not -BeNullOrEmpty
         }
 
         it "Added a 'Sheet1' property to the Package object                                        " {
-            $Excel.Sheet1                                               | Should not beNullOrEmpty
+            $Excel.Sheet1                                               | Should -Not -BeNullOrEmpty
         }
 
         $ws = $Excel.Workbook.Worksheets[1]
         it "Created the worksheet with the expected name, number of rows and number of columns     " {
-            $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be  $propertyNames.Count
-            $ws.Dimension.Rows                                          | Should     be ($rowcount + 1)
+            $ws.Name                                                    | Should      -Be "sheet1"
+            $ws.Dimension.Columns                                       | Should      -Be  $propertyNames.Count
+            $ws.Dimension.Rows                                          | Should      -Be ($rowcount + 1)
         }
 
         $headingNames = $ws.cells["1:1"].Value
         it "Created the worksheet with the correct header names                                    " {
             foreach ($p in $propertyNames) {
-                $headingnames -contains $p                              | Should     be $true
+                $headingnames -contains $p                              | Should      -Be $true
             }
         }
 
         it "Formatted the process StartTime field as 'localized Date-Time'                         " {
             $STHeader = $ws.cells["1:1"].where( {$_.Value -eq "StartTime"})[0]
             $STCell = $STHeader.Address -replace '1$', '2'
-            $ws.cells[$stcell].Style.Numberformat.NumFmtID              | Should     be 22
+            $ws.cells[$stcell].Style.Numberformat.NumFmtID              | Should      -Be 22
         }
 
         it "Formatted the process ID field as 'General'                                            " {
             $IDHeader = $ws.cells["1:1"].where( {$_.Value -eq "ID"})[0]
             $IDCell = $IDHeader.Address -replace '1$', '2'
-            $ws.cells[$IDcell].Style.Numberformat.NumFmtID              | Should     be 0
+            $ws.cells[$IDcell].Style.Numberformat.NumFmtID              | Should      -Be 0
         }
     }
 
@@ -93,15 +93,15 @@ Describe ExportExcel {
         $Excel = Open-ExcelPackage -Path $path
         $ws = $Excel.Workbook.Worksheets[1]
         it "Created a new file with Alias & Script Properties removed.                             " {
-            $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be  $propertyNames.Count
-            $ws.Dimension.Rows                                          | Should     be  ($rowcount + 1 ) # +1 for the header.
+            $ws.Name                                                    | Should      -Be "sheet1"
+            $ws.Dimension.Columns                                       | Should      -Be  $propertyNames.Count
+            $ws.Dimension.Rows                                          | Should      -Be  ($rowcount + 1 ) # +1 for the header.
         }
         it "Created a Range - even though the name given was invalid.                              " {
-            $ws.Names["No_spaces"]                                      | Should not beNullOrEmpty
-            $ws.Names["No_spaces"].End.Column                           | Should     be  $propertyNames.Count
-            $ws.names["No_spaces"].End.Row                              | Should     be  ($rowcount + 1 ) # +1 for the header.
-            $warnVar.Count                                              | Should     be  1
+            $ws.Names["No_spaces"]                                      | Should -Not -BeNullOrEmpty
+            $ws.Names["No_spaces"].End.Column                           | Should      -Be  $propertyNames.Count
+            $ws.names["No_spaces"].End.Row                              | Should      -Be  ($rowcount + 1 ) # +1 for the header.
+            $warnVar.Count                                              | Should      -Be  1
         }
         #This time use clearsheet instead of deleting the file test -Exclude properties, including wildcards.
         $Processes | Export-Excel $path -ClearSheet  -NoAliasOrScriptPropeties  -ExcludeProperty SafeHandle, threads, modules, MainModule, StartInfo, MachineName, MainWindow*, M*workingSet
@@ -109,9 +109,9 @@ Describe ExportExcel {
         $Excel = Open-ExcelPackage -Path $path
         $ws = $Excel.Workbook.Worksheets[1]
         it "Created a new file with further properties excluded and cleared the old sheet          " {
-            $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be ($propertyNames.Count - 10)
-            $ws.Dimension.Rows                                          | Should     be ($rowcount + 1)  # +1 for the header
+            $ws.Name                                                    | Should      -Be "sheet1"
+            $ws.Dimension.Columns                                       | Should      -Be ($propertyNames.Count - 10)
+            $ws.Dimension.Rows                                          | Should      -Be ($rowcount + 1)  # +1 for the header
         }
 
         $propertyNames = $Processes[0].psStandardmembers.DefaultDisplayPropertySet.ReferencedPropertyNames
@@ -122,9 +122,9 @@ Describe ExportExcel {
         $Excel = Open-ExcelPackage -Path $path
         $ws = $Excel.Workbook.Worksheets[1]
         it "Created a new file with just the members of the Display Property Set                   " {
-            $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be  $propertyNames.Count
-            $ws.Dimension.Rows                                          | Should     be ($rowcount + 1)
+            $ws.Name                                                    | Should      -Be "sheet1"
+            $ws.Dimension.Columns                                       | Should      -Be  $propertyNames.Count
+            $ws.Dimension.Rows                                          | Should      -Be ($rowcount + 1)
         }
     }
 
@@ -135,34 +135,34 @@ Describe ExportExcel {
         #testing -ReturnRange switch and applying number format to Formulas as well as values.
         $returnedRange =   @($null, -1, 0, 34, 777, "", -0.5, 119, -0.1, 234, 788,"=A9+A10")   | Export-Excel -NumberFormat '[Blue]$#,##0.00;[Red]-$#,##0.00' -Path $path -ReturnRange
         it "Created a new file and returned the expected range                                     " {
-            Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
-            $returnedRange                                              | Should     be "A1:A12"
+            Test-Path -Path $path -ErrorAction SilentlyContinue         | Should      -Be $true
+            $returnedRange                                              | Should      -Be "A1:A12"
         }
 
         $Excel = Open-ExcelPackage -Path $path
         it "Created 1 worksheet                                                                    " {
-            $Excel.Workbook.Worksheets.count                            | Should     be 1
+            $Excel.Workbook.Worksheets.count                            | Should      -Be 1
         }
 
         $ws = $Excel.Workbook.Worksheets[1]
         it "Created the worksheet with the expected name, number of rows and number of columns     " {
-            $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be  1
-            $ws.Dimension.End.Row                                       | Should     be  12
+            $ws.Name                                                    | Should      -Be "sheet1"
+            $ws.Dimension.Columns                                       | Should      -Be  1
+            $ws.Dimension.End.Row                                       | Should      -Be  12
         }
 
         it "Set the default style for the sheet as expected                                        " {
-            $ws.cells.Style.Numberformat.Format                         | Should     be  '[Blue]$#,##0.00;[Red]-$#,##0.00'
+            $ws.cells.Style.Numberformat.Format                         | Should      -Be  '[Blue]$#,##0.00;[Red]-$#,##0.00'
         }
 
         it "Set the default style and set values for Cells as expected, handling null,0 and ''     " {
-            $ws.cells[1, 1].Style.Numberformat.Format                   | Should     be  '[Blue]$#,##0.00;[Red]-$#,##0.00'
-            $ws.cells[1, 1].Value                                       | Should     beNullorEmpty
-            $ws.cells[2, 1].Value                                       | Should     be -1
-            $ws.cells[3, 1].Value                                       | Should     be 0
-            $ws.cells[5, 1].Value                                       | Should     be 777
-            $ws.cells[6, 1].Value                                       | Should     be ""
-            $ws.cells[4, 1].Style.Numberformat.Format                   | Should     be  '[Blue]$#,##0.00;[Red]-$#,##0.00'
+            $ws.cells[1, 1].Style.Numberformat.Format                   | Should      -Be  '[Blue]$#,##0.00;[Red]-$#,##0.00'
+            $ws.cells[1, 1].Value                                       | Should      -BeNullorEmpty
+            $ws.cells[2, 1].Value                                       | Should      -Be -1
+            $ws.cells[3, 1].Value                                       | Should      -Be 0
+            $ws.cells[5, 1].Value                                       | Should      -Be 777
+            $ws.cells[6, 1].Value                                       | Should      -Be ""
+            $ws.cells[4, 1].Style.Numberformat.Format                   | Should      -Be  '[Blue]$#,##0.00;[Red]-$#,##0.00'
 
         }
     }
@@ -178,13 +178,13 @@ Describe ExportExcel {
             $ws = $excel.Workbook.Worksheets[1]
         }
         it "Set the worksheet default number format correctly                                      " {
-            $ws.Cells.Style.Numberformat.Format                         | Should     be "0.00"
+            $ws.Cells.Style.Numberformat.Format                         | Should      -Be "0.00"
         }
         it "Set number formats on specific blocks of cells                                         " {
-            $ws.Cells["A2" ].Style.Numberformat.Format                  | Should     be "0.00"
-            $ws.Cells["c19"].Style.Numberformat.Format                  | Should     be "0.00"
-            $ws.Cells["A20"].Style.Numberformat.Format                  | Should     be "0.00%"
-            $ws.Cells["C6" ].Style.Numberformat.Format                  | Should     be (Expand-NumberFormat "currency")
+            $ws.Cells["A2" ].Style.Numberformat.Format                  | Should      -Be "0.00"
+            $ws.Cells["c19"].Style.Numberformat.Format                  | Should      -Be "0.00"
+            $ws.Cells["A20"].Style.Numberformat.Format                  | Should      -Be "0.00%"
+            $ws.Cells["C6" ].Style.Numberformat.Format                  | Should      -Be (Expand-NumberFormat "currency")
         }
     }
 
@@ -226,84 +226,84 @@ Describe ExportExcel {
             TimeSpan         = [datetime]::Now.Subtract([datetime]::Today)
         } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2  -Path $path -Calculate -WarningVariable $warnVar
         it "Created a new file                                                                     " {
-            Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
+            Test-Path -Path $path -ErrorAction SilentlyContinue         | Should      -Be $true
         }
         $Excel = Open-ExcelPackage -Path $path
         it "Created 1 worksheet with no warnings                                                   " {
-            $Excel.Workbook.Worksheets.count                            | Should     be 1
-            $warnVar                                                    | Should     beNullorEmpty
+            $Excel.Workbook.Worksheets.count                            | Should      -Be 1
+            $warnVar                                                    | Should      -BeNullorEmpty
         }
         $ws = $Excel.Workbook.Worksheets[1]
         it "Created the worksheet with the expected name, number of rows and number of columns     " {
-            $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be  27
-            $ws.Dimension.Rows                                          | Should     be  2
+            $ws.Name                                                    | Should      -Be "sheet1"
+            $ws.Dimension.Columns                                       | Should      -Be  27
+            $ws.Dimension.Rows                                          | Should      -Be  2
         }
         it "Set a date     in Cell A2                                                              " {
-            $ws.Cells[2, 1].Value.Gettype().name                        | Should     be  'DateTime'
+            $ws.Cells[2, 1].Value.Gettype().name                        | Should      -Be  'DateTime'
         }
         it "Set a formula  in Cell B2                                                              " {
-            $ws.Cells[2, 2].Formula                                     | Should     be  'SUM(S2:T2)'
+            $ws.Cells[2, 2].Formula                                     | Should      -Be  'SUM(S2:T2)'
         }
         it "Forced a successful calculation of the Value in Cell B2                                " {
-            $ws.Cells[2, 2].Value                                       | Should     be  246
+            $ws.Cells[2, 2].Value                                       | Should      -Be  246
         }
         it "Set strings    in Cells E2, F2 and R2  (no number conversion)                          " {
-            $ws.Cells[2,  5].Value.GetType().name                       | Should     be  'String'
-            $ws.Cells[2,  6].Value.GetType().name                       | Should     be  'String'
-            $ws.Cells[2, 18].Value.GetType().name                       | Should     be  'String'
+            $ws.Cells[2,  5].Value.GetType().name                       | Should      -Be  'String'
+            $ws.Cells[2,  6].Value.GetType().name                       | Should      -Be  'String'
+            $ws.Cells[2, 18].Value.GetType().name                       | Should      -Be  'String'
         }
         it "Set numbers    in Cells K2,L2,M2   (diferent Negative integer formats)                 " {
-            ($ws.Cells[2, 11].Value -is [valuetype] )                   | Should     be  $true
-            ($ws.Cells[2, 12].Value -is [valuetype] )                   | Should     be  $true
-            ($ws.Cells[2, 13].Value -is [valuetype] )                   | Should     be  $true
-             $ws.Cells[2, 11].Value                                     | Should     beLessThan 0
-             $ws.Cells[2, 12].Value                                     | Should     beLessThan 0
-             $ws.Cells[2, 13].Value                                     | Should     beLessThan 0
+            ($ws.Cells[2, 11].Value -is [valuetype] )                   | Should      -Be  $true
+            ($ws.Cells[2, 12].Value -is [valuetype] )                   | Should      -Be  $true
+            ($ws.Cells[2, 13].Value -is [valuetype] )                   | Should      -Be  $true
+             $ws.Cells[2, 11].Value                                     | Should      -BeLessThan 0
+             $ws.Cells[2, 12].Value                                     | Should      -BeLessThan 0
+             $ws.Cells[2, 13].Value                                     | Should      -BeLessThan 0
         }
         it "Set external hyperlinks in Cells U2 and V2                                             " {
-            $ws.Cells[2, 21].Hyperlink                                 | Should     be  "https://github.com/dfinke/ImportExcel"
-            $ws.Cells[2, 22].Hyperlink                                 | Should     be  "https://github.com/dfinke/ImportExcel"
+            $ws.Cells[2, 21].Hyperlink                                 | Should      -Be  "https://github.com/dfinke/ImportExcel"
+            $ws.Cells[2, 22].Hyperlink                                 | Should      -Be  "https://github.com/dfinke/ImportExcel"
         }
         it "Set internal hyperlinks in Cells W2 and X2                                             " {
-            $ws.Cells[2, 23].Hyperlink.Scheme                          | Should     be  "xl"
-            $ws.Cells[2, 23].Hyperlink.ReferenceAddress                | Should     be  "sheet1!A1"
-            $ws.Cells[2, 23].Hyperlink.Display                         | Should     be  "sheet1"
-            $ws.Cells[2, 24].Hyperlink.Scheme                          | Should     be  "xl"
-            $ws.Cells[2, 24].Hyperlink.ReferenceAddress                | Should     be  "sheet1!c5"
-            $ws.Cells[2, 24].Hyperlink.Display                         | Should     be  "sheet1!c5"
-            $ws.Cells[2, 25].Hyperlink.ReferenceAddress                | Should     be  "sheet1!E2"
-            $ws.Cells[2, 25].Hyperlink.Display                         | Should     be  "Display Text"
+            $ws.Cells[2, 23].Hyperlink.Scheme                          | Should      -Be  "xl"
+            $ws.Cells[2, 23].Hyperlink.ReferenceAddress                | Should      -Be  "sheet1!A1"
+            $ws.Cells[2, 23].Hyperlink.Display                         | Should      -Be  "sheet1"
+            $ws.Cells[2, 24].Hyperlink.Scheme                          | Should      -Be  "xl"
+            $ws.Cells[2, 24].Hyperlink.ReferenceAddress                | Should      -Be  "sheet1!c5"
+            $ws.Cells[2, 24].Hyperlink.Display                         | Should      -Be  "sheet1!c5"
+            $ws.Cells[2, 25].Hyperlink.ReferenceAddress                | Should      -Be  "sheet1!E2"
+            $ws.Cells[2, 25].Hyperlink.Display                         | Should      -Be  "Display Text"
         }
         it "Processed thousands according to local settings   (Cells H2 and I2)                    " {
             if ((Get-Culture).NumberFormat.NumberGroupSeparator -EQ ",") {
-                ($ws.Cells[2, 8].Value -is [valuetype] )               | Should     be  $true
-                 $ws.Cells[2, 9].Value.GetType().name                  | Should     be  'String'
+                ($ws.Cells[2, 8].Value -is [valuetype] )               | Should      -Be  $true
+                 $ws.Cells[2, 9].Value.GetType().name                  | Should      -Be  'String'
             }
             elseif ((Get-Culture).NumberFormat.NumberGroupSeparator -EQ ".") {
-                ($ws.Cells[2, 9].Value -is [valuetype] )               | Should     be  $true
-                 $ws.Cells[2, 8].Value.GetType().name                  | Should     be  'String'
+                ($ws.Cells[2, 9].Value -is [valuetype] )               | Should      -Be  $true
+                 $ws.Cells[2, 8].Value.GetType().name                  | Should      -Be  'String'
             }
         }
         it "Processed local currency as a number and other currency as a string (N2 & O2)          " {
-            ($ws.Cells[2, 14].Value -is [valuetype] )                   | Should     be  $true
-             $ws.Cells[2, 15].Value.GetType().name                      | Should     be  'String'
+            ($ws.Cells[2, 14].Value -is [valuetype] )                   | Should      -Be  $true
+             $ws.Cells[2, 15].Value.GetType().name                      | Should      -Be  'String'
         }
         it "Processed numbers with spaces between digits as strings (P2 & Q2)                      " {
-             $ws.Cells[2, 16].Value.GetType().name                      | Should     be  'String'
-             $ws.Cells[2, 17].Value.GetType().name                      | Should     be  'String'
+             $ws.Cells[2, 16].Value.GetType().name                      | Should      -Be  'String'
+             $ws.Cells[2, 17].Value.GetType().name                      | Should      -Be  'String'
         }
         it "Processed numbers leading or trailing speaces as Numbers (S2 & T2)                     " {
-            ($ws.Cells[2, 19].Value -is [valuetype] )                   | Should     be  $true
-            ($ws.Cells[2, 20].Value -is [valuetype] )                   | Should     be  $true
+            ($ws.Cells[2, 19].Value -is [valuetype] )                   | Should      -Be  $true
+            ($ws.Cells[2, 20].Value -is [valuetype] )                   | Should      -Be  $true
         }
         it "Converted a nested object to a string (Y2)                                             " {
-             $ws.Cells[2, 26].Value                                     | Should     match '^System\.Diagnostics\.Process\s+\(.*\)$'
+             $ws.Cells[2, 26].Value                                     | Should      -Match '^System\.Diagnostics\.Process\s+\(.*\)$'
         }
         it "Processed a timespan object (Z2)                                                       " {
-             $ws.cells[2, 27].Value.ToOADate()                          | Should     beGreaterThan 0
-             $ws.cells[2, 27].Value.ToOADate()                          | Should     beLessThan    1
-             $ws.cells[2, 27].Style.Numberformat.Format                 | Should     be  '[h]:mm:ss'
+             $ws.cells[2, 27].Value.ToOADate()                          | Should      -BeGreaterThan 0
+             $ws.cells[2, 27].Value.ToOADate()                          | Should      -BeLessThan    1
+             $ws.cells[2, 27].Style.Numberformat.Format                 | Should      -Be  '[h]:mm:ss'
         }
     }
 
@@ -329,40 +329,40 @@ Describe ExportExcel {
             Link      = [uri]"https://github.com/dfinke/ImportExcel"
         } | Export-Excel  -NoNumberConversion IPAddress, Number1  -Path $path -NoHeader
         it "Created a new file                                                                     " {
-            Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
+            Test-Path -Path $path -ErrorAction SilentlyContinue         | Should      -Be $true
         }
 
         $Excel = Open-ExcelPackage -Path $path
         it "Created 1 worksheet                                                                    " {
-            $Excel.Workbook.Worksheets.count                            | Should     be 1
+            $Excel.Workbook.Worksheets.count                            | Should      -Be 1
         }
 
         $ws = $Excel.Workbook.Worksheets[1]
         it "Created the worksheet with the expected name, number of rows and number of columns     " {
-            $ws.Name                                                    | Should     be "sheet1"
-            $ws.Dimension.Columns                                       | Should     be  14
-            $ws.Dimension.Rows                                          | Should     be  1
+            $ws.Name                                                    | Should      -Be "sheet1"
+            $ws.Dimension.Columns                                       | Should      -Be  14
+            $ws.Dimension.Rows                                          | Should      -Be  1
         }
 
         it "Set a date      in Cell A1                                                             " {
-            $ws.Cells[1, 1].Value.Gettype().name                        | Should     be  'DateTime'
+            $ws.Cells[1, 1].Value.Gettype().name                        | Should      -Be  'DateTime'
         }
 
         it "Set a formula   in Cell B1                                                             " {
-            $ws.Cells[1, 2].Formula                                     | Should     be  'SUM(F1:G1)'
+            $ws.Cells[1, 2].Formula                                     | Should      -Be  'SUM(F1:G1)'
         }
 
         it "Set strings     in Cells E1 and F1                                                     " {
-            $ws.Cells[1, 5].Value.GetType().name                        | Should     be  'String'
-            $ws.Cells[1, 6].Value.GetType().name                        | Should     be  'String'
+            $ws.Cells[1, 5].Value.GetType().name                        | Should      -Be  'String'
+            $ws.Cells[1, 6].Value.GetType().name                        | Should      -Be  'String'
         }
 
         it "Set a number    in Cell I1                                                             " {
-            ($ws.Cells[1, 9].Value -is [valuetype] )                     | Should     be  $true
+            ($ws.Cells[1, 9].Value -is [valuetype] )                     | Should      -Be  $true
         }
 
         it "Set a hyperlink in Cell N1                                                             " {
-            $ws.Cells[1, 14].Hyperlink                                   | Should     be  "https://github.com/dfinke/ImportExcel"
+            $ws.Cells[1, 14].Hyperlink                                   | Should      -Be  "https://github.com/dfinke/ImportExcel"
         }
     }
 
@@ -376,7 +376,7 @@ Describe ExportExcel {
         489, 668, 299, 777, 860, 151, 119, 497, 234, 788 | Export-Excel -Path $path -ConditionalText $ct
 
         it "Created a new file                                                                     " {
-            Test-Path -Path $path -ErrorAction SilentlyContinue         | Should     be $true
+            Test-Path -Path $path -ErrorAction SilentlyContinue         | Should      -Be $true
         }
 
         #ToDo need to test applying conitional formatting to a pre-existing worksheet and removing = from formula
@@ -384,16 +384,16 @@ Describe ExportExcel {
         $ws = $Excel.Workbook.Worksheets[1]
 
         it "Added one block of conditional formating for the data range                            " {
-            $ws.ConditionalFormatting.Count                             | Should     be 1
-            $ws.ConditionalFormatting[0].Address                        | Should     be ($ws.Dimension.Address)
+            $ws.ConditionalFormatting.Count                             | Should      -Be 1
+            $ws.ConditionalFormatting[0].Address                        | Should      -Be ($ws.Dimension.Address)
         }
 
         $cf = $ws.ConditionalFormatting[0]
         it "Set the conditional formatting properties correctly                                    " {
-            $cf.Formula                                                 | Should     be $ct.Text
-            $cf.Type.ToString()                                         | Should     be $ct.ConditionalType
-            #$cf.Style.Fill.BackgroundColor         | Should     be $ct.BackgroundColor
-            # $cf.Style.Font.Color                   | Should be $ct.ConditionalTextColor  - have to compare r.g.b
+            $cf.Formula                                                 | Should      -Be $ct.Text
+            $cf.Type.ToString()                                         | Should      -Be $ct.ConditionalType
+            #$cf.Style.Fill.BackgroundColor         | Should      -Be $ct.BackgroundColor
+            # $cf.Style.Font.Color                   | Should -Be $ct.ConditionalTextColor  - have to compare r.g.b
         }
     }
 
@@ -411,15 +411,15 @@ Describe ExportExcel {
 
     Context "#Example 6      # Adding multiple conditional formats using short form syntax. " {
         it "Added two blocks of conditional formating for the data range                           " {
-            $ws.ConditionalFormatting.Count                             | Should     be 2
-            $ws.ConditionalFormatting[0].Address                        | Should     be ($ws.Dimension.Address)
-            $ws.ConditionalFormatting[1].Address                        | Should     be ($ws.Dimension.Address)
+            $ws.ConditionalFormatting.Count                             | Should      -Be 2
+            $ws.ConditionalFormatting[0].Address                        | Should      -Be ($ws.Dimension.Address)
+            $ws.ConditionalFormatting[1].Address                        | Should      -Be ($ws.Dimension.Address)
         }
         it "Set the conditional formatting properties correctly                                    " {
-            $ws.ConditionalFormatting[0].Text                           | Should     be "Stop"
-            $ws.ConditionalFormatting[1].Text                           | Should     be "Running"
-            $ws.ConditionalFormatting[0].Type                           | Should     be "ContainsText"
-            $ws.ConditionalFormatting[1].Type                           | Should     be "ContainsText"
+            $ws.ConditionalFormatting[0].Text                           | Should      -Be "Stop"
+            $ws.ConditionalFormatting[1].Text                           | Should      -Be "Running"
+            $ws.ConditionalFormatting[0].Type                           | Should      -Be "ContainsText"
+            $ws.ConditionalFormatting[1].Type                           | Should      -Be "ContainsText"
             #Add RGB Comparison
         }
     }
@@ -450,14 +450,14 @@ Describe ExportExcel {
         #test Update-FirstObjectProperties
         $newarray = $Array | Update-FirstObjectProperties
         it "Outputs as many objects as it input                                                    " {
-            $newarray.Count                                             | Should     be $Array.Count
+            $newarray.Count                                             | Should      -Be $Array.Count
         }
         it "Added properties to item 0                                                             " {
-            $newarray[0].psobject.Properties.name.Count                 | Should     be 4
-            $newarray[0].Member1                                        | Should     be 'First'
-            $newarray[0].Member2                                        | Should     be 'Second'
-            $newarray[0].Member3                                        | Should     beNullOrEmpty
-            $newarray[0].Member4                                        | Should     beNullOrEmpty
+            $newarray[0].psobject.Properties.name.Count                 | Should      -Be 4
+            $newarray[0].Member1                                        | Should      -Be 'First'
+            $newarray[0].Member2                                        | Should      -Be 'Second'
+            $newarray[0].Member3                                        | Should      -BeNullOrEmpty
+            $newarray[0].Member4                                        | Should      -BeNullOrEmpty
         }
     }
 
@@ -472,25 +472,25 @@ Describe ExportExcel {
         $PTws = $Excel.Workbook.Worksheets["ProcessesPivotTable"]
         $wCount = $Excel.Workbook.Worksheets.Count
         it "Added the named sheet and pivot table to the workbook                                  " {
-            $excel.ProcessesPivotTable                                  | Should not beNullOrEmpty
-            $PTws                                                       | Should not beNullOrEmpty
-            $PTws.PivotTables.Count                                     | Should     be 1
-            $Excel.Workbook.Worksheets["Processes"]                     | Should not beNullOrEmpty
-            $Excel.Workbook.Worksheets.Count                            | Should     beGreaterThan 2
-            $excel.Workbook.Worksheets["Processes"].Dimension.rows      | Should     be 21    #20 data + 1 header
+            $excel.ProcessesPivotTable                                  | Should -Not -BeNullOrEmpty
+            $PTws                                                       | Should -Not -BeNullOrEmpty
+            $PTws.PivotTables.Count                                     | Should      -Be 1
+            $Excel.Workbook.Worksheets["Processes"]                     | Should -Not -BeNullOrEmpty
+            $Excel.Workbook.Worksheets.Count                            | Should      -BeGreaterThan 2
+            $excel.Workbook.Worksheets["Processes"].Dimension.rows      | Should      -Be 21    #20 data + 1 header
         }
         it "Selected  the Pivottable page                                                          " {
             Set-ItResult -Pending -Because "Bug in EPPLus 4.5"
-            $PTws.View.TabSelected                                      | Should     be $true
+            $PTws.View.TabSelected                                      | Should      -Be $true
         }
         $pt = $PTws.PivotTables[0]
         it "Built the expected Pivot table                                                         " {
-            $pt.RowFields.Count                                         | Should     be 1
-            $pt.RowFields[0].Name                                       | Should     be "Company"
-            $pt.DataFields.Count                                        | Should     be 1
-            $pt.DataFields[0].Function                                  | Should     be "Count"
-            $pt.DataFields[0].Field.Name                                | Should     be "PM"
-            $PTws.Drawings.Count                                        | Should     be 0
+            $pt.RowFields.Count                                         | Should      -Be 1
+            $pt.RowFields[0].Name                                       | Should      -Be "Company"
+            $pt.DataFields.Count                                        | Should      -Be 1
+            $pt.DataFields[0].Function                                  | Should      -Be "Count"
+            $pt.DataFields[0].Field.Name                                | Should      -Be "PM"
+            $PTws.Drawings.Count                                        | Should      -Be 0
         }
         #test adding pivot chart using the already open sheet
         $warnvar = $null
@@ -498,12 +498,12 @@ Describe ExportExcel {
         $Excel = Open-ExcelPackage   $path
         it "Added a chart to the pivot table without rebuilding                                    " {
             $ws = $Excel.Workbook.Worksheets["ProcessesPivotTable"]
-            $Excel.Workbook.Worksheets.Count                            | Should     be $wCount
-            $ws.Drawings.count                                          | Should     be 1
-            $ws.Drawings[0].ChartType.ToString()                        | Should     be "PieExploded3D"
+            $Excel.Workbook.Worksheets.Count                            | Should      -Be $wCount
+            $ws.Drawings.count                                          | Should      -Be 1
+            $ws.Drawings[0].ChartType.ToString()                        | Should      -Be "PieExploded3D"
         }
         it "Generated a message on re-processing the Pivot table                                   " {
-            $warnVar                                                    | Should not beNullOrEmpty
+            $warnVar                                                    | Should -Not -BeNullOrEmpty
         }
         #Test appending data extends pivot chart (with a warning) .
         $warnVar = $null
@@ -511,13 +511,13 @@ Describe ExportExcel {
         $Excel = Open-ExcelPackage   $path
         $pt = $Excel.Workbook.Worksheets["ProcessesPivotTable"].PivotTables[0]
         it "Appended to the Worksheet and Extended the Pivot table                                 " {
-            $Excel.Workbook.Worksheets.Count                            | Should     be $wCount
-            $excel.Workbook.Worksheets["Processes"].Dimension.rows      | Should     be 41     #appended 20 rows to the previous total
+            $Excel.Workbook.Worksheets.Count                            | Should      -Be $wCount
+            $excel.Workbook.Worksheets["Processes"].Dimension.rows      | Should      -Be 41     #appended 20 rows to the previous total
             $pt.CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.ref |
                  Should     be "A1:E41"
         }
         it "Generated a message on extending the Pivot table                                       " {
-            $warnVar                                                    | Should not beNullOrEmpty
+            $warnVar                                                    | Should -Not -BeNullOrEmpty
         }
     }
 
@@ -537,21 +537,21 @@ Describe ExportExcel {
         $Excel = Open-ExcelPackage  $path
 
         it "Got the Sheets in the right order                                                      " {
-            $excel.Workbook.Worksheets[1].Name  | Should be "Another"
-            $excel.Workbook.Worksheets[2].Name  | Should be "NewSheet"
-            $excel.Workbook.Worksheets[3].Name  | Should be "Onelast"
-            $excel.Workbook.Worksheets[4].Name  | Should be "ProcessesPivotTable"
-            $excel.Workbook.Worksheets[5].Name  | Should be "Processes"
-            $excel.Workbook.Worksheets[6].Name  | Should be "NearDone"
-            $excel.Workbook.Worksheets[7].Name  | Should be "Sheet1"
+            $excel.Workbook.Worksheets[1].Name  | Should -Be "Another"
+            $excel.Workbook.Worksheets[2].Name  | Should -Be "NewSheet"
+            $excel.Workbook.Worksheets[3].Name  | Should -Be "Onelast"
+            $excel.Workbook.Worksheets[4].Name  | Should -Be "ProcessesPivotTable"
+            $excel.Workbook.Worksheets[5].Name  | Should -Be "Processes"
+            $excel.Workbook.Worksheets[6].Name  | Should -Be "NearDone"
+            $excel.Workbook.Worksheets[7].Name  | Should -Be "Sheet1"
         }
 
         it "Cloned 'Sheet1' to 'NewSheet'                                                          " {
             $newWs = $excel.Workbook.Worksheets["NewSheet"]
-            $newWs.Dimension.Address                          | Should     be ($excel.Workbook.Worksheets["Sheet1"].Dimension.Address)
-            $newWs.ConditionalFormatting.Count                | Should     be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting.Count)
-            $newWs.ConditionalFormatting[0].Address.Address   | Should     be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting[0].Address.Address)
-            $newWs.ConditionalFormatting[0].Formula           | Should     be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting[0].Formula)
+            $newWs.Dimension.Address                          | Should      -Be ($excel.Workbook.Worksheets["Sheet1"].Dimension.Address)
+            $newWs.ConditionalFormatting.Count                | Should      -Be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting.Count)
+            $newWs.ConditionalFormatting[0].Address.Address   | Should      -Be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting[0].Address.Address)
+            $newWs.ConditionalFormatting[0].Formula           | Should      -Be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting[0].Formula)
         }
 
     }
@@ -568,41 +568,41 @@ Describe ExportExcel {
         $dataWs = $Excel.Workbook.Worksheets["withOffset"]
         $pt = $Excel.Workbook.Worksheets["PTOffset"].PivotTables[0]
         it "Created and appended to a sheet offset from the top left corner                        " {
-            $dataWs.Cells[1, 1].Value                                   | Should     beNullOrEmpty
-            $dataWs.Cells[2, 2].Value                                   | Should     beNullOrEmpty
-            $dataWs.Cells[3, 3].Value                                   | Should not beNullOrEmpty
-            $dataWs.Cells[3, 3].Style.Font.Bold                         | Should     be $true
-            $dataWs.Dimension.End.Row                                   | Should     be 23
-            $dataWs.names[0].Start.row                                  | Should     be 4   # StartRow + 1
-            $dataWs.names[0].End.row                                    | Should     be $dataWs.Dimension.End.Row
-            $dataWs.names[0].Name                                       | Should     be 'Name'
-            $dataWs.names.Count                                         | Should     be 7    #  Name, cpu, pm, handles & company + Named Range "Procs" + xl one for autofilter
-            $dataWs.cells[$dataws.Dimension].AutoFilter                 | Should     be true
+            $dataWs.Cells[1, 1].Value                                   | Should      -BeNullOrEmpty
+            $dataWs.Cells[2, 2].Value                                   | Should      -BeNullOrEmpty
+            $dataWs.Cells[3, 3].Value                                   | Should -Not -BeNullOrEmpty
+            $dataWs.Cells[3, 3].Style.Font.Bold                         | Should      -Be $true
+            $dataWs.Dimension.End.Row                                   | Should      -Be 23
+            $dataWs.names[0].Start.row                                  | Should      -Be 4   # StartRow + 1
+            $dataWs.names[0].End.row                                    | Should      -Be $dataWs.Dimension.End.Row
+            $dataWs.names[0].Name                                       | Should      -Be 'Name'
+            $dataWs.names.Count                                         | Should      -Be 7    #  Name, cpu, pm, handles & company + Named Range "Procs" + xl one for autofilter
+            $dataWs.cells[$dataws.Dimension].AutoFilter                 | Should      -Be true
             }
         it "Applied and auto-extended an autofilter                                                " {
-            $dataWs.Names["_xlnm._FilterDatabase"].Start.Row            | Should     be 3  #offset
-            $dataWs.Names["_xlnm._FilterDatabase"].Start.Column         | Should     be 3
-            $dataWs.Names["_xlnm._FilterDatabase"].Rows                 | Should     be 21 #2 x 10 data + 1 header
-            $dataWs.Names["_xlnm._FilterDatabase"].Columns              | Should     be 5  #Name, cpu, pm, handles & company
-            $dataWs.Names["_xlnm._FilterDatabase"].AutoFilter           | Should     be $true
+            $dataWs.Names["_xlnm._FilterDatabase"].Start.Row            | Should      -Be 3  #offset
+            $dataWs.Names["_xlnm._FilterDatabase"].Start.Column         | Should      -Be 3
+            $dataWs.Names["_xlnm._FilterDatabase"].Rows                 | Should      -Be 21 #2 x 10 data + 1 header
+            $dataWs.Names["_xlnm._FilterDatabase"].Columns              | Should      -Be 5  #Name, cpu, pm, handles & company
+            $dataWs.Names["_xlnm._FilterDatabase"].AutoFilter           | Should      -Be $true
         }
         it "Created and auto-extended the named ranges                                             " {
-            $dataWs.names["procs"].rows                                 | Should     be 21
-            $dataWs.names["procs"].Columns                              | Should     be 5
-            $dataWs.Names["CPU"].Rows                                   | Should     be 20
-            $dataWs.Names["CPU"].Columns                                | Should     be 1
+            $dataWs.names["procs"].rows                                 | Should      -Be 21
+            $dataWs.names["procs"].Columns                              | Should      -Be 5
+            $dataWs.Names["CPU"].Rows                                   | Should      -Be 20
+            $dataWs.Names["CPU"].Columns                                | Should      -Be 1
         }
         it "Created and extended the pivot table                                                   " {
             $pt.CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.ref |
                                                                           Should     be "C3:G23"
-            $pt.ColumGrandTotals                                        | Should     be $false
-            $pt.RowGrandTotals                                          | Should     be $false
-            $pt.Fields["Company"].IsRowField                            | Should     be $true
-            $pt.Fields["PM"].IsDataField                                | Should     be $true
-            $pt.Fields["Name"].IsPageField                              | Should     be $true
+            $pt.ColumGrandTotals                                        | Should      -Be $false
+            $pt.RowGrandTotals                                          | Should      -Be $false
+            $pt.Fields["Company"].IsRowField                            | Should      -Be $true
+            $pt.Fields["PM"].IsDataField                                | Should      -Be $true
+            $pt.Fields["Name"].IsPageField                              | Should      -Be $true
         }
         it "Generated a message on extending the Pivot table                                       " {
-            $warnVar                                                    | Should not beNullOrEmpty
+            $warnVar                                                    | Should -Not -BeNullOrEmpty
         }
     }
 
@@ -616,13 +616,13 @@ Describe ExportExcel {
         $dataWs = $Excel.Workbook.Worksheets["NoOffset"]
         #table should be 20 rows + header after extending the data. CPU range should be 1x20
         it "Created a new sheet and auto-extended a table and explicitly extended named ranges     " {
-            $dataWs.Tables["ProcTab"].Address.Address                   | Should     be "A1:E21"
-            $dataWs.Names["CPU"].Rows                                   | Should     be 20
-            $dataWs.Names["CPU"].Columns                                | Should     be 1
+            $dataWs.Tables["ProcTab"].Address.Address                   | Should      -Be "A1:E21"
+            $dataWs.Names["CPU"].Rows                                   | Should      -Be 20
+            $dataWs.Names["CPU"].Columns                                | Should      -Be 1
         }
         it "Set the expected number formats                                                        " {
-            $dataWs.cells["C2"].Style.Numberformat.Format               | Should     be "General"
-            $dataWs.cells["C12"].Style.Numberformat.Format              | Should     be "0.00"
+            $dataWs.cells["C2"].Style.Numberformat.Format               | Should      -Be "General"
+            $dataWs.cells["C12"].Style.Numberformat.Format              | Should      -Be "0.00"
         }
         #Test extneding autofilter and range when explicitly specified in the append
         $excel = Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company  | Export-Excel -ExcelPackage $excel  -RangeName procs -AutoFilter   -WorkSheetname NoOffset -ClearSheet -PassThru
@@ -631,11 +631,11 @@ Describe ExportExcel {
         $dataWs = $Excel.Workbook.Worksheets["NoOffset"]
 
         it "Created a new sheet and explicitly extended named range and autofilter                 " {
-            $dataWs.names["procs"].rows                                 | Should     be 21
-            $dataWs.names["procs"].Columns                              | Should     be 5
-            $dataWs.Names["_xlnm._FilterDatabase"].Rows                 | Should     be 21 #2 x 10 data + 1 header
-            $dataWs.Names["_xlnm._FilterDatabase"].Columns              | Should     be 5  #Name, cpu, pm, handles & company
-            $dataWs.Names["_xlnm._FilterDatabase"].AutoFilter           | Should     be $true
+            $dataWs.names["procs"].rows                                 | Should      -Be 21
+            $dataWs.names["procs"].Columns                              | Should      -Be 5
+            $dataWs.Names["_xlnm._FilterDatabase"].Rows                 | Should      -Be 21 #2 x 10 data + 1 header
+            $dataWs.Names["_xlnm._FilterDatabase"].Columns              | Should      -Be 5  #Name, cpu, pm, handles & company
+            $dataWs.Names["_xlnm._FilterDatabase"].AutoFilter           | Should      -Be $true
         }
     }
 
@@ -647,13 +647,13 @@ Describe ExportExcel {
         $ptDef += New-PivotTableDefinition -PivotTableName "PT2" -SourceWorkSheet 'Sheet2' -PivotRows "Company" -PivotData @{'Company' = 'Count'} -PivotTotalS Rows                             -IncludePivotChart -ChartType PieExploded3D -ShowPercent -WarningAction SilentlyContinue
 
         it "Built a pivot definition using New-PivotTableDefinition                                " {
-            $ptDef.PT1.SourceWorkSheet                                  | Should be 'Sheet1'
-            $ptDef.PT1.PivotRows                                        | Should be 'Status'
-            $ptDef.PT1.PivotData.Status                                 | Should be 'Count'
-            $ptDef.PT1.PivotFilter                                      | Should be 'StartType'
-            $ptDef.PT1.IncludePivotChart                                | Should be  $true
-            $ptDef.PT1.ChartType.tostring()                             | Should be 'BarClustered3D'
-            $ptDef.PT1.PivotTotals                                      | Should be 'Columns'
+            $ptDef.PT1.SourceWorkSheet                                  | Should -Be 'Sheet1'
+            $ptDef.PT1.PivotRows                                        | Should -Be 'Status'
+            $ptDef.PT1.PivotData.Status                                 | Should -Be 'Count'
+            $ptDef.PT1.PivotFilter                                      | Should -Be 'StartType'
+            $ptDef.PT1.IncludePivotChart                                | Should -Be  $true
+            $ptDef.PT1.ChartType.tostring()                             | Should -Be 'BarClustered3D'
+            $ptDef.PT1.PivotTotals                                      | Should -Be 'Columns'
         }
         Remove-Item -Path $path
         #Catch warning
@@ -667,26 +667,26 @@ Describe ExportExcel {
 
         if ($isWindows) {
           it "Set Column widths (with autosize)                                                      " {
-            $ws1.Column(2).Width                                        | Should not be $ws1.DefaultColWidth
-            $ws2.Column(1).width                                        | Should not be $ws2.DefaultColWidth
+            $ws1.Column(2).Width                                        | Should -Not -Be $ws1.DefaultColWidth
+            $ws2.Column(1).width                                        | Should -Not -Be $ws2.DefaultColWidth
           }
         }
 
         it "Added tables to both sheets (handling illegal chars) and a title in sheet 2            " {
-            $warnvar.count                                              | Should     beGreaterThan 0
-            $ws1.tables.Count                                           | Should     be 1
-            $ws2.tables.Count                                           | Should     be 1
-            $ws1.Tables[0].Address.Start.Row                            | Should     be 1
-            $ws2.Tables[0].Address.Start.Row                            | Should     be 2 #Title in row 1
-            $ws1.Tables[0].Address.End.Address                          | Should     be $ws1.Dimension.End.Address
-            $ws2.Tables[0].Address.End.Address                          | Should     be $ws2.Dimension.End.Address
-            $ws2.Tables[0].Name                                         | Should     be "Processes"
-            $ws2.Tables[0].StyleName                                    | Should     be "TableStyleLight1"
-            $ws2.Cells["A1"].Value                                      | Should     be "Processes"
-            $ws2.Cells["A1"].Style.Font.Bold                            | Should     be $true
-            $ws2.Cells["A1"].Style.Font.Size                            | Should     be 22
-            $ws2.Cells["A1"].Style.Fill.PatternType.tostring()          | Should     be "solid"
-            $ws2.Cells["A1"].Style.Fill.BackgroundColor.Rgb             | Should     be "fff0f8ff"
+            $warnvar.count                                              | Should      -BeGreaterThan 0
+            $ws1.tables.Count                                           | Should      -Be 1
+            $ws2.tables.Count                                           | Should      -Be 1
+            $ws1.Tables[0].Address.Start.Row                            | Should      -Be 1
+            $ws2.Tables[0].Address.Start.Row                            | Should      -Be 2 #Title in row 1
+            $ws1.Tables[0].Address.End.Address                          | Should      -Be $ws1.Dimension.End.Address
+            $ws2.Tables[0].Address.End.Address                          | Should      -Be $ws2.Dimension.End.Address
+            $ws2.Tables[0].Name                                         | Should      -Be "Processes"
+            $ws2.Tables[0].StyleName                                    | Should      -Be "TableStyleLight1"
+            $ws2.Cells["A1"].Value                                      | Should      -Be "Processes"
+            $ws2.Cells["A1"].Style.Font.Bold                            | Should      -Be $true
+            $ws2.Cells["A1"].Style.Font.Size                            | Should      -Be 22
+            $ws2.Cells["A1"].Style.Fill.PatternType.tostring()          | Should      -Be "solid"
+            $ws2.Cells["A1"].Style.Fill.BackgroundColor.Rgb             | Should      -Be "fff0f8ff"
         }
 
         $ptsheet1 = $Excel.Workbook.Worksheets["Pt1"]
@@ -702,23 +702,23 @@ Describe ExportExcel {
                 Should     be "Processes"
         }
         it "Set the other pivot tables and chart options from the definitions.                     " {
-            $pt1.PageFields[0].Name                                     | Should     be 'StartType'
-            $pt1.RowFields[0].Name                                      | Should     be 'Status'
-            $pt1.DataFields[0].Field.name                               | Should     be 'Status'
-            $pt1.DataFields[0].Function                                 | Should     be 'Count'
-            $pt1.ColumGrandTotals                                       | Should     be $true
-            $pt1.RowGrandTotals                                         | Should     be $false
-            $pt2.ColumGrandTotals                                       | Should     be $false
-            $pt2.RowGrandTotals                                         | Should     be $true
-            $pc1.ChartType                                              | Should     be 'BarClustered3D'
-            $pc1.From.Column                                            | Should     be 0                    #chart 1 at 0,10 chart 2 at 4,0 (default)
-            $pc2.From.Column                                            | Should     be 4
-            $pc1.From.Row                                               | Should     be 10
-            $pc2.From.Row                                               | Should     be 0
-            $pc1.Legend.Font                                            | Should     beNullOrEmpty           #Best check for legend removed.
-            $pc2.Legend.Font                                            | Should not beNullOrEmpty
-            $pc1.Title.Text                                             | Should     be 'Services by status'
-            $pc2.DataLabel.ShowPercent                                  | Should     be $true
+            $pt1.PageFields[0].Name                                     | Should      -Be 'StartType'
+            $pt1.RowFields[0].Name                                      | Should      -Be 'Status'
+            $pt1.DataFields[0].Field.name                               | Should      -Be 'Status'
+            $pt1.DataFields[0].Function                                 | Should      -Be 'Count'
+            $pt1.ColumGrandTotals                                       | Should      -Be $true
+            $pt1.RowGrandTotals                                         | Should      -Be $false
+            $pt2.ColumGrandTotals                                       | Should      -Be $false
+            $pt2.RowGrandTotals                                         | Should      -Be $true
+            $pc1.ChartType                                              | Should      -Be 'BarClustered3D'
+            $pc1.From.Column                                            | Should      -Be 0                    #chart 1 at 0,10 chart 2 at 4,0 (default)
+            $pc2.From.Column                                            | Should      -Be 4
+            $pc1.From.Row                                               | Should      -Be 10
+            $pc2.From.Row                                               | Should      -Be 0
+            $pc1.Legend.Font                                            | Should      -BeNullOrEmpty           #Best check for legend removed.
+            $pc2.Legend.Font                                            | Should -Not -BeNullOrEmpty
+            $pc1.Title.Text                                             | Should      -Be 'Services by status'
+            $pc2.DataLabel.ShowPercent                                  | Should      -Be $true
         }
     }
 
@@ -747,59 +747,59 @@ Describe ExportExcel {
         $excel = Open-ExcelPackage $path
         $sheet = $excel.Workbook.Worksheets["Processes"]
         it "Returned the rule when calling Add-ConditionalFormatting -passthru                     " {
-            $rule                                                       | Should not beNullOrEmpty
-            $rule.getType().fullname                                    | Should     be "OfficeOpenXml.ConditionalFormatting.ExcelConditionalFormattingTopPercent"
-            $rule.Style.Font.Strike                                     | Should be true
+            $rule                                                       | Should -Not -BeNullOrEmpty
+            $rule.getType().fullname                                    | Should      -Be "OfficeOpenXml.ConditionalFormatting.ExcelConditionalFormattingTopPercent"
+            $rule.Style.Font.Strike                                     | Should -Be true
         }
         it "Applied the formating                                                                  " {
-            $sheet                                                      | Should not beNullOrEmpty
+            $sheet                                                      | Should -Not -BeNullOrEmpty
             if ($isWindows) {
-                $sheet.Column(1).width                                  | Should not be  $sheet.DefaultColWidth
-                $sheet.Column(7).width                                  | Should not be  $sheet.DefaultColWidth
+                $sheet.Column(1).width                                  | Should -Not -Be  $sheet.DefaultColWidth
+                $sheet.Column(7).width                                  | Should -Not -Be  $sheet.DefaultColWidth
             }
-            $sheet.Column(1).style.font.bold                            | Should     be  $true
-            $sheet.Column(2).style.wraptext                             | Should     be  $true
-            $sheet.Column(2).width                                      | Should     be  29
-            $sheet.Column(3).style.horizontalalignment                  | Should     be  'right'
-            $sheet.Column(4).style.horizontalalignment                  | Should     be  'right'
-            $sheet.Cells["A1"].Style.HorizontalAlignment                | Should     be  'Center'
-            $sheet.Cells['E2'].Style.HorizontalAlignment                | Should     be  'right'
-            $sheet.Cells['A1'].Style.Font.Bold                          | Should     be  $true
-            $sheet.Cells['D2'].Style.Font.Bold                          | Should     be  $true
-            $sheet.Cells['E2'].style.numberformat.format                | Should     be  '#,###'
-            $sheet.Column(3).style.numberformat.format                  | Should     be  '#,###'
-            $sheet.Column(4).style.numberformat.format                  | Should     be  '#,##0.0'
-            $sheet.ConditionalFormatting.Count                          | Should     be  3
-            $sheet.ConditionalFormatting[0].type                        | Should     be  'Databar'
-            $sheet.ConditionalFormatting[0].Color.name                  | Should     be  'ffff0000'
-            $sheet.ConditionalFormatting[0].Address.Address             | Should     be  'D2:D1048576'
-            $sheet.ConditionalFormatting[1].Style.Font.Strike           | Should     be  $true
-            $sheet.ConditionalFormatting[1].type                        | Should     be  "TopPercent"
-            $sheet.ConditionalFormatting[2].type                        | Should     be  'GreaterThan'
-            $sheet.ConditionalFormatting[2].Formula                     | Should     be  '104857600'
-            $sheet.ConditionalFormatting[2].Style.Font.Color.Color.Name | Should     be  'ffff0000'
+            $sheet.Column(1).style.font.bold                            | Should      -Be  $true
+            $sheet.Column(2).style.wraptext                             | Should      -Be  $true
+            $sheet.Column(2).width                                      | Should      -Be  29
+            $sheet.Column(3).style.horizontalalignment                  | Should      -Be  'right'
+            $sheet.Column(4).style.horizontalalignment                  | Should      -Be  'right'
+            $sheet.Cells["A1"].Style.HorizontalAlignment                | Should      -Be  'Center'
+            $sheet.Cells['E2'].Style.HorizontalAlignment                | Should      -Be  'right'
+            $sheet.Cells['A1'].Style.Font.Bold                          | Should      -Be  $true
+            $sheet.Cells['D2'].Style.Font.Bold                          | Should      -Be  $true
+            $sheet.Cells['E2'].style.numberformat.format                | Should      -Be  '#,###'
+            $sheet.Column(3).style.numberformat.format                  | Should      -Be  '#,###'
+            $sheet.Column(4).style.numberformat.format                  | Should      -Be  '#,##0.0'
+            $sheet.ConditionalFormatting.Count                          | Should      -Be  3
+            $sheet.ConditionalFormatting[0].type                        | Should      -Be  'Databar'
+            $sheet.ConditionalFormatting[0].Color.name                  | Should      -Be  'ffff0000'
+            $sheet.ConditionalFormatting[0].Address.Address             | Should      -Be  'D2:D1048576'
+            $sheet.ConditionalFormatting[1].Style.Font.Strike           | Should      -Be  $true
+            $sheet.ConditionalFormatting[1].type                        | Should      -Be  "TopPercent"
+            $sheet.ConditionalFormatting[2].type                        | Should      -Be  'GreaterThan'
+            $sheet.ConditionalFormatting[2].Formula                     | Should      -Be  '104857600'
+            $sheet.ConditionalFormatting[2].Style.Font.Color.Color.Name | Should      -Be  'ffff0000'
         }
         it "Created the named ranges                                                               " {
-            $sheet.Names.Count                                          | Should     be 7
-            $sheet.Names[0].Start.Column                                | Should     be 1
-            $sheet.Names[0].Start.Row                                   | Should     be 2
-            $sheet.Names[0].End.Row                                     | Should     be $sheet.Dimension.End.Row
-            $sheet.Names[0].Name                                        | Should     be $sheet.Cells['A1'].Value
-            $sheet.Names[6].Start.Column                                | Should     be 7
-            $sheet.Names[6].Start.Row                                   | Should     be 2
-            $sheet.Names[6].End.Row                                     | Should     be $sheet.Dimension.End.Row
-            $sheet.Names[6].Name                                        | Should     be $sheet.Cells['G1'].Value
+            $sheet.Names.Count                                          | Should      -Be 7
+            $sheet.Names[0].Start.Column                                | Should      -Be 1
+            $sheet.Names[0].Start.Row                                   | Should      -Be 2
+            $sheet.Names[0].End.Row                                     | Should      -Be $sheet.Dimension.End.Row
+            $sheet.Names[0].Name                                        | Should      -Be $sheet.Cells['A1'].Value
+            $sheet.Names[6].Start.Column                                | Should      -Be 7
+            $sheet.Names[6].Start.Row                                   | Should      -Be 2
+            $sheet.Names[6].End.Row                                     | Should      -Be $sheet.Dimension.End.Row
+            $sheet.Names[6].Name                                        | Should      -Be $sheet.Cells['G1'].Value
         }
         it "Froze the panes                                                                        " {
-            $sheet.view.Panes.Count                                     | Should     be 3
+            $sheet.view.Panes.Count                                     | Should      -Be 3
         }
         $ptsheet1 = $Excel.Workbook.Worksheets["Pt_procs"]
 
         it "Created the pivot table                                                                " {
-            $ptsheet1                                                   | Should not beNullOrEmpty
-            $ptsheet1.PivotTables[0].DataFields[0].Field.Name           | Should     be "Name"
-            $ptsheet1.PivotTables[0].DataFields[0].Function             | Should     be "Count"
-            $ptsheet1.PivotTables[0].RowFields[0].Name                  | Should     be "Company"
+            $ptsheet1                                                   | Should -Not -BeNullOrEmpty
+            $ptsheet1.PivotTables[0].DataFields[0].Field.Name           | Should      -Be "Name"
+            $ptsheet1.PivotTables[0].DataFields[0].Function             | Should      -Be "Count"
+            $ptsheet1.PivotTables[0].RowFields[0].Name                  | Should      -Be "Company"
             $ptsheet1.PivotTables[0].CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.ref |
                 Should     be $sheet.Dimension.address
         }
@@ -813,52 +813,52 @@ Describe ExportExcel {
         $ParamChk1 =  (Get-command Add-ExcelChart          ).Parameters.Keys.where({-not (Get-command New-ExcelChartDefinition).Parameters.ContainsKey($_) }) | Sort-Object
         $ParamChk2 =  (Get-command New-ExcelChartDefinition).Parameters.Keys.where({-not (Get-command Add-ExcelChart          ).Parameters.ContainsKey($_) })
         it "Found the same parameters for Add-ExcelChart and New-ExcelChartDefinintion             " {
-            $ParamChk1.count                                            | Should     be 3
-            $ParamChk1[0]                                               | Should     be "PassThru"
-            $ParamChk1[1]                                               | Should     be "PivotTable"
-            $ParamChk1[2]                                               | Should     be "Worksheet"
-            $ParamChk2.count                                            | Should     be 1
-            $ParamChk2[0]                                               | Should     be "Header"
+            $ParamChk1.count                                            | Should      -Be 3
+            $ParamChk1[0]                                               | Should      -Be "PassThru"
+            $ParamChk1[1]                                               | Should      -Be "PivotTable"
+            $ParamChk1[2]                                               | Should      -Be "Worksheet"
+            $ParamChk2.count                                            | Should      -Be 1
+            $ParamChk2[0]                                               | Should      -Be "Header"
         }
         #Test Invoke-Sum
         $data = Invoke-Sum (Get-Process) Company Handles, PM, VirtualMemorySize
         it "Used Invoke-Sum to create a data set                                                   " {
-            $data                                                       | Should not beNullOrEmpty
-            $data.count                                                 | Should     beGreaterThan 1
-            $data[1].Name                                               | Should not beNullOrEmpty
-            $data[1].Handles                                            | Should not beNullOrEmpty
-            $data[1].PM                                                 | Should not beNullOrEmpty
-            $data[1].VirtualMemorySize                                  | Should not beNullOrEmpty
+            $data                                                       | Should -Not -BeNullOrEmpty
+            $data.count                                                 | Should      -BeGreaterThan 1
+            $data[1].Name                                               | Should -Not -BeNullOrEmpty
+            $data[1].Handles                                            | Should -Not -BeNullOrEmpty
+            $data[1].PM                                                 | Should -Not -BeNullOrEmpty
+            $data[1].VirtualMemorySize                                  | Should -Not -BeNullOrEmpty
         }
         $c = New-ExcelChartDefinition -Title Stats -ChartType LineMarkersStacked   -XRange "Processes[Name]" -YRange "Processes[PM]", "Processes[VirtualMemorySize]" -SeriesHeader 'PM', 'VMSize'
 
         it "Created the Excel chart definition                                                     " {
-            $c                                                          | Should not beNullOrEmpty
-            $c.ChartType.gettype().name                                 | Should     be "eChartType"
-            $c.ChartType.tostring()                                     | Should     be "LineMarkersStacked"
-            $c.yrange -is [array]                                       | Should     be $true
-            $c.yrange.count                                             | Should     be 2
-            $c.yrange[0]                                                | Should     be "Processes[PM]"
-            $c.yrange[1]                                                | Should     be "Processes[VirtualMemorySize]"
-            $c.xrange                                                   | Should     be "Processes[Name]"
-            $c.Title                                                    | Should     be "Stats"
-            $c.Nolegend                                                 | Should not be $true
-            $c.ShowCategory                                             | Should not be $true
-            $c.ShowPercent                                              | Should not be $true
+            $c                                                          | Should -Not -BeNullOrEmpty
+            $c.ChartType.gettype().name                                 | Should      -Be "eChartType"
+            $c.ChartType.tostring()                                     | Should      -Be "LineMarkersStacked"
+            $c.yrange -is [array]                                       | Should      -Be $true
+            $c.yrange.count                                             | Should      -Be 2
+            $c.yrange[0]                                                | Should      -Be "Processes[PM]"
+            $c.yrange[1]                                                | Should      -Be "Processes[VirtualMemorySize]"
+            $c.xrange                                                   | Should      -Be "Processes[Name]"
+            $c.Title                                                    | Should      -Be "Stats"
+            $c.Nolegend                                                 | Should -Not -Be $true
+            $c.ShowCategory                                             | Should -Not -Be $true
+            $c.ShowPercent                                              | Should -Not -Be $true
         }
         #Test creating a chart using -ExcelChartDefinition.
         $data | Export-Excel $path -AutoSize -TableName Processes -ExcelChartDefinition $c
         $excel = Open-ExcelPackage -Path $path
         $drawings = $excel.Workbook.Worksheets[1].drawings
         it "Used the Excel chart definition with Export-Excel                                      " {
-            $drawings.count                                             | Should     be 1
-            $drawings[0].ChartType                                      | Should     be "LineMarkersStacked"
-            $drawings[0].Series.count                                   | Should     be 2
-            $drawings[0].Series[0].Series                               | Should     be "'Sheet1'!Processes[PM]"
-            $drawings[0].Series[0].XSeries                              | Should     be "'Sheet1'!Processes[Name]"
-            $drawings[0].Series[1].Series                               | Should     be "'Sheet1'!Processes[VirtualMemorySize]"
-            $drawings[0].Series[1].XSeries                              | Should     be "'Sheet1'!Processes[Name]"
-            $drawings[0].Title.text                                     | Should     be "Stats"
+            $drawings.count                                             | Should      -Be 1
+            $drawings[0].ChartType                                      | Should      -Be "LineMarkersStacked"
+            $drawings[0].Series.count                                   | Should      -Be 2
+            $drawings[0].Series[0].Series                               | Should      -Be "'Sheet1'!Processes[PM]"
+            $drawings[0].Series[0].XSeries                              | Should      -Be "'Sheet1'!Processes[Name]"
+            $drawings[0].Series[1].Series                               | Should      -Be "'Sheet1'!Processes[VirtualMemorySize]"
+            $drawings[0].Series[1].XSeries                              | Should      -Be "'Sheet1'!Processes[Name]"
+            $drawings[0].Title.text                                     | Should      -Be "Stats"
         }
         Close-ExcelPackage $excel
     }
@@ -876,31 +876,31 @@ Describe ExportExcel {
         $ws = $Excel.Workbook.Worksheets["Sinx"]
         $d  = $ws.Drawings[0]
         It "Controled the axes and title and legend of the chart                                   " {
-            $d.XAxis.MaxValue                                           | Should     be 361
-            $d.XAxis.MajorUnit                                          | Should     be 30
-            $d.XAxis.MinorUnit                                          | Should     be 10
-            $d.XAxis.Title.Text                                         | Should     be "degrees"
-            $d.XAxis.Title.Font.bold                                    | Should     be $true
-            $d.XAxis.Title.Font.Size                                    | Should     be 12
-            $d.XAxis.MajorUnit                                          | Should     be 30
-            $d.XAxis.MinorUnit                                          | Should     be 10
-            $d.XAxis.MinValue                                           | Should     be 0
-            $d.XAxis.MaxValue                                           | Should     be 361
-            $d.YAxis.Format                                             | Should     be "0.00"
-            $d.Title.Text                                               | Should     be "Graph of Sine X"
-            $d.Title.Font.Bold                                          | Should     be $true
-            $d.Title.Font.Size                                          | Should     be 14
-            $d.yAxis.MajorUnit                                          | Should     be 0.25
-            $d.yAxis.MaxValue                                           | Should     be 1.25
-            $d.yaxis.MinValue                                           | Should     be -1.25
-            $d.Legend.Position.ToString()                               | Should     be "Bottom"
-            $d.Legend.Font.Bold                                         | Should     be $true
-            $d.Legend.Font.Size                                         | Should     be 8
-            $d.ChartType.tostring()                                     | Should     be "line"
-            $d.From.Column                                              | Should     be 2
+            $d.XAxis.MaxValue                                           | Should      -Be 361
+            $d.XAxis.MajorUnit                                          | Should      -Be 30
+            $d.XAxis.MinorUnit                                          | Should      -Be 10
+            $d.XAxis.Title.Text                                         | Should      -Be "degrees"
+            $d.XAxis.Title.Font.bold                                    | Should      -Be $true
+            $d.XAxis.Title.Font.Size                                    | Should      -Be 12
+            $d.XAxis.MajorUnit                                          | Should      -Be 30
+            $d.XAxis.MinorUnit                                          | Should      -Be 10
+            $d.XAxis.MinValue                                           | Should      -Be 0
+            $d.XAxis.MaxValue                                           | Should      -Be 361
+            $d.YAxis.Format                                             | Should      -Be "0.00"
+            $d.Title.Text                                               | Should      -Be "Graph of Sine X"
+            $d.Title.Font.Bold                                          | Should      -Be $true
+            $d.Title.Font.Size                                          | Should      -Be 14
+            $d.yAxis.MajorUnit                                          | Should      -Be 0.25
+            $d.yAxis.MaxValue                                           | Should      -Be 1.25
+            $d.yaxis.MinValue                                           | Should      -Be -1.25
+            $d.Legend.Position.ToString()                               | Should      -Be "Bottom"
+            $d.Legend.Font.Bold                                         | Should      -Be $true
+            $d.Legend.Font.Size                                         | Should      -Be 8
+            $d.ChartType.tostring()                                     | Should      -Be "line"
+            $d.From.Column                                              | Should      -Be 2
         }
         It "Appplied conditional formatting to the data                                            " {
-            $ws.ConditionalFormatting[0].Formula                        | Should     be "B1"
+            $ws.ConditionalFormatting[0].Formula                        | Should      -Be "B1"
         }
         Close-ExcelPackage -ExcelPackage $excel -nosave
     }
@@ -914,11 +914,11 @@ Describe ExportExcel {
         $ws = $excel.Sheet1
         $d = $ws.Drawings[0]
         it "Created the chart                                                                      " {
-            $d.Title.text                                                 | Should     beNullOrEmpty
-            $d.ChartType                                                  | Should     be "line"
-            $d.Series[0].Header                                           | Should     be "Sinx"
-            $d.Series[0].xSeries                                          | Should     be "'Sheet1'!A2:A362"
-            $d.Series[0].Series                                           | Should     be "'Sheet1'!B2:B362"
+            $d.Title.text                                                 | Should      -BeNullOrEmpty
+            $d.ChartType                                                  | Should      -Be "line"
+            $d.Series[0].Header                                           | Should      -Be "Sinx"
+            $d.Series[0].xSeries                                          | Should      -Be "'Sheet1'!A2:A362"
+            $d.Series[0].Series                                           | Should      -Be "'Sheet1'!B2:B362"
         }
 
     }
@@ -932,14 +932,14 @@ Describe ExportExcel {
         $Cf = New-ConditionalFormattingIconSet -Range ($range -replace "^.*:","B2:") -ConditionalFormat ThreeIconSet -Reverse -IconType Flags
         $ct = New-ConditionalText -Text "Microsoft" -ConditionalTextColor ([System.Drawing.Color]::Red) -BackgroundColor([System.Drawing.Color]::AliceBlue) -ConditionalType ContainsText
         it "Created the Conditional formatting rules                                               " {
-            $cf.Formatter                                               | Should     be "ThreeIconSet"
-            $cf.IconType                                                | Should     be "Flags"
-            $cf.Range                                                   | Should     be ($range -replace "^.*:","B2:")
-            $cf.Reverse                                                 | Should     be $true
-            $ct.BackgroundColor.Name                                    | Should     be "AliceBlue"
-            $ct.ConditionalTextColor.Name                               | Should     be "Red"
-            $ct.ConditionalType                                         | Should     be "ContainsText"
-            $ct.Text                                                    | Should     be "Microsoft"
+            $cf.Formatter                                               | Should      -Be "ThreeIconSet"
+            $cf.IconType                                                | Should      -Be "Flags"
+            $cf.Range                                                   | Should      -Be ($range -replace "^.*:","B2:")
+            $cf.Reverse                                                 | Should      -Be $true
+            $ct.BackgroundColor.Name                                    | Should      -Be "AliceBlue"
+            $ct.ConditionalTextColor.Name                               | Should      -Be "Red"
+            $ct.ConditionalType                                         | Should      -Be "ContainsText"
+            $ct.Text                                                    | Should      -Be "Microsoft"
         }
         #Test -ConditionalFormat & -ConditionalText
         Export-Excel -Path $path -ConditionalFormat $cf -ConditionalText $ct
@@ -948,15 +948,15 @@ Describe ExportExcel {
         $chart = $excel.Workbook.Worksheets["sheet1"].Drawings[0]
         $cFmt  = $excel.Workbook.Worksheets["sheet1"].ConditionalFormatting
         it "Created the chart with the right series                                                " {
-            $chart.ChartType                                            | Should     be "PieExploded3D"
-            $chart.series.series                                        | Should     be "'Sheet1'!B1:B$rows" #would be B2 and A2 if we had a header.
-            $chart.series.Xseries                                       | Should     be "'Sheet1'!A1:A$rows"
-            $chart.DataLabel.ShowPercent                                | Should     be $true
+            $chart.ChartType                                            | Should      -Be "PieExploded3D"
+            $chart.series.series                                        | Should      -Be "'Sheet1'!B1:B$rows" #would be B2 and A2 if we had a header.
+            $chart.series.Xseries                                       | Should      -Be "'Sheet1'!A1:A$rows"
+            $chart.DataLabel.ShowPercent                                | Should      -Be $true
         }
         it "Created two Conditional formatting rules                                               " {
-            $cFmt.Count                                                 | Should     be $true
-            $cFmt.Where({$_.type -eq "ContainsText"})                   | Should not beNullOrEmpty
-            $cFmt.Where({$_.type -eq "ThreeIconSet"})                   | Should not beNullOrEmpty
+            $cFmt.Count                                                 | Should      -Be $true
+            $cFmt.Where({$_.type -eq "ContainsText"})                   | Should -Not -BeNullOrEmpty
+            $cFmt.Where({$_.type -eq "ThreeIconSet"})                   | Should -Not -BeNullOrEmpty
         }
     }
 
@@ -986,18 +986,18 @@ Describe ExportExcel {
         $excel = Open-ExcelPackage -Path $path
         $ws = $excel.Workbook.Worksheets[1]
         it "Created 3 tables                                                                       " {
-            $ws.tables.count | Should be 3
+            $ws.tables.count | Should -Be 3
         }
         it "Created the FileSize table in the right place with the right size and style            " {
-            $ws.Tables["FileSize"].Address.Address                      | Should     be "G2:H16" #Insert at row 2, Column 7, 14 rows x 2 columns of data
-            $ws.Tables["FileSize"].StyleName                            | Should     be "TableStyleMedium2"
+            $ws.Tables["FileSize"].Address.Address                      | Should      -Be "G2:H16" #Insert at row 2, Column 7, 14 rows x 2 columns of data
+            $ws.Tables["FileSize"].StyleName                            | Should      -Be "TableStyleMedium2"
         }
         it "Created the ExtSize  table in the right place with the right size and style            " {
-            $ws.Tables["ExtSize"].Address.Address                      | Should      be "A2:B14" #tile, then 12 rows x 2 columns of data
-            $ws.Tables["ExtSize"].StyleName                            | Should      be "TableStyleMedium6"
+            $ws.Tables["ExtSize"].Address.Address                      | should      -be "A2:B14" #tile, then 12 rows x 2 columns of data
+            $ws.Tables["ExtSize"].StyleName                            | should      -be "TableStyleMedium6"
         }
         it "Created the ExtCount table in the right place with the right size                      " {
-            $ws.Tables["ExtCount"].Address.Address                      | Should     be "D2:E12" #title, then 10 rows x 2 columns of data
+            $ws.Tables["ExtCount"].Address.Address                      | Should      -Be "D2:E12" #title, then 10 rows x 2 columns of data
         }
     }
 
@@ -1010,15 +1010,15 @@ Describe ExportExcel {
             $ExcelPackage = $Processes | Export-Excel -Path $Path -PassThru
             $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
 
-            $ExcelPackage.File | Should Be $Path
-            $Worksheet.Cells['A1'].Value | Should Be 'Name'
-            $Worksheet.Tables | Should BeNullOrEmpty
-            $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
+            $ExcelPackage.File | Should -Be $Path
+            $Worksheet.Cells['A1'].Value | Should -Be 'Name'
+            $Worksheet.Tables | Should -BeNullOrEmpty
+            $Worksheet.AutoFilterAddress | Should -BeNullOrEmpty
         }
         it "throws when the ExcelPackage is specified with either -path or -Now".PadRight(87) {
             $ExcelPackage = Export-Excel -Path $Path -PassThru
-            {Export-Excel -ExcelPackage $ExcelPackage -Path $Path} | Should Throw 'Parameter set cannot be resolved using the specified named parameters'
-            {Export-Excel -ExcelPackage $ExcelPackage -Now} | Should Throw 'Parameter set cannot be resolved using the specified named parameters'
+            {Export-Excel -ExcelPackage $ExcelPackage -Path $Path} | Should  -Throw 'Parameter set cannot be resolved using the specified named parameters'
+            {Export-Excel -ExcelPackage $ExcelPackage -Now} | Should  -Throw 'Parameter set cannot be resolved using the specified named parameters'
 
             $Processes | Export-Excel -ExcelPackage $ExcelPackage
             Remove-Item -Path $Path
@@ -1027,36 +1027,36 @@ Describe ExportExcel {
             $ExcelPackage = Export-Excel -Path $Path -PassThru -TableName 'Data' -AutoFilter
             $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
 
-            $Worksheet.Tables[0].Name | Should Be 'Data'
-            $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
+            $Worksheet.Tables[0].Name | Should -Be 'Data'
+            $Worksheet.AutoFilterAddress | Should -BeNullOrEmpty
         }
         it "Default Set with Path and TableName with generated name".PadRight(87) {
             $ExcelPackage = $Processes | Export-Excel -Path $Path -PassThru -TableName ''
             $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
 
-            $ExcelPackage.File | Should Be $Path
-            $Worksheet.Tables[0].Name | Should Be 'Table1'
+            $ExcelPackage.File | Should -Be $Path
+            $Worksheet.Tables[0].Name | Should -Be 'Table1'
         }
         it "Now will use temp Path, set TableName with generated name and AutoSize".PadRight(87) {
             $ExcelPackage = $Processes | Export-Excel -Now -PassThru
             $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
 
-            $ExcelPackage.File.FullName   | Should BeLike ([IO.Path]::GetTempPath() + '*')
-            $Worksheet.Tables[0].Name      | Should Be 'Table1'
-            $Worksheet.AutoFilterAddress  | Should BeNullOrEmpty
+            $ExcelPackage.File.FullName   | Should -BeLike ([IO.Path]::GetTempPath() + '*')
+            $Worksheet.Tables[0].Name      | Should -Be 'Table1'
+            $Worksheet.AutoFilterAddress  | Should -BeNullOrEmpty
             if ($isWindows) {
-                $Worksheet.Column(5).Width | Should BeGreaterThan 9.5
+                $Worksheet.Column(5).Width | Should -BeGreaterThan 9.5
             }
         }
         it "Now allows override of Path and TableName".PadRight(87) {
             $ExcelPackage = $Processes | Export-Excel -Now -PassThru -Path $Path -TableName:$false
             $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
 
-            $ExcelPackage.File | Should Be $Path
-            $Worksheet.Tables | Should BeNullOrEmpty
-            $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
+            $ExcelPackage.File | Should -Be $Path
+            $Worksheet.Tables | Should -BeNullOrEmpty
+            $Worksheet.AutoFilterAddress | Should -BeNullOrEmpty
             if ($isWindows) {
-                $Worksheet.Column(5).Width | Should BeGreaterThan 9.5
+                $Worksheet.Column(5).Width | Should -BeGreaterThan 9.5
             }
         }
         <# Mock looks unreliable need to check
@@ -1074,18 +1074,18 @@ Describe ExportExcel {
             $ExcelPackage = $Processes | Export-Excel -Now -PassThru -AutoSize:$false -AutoFilter
             $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
 
-            $Worksheet.Tables | Should BeNullOrEmpty
-            $Worksheet.AutoFilterAddress | Should Not BeNullOrEmpty
-            [math]::Round($Worksheet.Column(5).Width, 2) | Should Be 9.14
+            $Worksheet.Tables | Should -BeNullOrEmpty
+            $Worksheet.AutoFilterAddress | Should -Not -BeNullOrEmpty
+            [math]::Round($Worksheet.Column(5).Width, 2) | Should -Be 9.14
         }
         it "Now allows to set TableName".PadRight(87) {
             $ExcelPackage = $Processes | Export-Excel -Now -PassThru -TableName 'Data'
             $Worksheet = $ExcelPackage.Workbook.Worksheets[1]
 
-            $Worksheet.Tables[0].Name | Should Be 'Data'
-            $Worksheet.AutoFilterAddress | Should BeNullOrEmpty
+            $Worksheet.Tables[0].Name | Should -Be 'Data'
+            $Worksheet.AutoFilterAddress | Should -BeNullOrEmpty
             if ($isWindows) {
-                $Worksheet.Column(5).Width | Should BeGreaterThan 9.5
+                $Worksheet.Column(5).Width | Should -BeGreaterThan 9.5
             }
         }
     }

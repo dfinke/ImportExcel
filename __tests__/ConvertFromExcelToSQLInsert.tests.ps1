@@ -22,7 +22,7 @@ Describe "ConvertFrom-ExcelToSQLInsert" {
 
         $actual = ConvertFrom-ExcelToSQLInsert -Path $xlFile Sheet1
 
-        $actual | should be $expected
+        $actual | Should -Be $expected
     }
 
      It "Should have NULL".PadRight(90)  {
@@ -30,6 +30,6 @@ Describe "ConvertFrom-ExcelToSQLInsert" {
 
         $actual = ConvertFrom-ExcelToSQLInsert -Path $xlFile Sheet1 -ConvertEmptyStringsToNull
 
-        $actual | should be $expected
+        $actual | Should -Be $expected
     }
 }

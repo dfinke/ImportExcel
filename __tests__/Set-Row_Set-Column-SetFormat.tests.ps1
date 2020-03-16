@@ -29,16 +29,16 @@ Describe "Number format expansion and setting" {
     Context "Expand-NumberFormat function" {
         It "Expanded named number formats as expected                                              " {
             $r = [regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol)
-            Expand-NumberFormat 'Currency'                              | Should  match "^[$r\(\)\[\] RED0#\?\-;,.]+$"
-            Expand-NumberFormat 'Number'                                | Should     be "0.00"
-            Expand-NumberFormat 'Percentage'                            | Should     be "0.00%"
-            Expand-NumberFormat 'Scientific'                            | Should     be "0.00E+00"
-            Expand-NumberFormat 'Fraction'                              | Should     be "# ?/?"
-            Expand-NumberFormat 'Short Date'                            | Should     be "mm-dd-yy"
-            Expand-NumberFormat 'Short Time'                            | Should     be "h:mm"
-            Expand-NumberFormat 'Long Time'                             | Should     be "h:mm:ss"
-            Expand-NumberFormat 'Date-Time'                             | Should     be "m/d/yy h:mm"
-            Expand-NumberFormat 'Text'                                  | Should     be "@"
+            Expand-NumberFormat 'Currency'                              | Should      -Match "^[$r\(\)\[\] RED0#\?\-;,.]+$"
+            Expand-NumberFormat 'Number'                                | Should      -Be "0.00"
+            Expand-NumberFormat 'Percentage'                            | Should      -Be "0.00%"
+            Expand-NumberFormat 'Scientific'                            | Should      -Be "0.00E+00"
+            Expand-NumberFormat 'Fraction'                              | Should      -Be "# ?/?"
+            Expand-NumberFormat 'Short Date'                            | Should      -Be "mm-dd-yy"
+            Expand-NumberFormat 'Short Time'                            | Should      -Be "h:mm"
+            Expand-NumberFormat 'Long Time'                             | Should      -Be "h:mm:ss"
+            Expand-NumberFormat 'Date-Time'                             | Should      -Be "m/d/yy h:mm"
+            Expand-NumberFormat 'Text'                                  | Should      -Be "@"
         }
     }
     Context "Apply-NumberFormat" {
@@ -87,36 +87,36 @@ Describe "Number format expansion and setting" {
         }
 
         It "Set formats which translate to the correct format ID                                   " {
-            $ws.Cells[ 1, 1].Style.Numberformat.NumFmtID                 | Should     be 0       # Set as General
-            $ws.Cells[20, 1].Style.Numberformat.NumFmtID                 | Should     be 1       # Set as 0
-            $ws.Cells[ 2, 1].Style.Numberformat.NumFmtID                 | Should     be 2       # Set as "Number"
-            $ws.Cells[21, 1].Style.Numberformat.NumFmtID                 | Should     be 2       # Set as 0.00
-            $ws.Cells[22, 1].Style.Numberformat.NumFmtID                 | Should     be 3       # Set as #,##0
-            $ws.Cells[23, 1].Style.Numberformat.NumFmtID                 | Should     be 4       # Set as #,##0.00
-            $ws.Cells[26, 1].Style.Numberformat.NumFmtID                 | Should     be 9       # Set as 0%
-            $ws.Cells[27, 1].Style.Numberformat.NumFmtID                 | Should     be 10      # Set as 0.00%
-            $ws.Cells[ 3, 1].Style.Numberformat.NumFmtID                 | Should     be 10      # Set as "Percentage"
-            $ws.Cells[28, 1].Style.Numberformat.NumFmtID                 | Should     be 11      # Set as 0.00E+00
-            $ws.Cells[ 4, 1].Style.Numberformat.NumFmtID                 | Should     be 11      # Set as "Scientific"
-            $ws.Cells[ 5, 1].Style.Numberformat.NumFmtID                 | Should     be 12      # Set as "Fraction"
-            $ws.Cells[29, 1].Style.Numberformat.NumFmtID                 | Should     be 12      # Set as # ?/?
-            $ws.Cells[30, 1].Style.Numberformat.NumFmtID                 | Should     be 13      # Set as # ??/?
-            $ws.Cells[ 6, 1].Style.Numberformat.NumFmtID                 | Should     be 14      # Set as "Short date"
-            $ws.Cells[17, 1].Style.Numberformat.NumFmtID                 | Should     be 15      # Set as d-mmm-yy
-            $ws.Cells[18, 1].Style.Numberformat.NumFmtID                 | Should     be 16      # Set as d-mmm
-            $ws.Cells[19, 1].Style.Numberformat.NumFmtID                 | Should     be 17      # Set as mmm-yy
-            $ws.Cells[12, 1].Style.Numberformat.NumFmtID                 | Should     be 18      # Set as h:mm AM/PM
-            $ws.Cells[13, 1].Style.Numberformat.NumFmtID                 | Should     be 19      # Set as h:mm:ss AM/PM
-            $ws.Cells[ 7, 1].Style.Numberformat.NumFmtID                 | Should     be 20      # Set as "Short time"
-            $ws.Cells[ 8, 1].Style.Numberformat.NumFmtID                 | Should     be 21      # Set as "Long time"
-            $ws.Cells[ 9, 1].Style.Numberformat.NumFmtID                 | Should     be 22      # Set as "Date-time"
-            $ws.Cells[14, 1].Style.Numberformat.NumFmtID                 | Should     be 45      # Set as mm:ss
-            $ws.Cells[15, 1].Style.Numberformat.NumFmtID                 | Should     be 46      # Set as [h]:mm:ss
-            $ws.Cells[16, 1].Style.Numberformat.NumFmtID                 | Should     be 47      # Set as mmss.0
-            $ws.Cells[11, 1].Style.Numberformat.NumFmtID                 | Should     be 49      # Set as "Text"
-            $ws.Cells[31, 1].Style.Numberformat.NumFmtID                 | Should     be 49      # Set as @
-            $ws.Cells[24, 1].Style.Numberformat.Format                   | Should     be '#,'    # Whole thousands
-            $ws.Cells[25, 1].Style.Numberformat.Format                   | Should     be '#.0,,' # Millions
+            $ws.Cells[ 1, 1].Style.Numberformat.NumFmtID                 | Should      -Be 0       # Set as General
+            $ws.Cells[20, 1].Style.Numberformat.NumFmtID                 | Should      -Be 1       # Set as 0
+            $ws.Cells[ 2, 1].Style.Numberformat.NumFmtID                 | Should      -Be 2       # Set as "Number"
+            $ws.Cells[21, 1].Style.Numberformat.NumFmtID                 | Should      -Be 2       # Set as 0.00
+            $ws.Cells[22, 1].Style.Numberformat.NumFmtID                 | Should      -Be 3       # Set as #,##0
+            $ws.Cells[23, 1].Style.Numberformat.NumFmtID                 | Should      -Be 4       # Set as #,##0.00
+            $ws.Cells[26, 1].Style.Numberformat.NumFmtID                 | Should      -Be 9       # Set as 0%
+            $ws.Cells[27, 1].Style.Numberformat.NumFmtID                 | Should      -Be 10      # Set as 0.00%
+            $ws.Cells[ 3, 1].Style.Numberformat.NumFmtID                 | Should      -Be 10      # Set as "Percentage"
+            $ws.Cells[28, 1].Style.Numberformat.NumFmtID                 | Should      -Be 11      # Set as 0.00E+00
+            $ws.Cells[ 4, 1].Style.Numberformat.NumFmtID                 | Should      -Be 11      # Set as "Scientific"
+            $ws.Cells[ 5, 1].Style.Numberformat.NumFmtID                 | Should      -Be 12      # Set as "Fraction"
+            $ws.Cells[29, 1].Style.Numberformat.NumFmtID                 | Should      -Be 12      # Set as # ?/?
+            $ws.Cells[30, 1].Style.Numberformat.NumFmtID                 | Should      -Be 13      # Set as # ??/?
+            $ws.Cells[ 6, 1].Style.Numberformat.NumFmtID                 | Should      -Be 14      # Set as "Short date"
+            $ws.Cells[17, 1].Style.Numberformat.NumFmtID                 | Should      -Be 15      # Set as d-mmm-yy
+            $ws.Cells[18, 1].Style.Numberformat.NumFmtID                 | Should      -Be 16      # Set as d-mmm
+            $ws.Cells[19, 1].Style.Numberformat.NumFmtID                 | Should      -Be 17      # Set as mmm-yy
+            $ws.Cells[12, 1].Style.Numberformat.NumFmtID                 | Should      -Be 18      # Set as h:mm AM/PM
+            $ws.Cells[13, 1].Style.Numberformat.NumFmtID                 | Should      -Be 19      # Set as h:mm:ss AM/PM
+            $ws.Cells[ 7, 1].Style.Numberformat.NumFmtID                 | Should      -Be 20      # Set as "Short time"
+            $ws.Cells[ 8, 1].Style.Numberformat.NumFmtID                 | Should      -Be 21      # Set as "Long time"
+            $ws.Cells[ 9, 1].Style.Numberformat.NumFmtID                 | Should      -Be 22      # Set as "Date-time"
+            $ws.Cells[14, 1].Style.Numberformat.NumFmtID                 | Should      -Be 45      # Set as mm:ss
+            $ws.Cells[15, 1].Style.Numberformat.NumFmtID                 | Should      -Be 46      # Set as [h]:mm:ss
+            $ws.Cells[16, 1].Style.Numberformat.NumFmtID                 | Should      -Be 47      # Set as mmss.0
+            $ws.Cells[11, 1].Style.Numberformat.NumFmtID                 | Should      -Be 49      # Set as "Text"
+            $ws.Cells[31, 1].Style.Numberformat.NumFmtID                 | Should      -Be 49      # Set as @
+            $ws.Cells[24, 1].Style.Numberformat.Format                   | Should      -Be '#,'    # Whole thousands
+            $ws.Cells[25, 1].Style.Numberformat.Format                   | Should      -Be '#.0,,' # Millions
         }
     }
 }
@@ -155,70 +155,70 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
     }
     Context "Set-ExcelRow and Set-ExcelColumn" {
         it "Set a row and a column to have zero width/height                                       " {
-            $r                                                          | Should not beNullorEmpty
-            #  $c                                                          | Should not beNullorEmpty  ## can't see why but this test breaks in appveyor
-            $ws.Column(1).width                                         | Should be  0
-            $ws.Row(5).height                                           | Should be  0
+            $r                                                          | Should -Not -BeNullorEmpty
+            #  $c                                                          | Should -Not -BeNullorEmpty  ## can't see why but this test breaks in appveyor
+            $ws.Column(1).width                                         | Should -Be  0
+            $ws.Row(5).height                                           | Should -Be  0
         }
         it "Set a column formula, with numberformat, color, bold face and alignment                " {
-            $ws.Cells["e2"].Formula                                     | Should     be "Quantity*Price"
-            $ws.Cells["e2"].Value                                       | Should     be 147.63
-            $ws.Cells["e2"].Style.Font.Color.rgb                        | Should     be "FF0000FF"
-            $ws.Cells["e2"].Style.Font.Bold                             | Should     be $true
-            $ws.Cells["e2"].Style.Font.VerticalAlign                    | Should     be "None"
-            $ws.Cells["e2"].Style.Numberformat.format                   | Should     be "£#,###.00"
-            $ws.Cells["e2"].Style.HorizontalAlignment                   | Should     be "Right"
+            $ws.Cells["e2"].Formula                                     | Should      -Be "Quantity*Price"
+            $ws.Cells["e2"].Value                                       | Should      -Be 147.63
+            $ws.Cells["e2"].Style.Font.Color.rgb                        | Should      -Be "FF0000FF"
+            $ws.Cells["e2"].Style.Font.Bold                             | Should      -Be $true
+            $ws.Cells["e2"].Style.Font.VerticalAlign                    | Should      -Be "None"
+            $ws.Cells["e2"].Style.Numberformat.format                   | Should      -Be "£#,###.00"
+            $ws.Cells["e2"].Style.HorizontalAlignment                   | Should      -Be "Right"
         }
     }
     Context "Other formatting" {
         it "Trapped an attempt to hide a range instead of a Row/Column                             " {
-            $BadHideWarnvar                                             | Should not beNullOrEmpty
+            $BadHideWarnvar                                             | Should -Not -BeNullOrEmpty
         }
         it "Set and calculated a row formula with border font size and underline                   " {
-            $ws.Cells["b7"].Style.Border.Top.Style                      | Should     be "None"
-            $ws.Cells["F7"].Style.Border.Top.Style                      | Should     be "None"
-            $ws.Cells["C7"].Style.Border.Top.Style                      | Should     be "Thin"
-            $ws.Cells["C7"].Style.Border.Bottom.Style                   | Should     be "Thin"
-            $ws.Cells["C7"].Style.Border.Right.Style                    | Should     be "None"
-            $ws.Cells["C7"].Style.Border.Left.Style                     | Should     be "Thin"
-            $ws.Cells["E7"].Style.Border.Left.Style                     | Should     be "None"
-            $ws.Cells["E7"].Style.Border.Right.Style                    | Should     be "Thin"
-            $ws.Cells["C7"].Style.Font.size                             | Should     be 14
-            $ws.Cells["C7"].Formula                                     | Should     be "sum(C2:C6)"
-            $ws.Cells["C7"].value                                       | Should     be 81
-            $ws.Cells["C7"].Style.Font.UnderLine                        | Should     be $true
-            $ws.Cells["C6"].Style.Font.UnderLine                        | Should     be $false
+            $ws.Cells["b7"].Style.Border.Top.Style                      | Should      -Be "None"
+            $ws.Cells["F7"].Style.Border.Top.Style                      | Should      -Be "None"
+            $ws.Cells["C7"].Style.Border.Top.Style                      | Should      -Be "Thin"
+            $ws.Cells["C7"].Style.Border.Bottom.Style                   | Should      -Be "Thin"
+            $ws.Cells["C7"].Style.Border.Right.Style                    | Should      -Be "None"
+            $ws.Cells["C7"].Style.Border.Left.Style                     | Should      -Be "Thin"
+            $ws.Cells["E7"].Style.Border.Left.Style                     | Should      -Be "None"
+            $ws.Cells["E7"].Style.Border.Right.Style                    | Should      -Be "Thin"
+            $ws.Cells["C7"].Style.Font.size                             | Should      -Be 14
+            $ws.Cells["C7"].Formula                                     | Should      -Be "sum(C2:C6)"
+            $ws.Cells["C7"].value                                       | Should      -Be 81
+            $ws.Cells["C7"].Style.Font.UnderLine                        | Should      -Be $true
+            $ws.Cells["C6"].Style.Font.UnderLine                        | Should      -Be $false
         }
         it "Set custom font, size, text-wrapping, alignment, superscript, border and Fill          " {
-            $ws.Cells["b3"].Style.Border.Left.Color.Rgb                 | Should     be "FFFF0000"
-            $ws.Cells["b3"].Style.Border.Left.Style                     | Should     be "Thick"
-            $ws.Cells["b3"].Style.Border.Right.Style                    | Should     be "Thick"
-            $ws.Cells["b3"].Style.Border.Top.Style                      | Should     be "Thick"
-            $ws.Cells["b3"].Style.Border.Bottom.Style                   | Should     be "Thick"
-            $ws.Cells["b3"].Style.Font.Strike                           | Should     be $true
-            $ws.Cells["e1"].Style.Font.Color.Rgb                        | Should     be "ff000000"
-            $ws.Cells["e1"].Style.Font.Bold                             | Should     be $false
-            $ws.Cells["e1"].Style.Font.Name                             | Should     be "Courier New"
-            $ws.Cells["e1"].Style.Font.Size                             | Should     be 9
-            $ws.Cells["e3"].Style.Font.VerticalAlign                    | Should     be "Superscript"
-            $ws.Cells["e3"].Style.HorizontalAlignment                   | Should     be "Left"
-            $ws.Cells["C6"].Style.WrapText                              | Should     be $false
-            $ws.Cells["e7"].Style.WrapText                              | Should     be $true
-            $ws.Cells["e7"].Style.Fill.BackgroundColor.Rgb              | Should     be "FFF0F8FF"
-            $ws.Cells["e7"].Style.Fill.PatternColor.Rgb                 | Should     be "FFFF0000"
-            $ws.Cells["e7"].Style.Fill.PatternType                      | Should     be "DarkTrellis"
+            $ws.Cells["b3"].Style.Border.Left.Color.Rgb                 | Should      -Be "FFFF0000"
+            $ws.Cells["b3"].Style.Border.Left.Style                     | Should      -Be "Thick"
+            $ws.Cells["b3"].Style.Border.Right.Style                    | Should      -Be "Thick"
+            $ws.Cells["b3"].Style.Border.Top.Style                      | Should      -Be "Thick"
+            $ws.Cells["b3"].Style.Border.Bottom.Style                   | Should      -Be "Thick"
+            $ws.Cells["b3"].Style.Font.Strike                           | Should      -Be $true
+            $ws.Cells["e1"].Style.Font.Color.Rgb                        | Should      -Be "ff000000"
+            $ws.Cells["e1"].Style.Font.Bold                             | Should      -Be $false
+            $ws.Cells["e1"].Style.Font.Name                             | Should      -Be "Courier New"
+            $ws.Cells["e1"].Style.Font.Size                             | Should      -Be 9
+            $ws.Cells["e3"].Style.Font.VerticalAlign                    | Should      -Be "Superscript"
+            $ws.Cells["e3"].Style.HorizontalAlignment                   | Should      -Be "Left"
+            $ws.Cells["C6"].Style.WrapText                              | Should      -Be $false
+            $ws.Cells["e7"].Style.WrapText                              | Should      -Be $true
+            $ws.Cells["e7"].Style.Fill.BackgroundColor.Rgb              | Should      -Be "FFF0F8FF"
+            $ws.Cells["e7"].Style.Fill.PatternColor.Rgb                 | Should      -Be "FFFF0000"
+            $ws.Cells["e7"].Style.Fill.PatternType                      | Should      -Be "DarkTrellis"
         }
     }
 
     Context "Set-ExcelRange value setting " {
         it "Inserted a formula                                                                     " {
-            $ws.Cells["D7"].Formula                                     | Should     be "E7/C7"
+            $ws.Cells["D7"].Formula                                     | Should      -Be "E7/C7"
         }
         it "Inserted a value                                                                       " {
-            $ws.Cells["B7"].Value                                       | Should     be "Total"
+            $ws.Cells["B7"].Value                                       | Should      -Be "Total"
         }
         it "Inserted a date with localized date-time format                                        " {
-            $ws.Cells["B8"].Style.Numberformat.NumFmtID                 | Should     be 22
+            $ws.Cells["B8"].Style.Numberformat.NumFmtID                 | Should      -Be 22
         }
     }
 
@@ -249,27 +249,27 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
             $ws = $excel.Workbook.Worksheets["Sheet1"]
         }
         It "Inserted Hyperlinks                                                                    " {
-            $ws.Cells["D2"].Hyperlink                                   | Should not beNullorEmpty
-            $ws.Cells["D2"].Style.Font.UnderLine                        | Should     be $true
+            $ws.Cells["D2"].Hyperlink                                   | Should -Not -BeNullorEmpty
+            $ws.Cells["D2"].Style.Font.UnderLine                        | Should      -Be $true
         }
         It "Inserted and formatted Dates                                                           " {
-            $ws.Cells["C2"].Value.GetType().name                        | should     be "DateTime"
-            $ws.Cells["C2"].Style.Numberformat.NumFmtID                 | should     be 14
-            $ws.Cells["E2"].Value.GetType().name                        | should     be "DateTime"
-            $ws.Cells["E2"].Style.Numberformat.NumFmtID                 | should     be 14
+            $ws.Cells["C2"].Value.GetType().name                        | Should      -Be "DateTime"
+            $ws.Cells["C2"].Style.Numberformat.NumFmtID                 | Should      -Be 14
+            $ws.Cells["E2"].Value.GetType().name                        | Should      -Be "DateTime"
+            $ws.Cells["E2"].Style.Numberformat.NumFmtID                 | Should      -Be 14
         }
         It "Inserted Formulas                                                                      " {
-            $ws.Cells["F2"].Formula                                     | Should not beNullorEmpty
+            $ws.Cells["F2"].Formula                                     | Should -Not -BeNullorEmpty
         }
         It "Created Named ranges                                                                   " {
-            $ws.Names.Count                                             | Should     be 6
-            $ws.Names["Age"]                                            | Should not beNullorEmpty
-            $ws.Names["Age"].Start.Column                               | Should     be 6
-            $ws.Names["Age"].Start.Row                                  | Should     be 2
-            $ws.Names["Age"].End.Row                                    | Should     be 7
-            $ws.names[0].name                                           | Should     be "Name"
-            $ws.Names[0].Start.Column                                   | Should     be 1
-            $ws.Names[0].Start.Row                                      | Should     be 2
+            $ws.Names.Count                                             | Should      -Be 6
+            $ws.Names["Age"]                                            | Should -Not -BeNullorEmpty
+            $ws.Names["Age"].Start.Column                               | Should      -Be 6
+            $ws.Names["Age"].Start.Row                                  | Should      -Be 2
+            $ws.Names["Age"].End.Row                                    | Should      -Be 7
+            $ws.names[0].name                                           | Should      -Be "Name"
+            $ws.Names[0].Start.Column                                   | Should      -Be 1
+            $ws.Names[0].Start.Row                                      | Should      -Be 2
         }
 
     }
@@ -286,9 +286,9 @@ Describe "Conditional Formatting" {
     }
     Context "Using a pre-prepared 3 Arrows rule" {
         it "Set the right type, IconSet and range                                                  " {
-            $ws.ConditionalFormatting[0].IconSet                        | Should     be "Arrows"
-            $ws.ConditionalFormatting[0].Address.Address                | Should     be "c:c"
-            $ws.ConditionalFormatting[0].Type.ToString()                | Should     be "ThreeIconSet"
+            $ws.ConditionalFormatting[0].IconSet                        | Should      -Be "Arrows"
+            $ws.ConditionalFormatting[0].Address.Address                | Should      -Be "c:c"
+            $ws.ConditionalFormatting[0].Type.ToString()                | Should      -Be "ThreeIconSet"
         }
     }
 
@@ -329,8 +329,8 @@ Sold
 
             $ws = $excel.Workbook.Worksheets["Sheet1"]
 
-            $ws.Names.Count | Should Be 1
-            $ws.Names[0].Name | Should Be 'Sold'
+            $ws.Names.Count | Should -Be 1
+            $ws.Names[0].Name | Should -Be 'Sold'
       }
 
       it "Should have a more than a single item as a named range                                   " {
@@ -344,9 +344,9 @@ Sold,ID
 
             $ws = $excel.Workbook.Worksheets["Sheet1"]
 
-            $ws.Names.Count | Should Be 2
-            $ws.Names[0].Name | Should Be 'Sold'
-            $ws.Names[1].Name | Should Be 'ID'
+            $ws.Names.Count | Should -Be 2
+            $ws.Names[0].Name | Should -Be 'Sold'
+            $ws.Names[1].Name | Should -Be 'ID'
       }
 }
 
@@ -368,20 +368,20 @@ Describe "Table Formatting" {
     }
     Context "Setting and not clearing when Export-Excel touches the file again." {
         it "Set the Table Options                                                                  " {
-            $ws1.Tables[0].Address.Address                              | should     be "A1:E16"
-            $ws1.Tables[0].Name                                         | should     be "HardwareTable"
-            $ws1.Tables[0].ShowFirstColumn                              | should     be $true
-            $ws1.Tables[0].ShowLastColumn                               | should not be $true
-            $ws1.Tables[0].ShowTotal                                    | should     be $true
-            $ws1.Tables[0].Columns["Total"].TotalsRowFunction           | Should     be "Sum"
-            $ws1.Tables[0].StyleName                                    | should     be "TableStyleLight1"
-            $ws1.Cells["D4"].Style.Numberformat.Format                  | Should     match ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol))
-            $ws1.Cells["E5"].Style.Numberformat.Format                  | Should     match ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol))
+            $ws1.Tables[0].Address.Address                              | Should      -Be "A1:E16"
+            $ws1.Tables[0].Name                                         | Should      -Be "HardwareTable"
+            $ws1.Tables[0].ShowFirstColumn                              | Should      -Be $true
+            $ws1.Tables[0].ShowLastColumn                               | Should -Not -Be $true
+            $ws1.Tables[0].ShowTotal                                    | Should      -Be $true
+            $ws1.Tables[0].Columns["Total"].TotalsRowFunction           | Should      -Be "Sum"
+            $ws1.Tables[0].StyleName                                    | Should      -Be "TableStyleLight1"
+            $ws1.Cells["D4"].Style.Numberformat.Format                  | Should      -Match ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol))
+            $ws1.Cells["E5"].Style.Numberformat.Format                  | Should      -Match ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol))
         }
         it "Set the Pivot Options                                                                  " {
-            $ws2.PivotTables[0].DataFields[0].Format                    | Should     match ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol))
-            $ws2.PivotTables[0].ColumGrandTotals                        | Should     be $false
-            $ws2.PivotTables[0].StyleName                               | Should     be "PivotStyleDark2"
+            $ws2.PivotTables[0].DataFields[0].Format                    | Should      -Match ([regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol))
+            $ws2.PivotTables[0].ColumGrandTotals                        | Should      -Be $false
+            $ws2.PivotTables[0].StyleName                               | Should      -Be "PivotStyleDark2"
         }
     }
 }

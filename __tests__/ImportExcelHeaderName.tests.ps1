@@ -35,15 +35,15 @@ Describe "Import-Excel on a sheet with no headings" {
 
         $actualNames = $actual[0].psobject.properties.name
 
-        $actualNames.Count | Should Be 3
-        $actualNames[0] | Should BeExactly 'A'
-        $actualNames[1] | Should BeExactly 'B'
-        $actualNames[2] | Should BeExactly 'C'
+        $actualNames.Count | Should -Be 3
+        $actualNames[0] | Should -BeExactly 'A'
+        $actualNames[1] | Should -BeExactly 'B'
+        $actualNames[2] | Should -BeExactly 'C'
 
-        $actual.Count | Should Be 2
-        $actual[0].A | Should BeExactly 'D'
-        $actual[0].B | Should BeExactly 'E'
-        $actual[0].C | Should BeExactly 'F'
+        $actual.Count | Should -Be 2
+        $actual[0].A | Should -BeExactly 'D'
+        $actual[0].B | Should -BeExactly 'E'
+        $actual[0].C | Should -BeExactly 'F'
     }
 
     It "Import-Excel -NoHeader should have this shape" {
@@ -51,12 +51,12 @@ Describe "Import-Excel on a sheet with no headings" {
 
         $actualNames = $actual[0].psobject.properties.name
 
-        $actualNames.Count | Should Be 3
-        $actualNames[0] | Should BeExactly 'P1'
-        $actualNames[1] | Should BeExactly 'P2'
-        $actualNames[2] | Should BeExactly 'P3'
+        $actualNames.Count | Should -Be 3
+        $actualNames[0] | Should -BeExactly 'P1'
+        $actualNames[1] | Should -BeExactly 'P2'
+        $actualNames[2] | Should -BeExactly 'P3'
 
-        $actual.Count | Should Be 3
+        $actual.Count | Should -Be 3
     }
 
     It "Import-Excel -HeaderName should have this shape" {
@@ -64,20 +64,20 @@ Describe "Import-Excel on a sheet with no headings" {
 
         $actualNames = $actual[0].psobject.properties.name
 
-        $actualNames.Count | Should Be 3
-        $actualNames[0] | Should BeExactly 'Q'
-        $actualNames[1] | Should BeExactly 'R'
-        $actualNames[2] | Should BeExactly 'S'
+        $actualNames.Count | Should -Be 3
+        $actualNames[0] | Should -BeExactly 'Q'
+        $actualNames[1] | Should -BeExactly 'R'
+        $actualNames[2] | Should -BeExactly 'S'
 
-        $actual.Count | Should Be 3
+        $actual.Count | Should -Be 3
 
-        $actual[0].Q | Should BeExactly 'A'
-        $actual[0].R | Should BeExactly 'B'
-        $actual[0].S | Should BeExactly 'C'
+        $actual[0].Q | Should -BeExactly 'A'
+        $actual[0].R | Should -BeExactly 'B'
+        $actual[0].S | Should -BeExactly 'C'
 
-        $actual[1].Q | Should BeExactly 'D'
-        $actual[1].R | Should BeExactly 'E'
-        $actual[1].S | Should BeExactly 'F'
+        $actual[1].Q | Should -BeExactly 'D'
+        $actual[1].R | Should -BeExactly 'E'
+        $actual[1].S | Should -BeExactly 'F'
     }
 
     It "Should work with StartRow" {
@@ -85,20 +85,20 @@ Describe "Import-Excel on a sheet with no headings" {
 
         $actualNames = $actual[0].psobject.properties.name
 
-        $actualNames.Count | Should Be 3
-        $actualNames[0] | Should BeExactly 'Q'
-        $actualNames[1] | Should BeExactly 'R'
-        $actualNames[2] | Should BeExactly 'S'
+        $actualNames.Count | Should -Be 3
+        $actualNames[0] | Should -BeExactly 'Q'
+        $actualNames[1] | Should -BeExactly 'R'
+        $actualNames[2] | Should -BeExactly 'S'
 
-        $actual.Count | Should Be 2
+        $actual.Count | Should -Be 2
 
-        $actual[0].Q | Should BeExactly 'D'
-        $actual[0].R | Should BeExactly 'E'
-        $actual[0].S | Should BeExactly 'F'
+        $actual[0].Q | Should -BeExactly 'D'
+        $actual[0].R | Should -BeExactly 'E'
+        $actual[0].S | Should -BeExactly 'F'
 
-        $actual[1].Q | Should BeExactly 'G'
-        $actual[1].R | Should BeExactly 'H'
-        $actual[1].S | Should BeExactly 'I'
+        $actual[1].Q | Should -BeExactly 'G'
+        $actual[1].R | Should -BeExactly 'H'
+        $actual[1].S | Should -BeExactly 'I'
 
     }
 
@@ -106,64 +106,64 @@ Describe "Import-Excel on a sheet with no headings" {
         $actual = @(Import-Excel $xlfile -NoHeader)
         $actualNames = $actual[0].psobject.properties.name
 
-        $actualNames.Count | Should Be 3
-        $actualNames[0] | Should BeExactly 'P1'
-        $actualNames[1] | Should BeExactly 'P2'
-        $actualNames[2] | Should BeExactly 'P3'
+        $actualNames.Count | Should -Be 3
+        $actualNames[0] | Should -BeExactly 'P1'
+        $actualNames[1] | Should -BeExactly 'P2'
+        $actualNames[2] | Should -BeExactly 'P3'
 
-        $actual.Count | Should Be 3
+        $actual.Count | Should -Be 3
 
-        $actual[0].P1 | Should BeExactly 'A'
-        $actual[0].P2 | Should BeExactly 'B'
-        $actual[0].P3 | Should BeExactly 'C'
+        $actual[0].P1 | Should -BeExactly 'A'
+        $actual[0].P2 | Should -BeExactly 'B'
+        $actual[0].P3 | Should -BeExactly 'C'
 
-        $actual[1].P1 | Should BeExactly 'D'
-        $actual[1].P2 | Should BeExactly 'E'
-        $actual[1].P3 | Should BeExactly 'F'
+        $actual[1].P1 | Should -BeExactly 'D'
+        $actual[1].P2 | Should -BeExactly 'E'
+        $actual[1].P3 | Should -BeExactly 'F'
 
-        $actual[2].P1 | Should BeExactly 'G'
-        $actual[2].P2 | Should BeExactly 'H'
-        $actual[2].P3 | Should BeExactly 'I'
+        $actual[2].P1 | Should -BeExactly 'G'
+        $actual[2].P2 | Should -BeExactly 'H'
+        $actual[2].P3 | Should -BeExactly 'I'
     }
 
     It "Should work with -NoHeader -DataOnly" {
         $actual = @(Import-Excel $xlfile -NoHeader -DataOnly)
         $actualNames = $actual[0].psobject.properties.name
 
-        $actualNames.Count | Should Be 3
-        $actualNames[0] | Should BeExactly 'P1'
-        $actualNames[1] | Should BeExactly 'P2'
-        $actualNames[2] | Should BeExactly 'P3'
+        $actualNames.Count | Should -Be 3
+        $actualNames[0] | Should -BeExactly 'P1'
+        $actualNames[1] | Should -BeExactly 'P2'
+        $actualNames[2] | Should -BeExactly 'P3'
 
-        $actual.Count | Should Be 3
+        $actual.Count | Should -Be 3
 
-        $actual[0].P1 | Should BeExactly 'A'
-        $actual[0].P2 | Should BeExactly 'B'
-        $actual[0].P3 | Should BeExactly 'C'
+        $actual[0].P1 | Should -BeExactly 'A'
+        $actual[0].P2 | Should -BeExactly 'B'
+        $actual[0].P3 | Should -BeExactly 'C'
 
-        $actual[1].P1 | Should BeExactly 'D'
-        $actual[1].P2 | Should BeExactly 'E'
-        $actual[1].P3 | Should BeExactly 'F'
+        $actual[1].P1 | Should -BeExactly 'D'
+        $actual[1].P2 | Should -BeExactly 'E'
+        $actual[1].P3 | Should -BeExactly 'F'
 
-        $actual[2].P1 | Should BeExactly 'G'
-        $actual[2].P2 | Should BeExactly 'H'
-        $actual[2].P3 | Should BeExactly 'I'
+        $actual[2].P1 | Should -BeExactly 'G'
+        $actual[2].P2 | Should -BeExactly 'H'
+        $actual[2].P3 | Should -BeExactly 'I'
     }
 
     It "Should work with -HeaderName -DataOnly -StartRow" {
         $actual = @(Import-Excel $xlfile -HeaderName 'Q', 'R', 'S' -DataOnly -StartRow 2)
         $actualNames = $actual[0].psobject.properties.name
 
-        $actualNames.Count | Should Be 3
-        $actualNames[0] | Should BeExactly 'Q'
-        $actualNames[1] | Should BeExactly 'R'
-        $actualNames[2] | Should BeExactly 'S'
+        $actualNames.Count | Should -Be 3
+        $actualNames[0] | Should -BeExactly 'Q'
+        $actualNames[1] | Should -BeExactly 'R'
+        $actualNames[2] | Should -BeExactly 'S'
 
-        $actual.Count | Should Be 1
+        $actual.Count | Should -Be 1
 
-        $actual[0].Q | Should BeExactly 'G'
-        $actual[0].R | Should BeExactly 'H'
-        $actual[0].S | Should BeExactly 'I'
+        $actual[0].Q | Should -BeExactly 'G'
+        $actual[0].R | Should -BeExactly 'H'
+        $actual[0].S | Should -BeExactly 'I'
     }
 
     It "Should" {
@@ -190,17 +190,17 @@ Describe "Import-Excel on a sheet with no headings" {
         $actual = @(Import-Excel -Path $xlfile -DataOnly -HeaderName 'FirstName', 'SecondName', 'City' -StartRow 2)
         $actualNames = $actual[0].psobject.properties.name
 
-        $actualNames.Count | Should Be 3
-        $actualNames[0] | Should BeExactly 'FirstName'
-        $actualNames[1] | Should BeExactly 'SecondName'
-        $actualNames[2] | Should BeExactly 'City'
+        $actualNames.Count | Should -Be 3
+        $actualNames[0] | Should -BeExactly 'FirstName'
+        $actualNames[1] | Should -BeExactly 'SecondName'
+        $actualNames[2] | Should -BeExactly 'City'
 
-        $actual.Count | Should Be 1
+        $actual.Count | Should -Be 1
 
         # Looks like -DataOnly does not handle empty columns
-        # $actual[0].FirstName | Should BeExactly 'Jean-Claude'
-        # $actual[0].SecondName | Should BeExactly 'Vandamme'
-        # $actual[0].City | Should BeExactly 'Brussels'
+        # $actual[0].FirstName | Should -BeExactly 'Jean-Claude'
+        # $actual[0].SecondName | Should -BeExactly 'Vandamme'
+        # $actual[0].City | Should -BeExactly 'Brussels'
     }
 
     It "Should handle data correctly if there is only a single row" {

@@ -41,9 +41,9 @@ Describe "Copy-Worksheet" {
             $ws = $excel.Workbook.Worksheets["Processes"]
         }
         it "Inserted a worksheet                                                                   " {
-            $Excel.Workbook.Worksheets.count                            | Should     be 2
-            $ws                                                         | Should not benullorEmpty
-            $ws.Dimension.Address                                       | should be $ProcRange
+            $Excel.Workbook.Worksheets.count                            | Should      -Be 2
+            $ws                                                         | Should -Not -BenullorEmpty
+            $ws.Dimension.Address                                       | Should -Be $ProcRange
         }
     }
     Context "Mixed types using a package object" {
@@ -54,38 +54,38 @@ Describe "Copy-Worksheet" {
             $ws = $Excel.Workbook.Worksheets[3]
         }
         it "Copied a worksheet, giving the expected name, number of rows and number of columns     " {
-            $Excel.Workbook.Worksheets.count                            | Should     be 3
-            $ws                                                         | Should not benullorEmpty
-            $ws.Name                                                    | Should     be "CopyOfMixedTypes"
-            $ws.Dimension.Columns                                       | Should     be  22
-            $ws.Dimension.Rows                                          | Should     be  2
+            $Excel.Workbook.Worksheets.count                            | Should      -Be 3
+            $ws                                                         | Should -Not -BenullorEmpty
+            $ws.Name                                                    | Should      -Be "CopyOfMixedTypes"
+            $ws.Dimension.Columns                                       | Should      -Be  22
+            $ws.Dimension.Rows                                          | Should      -Be  2
         }
         it "Copied the expected data into the worksheet                                            " {
-            $ws.Cells[2, 1].Value.Gettype().name                        | Should     be  'DateTime'
-            $ws.Cells[2, 2].Formula                                     | Should     be  'SUM(F2:G2)'
-            $ws.Cells[2, 5].Value.GetType().name                        | Should     be  'String'
-            $ws.Cells[2, 6].Value.GetType().name                        | Should     be  'String'
-            $ws.Cells[2, 18].Value.GetType().name                       | Should     be  'String'
-           ($ws.Cells[2, 11].Value -is [valuetype] )                    | Should     be  $true
-           ($ws.Cells[2, 12].Value -is [valuetype] )                    | Should     be  $true
-           ($ws.Cells[2, 13].Value -is [valuetype] )                    | Should     be  $true
-            $ws.Cells[2, 11].Value                                      | Should     beLessThan 0
-            $ws.Cells[2, 12].Value                                      | Should     beLessThan 0
-            $ws.Cells[2, 13].Value                                      | Should     beLessThan 0
+            $ws.Cells[2, 1].Value.Gettype().name                        | Should      -Be  'DateTime'
+            $ws.Cells[2, 2].Formula                                     | Should      -Be  'SUM(F2:G2)'
+            $ws.Cells[2, 5].Value.GetType().name                        | Should      -Be  'String'
+            $ws.Cells[2, 6].Value.GetType().name                        | Should      -Be  'String'
+            $ws.Cells[2, 18].Value.GetType().name                       | Should      -Be  'String'
+           ($ws.Cells[2, 11].Value -is [valuetype] )                    | Should      -Be  $true
+           ($ws.Cells[2, 12].Value -is [valuetype] )                    | Should      -Be  $true
+           ($ws.Cells[2, 13].Value -is [valuetype] )                    | Should      -Be  $true
+            $ws.Cells[2, 11].Value                                      | Should      -BeLessThan 0
+            $ws.Cells[2, 12].Value                                      | Should      -BeLessThan 0
+            $ws.Cells[2, 13].Value                                      | Should      -BeLessThan 0
             if ((Get-Culture).NumberFormat.NumberGroupSeparator -EQ ",") {
-               ($ws.Cells[2, 8].Value -is [valuetype] )                 | Should     be  $true
-                $ws.Cells[2, 9].Value.GetType().name                    | Should     be  'String'
+               ($ws.Cells[2, 8].Value -is [valuetype] )                 | Should      -Be  $true
+                $ws.Cells[2, 9].Value.GetType().name                    | Should      -Be  'String'
             }
             elseif ((Get-Culture).NumberFormat.NumberGroupSeparator -EQ ".") {
-               ($ws.Cells[2, 9].Value -is [valuetype] )                 | Should     be  $true
-                $ws.Cells[2, 8].Value.GetType().name                    | Should     be  'String'
+               ($ws.Cells[2, 9].Value -is [valuetype] )                 | Should      -Be  $true
+                $ws.Cells[2, 8].Value.GetType().name                    | Should      -Be  'String'
             }
-           ($ws.Cells[2, 14].Value -is [valuetype] )                    | Should     be  $true
-            $ws.Cells[2, 15].Value.GetType().name                       | Should     be  'String'
-            $ws.Cells[2, 16].Value.GetType().name                       | Should     be  'String'
-            $ws.Cells[2, 17].Value.GetType().name                       | Should     be  'String'
-           ($ws.Cells[2, 19].Value -is [valuetype] )                    | Should     be  $true
-           ($ws.Cells[2, 20].Value -is [valuetype] )                    | Should     be  $true
+           ($ws.Cells[2, 14].Value -is [valuetype] )                    | Should      -Be  $true
+            $ws.Cells[2, 15].Value.GetType().name                       | Should      -Be  'String'
+            $ws.Cells[2, 16].Value.GetType().name                       | Should      -Be  'String'
+            $ws.Cells[2, 17].Value.GetType().name                       | Should      -Be  'String'
+           ($ws.Cells[2, 19].Value -is [valuetype] )                    | Should      -Be  $true
+           ($ws.Cells[2, 20].Value -is [valuetype] )                    | Should      -Be  $true
         }
     }
 
@@ -113,7 +113,7 @@ Describe "Copy-Worksheet" {
 
             $targetSheets | ForEach-Object { Remove-Worksheet -FullName $xlfile -WorksheetName $_ }
 
-            (Get-ExcelSheetInfo -Path $xlfile ).Count | Should Be 3
+            (Get-ExcelSheetInfo -Path $xlfile ).Count | Should -Be 3
         }
     }
 
@@ -136,8 +136,8 @@ Describe "Copy-Worksheet" {
         }
         it "Should copy sheets piped into the command                                              " {
             $excel = Open-ExcelPackage $xlfileArchive
-            $excel.Workbook.Worksheets.Count                            | should      be 5
-            $excel.Workbook.Worksheets['1.3.2019'].Cells['A1'].Value    | should      be 'Hello World'
+            $excel.Workbook.Worksheets.Count                            | should      -be 5
+            $excel.Workbook.Worksheets['1.3.2019'].Cells['A1'].Value    | should      -be 'Hello World'
         }
     }
 }

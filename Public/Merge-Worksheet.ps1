@@ -118,7 +118,7 @@
      $headings         = $DifferenceObject[0].psobject.Properties.Name # This preserves the sequence - using Get-member would sort them alphabetically! There may be extra properties in
      if ($NoHeader     -and "Name" -eq $Key)  {$Key     = "p1"}
      if ($headings     -notcontains    $Key -and
-                              ('*' -ne $Key)) {Write-Warning -Message "You need to specify one of the headings in the sheet '$Worksheet1' as a key." ; return }
+                              ('*' -ne $Key)) {Write-Warning -Message "You need to specify one of the headings in the sheet '$Worksheet2' as a key." ; return }
      foreach ($p in $Property)                { $propList += ($headings.where({$_ -like    $p}) )}
      foreach ($p in $ExcludeProperty)         { $propList  =  $propList.where({$_ -notlike $p})  }
      if (($propList    -notcontains $Key) -and
