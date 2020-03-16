@@ -1,4 +1,5 @@
-﻿[CmdletBinding(DefaultParameterSetName = 'Default')]
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSPossibleIncorrectComparisonWithNull','',Justification='Intentional use to select non null array items')]
+[CmdletBinding(DefaultParameterSetName = 'Default')]
 param(
     [Parameter(Position=0)]
     [string]$XLFile,
@@ -49,6 +50,7 @@ if (-not $UseExisting) {
     $InvokePesterParams.Remove('WorkSheetName')
     Invoke-Pester @InvokePesterParams
 }
+
 if (-not (Test-Path -Path $InvokePesterParams['OutputFile'])) {
     throw "Could not output file $($InvokePesterParams['OutputFile'])"; return
 }
@@ -98,7 +100,7 @@ $testResults = foreach ($test in $resultXML.'test-suite'.results.'test-suite') {
                    Duration = $_.time
                    File     = $testPs1File; Group    = $Describe
                    SubGroup = $Context    ; Name     =($_.Description -replace '\s{2,}', ' ')
-                   Result   = $_.result   ; FullDesc = '=Group&" "&SubGroup&" "&Test'})
+                   Result   = $_.result   ; FullDesc = '=Group&" "&SubGroup&" "&Name'})
               }
             }
         }
@@ -124,7 +126,6 @@ if (-not $testResults) {Write-Warning 'No Results found' ; return}
 $clearSheet = -not $Append
 $excel      =  $testResults | Export-Excel  -Path $xlFile -WorkSheetname $WorkSheetName -ClearSheet:$clearSheet -Append:$append -PassThru  -BoldTopRow -FreezeTopRow -AutoSize -AutoFilter -AutoNameRange
 $ws         =  $excel.Workbook.Worksheets[$WorkSheetName]
-
 <#  Worksheet should look like ..
   |A        |B             |C      D      |E        |F       |G          |H       |I        |J        |K    |L       |M
  1|Machine  |OS            |Date   Time   |Executed |Success |Duration   |File    |Group    |SubGroup |Name |Result  |FullDescription
