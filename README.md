@@ -60,6 +60,27 @@ Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfi
 
 ![](./images/ScriptAnalyzerReport.png)
 
+# What's new 7.1.0
+
+Fixes, Updates and new Examples
+
+### Fixed
+
+- Odd behavior on the return of Import-Excel function https://github.com/dfinke/ImportExcel/issues/792
+- Export-Excel -FreezeTopRow with -Title https://github.com/dfinke/ImportExcel/issues/795
+- Not importing when first row contains a 0 in a column https://github.com/dfinke/ImportExcel/issues/802
+
+### Updated
+
+- Add `-AsDate` support to `Import-Excel` and `ConvertFrom-ExcelSheet`
+
+### New Examples
+
+|PS1|Description|Link|
+|---|---|---|
+|Pester-To-XLSx|Runs Pester, collects the results, enriches it, and exports it to Excel|[Pester-To-XLSx.ps1](https://github.com/dfinke/ImportExcel/blob/fe68ddbb0dd86e9fd1f3bfe01c4d2b9ce5509510/Examples/Pester-To-XLSx.ps1)
+|DSUM|Sums up the numbers in a field (column) of records in a list or database that match conditions that you specify.|[DSUM.ps1](https://github.com/dfinke/ImportExcel/blob/12fa49e3142af2178ae1c6b18d8c757af0d629ac/Examples/ExcelBuiltIns/DSUM.ps1)
+|VLookup|Setups up a sheet, you enter the name of an item and the amount is looked up|[VLOOKUP.ps1](https://github.com/dfinke/ImportExcel/blob/e42f42fde92ca636af22252b753a8329f48e15f1/Examples/ExcelBuiltIns/VLOOKUP.ps1)
 # What's new 7.0.1
 
 More infrastructure improvements.
