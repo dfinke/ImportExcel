@@ -477,12 +477,24 @@
         try {
             #Allow single switch or two seperate ones.
             if ($FreezeTopRowFirstColumn -or ($FreezeTopRow -and $FreezeFirstColumn)) {
-                $ws.View.FreezePanes(2, 2)
-                Write-Verbose -Message "Froze top row and first column"
+                if ($Title) {
+                    $ws.View.FreezePanes(3, 2)
+                    Write-Verbose -Message "Froze title and header rows and first column"
+                }
+                else {
+                    $ws.View.FreezePanes(2, 2)
+                    Write-Verbose -Message "Froze top row and first column"
+                }
             }
             elseif ($FreezeTopRow) {
-                $ws.View.FreezePanes(2, 1)
-                Write-Verbose -Message "Froze top row"
+                if ($Title) {
+                    $ws.View.FreezePanes(2, 1)
+                    Write-Verbose -Message "Froze title and header rows"
+                }
+                else {
+                    $ws.View.FreezePanes(2, 1)
+                    Write-Verbose -Message "Froze top row"
+                }
             }
             elseif ($FreezeFirstColumn) {
                 $ws.View.FreezePanes(1, 2)
