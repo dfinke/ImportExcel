@@ -83,7 +83,8 @@
                 }
 
                 foreach ($C in $Columns) {
-                    $Worksheet.Cells[$StartRow, $C] | Where-Object { $_.Value } | Select-Object @{N = 'Column'; E = { $C } }, Value
+                    #allow "False" or "0" to be column headings
+                    $Worksheet.Cells[$StartRow, $C] | Where-Object {-not [string]::IsNullOrEmpty($_.Value) } | Select-Object @{N = 'Column'; E = { $C } }, Value
                 }
             }
         }
@@ -127,7 +128,7 @@
             if ($DataOnly) {
                 #If we are using headers startrow will be the header-row so examine data from startRow + 1,
                 if ($NoHeader) { $range = "A" + ($StartRow     ) + ":" + $endAddress }
-                else { $range = "A" + ($StartRow + 1 ) + ":" + $endAddress }
+                else           { $range = "A" + ($StartRow + 1 ) + ":" + $endAddress }
                 #We're going to look at every cell and build 2 hash tables holding rows & columns which contain data.
                 #Want to Avoid 'select unique' operations & large Sorts, becuse time time taken increases with square
                 #of number of items (PS uses heapsort at large size). Instead keep a list of what we have seen,
@@ -137,14 +138,14 @@
                 foreach ($cell in $Worksheet.Cells[$range]) {
                     if ($null -ne $cell.Value ) { $colHash[$cell.Start.Column] = 1; $rowHash[$cell.Start.row] = 1 }
                 }
-                $rows = (   $StartRow..$EndRow   ).Where( { $rowHash[$_] })
+                $rows    = (   $StartRow..$EndRow   ).Where( { $rowHash[$_] })
                 $columns = ($StartColumn..$EndColumn).Where( { $colHash[$_] })
             }
             else {
-                $Columns = $StartColumn .. $EndColumn  ; if ($StartColumn -gt $EndColumn) { Write-Warning -Message "Selecting columns $StartColumn to $EndColumn might give odd results." }
-                if ($NoHeader) { $Rows = $StartRow..$EndRow ; if ($StartRow -gt $EndRow) { Write-Warning -Message "Selecting rows $StartRow to $EndRow might give odd results." } }
+                $Columns = $StartColumn .. $EndColumn        ; if ($StartColumn -gt $EndColumn) { Write-Warning -Message "Selecting columns $StartColumn to $EndColumn might give odd results." }
+                if       ($NoHeader) { $Rows = $StartRow..$EndRow ; if ($StartRow -gt $EndRow) { Write-Warning -Message "Selecting rows $StartRow to $EndRow might give odd results." } }
                 elseif ($HeaderName) { $Rows = $StartRow..$EndRow }
-                else { $Rows = (1 + $StartRow)..$EndRow } # ; if ($StartRow -ge $EndRow) { Write-Warning -Message "Selecting $StartRow as the header with data in $(1+$StartRow) to $EndRow might give odd results." } }
+                else                 { $Rows = (1 + $StartRow)..$EndRow } # ; if ($StartRow -ge $EndRow) { Write-Warning -Message "Selecting $StartRow as the header with data in $(1+$StartRow) to $EndRow might give odd results." } }
             }
             #endregion
             #region Create property names
