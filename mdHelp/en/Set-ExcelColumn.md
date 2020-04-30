@@ -8,7 +8,7 @@ schema: 2.0.0
 # Set-ExcelColumn
 
 ## SYNOPSIS
-Adds or modifies a column in an Excel worksheet, filling values, setting formatting and/or creating named ranges.
+Adds or modifies a column in an Excel worksheet, filling values, setting formatting, and/or creating named ranges.
 
 ## SYNTAX
 

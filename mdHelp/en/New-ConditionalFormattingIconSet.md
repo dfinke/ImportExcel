@@ -8,7 +8,7 @@ schema: 2.0.0
 # New-ConditionalFormattingIconSet
 
 ## SYNOPSIS
-Creates an object which describes a conditional formatting rule a for 3,4 or 5 icon set.
+Creates an object which describes a conditional formatting rule a for 3, 4, or 5 icon set.
 
 ## SYNTAX
 

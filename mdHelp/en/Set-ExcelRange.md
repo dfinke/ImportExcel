@@ -8,7 +8,7 @@ schema: 2.0.0
 # Set-ExcelRange
 
 ## SYNOPSIS
-Applies number, font, alignment and/or color formatting, values or formulas to a range of Excel cells.
+Applies number, font, alignment, and/or color formatting values (or formulas) to a range of Excel cells.
 
 ## SYNTAX
 

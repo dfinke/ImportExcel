@@ -8,7 +8,7 @@ schema: 2.0.0
 # New-ExcelChartDefinition
 
 ## SYNOPSIS
-Creates a Definition of a chart which can be added using Export-Excel, or Add-PivotTable
+Creates a Definition of a chart which can be added using Export-Excel or Add-PivotTable.
 
 ## SYNTAX
 

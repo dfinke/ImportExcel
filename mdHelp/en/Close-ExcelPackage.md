@@ -8,7 +8,7 @@ schema: 2.0.0
 # Close-ExcelPackage
 
 ## SYNOPSIS
-Closes an Excel Package, saving, saving under a new name or abandoning changes and opening the file in Excel as required.
+Closes an Excel Package, either saving normally, saving under a new name, or abandoning changes, in addition to opening the file in Excel (if specified).
 
 ## SYNTAX
 

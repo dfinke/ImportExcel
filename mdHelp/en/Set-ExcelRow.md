@@ -8,7 +8,7 @@ schema: 2.0.0
 # Set-ExcelRow
 
 ## SYNOPSIS
-Fills values into a \[new\] row in an Excel spreadsheet, and sets row formats.
+Fills values into a \[new\] row in an Excel spreadsheet and sets row formats.
 
 ## SYNTAX
 

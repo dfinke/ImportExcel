@@ -8,7 +8,7 @@ schema: 2.0.0
 # Expand-NumberFormat
 
 ## SYNOPSIS
-Converts short names for number formats to the formatting strings used in Excel
+Converts short names for number formats to the formatting strings used in Excel.
 
 ## SYNTAX
 

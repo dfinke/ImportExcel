@@ -8,7 +8,7 @@ schema: 2.0.0
 # Select-Worksheet
 
 ## SYNOPSIS
-Sets the selected tab in an Excel workbook to be the chosen sheet and unselects all the others.
+Sets the selected tab in an Excel workbook to be the chosen sheet, deselecting all others.
 
 ## SYNTAX
 

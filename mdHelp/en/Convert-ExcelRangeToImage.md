@@ -8,7 +8,7 @@ schema: 2.0.0
 # Convert-ExcelRangeToImage
 
 ## SYNOPSIS
-Gets the specified part of an Excel file and exports it as an image
+Gets the specified part of an Excel file and exports it as an image.
 
 ## SYNTAX
 

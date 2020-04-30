@@ -8,7 +8,7 @@ schema: 2.0.0
 # Remove-WorkSheet
 
 ## SYNOPSIS
-Removes one or more worksheets from one or more workbooks
+Removes one or more worksheets from one or more workbooks.
 
 ## SYNTAX
 

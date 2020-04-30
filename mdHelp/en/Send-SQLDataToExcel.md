@@ -8,7 +8,7 @@ schema: 2.0.0
 # Send-SQLDataToExcel
 
 ## SYNOPSIS
-Inserts a DataTable - returned by a SQL query - into an ExcelSheet
+Inserts a DataTable (returned by a SQL query) into an ExcelSheet.
 
 ## SYNTAX
 

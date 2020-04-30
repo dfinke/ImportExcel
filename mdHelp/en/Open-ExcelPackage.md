@@ -8,7 +8,7 @@ schema: 2.0.0
 # Open-ExcelPackage
 
 ## SYNOPSIS
-Returns an ExcelPackage object for the specified XLSX fil.e
+Returns an ExcelPackage object for the specified XLSX file.
 
 ## SYNTAX
 
