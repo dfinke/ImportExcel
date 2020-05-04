@@ -1,4 +1,4 @@
-[cmdletbinding(DefaultParameterSetName='Scope')]
+[cmdletbinding(DefaultParameterSetName = 'Scope')]
 Param(
     [Parameter(Mandatory = $true, ParameterSetName = 'ModulePath')]
     [ValidateNotNullOrEmpty()]
@@ -10,7 +10,7 @@ Param(
     [string]
     $Scope = 'CurrentUser',
 
-    [Parameter(Mandatory=$true, ParameterSetName = 'PreCheckOnly')]
+    [Parameter(Mandatory = $true, ParameterSetName = 'PreCheckOnly')]
     [switch]$PreCheckOnly,
     [Parameter(ParameterSetName = 'ModulePath')]
     [Parameter(ParameterSetName = 'Scope')]
@@ -30,7 +30,7 @@ Param(
 )
 Function Show-Warning {
     param(
-        [Parameter(Position=0,ValueFromPipeline=$true)]
+        [Parameter(Position = 0, ValueFromPipeline = $true)]
         $message
     )
     process {
@@ -49,11 +49,11 @@ if (-not $psdpath -or $psdpath.count -gt 1) {
     throw "Did not find a unique PSD file "
 }
 else {
-    try   {$null        = Test-ModuleManifest -Path $psdpath -ErrorAction stop}
-    catch {throw $_ ; return}
-    $ModuleName         = $psdpath.Name -replace '\.psd1$' , ''
-    $Settings           = $(& ([scriptblock]::Create(($psdpath | Get-Content -Raw))))
-    $approvedVerbs      = Get-Verb | Select-Object -ExpandProperty verb
+    try { $null = Test-ModuleManifest -Path $psdpath -ErrorAction stop }
+    catch { throw $_ ; return }
+    $ModuleName = $psdpath.Name -replace '\.psd1$' , ''
+    $Settings = $(& ([scriptblock]::Create(($psdpath | Get-Content -Raw))))
+    $approvedVerbs = Get-Verb | Select-Object -ExpandProperty verb
     $script:warningfile = Join-Path -Path $pwd -ChildPath "warnings.txt"
 }
 
@@ -63,7 +63,7 @@ if (-not $SkipPreChecks) {
     #Check files in the manifest are present
     foreach ($file in $Settings.FileList) {
         if (-not (Test-Path $file)) {
-           Show-Warning "File $file in the manifest file list is not present"
+            Show-Warning "File $file in the manifest file list is not present"
         }
     }
 
@@ -71,7 +71,7 @@ if (-not $SkipPreChecks) {
     #  its name and any alias names in the manifest; function should have a param block and help should be in an MD file
     # We will want a regex which captures from "function verb-noun {" to its closing "}"
     # need to match each { to a } - $reg is based on https://stackoverflow.com/questions/7898310/using-regex-to-balance-match-parenthesis
-    $reg  = [Regex]::new(@"
+    $reg = [Regex]::new(@"
         function\s*[-\w]+\s*{ # The function name and opening '{'
             (?:
             [^{}]+                  # Match all non-braces
@@ -84,56 +84,56 @@ if (-not $SkipPreChecks) {
         }                         # Functions closing '}'
 "@, 57)  # 57 = compile,multi-line ignore case and white space.
     foreach ($file in (Get-Item .\Public\*.ps1)) {
-        $name = $file.name -replace(".ps1","")
-        if ($name -notmatch ("(\w+)-\w+"))         {Show-Warning "$name in the public folder is not a verb-noun name"}
-        elseif ($Matches[1] -notin $approvedVerbs) {Show-Warning "$name in the public folder does not start with an approved verb"}
-        if(-not ($Settings.FunctionsToExport -ceq $name)) {
+        $name = $file.name -replace (".ps1", "")
+        if ($name -notmatch ("(\w+)-\w+")) { Show-Warning "$name in the public folder is not a verb-noun name" }
+        elseif ($Matches[1] -notin $approvedVerbs) { Show-Warning "$name in the public folder does not start with an approved verb" }
+        if (-not ($Settings.FunctionsToExport -ceq $name)) {
             Show-Warning ('File {0} in the public folder does not match an exported function in the manifest' -f $file.name)
         }
         else {
             $fileContent = Get-Content $file -Raw
-            $m    = $reg.Matches($fileContent)
-            if     ($m.Count -eq 0)                         {Show-Warning ('Could not find {0} function in {1}'  -f $name, $file.name); continue}
-            elseif ($m.Count -ge 2)                         {Show-Warning ('Multiple functions in {0}' -f $item.name)         ; Continue}
+            $m = $reg.Matches($fileContent)
+            if ($m.Count -eq 0) { Show-Warning ('Could not find {0} function in {1}' -f $name, $file.name); continue }
+            elseif ($m.Count -ge 2) { Show-Warning ('Multiple functions in {0}' -f $item.name)         ; Continue }
             elseif ($m[0] -imatch "^\function\s" -and
-                    $m[0] -cnotmatch "^\w+\s+$name")        {Show-Warning ('function name does not match file name for {0}' -f $file.name)}
+                $m[0] -cnotmatch "^\w+\s+$name") { Show-Warning ('function name does not match file name for {0}' -f $file.name) }
             #$m[0] runs form the f of function to its final }  -find the section up to param, check for aliases & comment-based help
-            $m2 = [regex]::Match($m[0],"^.*?param",17) # 17 = multi-line, ignnore case
-            if (-not $m2.Success)                           {Show-Warning "function $name has no param() block"}
+            $m2 = [regex]::Match($m[0], "^.*?param", 17) # 17 = multi-line, ignnore case
+            if (-not $m2.Success) { Show-Warning "function $name has no param() block" }
             else {
                 if ($m2.value -match "(?<!#\s*)\[\s*Alias\(\s*.([\w-]+).\s*\)\s*\]") {
                     foreach ($a in  ($Matches[1] -split '\s*,\s*')) {
-                        $a = $a -replace "'",""  -replace '"',''
-                        if (-not ($Settings.AliasesToExport   -eq $a)) {
+                        $a = $a -replace "'", "" -replace '"', ''
+                        if (-not ($Settings.AliasesToExport -eq $a)) {
                             Show-Warning "Function $name has alias $a which is not in the manifest"
                         }
-                     }
+                    }
                 }
                 if ($m2.value -match "\.syopsis|\.Description|\.Example") {
-                            Show-Warning "Function $name appears to have comment based help."
+                    Show-Warning "Function $name appears to have comment based help."
                 }
             }
         }
     }
 
     #Warn about functions which are exported but not found in public
-    $notFromPublic = $Settings.FunctionsToExport.Where({-not (Test-Path ".\public\$_.ps1")})
-    If ($notFromPublic) {Show-Warning ('Exported function(s) {0} are not loaded from the Public folder' -f ($notFromPublic -join ', '))}
+    $notFromPublic = $Settings.FunctionsToExport.Where( { -not (Test-Path ".\public\$_.ps1") })
+    If ($notFromPublic) { Show-Warning ('Exported function(s) {0} are not loaded from the Public folder' -f ($notFromPublic -join ', ')) }
 }
 
-if ($PreCheckOnly) {return}
+if ($PreCheckOnly) { return }
 
 #region build, determine module path if necessary, create target directory if necessary, copy files based on manifest, build help
-try     {
+try {
     if ($ModulePath) {
-        $ModulePath = $ModulePath -replace "\\$|/$",""
+        $ModulePath = $ModulePath -replace "\\$|/$", ""
     }
     else {
-        if ($IsLinux -or $IsMacOS)      {$ModulePathSeparator = ':' }
-        else                            {$ModulePathSeparator = ';' }
-        if ($Scope   -eq 'CurrentUser') {$dir =  [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::UserProfile) }
-        else                            {$dir =  [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::ProgramFiles) }
-        $ModulePath = ($env:PSModulePath -split $ModulePathSeparator).where({$_ -like "$dir*"},"First",1)
+        if ($IsLinux -or $IsMacOS) { $ModulePathSeparator = ':' }
+        else { $ModulePathSeparator = ';' }
+        if ($Scope -eq 'CurrentUser') { $dir = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::UserProfile) }
+        else { $dir = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::ProgramFiles) }
+        $ModulePath = ($env:PSModulePath -split $ModulePathSeparator).where( { $_ -like "$dir*" }, "First", 1)
         $ModulePath = Join-Path -Path $ModulePath -ChildPath $ModuleName
         $ModulePath = Join-Path -Path $ModulePath -ChildPath $Settings.ModuleVersion
     }
@@ -150,13 +150,13 @@ try     {
     $outputFile = $psdpath | Copy-Item -Destination $ModulePath -PassThru
     $outputFile.fullname
     foreach ($file in $Settings.FileList) {
-        if  ($file -like '.\*') {
-             $dest = ($file -replace '\.\\',"$ModulePath\")
-             if (-not (Test-Path -PathType Container (Split-Path -Parent $dest))) {
+        if ($file -like '.\*') {
+            $dest = ($file -replace '\.\\', "$ModulePath\")
+            if (-not (Test-Path -PathType Container (Split-Path -Parent $dest))) {
                 $null = New-item -Type Directory -Path (Split-Path -Parent $dest)
-             }
+            }
         }
-        else  {$dest = $ModulePath }
+        else { $dest = $ModulePath }
         Copy-Item -Path $file  -Destination $dest -Force -Recurse
     }
 
@@ -167,19 +167,19 @@ try     {
         }
         $platypsInfo = Import-Module platyPS  -PassThru -force
         Get-ChildItem .\mdHelp -Directory | ForEach-Object {
-           'Building help for language ''{0}'', using {1} V{2}.' -f $_.Name,$platypsInfo.Name, $platypsInfo.Version
+            'Building help for language ''{0}'', using {1} V{2}.' -f $_.Name, $platypsInfo.Name, $platypsInfo.Version
             $Null = New-ExternalHelp -Path $_.FullName  -OutputPath (Join-Path $ModulePath $_.Name) -Force
         }
     }
     #Leave module path for things which follow.
     $env:PSNewBuildModule = $ModulePath
 }
-catch   {
+catch {
     if ($PSScriptRoot) { Pop-Location }
     throw ('Failed installing module "{0}". Error: "{1}" in Line {2}' -f $ModuleName, $_, $_.InvocationInfo.ScriptLineNumber)
 }
 finally {
-    if (-not $outputFile -or -not (Test-Path $outputFile)) { throw "Failed to create module"}
+    if (-not $outputFile -or -not (Test-Path $outputFile)) { throw "Failed to create module" }
 }
 #endregion
 
@@ -189,16 +189,16 @@ if ($env:Build_ArtifactStagingDirectory) {
 
 #Check valid command names, help, run script analyzer over the files in the module directory
 if (-not $SkipPostChecks) {
-    try   {$outputFile | Import-Module -Force -ErrorAction stop }
+    try { $outputFile | Import-Module -Force -ErrorAction stop }
     catch {
-            if ($PSScriptRoot) { Pop-Location }
-            throw "New module failed to load"
+        if ($PSScriptRoot) { Pop-Location }
+        throw "New module failed to load"
     }
-    $commands = Get-Command -Module $ModuleName -CommandType function,Cmdlet
-    $commands.where({$_.name -notmatch "(\w+)-\w+" -or $Matches[1] -notin $approvedVerbs}) | ForEach-Object {
+    $commands = Get-Command -Module $ModuleName -CommandType function, Cmdlet
+    $commands.where( { $_.name -notmatch "(\w+)-\w+" -or $Matches[1] -notin $approvedVerbs }) | ForEach-Object {
         Show-Warning ('{0} does not meet the ApprovedVerb-Noun naming rules' -f $_.name)
     }
-    $helpless = $commands | Get-Help | Where-Object {$_.Synopsis -match "^\s+$($_.name)\s+\["} | Select-Object -ExpandProperty name
+    $helpless = $commands | Get-Help | Where-Object { $_.Synopsis -match "^\s+$($_.name)\s+\[" } | Select-Object -ExpandProperty name
     foreach ($command in $helpless ) {
         Show-Warning ('On-line help is missing for {0}.' -f $command)
     }
@@ -222,10 +222,12 @@ if (-not $SkipPostChecks) {
             AutoSize             = $true
             Activate             = $true
             PivotTableDefinition = @{BreakDown = @{
-                PivotData            = @{RuleName = 'Count' }
-                PivotRows            = 'Severity', 'RuleName'
-                PivotTotals          = 'Rows'
-                PivotChartDefinition = $chartDef }}
+                    PivotData            = @{RuleName = 'Count' }
+                    PivotRows            = 'Severity', 'RuleName'
+                    PivotTotals          = 'Rows'
+                    PivotChartDefinition = $chartDef 
+                }
+            }
         }
         Remove-Item -Path $ExcelParams['Path'] -ErrorAction SilentlyContinue
         $AnalyzerResults | Export-Excel @ExcelParams
@@ -244,8 +246,8 @@ if (Test-Path $script:warningfile) {
 #if there are test files, run pester (unless told not to)
 if (-not $SkipPesterTests -and (Get-ChildItem -Recurse *.tests.ps1)) {
     Import-Module -Force $outputFile
-    if (-not (Get-Module -ListAvailable pester | Where-Object -Property version -ge ([version]::new(4,4,1)))) {
-        Install-Module Pester -Force -SkipPublisherCheck
+    if (-not (Get-Module -ListAvailable pester | Where-Object -Property version -ge ([version]::new(4, 4, 1)))) {
+        Install-Module Pester -Force -SkipPublisherCheck -MaximumVersion 4.99.99
     }
     Import-Module Pester
     $PesterOutputPath = Join-Path $pwd  -ChildPath ('TestResultsPS{0}.xml' -f $PSVersionTable.PSVersion)
