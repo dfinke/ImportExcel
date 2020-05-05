@@ -13,7 +13,10 @@ param
     # AppVeyor and Azure - Upload module as AppVeyor Artifact.
     [Switch]$Artifact,
     # Azure - Runs PsScriptAnalyzer against one or more folders and pivots the results to form a report.
-    [Switch]$Analyzer
+    [Switch]$Analyzer,
+    # Installs the module and invokes only the ModuleImport test.
+    # Used for validating that the module imports still when external dependencies are missing, e.g. mono-libgdiplus on macOS.
+    [Switch]$TestImportOnly
 )
 $ErrorActionPreference = 'Stop'
 if ($Initialize) {
@@ -21,7 +24,7 @@ if ($Initialize) {
     $ModuleVersion = (. ([Scriptblock]::Create((Get-Content -Path $Psd1 | Out-String)))).ModuleVersion
     Update-AppveyorBuild -Version "$ModuleVersion ($env:APPVEYOR_BUILD_NUMBER) $env:APPVEYOR_REPO_BRANCH"
 }
-if ($Test) {
+if ($Test -or $TestImportOnly) {
     function Get-EnvironmentInfo {
         if ([environment]::OSVersion.Platform -like "win*") {
             # Get Windows Version
@@ -97,7 +100,23 @@ if (-not $VersionFilePath) {
     '[Progress] Installing Module.'
     . .\CI\Install.ps1
     '[Progress] Invoking Pester.'
-    Invoke-Pester -OutputFile ('TestResultsPS{0}.xml' -f $PSVersionTable.PSVersion)
+    $pesterParams = @{
+        OutputFile = ('TestResultsPS{0}.xml' -f $PSVersionTable.PSVersion)
+        PassThru = $true
+    }
+    if ($TestImportOnly) {
+        $pesterParams['Tag'] = 'TestImportOnly'
+    }
+    else {
+        $pesterParams['ExcludeTag'] = 'TestImportOnly'
+    }
+    $testResults = Invoke-Pester @pesterParams
+    'Pester invocation complete!'
+    if ($testResults.FailedCount -gt 0) {
+        "Test failures:"
+        $testResults.TestResult | Where-Object {-not $_.Passed} | Format-List
+        Write-Error "$($testResults.FailedCount) Pester tests failed. Build cannot continue!"
+    }
 }
 if ($Finalize) {
     '[Progress] Finalizing.'

@@ -93,3 +93,19 @@ jobs:
         testResultsFormat: 'NUnit'
         testResultsFiles: '**/TestResults*.xml'
         failTaskOnFailedTests: true
+
+  - job: macOSNoDeps
+    pool:
+      vmImage: 'macOS-latest'
+
+    steps:
+    - powershell: 'Install-Module -Name Pester -Force -MaximumVersion 4.99.99'
+      displayName: 'Update Pester'
+    - powershell: './CI/CI.ps1 -TestImportOnly'
+      displayName: 'Install and Test Import Only'
+
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'NUnit'
+        testResultsFiles: '**/TestResults*.xml'
+        failTaskOnFailedTests: true
