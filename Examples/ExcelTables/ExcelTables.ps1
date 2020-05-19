@@ -26,7 +26,7 @@ function Import-ExcelTables ( $Path, $TablePrefix, $IgnoreWorksheets )
   $Workbook = $ExcelPackage.Workbook
   $Worksheets = $Workbook.Worksheets
 
-  $Worksheets.Tables | Where { $Table = $_; (!$IgnoreWorksheets.Where{$Table.Worksheet -like $_}) -and ($_.Name -match "^$TablePrefix") } | %{
+  $Worksheets.Tables | Where { $Table = $_; (!$IgnoreWorksheets.Where{$Table.Worksheet -like $_}) -and ($Table.Name -match "^$TablePrefix") } | %{
 
       $ExcelTables[$Table.Name -replace "$TablePrefix"] = Import-Excel -ExcelPackage $ExcelPackage -Sheet $Table.Worksheet `
       -StartRow $Table.Address.Start.Row -StartColumn $Table.Address.Start.Column `
