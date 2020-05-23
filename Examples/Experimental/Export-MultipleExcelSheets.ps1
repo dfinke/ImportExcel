@@ -1,6 +1,19 @@
 function Export-MultipleExcelSheets {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "", Justification="No suitable singular")]
+    <#
+        .Synopsis
+        Takes a hash table of scriptblocks and exports each as a sheet in an Excel file    
+
+        .Example
+$p = Get-Process
+
+$InfoMap = @{
+    PM                 = { $p | Select-Object company, pm }
+    Handles            = { $p | Select-Object company, handles }
+    Services           = { Get-Service }
+}
+
+Export-MultipleExcelSheets -Path $xlfile -InfoMap $InfoMap -Show -AutoSize        
+    #>
     param(
         [Parameter(Mandatory = $true)]
         $Path,
@@ -18,10 +31,15 @@ function Export-MultipleExcelSheets {
     $parameters.Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
 
     foreach ($entry in $InfoMap.GetEnumerator()) {
-        Write-Progress -Activity "Exporting" -Status "$($entry.Key)"
-        $parameters.WorkSheetname = $entry.Key
+        if ($entry.Value -is [scriptblock]) {
+            Write-Progress -Activity "Exporting" -Status "$($entry.Key)"
+            $parameters.WorkSheetname = $entry.Key
 
-        & $entry.Value | Export-Excel @parameters
+            & $entry.Value | Export-Excel @parameters
+        }
+        else {
+            Write-Warning "$($entry.Key) not exported, needs to be a scriptblock"
+        }
     }
 
     if ($Show) { Invoke-Item $Path }
