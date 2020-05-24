@@ -131,6 +131,7 @@ if ($Artifact) {
     "[Progress] Artifact Start for Module: $ModuleName, Version: $VersionLocal."
     if ($env:APPVEYOR) {
         $ZipFileName = "{0} {1} {2} {3:yyyy-MM-dd HH-mm-ss}.zip" -f $ModuleName, $VersionLocal, $env:APPVEYOR_REPO_BRANCH, (Get-Date)
+        $ZipFileName = $ZipFileName -replace ("[{0}]" -f [RegEx]::Escape([IO.Path]::GetInvalidFileNameChars() -join ''))
         $ZipFileFullPath = Join-Path -Path $PSScriptRoot -ChildPath $ZipFileName
         "[Info] Artifact. $ModuleName, ZipFileName: $ZipFileName."
         #Compress-Archive -Path $ModulePath -DestinationPath $ZipFileFullPath
