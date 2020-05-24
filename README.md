@@ -17,7 +17,6 @@ If this project helped you reduce the time to get your job done, let me know.
 
 | CI System    | Environment                   | Status                                                                                                                                                                                                                                          |
 |--------------|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| AppVeyor     | Windows, Core preview, Ubuntu | [![Build status](https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true)](https://ci.appveyor.com/project/dfinke/importexcel/branch/master)                                                                        |
 | Azure DevOps | Windows                       | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=Windows)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master)       |
 | Azure DevOps | Windows (Core)                | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=WindowsPSCore)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master) |
 | Azure DevOps | Ubuntu                        | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=Ubuntu)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master)        |
@@ -63,6 +62,7 @@ Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfi
 # What's new 7.1.1
 
 - Moved `Export-MultipleExcelSheets` from psm1 to Examples/Experimental
+- Deleted the CI build in Appveyor
 
 # What's new 7.1.0
 
