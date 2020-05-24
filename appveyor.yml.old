@@ -1,0 +1,67 @@
+# Version format
+version: '({build})'
+
+# Build worker image (VM templates)
+image:
+  - Ubuntu1804
+  - 'Visual Studio 2019'
+
+# Fix CRLF on Windows
+init:
+  - cmd: 'git config --global --unset core.autocrlf'
+
+# To disable automatic builds
+build: off
+
+# Skipping commits with particular message or from specific user
+skip_commits:
+  message: '/\[skip av\]/'
+  files:
+    - '*.md'
+
+# Including commits with particular message or from specific user
+#only_commits:
+#  message: '/\[build\]/' # Start a new build if message contains 'build'
+
+# Scripts that run after cloning repository
+install:
+  - ps: 'Install-Module -Name Pester -Force -SkipPublisherCheck -MaximumVersion 4.99.99'
+  - ps: 'Install-Module -Name Assert -Force -MaximumVersion 4.99.99'
+  # PowerShell Core
+  - ps: '& .\CI\InstallPowerShell.ps1 -Version "7.0.0-preview.4"' # Install other PowerShell Core version (Optional)
+  - pwsh: 'Install-Module -Name Pester -Force -MaximumVersion 4.99.99'
+  - pwsh: 'Install-Module -Name Assert -Force -MaximumVersion 4.99.99'
+
+# To run your custom scripts instead of automatic tests
+test_script:
+  - ps: '& .\CI\CI.ps1 -Test'
+  - pwsh: '& .\CI\CI.ps1 -Test'
+  - ps: '& .\CI\CI.ps1 -Finalize' # Collect and upload results
+
+# Deploy
+deploy_script:
+  - ps: '& .\CI\CI.ps1 -Artifact'
+  - ps: '$null = Install-PackageProvider -Name NuGet -Force ; & .\CI\Publish.ps1'
+
+# Linux setup
+for:
+  -
+    matrix:
+      only:
+        - image: Ubuntu1804
+    # Install other PowerShell Core version (Optional)
+    init:
+      - sh: 'sudo apt-get -qq update && sudo apt-get -qq install powershell-preview && sudo rm /usr/bin/pwsh && sudo ln -s /opt/microsoft/powershell/7-preview/pwsh /usr/bin/pwsh'
+      - sh: 'export LANG=en_US.UTF-8' # Fix for PowerShell 7.0.0-preview.2, Remove if using other version.
+    # Scripts that run after cloning repository
+    install:
+      - pwsh: '& .\CI\CI.ps1 -Initialize' # Set AppVeyor build version
+      - pwsh: 'Install-Module -Name Pester -Force -MaximumVersion 4.99.99'
+      - pwsh: 'Install-Module -Name Assert -Force -MaximumVersion 4.99.99'
+    # To run your custom scripts instead of automatic tests
+    test_script:
+      - pwsh: '& .\CI\CI.ps1 -Test'
+      - pwsh: '& .\CI\CI.ps1 -Finalize' # Collect and upload results
+    # Skip Deploy
+    deploy_script:
+      - pwsh: '"Deploy skiped on Linux."'
