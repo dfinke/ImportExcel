@@ -6,7 +6,7 @@
     RootModule         = 'ImportExcel.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '7.1.0'
+    ModuleVersion      = '7.1.1'
 
     # ID used to uniquely identify this module
     GUID               = '60dd4136-feff-401a-ba27-a84458c57ede'
@@ -18,7 +18,7 @@
     CompanyName        = 'Doug Finke'
 
     # Copyright statement for this module
-    Copyright          = 'c 2019 All rights reserved.'
+    Copyright          = 'c 2020 All rights reserved.'
 
     # Description of the functionality provided by this module
     Description        = @'

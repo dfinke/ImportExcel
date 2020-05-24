@@ -60,6 +60,10 @@ Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfi
 
 ![](./images/ScriptAnalyzerReport.png)
 
+# What's new 7.1.1
+
+- Moved `Export-MultipleExcelSheets` from psm1 to Examples/Experimental
+
 # What's new 7.1.0
 
 Fixes, Updates and new Examples
