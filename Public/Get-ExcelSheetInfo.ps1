@@ -2,27 +2,20 @@ function Get-ExcelSheetInfo {
     [CmdletBinding()]
     param(
         [Alias('FullName')]
-        [Parameter(ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, Mandatory=$true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ValueFromPipeline = $true, Mandatory = $true)]
         $Path
     )
     process {
         $Path = (Resolve-Path $Path).ProviderPath
 
-        $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,'Open','Read','ReadWrite'
-        $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
-        $workbook  = $xl.Workbook
+        $pkg = Open-ExcelPackage -Path $Path
+        $workbook = $pkg.Workbook
 
         if ($workbook -and $workbook.Worksheets) {
-            $workbook.Worksheets |
-                Select-Object -Property name,index,hidden,@{
-                    Label = 'Path'
-                    Expression = {$Path}
-                }
+            $workbook.Worksheets | 
+                Select-Object -Property Name, Index, Hidden, Dimension, Tables, @{Name = 'Path'; Expression = { $Path } }
         }
 
-        $stream.Close()
-        $stream.Dispose()
-        $xl.Dispose()
-        $xl = $null
+        Close-ExcelPackage -ExcelPackage $pkg -NoSave
     }
 }
