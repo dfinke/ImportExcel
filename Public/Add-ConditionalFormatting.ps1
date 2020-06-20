@@ -87,7 +87,7 @@
     if     ($Reverse)  {
             if     ($rule.type -match 'IconSet$'   )                {$rule.reverse = $true}
             elseif ($rule.type -match 'ColorScale$')                {$temp =$rule.LowValue.Color ; $rule.LowValue.Color = $rule.HighValue.Color; $rule.HighValue.Color = $temp}
-            else   {Write-Warning -Message "-Reverse was ignored because $ruletype does not support it."}
+            else   {Write-Warning -Message "-Reverse was ignored because $RuleType does not support it."}
     }
     #endregion
     #region set the rule conditions

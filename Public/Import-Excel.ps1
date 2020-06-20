@@ -115,7 +115,7 @@
             try {
                 #Select worksheet
                 if (-not  $WorksheetName) { $Worksheet = $ExcelPackage.Workbook.Worksheets[1] }
-                elseif (-not ($Worksheet = $ExcelPackage.Workbook.Worksheets[$WorkSheetName])) {
+                elseif (-not ($Worksheet = $ExcelPackage.Workbook.Worksheets[$WorksheetName])) {
                     throw "Worksheet '$WorksheetName' not found, the workbook only contains the worksheets '$($ExcelPackage.Workbook.Worksheets)'. If you only wish to select the first worksheet, please remove the '-WorksheetName' parameter." ; return
                 }
 
@@ -142,12 +142,12 @@
                 }
                 else {
                     $Columns = $StartColumn .. $EndColumn  ; if ($StartColumn -gt $EndColumn) { Write-Warning -Message "Selecting columns $StartColumn to $EndColumn might give odd results." }
-                    if ($NoHeader) { $Rows = $StartRow..$EndRow ; if ($StartRow -gt $EndRow) { Write-Warning -Message "Selecting rows $StartRow to $EndRow might give odd results." } }
-                    elseif ($HeaderName) { $Rows = $StartRow..$EndRow }
+                    if ($NoHeader) { $rows = $StartRow..$EndRow ; if ($StartRow -gt $EndRow) { Write-Warning -Message "Selecting rows $StartRow to $EndRow might give odd results." } }
+                    elseif ($HeaderName) { $rows = $StartRow..$EndRow }
                     else {
-                        $Rows = (1 + $StartRow)..$EndRow
+                        $rows = (1 + $StartRow)..$EndRow
                         if ($StartRow -eq 1 -and $EndRow -eq 1) {
-                            $Rows = 0
+                            $rows = 0
                         }
                     }
 
@@ -162,7 +162,7 @@
                     throw "Duplicate column headers found on row '$StartRow' in columns '$($Duplicates.Group.Column)'. Column headers must be unique, if this is not a requirement please use the '-NoHeader' or '-HeaderName' parameter."; return
                 }
                 #endregion
-                if (-not $Rows) {
+                if (-not $rows) {
                     Write-Warning "Worksheet '$WorksheetName' in workbook '$Path' contains no data in the rows after top row '$StartRow'"
                 }
                 else {
@@ -186,7 +186,7 @@
                         $TextColRegEx = New-Object -TypeName regex -ArgumentList $TextColExpression , 9
                     }
                     else {$TextColRegEx = $null}
-                    foreach ($R in $Rows) {
+                    foreach ($R in $rows) {
                         #Disabled write-verbose for speed
                         #  Write-Verbose "Import row '$R'"
                         $NewRow = [Ordered]@{ }
@@ -213,7 +213,7 @@
                     #endregion
                 }
             }
-            catch { throw "Failed importing the Excel workbook '$Path' with worksheet '$Worksheetname': $_"; return }
+            catch { throw "Failed importing the Excel workbook '$Path' with worksheet '$WorksheetName': $_"; return }
             finally {
                 if ($Path) { $stream.close(); $ExcelPackage.Dispose() }
             }

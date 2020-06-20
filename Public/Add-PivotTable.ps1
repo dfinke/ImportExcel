@@ -96,8 +96,8 @@
                 $pivotTable = $wsPivot.PivotTables.Add($Address, $SourceWorkSheet.Cells[$SourceRange], $pivotTableName)
             }
             else {Write-warning "Could not create a PivotTable with the Source Range provided."; return}
-            foreach ($Row in $PivotRows) {
-                try {$null = $pivotTable.RowFields.Add($pivotTable.Fields[$Row]) }
+            foreach ($row in $PivotRows) {
+                try {$null = $pivotTable.RowFields.Add($pivotTable.Fields[$row]) }
                 catch {Write-Warning -message "Could not add '$row' to Rows in PivotTable $pivotTableName." }
             }
             foreach ($Column in $PivotColumns) {

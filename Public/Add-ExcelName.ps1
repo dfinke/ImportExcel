@@ -11,7 +11,7 @@ function Add-ExcelName {
         $ws = $Range.Worksheet
         if (-not $RangeName) {
             $RangeName = $ws.Cells[$Range.Start.Address].Value
-            $Range  = ($Range.Worksheet.cells[($range.start.row +1), $range.start.Column ,  $range.end.row, $range.end.column])
+            $Range  = ($Range.Worksheet.cells[($Range.start.row +1), $Range.start.Column ,  $Range.end.row, $Range.end.column])
         }
         if ($RangeName -match '\W') {
             Write-Warning -Message "Range name '$RangeName' contains illegal characters, they will be replaced with '_'."

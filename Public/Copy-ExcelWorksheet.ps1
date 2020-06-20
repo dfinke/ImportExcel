@@ -52,7 +52,7 @@
             else {
                 $SourceObject = (Resolve-Path $SourceObject).ProviderPath
                 try {
-                    Write-Verbose "Opening worksheet '$Worksheetname' in Excel workbook '$SourceObject'."
+                    Write-Verbose "Opening worksheet '$WorksheetName' in Excel workbook '$SourceObject'."
                     $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $SourceObject, 'Open', 'Read' , 'ReadWrite'
                     $package1 = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
                     $sourceWs = $Package1.Workbook.Worksheets[$SourceWorkSheet]

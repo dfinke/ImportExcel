@@ -7,7 +7,7 @@
         [Parameter(Mandatory = $true, ParameterSetName = "PackageDefault")]
         [Parameter(Mandatory = $true, ParameterSetName = "PackageTable")]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
-        $WorkSheetName = 'Combined',
+        $WorksheetName = 'Combined',
         [switch]$Clearsheet,
         [switch]$NoHeader,
         [string]$FromLabel = "From" ,
@@ -55,10 +55,10 @@
     )
     #region get target worksheet, select it and move it to the end.
     if ($Path -and -not $ExcelPackage) {$ExcelPackage = Open-ExcelPackage -path $Path  }
-    $destinationSheet = Add-Worksheet -ExcelPackage $ExcelPackage -WorkSheetname $WorkSheetName -ClearSheet:$Clearsheet
+    $destinationSheet = Add-Worksheet -ExcelPackage $ExcelPackage -WorkSheetname $WorksheetName -ClearSheet:$Clearsheet
     foreach ($w in $ExcelPackage.Workbook.Worksheets) {$w.view.TabSelected = $false}
     $destinationSheet.View.TabSelected = $true
-    $ExcelPackage.Workbook.Worksheets.MoveToEnd($WorkSheetName)
+    $ExcelPackage.Workbook.Worksheets.MoveToEnd($WorksheetName)
     #row to insert at will be 1 on a blank sheet and lastrow + 1 on populated one
     $row = (1 + $destinationSheet.Dimension.End.Row )
     #endregion
@@ -123,7 +123,7 @@
     'Title', 'TitleFillPattern', 'TitleBackgroundColor', 'TitleBold', 'TitleSize' | ForEach-Object {$null = $params.Remove($_)}
     if ($params.Keys.Count) {
         if ($Title) { $params.StartRow = 2}
-        $params.WorkSheetName = $WorkSheetName
+        $params.WorkSheetName = $WorksheetName
         $params.ExcelPackage = $ExcelPackage
         Export-Excel @Params
     }
