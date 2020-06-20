@@ -122,8 +122,8 @@
      foreach ($p in $Property)                { $propList += ($headings.where({$_ -like    $p}) )}
      foreach ($p in $ExcludeProperty)         { $propList  =  $propList.where({$_ -notlike $p})  }
      if (($propList    -notcontains $Key) -and
-                           ('*' -ne $Key))    { $propList +=  $Key}    #If $key isn't one of the headings we will have bailed by now
-     $propList         = $propList   | Select-Object -Unique           #so, prolist must contain at least $key if nothing else
+                           ('*' -ne $Key))    { $propList +=  $Key}    #If $Key isn't one of the headings we will have bailed by now
+     $propList         = $propList   | Select-Object -Unique           #so, prolist must contain at least $Key if nothing else
 
      #If key is "*" we treat it differently , and we will create a script property which concatenates all the Properties in $Proplist
      $ConCatblock      = [scriptblock]::Create( ($proplist | ForEach-Object {'$this."' + $_ + '"'})  -join " + ")
@@ -131,12 +131,12 @@
      #Build the list of the properties to output, in order.
      $diffpart         = @()
      $refpart          = @()
-     foreach ($p in $proplist.Where({$key -ne $_}) ) {$refPart += $p ; $diffPart += "$DiffPrefix $p" }
+     foreach ($p in $proplist.Where({$Key -ne $_}) ) {$refPart += $p ; $diffPart += "$DiffPrefix $p" }
      $lastRefColNo     = $proplist.count
      $FirstDiffColNo   = $lastRefColNo + 1
 
-     if ($key -ne '*') {
-            $outputProps   = @($key) + $refpart + $diffpart
+     if ($Key -ne '*') {
+            $outputProps   = @($Key) + $refpart + $diffpart
             #If we are using a single column as the key, don't duplicate it, so the last difference column will be A if there is one property, C if there are two, E if there are 3
             $lastDiffColNo = (2 * $proplist.count) - 1
      }
@@ -151,7 +151,7 @@
      #the row in the other sheet might be different so we will look up the row number from the key field - build a hash table for that here
      #If we have "*" as the key ad the script property to concatenate the [selected] properties.
 
-     $Rowhash = @{}
+     $rowHash = @{}
      $rowNo = $firstDataRow
      foreach ($row in $ReferenceObject)  {
         if   ($null -eq $row._row) {Add-Member -InputObject $row -MemberType NoteProperty   -Value ($rowNo ++)  -Name "_Row" }
@@ -163,23 +163,23 @@
          Add-Member       -InputObject $row -MemberType NoteProperty   -Value $rowNo       -Name "$DiffPrefix Row" -Force
          if   ($Key       -eq '*' )    {
                Add-Member -InputObject $row -MemberType ScriptProperty -Value $ConCatblock -Name "_All"
-               $Rowhash[$row._All] = $rowNo
+               $rowHash[$row._All] = $rowNo
          }
-         else {$Rowhash[$row.$key] = $rowNo  }
+         else {$rowHash[$row.$Key] = $rowNo  }
          $rowNo ++
      }
-     if ($DifferenceObject.count -gt $Rowhash.Keys.Count) {
-        Write-Warning -Message "Difference object has $($DifferenceObject.Count) rows; but only $($Rowhash.keys.count) unique keys"
+     if ($DifferenceObject.count -gt $rowHash.Keys.Count) {
+        Write-Warning -Message "Difference object has $($DifferenceObject.Count) rows; but only $($rowHash.keys.count) unique keys"
      }
-     if ($Key -eq '*') {$key = "_ALL"}
+     if ($Key -eq '*') {$Key = "_ALL"}
  #endregion
      #We need to know all the properties we've met on the objects we've diffed
      $eDiffProps  = [ordered]@{}
      #When we do a compare object changes will result in two rows so we group them and join them together.
      $expandedDiff = Compare-Object -ReferenceObject $ReferenceObject -DifferenceObject $DifferenceObject -Property $propList -PassThru -IncludeEqual |
-                        Group-Object -Property $key | ForEach-Object {
+                        Group-Object -Property $Key | ForEach-Object {
                             #The value of the key column is the name of the Group.
-                            $keyval = $_.name
+                            $keyVal = $_.name
                             #we're going to create a custom object from a hash table.
                             $hash = [ordered]@{}
                             foreach ($result in $_.Group) {
@@ -187,7 +187,7 @@
                                 elseif (-not $hash["$DiffPrefix Row"])       {$hash["_Row"] = "" }
                                 #if we have already set the side, this must be the second record, so set side to indicate "changed"; if we got two "Same" indicators we may have a classh of keys
                                 if     ($hash.Side) {
-                                    if ($hash.Side -eq $result.SideIndicator) {Write-Warning -Message "'$keyval' may be a duplicate."}
+                                    if ($hash.Side -eq $result.SideIndicator) {Write-Warning -Message "'$keyVal' may be a duplicate."}
                                         $hash.Side = "<>"
                                 }
                                 else   {$hash["Side"] = $result.SideIndicator}
@@ -204,10 +204,10 @@
                                     '<=' {      $hash["$DiffPrefix is"] = 'Removed'}
                                     }
                                  #find the number of the row in the the "difference" object which has this key. If it is the object is only in the reference this will be blank.
-                                 $hash["$DiffPrefix Row"] = $Rowhash[$keyval]
-                                 $hash[$key]              = $keyval
+                                 $hash["$DiffPrefix Row"] = $rowHash[$keyVal]
+                                 $hash[$Key]              = $keyVal
                                  #Create FieldName and/or =>FieldName columns
-                                 foreach  ($p in $result.psobject.Properties.name.where({$_ -ne $key -and $_ -ne "SideIndicator" -and $_ -ne "$DiffPrefix Row" })) {
+                                 foreach  ($p in $result.psobject.Properties.name.where({$_ -ne $Key -and $_ -ne "SideIndicator" -and $_ -ne "$DiffPrefix Row" })) {
                                     if     ($result.SideIndicator -eq "==" -and $p -in $propList)
                                                                              {$hash[("$p")] = $hash[("$DiffPrefix $p")] = $result.$P}
                                     elseif ($result.SideIndicator -eq "==" -or $result.SideIndicator -eq "<=")

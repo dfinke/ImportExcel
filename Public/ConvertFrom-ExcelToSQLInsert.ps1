@@ -8,7 +8,7 @@ function ConvertFrom-ExcelToSQLInsert {
         [ValidateScript( { Test-Path $_ -PathType Leaf })]
         $Path,
         [Alias("Sheet")]
-        $WorkSheetname = 1,
+        $WorksheetName = 1,
         [Alias('HeaderRow', 'TopRow')]
         [ValidateRange(1, 9999)]
         [Int]$StartRow,

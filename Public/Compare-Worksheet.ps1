@@ -7,7 +7,7 @@
         $Referencefile ,
         [parameter(Mandatory=$true,Position=1)]
         $Differencefile   ,
-        $WorkSheetName   = "Sheet1",
+        $WorksheetName   = "Sheet1",
         $Property        = "*"    ,
         $ExcludeProperty ,
         [Parameter(ParameterSetName='B', Mandatory)]
@@ -32,19 +32,19 @@
     catch  { Write-Warning -Message "Could not Resolve the filenames." ; return }
 
     #If we have one file , we must have two different worksheet names. If we have two files we can have a single string or two strings.
-    if     ($onefile -and ( ($WorkSheetName.count -ne 2) -or $WorkSheetName[0] -eq $WorkSheetName[1] ) ) {
+    if     ($onefile -and ( ($WorksheetName.count -ne 2) -or $WorksheetName[0] -eq $WorksheetName[1] ) ) {
         Write-Warning -Message "If both the Reference and difference file are the same then worksheet name must provide 2 different names"
         return
     }
-    if     ($WorkSheetName.count -eq 2)       {$worksheet1 = $WorkSheetName[0] ;   $workSheet2 = $WorkSheetName[1]}
-    elseif ($WorkSheetName -is [string])      {$worksheet1 = $workSheet2 = $WorkSheetName}
+    if     ($WorksheetName.count -eq 2)       {$worksheet1 = $WorksheetName[0] ;   $worksheet2 = $WorksheetName[1]}
+    elseif ($WorksheetName -is [string])      {$worksheet1 = $worksheet2 = $WorksheetName}
     else   {Write-Warning -Message "You must provide either a single worksheet name or two names." ; return }
 
     $params= @{ ErrorAction = [System.Management.Automation.ActionPreference]::Stop }
     foreach ($p in @("HeaderName","NoHeader","StartRow")) {if ($PSBoundParameters[$p]) {$params[$p] = $PSBoundParameters[$p]}}
     try    {
-        $sheet1 = Import-Excel -Path $Referencefile  -WorksheetName $WorkSheet1 @params
-        $sheet2 = Import-Excel -Path $Differencefile -WorksheetName $WorkSheet2 @Params
+        $sheet1 = Import-Excel -Path $Referencefile  -WorksheetName $worksheet1 @params
+        $sheet2 = Import-Excel -Path $Differencefile -WorksheetName $worksheet2 @Params
     }
     catch  {Write-Warning -Message "Could not read the worksheet from $Referencefile and/or $Differencefile." ; return }
 
@@ -57,7 +57,7 @@
     $propList = @()
     foreach ($p in $Property)           {$propList += ($headings.where({$_ -like    $p}) )}
     foreach ($p in $ExcludeProperty)    {$propList  =  $propList.where({$_ -notlike $p})  }
-    if (($headings -contains $key) -and ($propList -notcontains $Key)) {$propList += $Key}
+    if (($headings -contains $Key) -and ($propList -notcontains $Key)) {$propList += $Key}
     $propList = $propList | Select-Object -Unique
     if ($propList.Count -eq 0)  {Write-Warning -Message "No Columns are selected with -Property = '$Property' and -excludeProperty = '$ExcludeProperty'." ; return}
 
@@ -106,7 +106,7 @@
         }
     }
     #if font color was specified, set it on changed properties where the same key appears in both sheets.
-    if      ($diff -and $FontColor -and (($propList -contains $Key) -or ($key -is [hashtable]))  ) {
+    if      ($diff -and $FontColor -and (($propList -contains $Key) -or ($Key -is [hashtable]))  ) {
         $updates = $diff.where({$_.SideIndicator -ne "=="})  | Group-object -Property $Key | Where-Object {$_.count -eq 2}
         if ($updates) {
             $XL1 = Open-ExcelPackage -path $Referencefile
@@ -135,28 +135,28 @@
     elseif  ($diff -and $FontColor) {Write-Warning -Message "To match rows to set changed cells, you must specify -Key and it must match one of the included properties." }
 
     #if nothing was found write a message which will not be redirected
-    if (-not $diff) {Write-Host "Comparison of $Referencefile::$worksheet1 and $Differencefile::$WorkSheet2 returned no results."  }
+    if (-not $diff) {Write-Host "Comparison of $Referencefile::$worksheet1 and $Differencefile::$worksheet2 returned no results."  }
 
     if      ($Show)               {
         Start-Process -FilePath $Referencefile
         if  (-not $oneFile)  { Start-Process -FilePath $Differencefile }
         if  ($GridView)      { Write-Warning -Message "-GridView is ignored when -Show is specified" }
     }
-    elseif  ($GridView -and $propList -contains $key) {
+    elseif  ($GridView -and $propList -contains $Key) {
 
 
              if ($IncludeEqual -and -not $ExcludeDifferent) {
-                $GroupedRows = $diff | Group-Object -Property $key
+                $GroupedRows = $diff | Group-Object -Property $Key
              }
              else { #to get the right now numbers on the grid we need to have all the rows.
                 $GroupedRows = Compare-Object -ReferenceObject $Sheet1 -DifferenceObject $Sheet2 -Property $propList -PassThru -IncludeEqual  |
-                                        Group-Object -Property $key
+                                        Group-Object -Property $Key
              }
              #Additions, deletions and unchanged rows will give a group of 1; changes will give a group of 2 .
 
              #If one sheet has extra rows we can get a single "==" result from compare, but with the row from the reference sheet
              #but the row in the other sheet might so we will look up the row number from the key field build a hash table for that
-             $Sheet2 | ForEach-Object -Begin {$Rowhash = @{} } -Process {$Rowhash[$_.$key] = $_._row }
+             $Sheet2 | ForEach-Object -Begin {$rowHash = @{} } -Process {$rowHash[$_.$Key] = $_._row }
 
              $ExpandedDiff = ForEach ($g in $GroupedRows)  {
                 #we're going to create a custom object from a hash table. We want the fields to be ordered
@@ -168,11 +168,11 @@
                     #if we have already set the side, this is the second record, so set side to indicate "changed"
                     if     ($hash.Side) {$hash.side = "<>"} else {$hash["Side"] = $result.sideindicator}
                     #if result is "in reference" and we don't have a matching "in difference" (meaning a change) the lookup will be blank. Which we want.
-                    $hash[">Row"] = $Rowhash[$g.Name]
+                    $hash[">Row"] = $rowHash[$g.Name]
                     #position the key as the next field (only appears once)
-                    $Hash[$key]    = $g.Name
+                    $Hash[$Key]    = $g.Name
                     #For all the other fields we care about create <=FieldName and/or =>FieldName
-                    foreach ($p in $propList.Where({$_ -ne $key})) {
+                    foreach ($p in $propList.Where({$_ -ne $Key})) {
                         if  ($result.SideIndicator -eq "==")  {$hash[("=>$P")] = $hash[("<=$P")] =$result.$P}
                         else                                  {$hash[($result.SideIndicator+$P)] =$result.$P}
                     }
@@ -191,7 +191,7 @@
              if ( $ExcludeDifferent) {$ExpandedDiff = $ExpandedDiff.where({$_.side -eq "=="}) | Sort-Object -Property "<row" ,">row"  }
              elseif ( $IncludeEqual) {$ExpandedDiff = $ExpandedDiff                           | Sort-Object -Property "<row" ,">row"  }
              else                    {$ExpandedDiff = $ExpandedDiff.where({$_.side -ne "=="}) | Sort-Object -Property "<row" ,">row"  }
-             $ExpandedDiff | Update-FirstObjectProperties | Out-GridView -Title "Comparing $Referencefile::$worksheet1 (<=) with $Differencefile::$WorkSheet2 (=>)"
+             $ExpandedDiff | Update-FirstObjectProperties | Out-GridView -Title "Comparing $Referencefile::$worksheet1 (<=) with $Differencefile::$worksheet2 (=>)"
     }
     elseif  ($GridView     )  {Write-Warning -Message "To use -GridView you must specify -Key and it must match one of the included properties."  }
     elseif  (-not $PassThru)  {return ($diff | Select-Object -Property (@(@{n="_Side";e={$_.SideIndicator}},"_File" ,"_Sheet","_Row") + $propList))}

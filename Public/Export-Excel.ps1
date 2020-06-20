@@ -132,7 +132,7 @@
                 $WorksheetName = $ws.Name
             }
         }
-        catch {throw "Could not get worksheet $worksheetname"}
+        catch {throw "Could not get worksheet $WorksheetName"}
         try   {
             if ($Append -and $ws.Dimension) {
                 #if there is a title or anything else above the header row, append needs to be combined wih a suitable startrow parameter
@@ -176,23 +176,23 @@
             }
             elseif ($Title) {
                 #Can only add a title if not appending!
-                $Row = $StartRow
-                $ws.Cells[$Row, $StartColumn].Value = $Title
-                $ws.Cells[$Row, $StartColumn].Style.Font.Size = $TitleSize
+                $row = $StartRow
+                $ws.Cells[$row, $StartColumn].Value = $Title
+                $ws.Cells[$row, $StartColumn].Style.Font.Size = $TitleSize
 
                 if  ($PSBoundParameters.ContainsKey("TitleBold")) {
                     #Set title to Bold face font if -TitleBold was specified.
                     #Otherwise the default will be unbolded.
-                    $ws.Cells[$Row, $StartColumn].Style.Font.Bold = [boolean]$TitleBold
+                    $ws.Cells[$row, $StartColumn].Style.Font.Bold = [boolean]$TitleBold
                 }
                 if ($TitleBackgroundColor ) {
                     if ($TitleBackgroundColor -is [string])         {$TitleBackgroundColor = [System.Drawing.Color]::$TitleBackgroundColor }
-                    $ws.Cells[$Row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
-                    $ws.Cells[$Row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
+                    $ws.Cells[$row, $StartColumn].Style.Fill.PatternType = $TitleFillPattern
+                    $ws.Cells[$row, $StartColumn].Style.Fill.BackgroundColor.SetColor($TitleBackgroundColor)
                 }
-                $Row ++ ; $startRow ++
+                $row ++ ; $startRow ++
             }
-            else {  $Row = $StartRow }
+            else {  $row = $StartRow }
             $ColumnIndex = $StartColumn
             $Numberformat = Expand-NumberFormat -NumberFormat $Numberformat
             if ((-not $ws.Dimension) -and ($Numberformat -ne $ws.Cells.Style.Numberformat.Format)) {
@@ -278,20 +278,20 @@
                     foreach ($exclusion in $ExcludeProperty) {$script:Header = $script:Header -notlike $exclusion}
                     if ($NoHeader) {
                         # Don't push the headers to the spreadsheet
-                        $Row -= 1
+                        $row -= 1
                     }
                     else {
                         $ColumnIndex = $StartColumn
                         foreach ($Name in $script:Header) {
-                            $ws.Cells[$Row, $ColumnIndex].Value = $Name
-                            Write-Verbose "Cell '$Row`:$ColumnIndex' add header '$Name'"
+                            $ws.Cells[$row, $ColumnIndex].Value = $Name
+                            Write-Verbose "Cell '$row`:$ColumnIndex' add header '$Name'"
                             $ColumnIndex += 1
                         }
                     }
                 }
                 #endregion
                 #region Add non header values
-                $Row += 1
+                $row += 1
                 $ColumnIndex = $StartColumn
                 <#
                  For each item in the header OR for the Data item if this is a simple Type or data table :
@@ -305,39 +305,39 @@
                     else {$v = $TargetData.$Name}
                     try   {
                         if     ($v -is    [DateTime]) {
-                            $ws.Cells[$Row, $ColumnIndex].Value = $v
-                            $ws.Cells[$Row, $ColumnIndex].Style.Numberformat.Format = 'm/d/yy h:mm' # This is not a custom format, but a preset recognized as date and localized.
+                            $ws.Cells[$row, $ColumnIndex].Value = $v
+                            $ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = 'm/d/yy h:mm' # This is not a custom format, but a preset recognized as date and localized.
                         }
                         elseif ($v -is    [TimeSpan]) {
-                            $ws.Cells[$Row, $ColumnIndex].Value = $v
-                            $ws.Cells[$Row, $ColumnIndex].Style.Numberformat.Format = '[h]:mm:ss'
+                            $ws.Cells[$row, $ColumnIndex].Value = $v
+                            $ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = '[h]:mm:ss'
                         }
                         elseif ($v -is    [System.ValueType]) {
-                            $ws.Cells[$Row, $ColumnIndex].Value = $v
-                            if ($setNumformat) {$ws.Cells[$Row, $ColumnIndex].Style.Numberformat.Format = $Numberformat }
+                            $ws.Cells[$row, $ColumnIndex].Value = $v
+                            if ($setNumformat) {$ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = $Numberformat }
                         }
                         elseif ($v -is    [uri] ) {
-                            $ws.Cells[$Row, $ColumnIndex].HyperLink = $v
-                            $ws.Cells[$Row, $ColumnIndex].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
-                            $ws.Cells[$Row, $ColumnIndex].Style.Font.UnderLine = $true
+                            $ws.Cells[$row, $ColumnIndex].HyperLink = $v
+                            $ws.Cells[$row, $ColumnIndex].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
+                            $ws.Cells[$row, $ColumnIndex].Style.Font.UnderLine = $true
                         }
                         elseif ($v -isnot [String] ) { #Other objects or null.
-                            if ($null -ne $v) { $ws.Cells[$Row, $ColumnIndex].Value = $v.toString()}
+                            if ($null -ne $v) { $ws.Cells[$row, $ColumnIndex].Value = $v.toString()}
                         }
                         elseif ($v[0] -eq '=') {
-                            $ws.Cells[$Row, $ColumnIndex].Formula = ($v -replace '^=','')
-                            if ($setNumformat) {$ws.Cells[$Row, $ColumnIndex].Style.Numberformat.Format = $Numberformat }
+                            $ws.Cells[$row, $ColumnIndex].Formula = ($v -replace '^=','')
+                            if ($setNumformat) {$ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = $Numberformat }
                         }
                         elseif ( [System.Uri]::IsWellFormedUriString($v , [System.UriKind]::Absolute) ) {
                             if ($v -match "^xl://internal/") {
                                   $referenceAddress = $v -replace "^xl://internal/" , ""
                                   $display          = $referenceAddress -replace "!A1$"   , ""
                                   $h = New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList $referenceAddress , $display
-                                  $ws.Cells[$Row, $ColumnIndex].HyperLink = $h
+                                  $ws.Cells[$row, $ColumnIndex].HyperLink = $h
                             }
-                            else {$ws.Cells[$Row, $ColumnIndex].HyperLink = $v }   #$ws.Cells[$Row, $ColumnIndex].Value = $v.AbsoluteUri
-                            $ws.Cells[$Row, $ColumnIndex].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
-                            $ws.Cells[$Row, $ColumnIndex].Style.Font.UnderLine = $true
+                            else {$ws.Cells[$row, $ColumnIndex].HyperLink = $v }   #$ws.Cells[$row, $ColumnIndex].Value = $v.AbsoluteUri
+                            $ws.Cells[$row, $ColumnIndex].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
+                            $ws.Cells[$row, $ColumnIndex].Style.Font.UnderLine = $true
                         }
                         else {
                             $number = $null
@@ -346,15 +346,15 @@
                                  $NoNumberConversion -notcontains $Name -and
                                  [Double]::TryParse($v, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)
                                ) {
-                                 $ws.Cells[$Row, $ColumnIndex].Value = $number
-                                 if ($setNumformat) {$ws.Cells[$Row, $ColumnIndex].Style.Numberformat.Format = $Numberformat }
+                                 $ws.Cells[$row, $ColumnIndex].Value = $number
+                                 if ($setNumformat) {$ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = $Numberformat }
                             }
                             else {
-                                $ws.Cells[$Row, $ColumnIndex].Value  = $v
+                                $ws.Cells[$row, $ColumnIndex].Value  = $v
                             }
                         }
                     }
-                    catch {Write-Warning -Message "Could not insert the '$Name' property at Row $Row, Column $ColumnIndex"}
+                    catch {Write-Warning -Message "Could not insert the '$Name' property at Row $row, Column $ColumnIndex"}
                     $ColumnIndex += 1
                 }
                 $ColumnIndex -= 1 # column index will be the last column whether isDataTypeValueType was true or false
@@ -371,7 +371,7 @@
               $endAddress     = $ws.Dimension.End.Address
         }
         else {
-              $LastRow        = $Row
+              $LastRow        = $row
               $LastCol        = $ColumnIndex
               $endAddress     = [OfficeOpenXml.ExcelAddress]::GetAddress($LastRow , $LastCol)
         }

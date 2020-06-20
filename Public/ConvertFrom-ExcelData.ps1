@@ -7,7 +7,7 @@ function ConvertFrom-ExcelData {
         $Path,
         [ScriptBlock]$scriptBlock,
         [Alias("Sheet")]
-        $WorkSheetname = 1,
+        $WorksheetName = 1,
         [int]$HeaderRow = 1,
         [string[]]$Header,
         [switch]$NoHeader,

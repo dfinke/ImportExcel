@@ -8,7 +8,7 @@
         [Parameter(ParameterSetName="Package",Mandatory=$true)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [Parameter(ParameterSetName="Package")]
-        [String]$Worksheetname = "Sheet1",
+        [String]$WorksheetName = "Sheet1",
         [Parameter(ParameterSetName="sheet",Mandatory=$true)]
         [OfficeOpenXml.ExcelWorksheet]$Worksheet,
         [Parameter(ValueFromPipeline=$true)]
@@ -52,10 +52,10 @@
     begin {
         #if we were passed a package object and a worksheet name , get the worksheet.
         if ($ExcelPackage)  {
-            if ($ExcelPackage.Workbook.Worksheets.Name -notcontains $Worksheetname) {
-                throw "The Workbook does not contain a sheet named '$Worksheetname'"
+            if ($ExcelPackage.Workbook.Worksheets.Name -notcontains $WorksheetName) {
+                throw "The Workbook does not contain a sheet named '$WorksheetName'"
             }
-            else {$Worksheet   = $ExcelPackage.Workbook.Worksheets[$Worksheetname] }
+            else {$Worksheet   = $ExcelPackage.Workbook.Worksheets[$WorksheetName] }
         }
 
         #In a script block to build a formula, we may want any of corners or the column name,
@@ -66,7 +66,7 @@
         $endRow                            = $Worksheet.Dimension.End.Row
     }
     process {
-        if ($null -eq $workSheet.Dimension) {Write-Warning "Can't format an empty worksheet."; return}
+        if ($null -eq $Worksheet.Dimension) {Write-Warning "Can't format an empty worksheet."; return}
         if ($Column  -eq 0 )  {$Column     = $endColumn    + 1 }
         $columnName = (New-Object 'OfficeOpenXml.ExcelCellAddress' @(1, $column)).Address -replace "1",""
         Write-Verbose -Message "Updating Column $columnName"
@@ -120,7 +120,7 @@
             Set-ExcelRange -Worksheet $Worksheet -Range $theRange @params
         }
         #endregion
-        if      ($PSBoundParameters.ContainsKey('Hide')) {$workSheet.Column($Column).Hidden = [bool]$Hide}
+        if      ($PSBoundParameters.ContainsKey('Hide')) {$Worksheet.Column($Column).Hidden = [bool]$Hide}
         #return the new data if -passthru was specified.
         if      ($PassThru)                 { $Worksheet.Column($Column)}
         elseif  ($ReturnRange)              { $theRange}

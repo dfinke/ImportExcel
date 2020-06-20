@@ -84,7 +84,7 @@
          #All the 'difference' columns in the sheet are labeled with the file they came from, 'reference' columns need their
          #headers prefixed with the ref file name,  $colnames is the basis of a regular expression to identify what should have $refPrefix appended
          $colNames              = @("^_Row$")
-         if ($key -ne "*")
+         if ($Key -ne "*")
                {$colnames      += "^$Key$"}
          if ($filesToProcess.Count -ge 2) {
                $refPrefix       = (Split-Path -Path $filestoProcess[0] -Leaf) -replace "\.xlsx$"," "

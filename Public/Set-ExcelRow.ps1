@@ -8,7 +8,7 @@
         [Parameter(ParameterSetName="Package",Mandatory=$true)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [Parameter(ParameterSetName="Package")]
-        $Worksheetname = "Sheet1",
+        $WorksheetName = "Sheet1",
         [Parameter(ParameterSetName="Sheet",Mandatory=$true)]
         [OfficeOpenXml.Excelworksheet] $Worksheet,
         [Parameter(ValueFromPipeline = $true)]
@@ -53,10 +53,10 @@
     begin {
         #if we were passed a package object and a worksheet name , get the worksheet.
         if ($ExcelPackage)  {
-            if ($ExcelPackage.Workbook.Worksheets.Name -notcontains $Worksheetname) {
-                throw "The Workbook does not contain a sheet named '$Worksheetname'"
+            if ($ExcelPackage.Workbook.Worksheets.Name -notcontains $WorksheetName) {
+                throw "The Workbook does not contain a sheet named '$WorksheetName'"
             }
-            else {$Worksheet   = $ExcelPackage.Workbook.Worksheets[$Worksheetname] }
+            else {$Worksheet   = $ExcelPackage.Workbook.Worksheets[$WorksheetName] }
         }
         #In a script block to build a formula, we may want any of corners or the columnname,
         #if row and start column aren't specified assume first unused row, and first column
@@ -66,7 +66,7 @@
         $endRow                              = $Worksheet.Dimension.End.Row
     }
     process {
-        if ($null -eq $workSheet.Dimension) {Write-Warning "Can't format an empty worksheet."; return}
+        if ($null -eq $Worksheet.Dimension) {Write-Warning "Can't format an empty worksheet."; return}
         if      ($Row  -eq 0 ) {$Row         = $endRow + 1 }
         Write-Verbose -Message "Updating Row $Row"
         #Add a row label
@@ -117,7 +117,7 @@
             Set-ExcelRange -Worksheet $Worksheet -Range $theRange @params
         }
         #endregion
-        if ($PSBoundParameters.ContainsKey('Hide')) {$workSheet.Row($Row).Hidden = [bool]$Hide}
+        if ($PSBoundParameters.ContainsKey('Hide')) {$Worksheet.Row($Row).Hidden = [bool]$Hide}
         #return the new data if -passthru was specified.
         if     ($passThru)     {$Worksheet.Row($Row)}
         elseif ($ReturnRange)  {$theRange}
