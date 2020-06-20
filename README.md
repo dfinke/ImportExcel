@@ -63,6 +63,7 @@ Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfi
 
 - Moved `Export-MultipleExcelSheets` from psm1 to Examples/Experimental
 - Deleted the CI build in Appveyor
+- Thank you [Mikey Bronowski](https://github.com/MikeyBronowski) for the sweep and standardising casing of parameter names
 
 # What's new 7.1.0
 
