@@ -40,7 +40,7 @@ $worksheetName = 'Processes'
 $Path          = "$pwd\demo.xlsx"
 $myData        = Get-Process | Select-Object -Property Name,WS,CPU,Description,company,startTime
 
-$excelPackage  = $myData | Export-Excel -KillExcel -Path $Path -WorkSheetname $worksheetName -ClearSheet -AutoSize -AutoFilter -BoldTopRow -FreezeTopRow -PassThru
+$excelPackage  = $myData | Export-Excel -KillExcel -Path $Path -WorksheetName $worksheetName -ClearSheet -AutoSize -AutoFilter -BoldTopRow -FreezeTopRow -PassThru
 $worksheet     = $excelPackage.Workbook.Worksheets[$worksheetName]
 $range         = $worksheet.Dimension.Address
 Set-ExcelRange                -Worksheet $worksheet -Range "b:b"      -NumberFormat "#,###"            -AutoFit

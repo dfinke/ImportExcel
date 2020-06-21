@@ -4,7 +4,7 @@
         [Parameter(Mandatory = $true,ValueFromPipeline=$true)]
         [Alias('SourceWorkbook')]
         $SourceObject,
-        $SourceWorkSheet = 1 ,
+        $SourceWorksheet = 1 ,
         [Parameter(Mandatory = $true)]
         $DestinationWorkbook,
         $DestinationWorksheet,
@@ -39,7 +39,7 @@
                     return
                 }
                 else {
-                    $null = Add-Worksheet -ExcelPackage $excel -WorkSheetname $DestinationWorksheet -CopySource ($excel.Workbook.Worksheets[$SourceWorkSheet])
+                    $null = Add-Worksheet -ExcelPackage $excel -WorksheetName $DestinationWorksheet -CopySource ($excel.Workbook.Worksheets[$SourceWorksheet])
                     Close-ExcelPackage -ExcelPackage $excel -Show:$Show
                     return
                 }
@@ -47,15 +47,15 @@
         }
         else {
             if     ($SourceObject -is [OfficeOpenXml.ExcelWorksheet]) {$sourceWs = $SourceObject}
-            elseif ($SourceObject -is [OfficeOpenXml.ExcelWorkbook])  {$sourceWs = $SourceObject.Worksheets[$SourceWorkSheet]}
-            elseif ($SourceObject -is [OfficeOpenXml.ExcelPackage] )  {$sourceWs = $SourceObject.Workbook.Worksheets[$SourceWorkSheet]}
+            elseif ($SourceObject -is [OfficeOpenXml.ExcelWorkbook])  {$sourceWs = $SourceObject.Worksheets[$SourceWorksheet]}
+            elseif ($SourceObject -is [OfficeOpenXml.ExcelPackage] )  {$sourceWs = $SourceObject.Workbook.Worksheets[$SourceWorksheet]}
             else {
                 $SourceObject = (Resolve-Path $SourceObject).ProviderPath
                 try {
                     Write-Verbose "Opening worksheet '$WorksheetName' in Excel workbook '$SourceObject'."
                     $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $SourceObject, 'Open', 'Read' , 'ReadWrite'
                     $package1 = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
-                    $sourceWs = $Package1.Workbook.Worksheets[$SourceWorkSheet]
+                    $sourceWs = $Package1.Workbook.Worksheets[$SourceWorksheets]
                 }
                 catch {Write-Warning -Message "Could not open $SourceObject - the error was '$($_.exception.message)' " ; return}
             }
@@ -76,7 +76,7 @@
                         $DestinationWorkbook.Worksheets.Delete($DestinationWorksheet)
                     }
                     Write-Verbose "Copying '$($sourcews.name)' from $($SourceObject) to '$($DestinationWorksheet)' in $($PSBoundParameters['DestinationWorkbook'])"
-                    $null = Add-Worksheet -ExcelWorkbook $DestinationWorkbook -WorkSheetname $DestinationWorksheet -CopySource  $sourceWs
+                    $null = Add-Worksheet -ExcelWorkbook $DestinationWorkbook -WorksheetName $DestinationWorksheet -CopySource  $sourceWs
                     #Leave the destination open but close the source - if we're copying more than one sheet we'll re-open it and live with the inefficiency
                     if ($stream)   {$stream.Close()                                        }
                     if ($package1) {Close-ExcelPackage -ExcelPackage $package1 -NoSave     }

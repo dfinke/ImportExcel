@@ -1,8 +1,8 @@
 function Get-XYRange {
     [CmdletBinding()]
-    param($targetData)
+    param($TargetData)
 
-    $record = $targetData | Select-Object -First 1
+    $record = $TargetData | Select-Object -First 1
     $p=$record.psobject.Properties.name
 
     $infer = for ($idx = 0; $idx -lt $p.Count; $idx++) {

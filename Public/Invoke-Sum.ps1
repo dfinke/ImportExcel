@@ -1,17 +1,17 @@
 function Invoke-Sum {
     [CmdletBinding()]
     param(
-        $data,
-        $dimension,
-        $measure
+        $Data,
+        $Dimension,
+        $Measure
     )
 
-    if(!$measure) {$measure = $dimension}
+    if(!$Measure) {$Measure = $Dimension}
 
     $h=@{}
 
-    foreach ($item in $data){
-        $key=$item.$dimension
+    foreach ($item in $Data){
+        $key=$item.$Dimension
 
         if(!$key) {$key="[missing]"}
 
@@ -19,7 +19,7 @@ function Invoke-Sum {
             $h.$key=[ordered]@{}
         }
 
-        foreach($m in $measure) {
+        foreach($m in $Measure) {
             $value = $item.$m
             if($value -is [string] -or $value -is [System.Enum]) {
                 $value = 1

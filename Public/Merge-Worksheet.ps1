@@ -233,7 +233,7 @@
      elseif ($PSCmdlet.ShouldProcess($OutputFile,"Write Output to Excel file")) {
          $expandedDiff =  $expandedDiff | Sort-Object -Property  "_row", "$DiffPrefix Row"
          $xl = $expandedDiff | Select-Object -Property   $OutputProps    | Update-FirstObjectProperties      |
-           Export-Excel -Path $OutputFile -Worksheetname $OutputSheetName -FreezeTopRow -BoldTopRow -AutoSize -AutoFilter -PassThru
+           Export-Excel -Path $OutputFile -WorksheetName $OutputSheetName -FreezeTopRow -BoldTopRow -AutoSize -AutoFilter -PassThru
          $ws =  $xl.Workbook.Worksheets[$OutputSheetName]
          for ($i = 0; $i -lt $expandedDiff.Count; $i++ ) {
             if     ( $expandedDiff[$i].side -ne "==" )  {

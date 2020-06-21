@@ -9,7 +9,7 @@
         [Parameter(ParameterSetName="ExistingSession", Mandatory=$true)]
         $Session,
         [Parameter(ParameterSetName="SQLConnection",   Mandatory=$true)]
-        [switch]$MsSQLserver,
+        [switch]$MsSqlServer,
         [Parameter(ParameterSetName="SQLConnection")]
         [String]$DataBase,
         [Parameter(ParameterSetName="SQLConnection",   Mandatory=$true)]
@@ -46,10 +46,10 @@
             $null = $PSBoundParameters.Remove('AutoFilter')
         }
       #endregion
-      #region if we were either given a session object or a connection string (& optionally -MSSQLServer) make sure we can connect
+      #region if we were either given a session object or a connection string (& optionally -MsSqlServer) make sure we can connect
         try {
-            #If we got -MSSQLServer, create a SQL connection, if we didn't but we got -Connection create an ODBC connection
-            if     ($MsSQLserver -and $Connection) {
+            #If we got -MsSqlServer, create a SQL connection, if we didn't but we got -Connection create an ODBC connection
+            if     ($MsSqlServer -and $Connection) {
                 if ($Connection -notmatch '=') {$Connection = "server=$Connection;trusted_connection=true;timeout=60"}
                 $Session     = New-Object -TypeName System.Data.SqlClient.SqlConnection  -ArgumentList $Connection
                 if ($Session.State -ne 'Open') {$Session.Open()}
@@ -90,7 +90,7 @@
       #endregion
       #region send the table to Excel
         #remove parameters which relate to querying SQL, leaving the ones used by Export-Excel
-        'Connection' , 'Database'  , 'Session' , 'MsSQLserver' , 'SQL'  , 'DataTable'  , 'QueryTimeout' , 'Force' |
+        'Connection' , 'Database'  , 'Session' , 'MsSqlServer' , 'SQL'  , 'DataTable'  , 'QueryTimeout' , 'Force' |
                 ForEach-Object {$null = $PSBoundParameters.Remove($_) }
         #if force was specified export even if there are no rows. If there are no columns, the query failed and export "null" if forced
         if     ($DataTable.Rows.Count) {

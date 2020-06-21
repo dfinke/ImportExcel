@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Get-XYRange [[-targetData] <Object>]
+Get-XYRange [[-TargetData] <Object>]
 ```
 
 ## DESCRIPTION
@@ -30,8 +30,8 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -targetData
-{{ Fill targetData Description }}
+### -TargetData
+{{ Fill TargetData Description }}
 
 ```yaml
 Type: Object

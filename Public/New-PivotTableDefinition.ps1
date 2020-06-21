@@ -5,7 +5,7 @@ function New-PivotTableDefinition {
         [Parameter(Mandatory)]
         [Alias("PivtoTableName")]#Previous typo - use alias to avoid breaking scripts
         $PivotTableName,
-        $SourceWorkSheet,
+        $SourceWorksheet,
         $SourceRange,
         $PivotRows,
         [hashtable]$PivotData,

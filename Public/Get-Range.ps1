@@ -1,5 +1,5 @@
 function Get-Range  {
     [CmdletBinding()]
-    param($start=0,$stop,$step=1)
-    for ($idx = $start; $idx -lt $stop; $idx+=$step) {$idx}
+    param($Start=0,$Stop,$Step=1)
+    for ($idx = $Start; $idx -lt $Stop; $idx+=$Step) {$idx}
 }

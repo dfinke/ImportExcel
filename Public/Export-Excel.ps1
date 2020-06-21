@@ -435,8 +435,8 @@
                 $params = $item.value
                 if ($Activate) {$params.Activate = $true   }
                 if ($params.keys -notcontains 'SourceRange' -and
-                   ($params.Keys -notcontains 'SourceWorkSheet'   -or  $params.SourceWorkSheet -eq $WorksheetName)) {$params.SourceRange = $dataRange}
-                if ($params.Keys -notcontains 'SourceWorkSheet')      {$params.SourceWorkSheet = $ws }
+                   ($params.Keys -notcontains 'SourceWorksheet'   -or  $params.SourceWorksheet -eq $WorksheetName)) {$params.SourceRange = $dataRange}
+                if ($params.Keys -notcontains 'SourceWorksheet')      {$params.SourceWorksheet = $ws }
                 if ($params.Keys -notcontains 'NoTotalsInPivot'   -and $NoTotalsInPivot  ) {$params.PivotTotals       = 'None'}
                 if ($params.Keys -notcontains 'PivotTotals'       -and $PivotTotals      ) {$params.PivotTotals       = $PivotTotals}
                 if ($params.Keys -notcontains 'PivotDataToColumn' -and $PivotDataToColumn) {$params.PivotDataToColumn = $true}
@@ -471,7 +471,7 @@
                 if ($ShowPercent)   {$params.ShowPercent       = $true}
                 if ($NoLegend)      {$params.NoLegend          = $true}
             }
-            Add-PivotTable -ExcelPackage $pkg -SourceWorkSheet $ws   @params
+            Add-PivotTable -ExcelPackage $pkg -SourceWorksheet $ws   @params
         }
 
         try {
@@ -544,7 +544,7 @@
 
         foreach ($Sheet in $HideSheet) {
             try {
-                $pkg.Workbook.WorkSheets.Where({$_.Name -like $sheet}) | ForEach-Object {
+                $pkg.Workbook.Worksheets.Where({$_.Name -like $sheet}) | ForEach-Object {
                     $_.Hidden = 'Hidden'
                     Write-verbose -Message "Sheet '$($_.Name)' Hidden."
                 }
@@ -553,7 +553,7 @@
         }
         foreach ($Sheet in $UnHideSheet) {
             try {
-                $pkg.Workbook.WorkSheets.Where({$_.Name -like $sheet}) | ForEach-Object {
+                $pkg.Workbook.Worksheets.Where({$_.Name -like $sheet}) | ForEach-Object {
                     $_.Hidden = 'Visible'
                     Write-verbose -Message "Sheet '$($_.Name)' shown"
                 }

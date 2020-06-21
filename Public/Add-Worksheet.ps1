@@ -4,7 +4,7 @@ function Add-Worksheet  {
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = "Package", Position = 0)]
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
-        [Parameter(Mandatory = $true, ParameterSetName = "WorkBook")]
+        [Parameter(Mandatory = $true, ParameterSetName = "Workbook")]
         [OfficeOpenXml.ExcelWorkbook]$ExcelWorkbook,
         [string]$WorksheetName ,
         [switch]$ClearSheet,

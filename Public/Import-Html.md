@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Import-Html [[-url] <Object>] [[-index] <Object>] [[-Header] <Object>] [[-FirstDataRow] <Int32>]
+Import-Html [[-Url] <Object>] [[-Index] <Object>] [[-Header] <Object>] [[-FirstDataRow] <Int32>]
  [-UseDefaultCredentials] [<CommonParameters>]
 ```
 
@@ -76,8 +76,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -index
-{{ Fill index Description }}
+### -Index
+{{ Fill Index Description }}
 
 ```yaml
 Type: Object
@@ -91,8 +91,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -url
-{{ Fill url Description }}
+### -Url
+{{ Fill Url Description }}
 
 ```yaml
 Type: Object

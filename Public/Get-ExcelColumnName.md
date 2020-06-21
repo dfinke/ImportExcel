@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Get-ExcelColumnName [[-columnNumber] <Object>] [<CommonParameters>]
+Get-ExcelColumnName [[-ColumnNumber] <Object>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,8 +30,8 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -columnNumber
-{{ Fill columnNumber Description }}
+### -ColumnNumber
+{{ Fill ColumnNumber Description }}
 
 ```yaml
 Type: Object
