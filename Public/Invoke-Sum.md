@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Invoke-Sum [[-data] <Object>] [[-dimension] <Object>] [[-measure] <Object>]
+Invoke-Sum [[-Data] <Object>] [[-Dimension] <Object>] [[-Measure] <Object>]
 ```
 
 ## DESCRIPTION
@@ -30,8 +30,8 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -data
-{{ Fill data Description }}
+### -Data
+{{ Fill Data Description }}
 
 ```yaml
 Type: Object
@@ -45,8 +45,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -dimension
-{{ Fill dimension Description }}
+### -Dimension
+{{ Fill Dimension Description }}
 
 ```yaml
 Type: Object
@@ -60,8 +60,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -measure
-{{ Fill measure Description }}
+### -Measure
+{{ Fill Measure Description }}
 
 ```yaml
 Type: Object

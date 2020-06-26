@@ -5,7 +5,7 @@ function ConvertFrom-ExcelData {
         [Parameter(ValueFromPipelineByPropertyName = $true, ValueFromPipeline = $true, Mandatory = $true)]
         [ValidateScript( { Test-Path $_ -PathType Leaf })]
         $Path,
-        [ScriptBlock]$scriptBlock,
+        [ScriptBlock]$ScriptBlock,
         [Alias("Sheet")]
         $WorksheetName = 1,
         [int]$HeaderRow = 1,
@@ -14,7 +14,7 @@ function ConvertFrom-ExcelData {
         [switch]$DataOnly
     )
 
-    $null = $PSBoundParameters.Remove('scriptBlock')
+    $null = $PSBoundParameters.Remove('ScriptBlock')
     $params = @{} + $PSBoundParameters
 
     $data = Import-Excel @params
@@ -24,6 +24,6 @@ function ConvertFrom-ExcelData {
         Select-Object -ExpandProperty name
 
     foreach ($record in $data) {
-        & $scriptBlock $PropertyNames $record
+        & $ScriptBlock $PropertyNames $record
     }
 }

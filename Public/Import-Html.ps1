@@ -2,8 +2,8 @@
 function Import-Html {
     [CmdletBinding()]
     param(
-        $url,
-        $index,
+        $Url,
+        $Index,
         $Header,
         [int]$FirstDataRow=0,
         [Switch]$UseDefaultCredentials
@@ -14,7 +14,7 @@ function Import-Html {
 
     Write-Verbose "Exporting to Excel file $($xlFile)"
 
-    $data = Get-HtmlTable -url $url -tableIndex $index -Header $Header -FirstDataRow $FirstDataRow -UseDefaultCredentials: $UseDefaultCredentials
+    $data = Get-HtmlTable -Url $Url -TableIndex $Index -Header $Header -FirstDataRow $FirstDataRow -UseDefaultCredentials: $UseDefaultCredentials
 
     $data | Export-Excel $xlFile -Show -AutoSize
 }

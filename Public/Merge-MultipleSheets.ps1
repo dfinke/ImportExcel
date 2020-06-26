@@ -75,7 +75,7 @@
          $orderByProperties  = $merged[0].psobject.properties.where({$_.name -match "row$"}).name
          Write-Progress -Activity "Merging sheets" -CurrentOperation "creating output sheet '$OutputSheetName' in $OutputFile"
          $excel                 = $merged | Sort-Object -Property $orderByProperties  |
-                                   Export-Excel -Path $OutputFile -Worksheetname $OutputSheetName -ClearSheet -BoldTopRow -AutoFilter -PassThru
+                                   Export-Excel -Path $OutputFile -WorksheetName $OutputSheetName -ClearSheet -BoldTopRow -AutoFilter -PassThru
          $sheet                 = $excel.Workbook.Worksheets[$OutputSheetName]
 
          #We will put in a conditional format for "if all the others are not flagged as 'same'" to mark rows where something is added, removed or changed

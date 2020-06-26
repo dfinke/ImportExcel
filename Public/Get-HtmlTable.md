@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Get-HtmlTable [-url] <Object> [[-tableIndex] <Object>] [[-Header] <Object>] [[-FirstDataRow] <Int32>]
+Get-HtmlTable [-Url] <Object> [[-TableIndex] <Object>] [[-Header] <Object>] [[-FirstDataRow] <Int32>]
  [-UseDefaultCredentials] [<CommonParameters>]
 ```
 
@@ -76,8 +76,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -tableIndex
-{{ Fill tableIndex Description }}
+### -TableIndex
+{{ Fill TableIndex Description }}
 
 ```yaml
 Type: Object
@@ -91,8 +91,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -url
-{{ Fill url Description }}
+### -Url
+{{ Fill Url Description }}
 
 ```yaml
 Type: Object

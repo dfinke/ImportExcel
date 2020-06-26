@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Set-CellStyle [[-WorkSheet] <Object>] [[-Row] <Object>] [[-LastColumn] <Object>] [[-Pattern] <ExcelFillStyle>]
+Set-CellStyle [[-Worksheet] <Object>] [[-Row] <Object>] [[-LastColumn] <Object>] [[-Pattern] <ExcelFillStyle>]
  [[-Color] <Object>]
 ```
 
@@ -92,8 +92,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -WorkSheet
-{{ Fill WorkSheet Description }}
+### -Worksheet
+{{ Fill Worksheet Description }}
 
 ```yaml
 Type: Object

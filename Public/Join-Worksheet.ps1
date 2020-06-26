@@ -55,7 +55,7 @@
     )
     #region get target worksheet, select it and move it to the end.
     if ($Path -and -not $ExcelPackage) {$ExcelPackage = Open-ExcelPackage -path $Path  }
-    $destinationSheet = Add-Worksheet -ExcelPackage $ExcelPackage -WorkSheetname $WorksheetName -ClearSheet:$Clearsheet
+    $destinationSheet = Add-Worksheet -ExcelPackage $ExcelPackage -WorksheetName $WorksheetName -ClearSheet:$Clearsheet
     foreach ($w in $ExcelPackage.Workbook.Worksheets) {$w.view.TabSelected = $false}
     $destinationSheet.View.TabSelected = $true
     $ExcelPackage.Workbook.Worksheets.MoveToEnd($WorksheetName)
@@ -123,7 +123,7 @@
     'Title', 'TitleFillPattern', 'TitleBackgroundColor', 'TitleBold', 'TitleSize' | ForEach-Object {$null = $params.Remove($_)}
     if ($params.Keys.Count) {
         if ($Title) { $params.StartRow = 2}
-        $params.WorkSheetName = $WorksheetName
+        $params.WorksheetName = $WorksheetName
         $params.ExcelPackage = $ExcelPackage
         Export-Excel @Params
     }

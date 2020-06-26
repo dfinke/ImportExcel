@@ -13,7 +13,7 @@ Reads data from a sheet, and for each row, calls a custom scriptblock with a lis
 ## SYNTAX
 
 ```
-ConvertFrom-ExcelData [-Path] <Object> [[-scriptBlock] <ScriptBlock>] [[-WorkSheetname] <Object>]
+ConvertFrom-ExcelData [-Path] <Object> [[-ScriptBlock] <ScriptBlock>] [[-WorksheetName] <Object>]
  [[-HeaderRow] <Int32>] [[-Header] <String[]>] [-NoHeader] [-DataOnly] [<CommonParameters>]
 ```
 
@@ -59,8 +59,8 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -scriptBlock
-{{ Fill scriptBlock Description }}
+### -ScriptBlock
+{{ Fill ScriptBlock Description }}
 
 ```yaml
 Type: ScriptBlock
@@ -74,8 +74,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -WorkSheetname
-{{ Fill WorkSheetname Description }}
+### -WorksheetName
+{{ Fill WorksheetName Description }}
 
 ```yaml
 Type: Object

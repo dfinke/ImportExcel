@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Set-WorkSheetProtection
+# Set-WorksheetProtection
 
 ## SYNOPSIS
 {{ Fill in the Synopsis }}
@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Set-WorkSheetProtection [-WorkSheet] <ExcelWorksheet> [-IsProtected] [-AllowAll] [-BlockSelectLockedCells]
+Set-WorksheetProtection [-Worksheet] <ExcelWorksheet> [-IsProtected] [-AllowAll] [-BlockSelectLockedCells]
  [-BlockSelectUnlockedCells] [-AllowFormatCells] [-AllowFormatColumns] [-AllowFormatRows] [-AllowInsertColumns]
  [-AllowInsertRows] [-AllowInsertHyperlinks] [-AllowDeleteColumns] [-AllowDeleteRows] [-AllowSort]
  [-AllowAutoFilter] [-AllowPivotTables] [-BlockEditObject] [-BlockEditScenarios] [[-LockAddress] <String>]
@@ -319,8 +319,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -WorkSheet
-{{ Fill WorkSheet Description }}
+### -Worksheet
+{{ Fill Worksheet Description }}
 
 ```yaml
 Type: ExcelWorksheet

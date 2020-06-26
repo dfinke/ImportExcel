@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Get-Range [[-start] <Object>] [[-stop] <Object>] [[-step] <Object>]
+Get-Range [[-Start] <Object>] [[-Stop] <Object>] [[-Step] <Object>]
 ```
 
 ## DESCRIPTION
@@ -45,8 +45,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -step
-{{ Fill step Description }}
+### -Step
+{{ Fill Step Description }}
 
 ```yaml
 Type: Object

@@ -1,11 +1,11 @@
 function Get-ExcelColumnName {
     param(
         [Parameter(ValueFromPipeline=$true)]
-        $columnNumber=1
+        $ColumnNumber=1
     )
 
     Process {
-        $dividend = $columnNumber
+        $dividend = $ColumnNumber
         $columnName = New-Object System.Collections.ArrayList($null)
 
         while($dividend -gt 0) {
@@ -19,7 +19,7 @@ function Get-ExcelColumnName {
         }
 
         [PSCustomObject] @{
-            ColumnNumber = $columnNumber
+            ColumnNumber = $ColumnNumber
             ColumnName   = $columnName -join ''
         }
 

@@ -7,7 +7,7 @@
         [OfficeOpenXml.ExcelAddressBase]
         $Address,
         $ExcelPackage,
-        $SourceWorkSheet,
+        $SourceWorksheet,
         $SourceRange,
         $PivotRows,
         $PivotData,
@@ -75,11 +75,11 @@
     if (-not $wsPivot.PivotTables[$pivotTableName] ) {
         try {
             #Accept a string or a worksheet object as $SourceWorksheet - we don't need a worksheet if we have a Rangebase .
-            if ( $SourceWorkSheet -is [string]) {
-                $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets.where( {$_.name -Like $SourceWorkSheet})[0]
+            if ( $SourceWorksheet -is [string]) {
+                $SourceWorksheet = $ExcelPackage.Workbook.Worksheets.where( {$_.name -Like $SourceWorksheet})[0]
             }
-            elseif ( $SourceWorkSheet -is [int]   ) {
-                $SourceWorkSheet = $ExcelPackage.Workbook.Worksheets[$SourceWorkSheet]
+            elseif ( $SourceWorksheet -is [int]   ) {
+                $SourceWorksheet = $ExcelPackage.Workbook.Worksheets[$SourceWorksheet]
             }
             if (     $SourceRange -is [OfficeOpenXml.Table.ExcelTable]) {$SourceRange = $SourceRange.Address }
             if (     $sourceRange -is [OfficeOpenXml.ExcelRange] -or
@@ -87,13 +87,13 @@
                 $pivotTable = $wsPivot.PivotTables.Add($Address, $SourceRange, $pivotTableName)
             }
             elseif (-not $SourceRange) {
-                $pivotTable = $wsPivot.PivotTables.Add($Address, $SourceWorkSheet.cells[$SourceWorkSheet.Dimension.Address], $pivotTableName)
+                $pivotTable = $wsPivot.PivotTables.Add($Address, $SourceWorksheet.cells[$SourceWorksheet.Dimension.Address], $pivotTableName)
             }
-            elseif ($SourceWorkSheet -isnot [OfficeOpenXml.ExcelWorksheet]  ) {
+            elseif ($SourceWorksheet -isnot [OfficeOpenXml.ExcelWorksheet]  ) {
                 Write-Warning -Message "Could not find source Worksheet for pivot-table '$pivotTableName'." ; return
             }
             elseif (     $SourceRange -is [String] -or $SourceRange -is [OfficeOpenXml.ExcelAddress]) {
-                $pivotTable = $wsPivot.PivotTables.Add($Address, $SourceWorkSheet.Cells[$SourceRange], $pivotTableName)
+                $pivotTable = $wsPivot.PivotTables.Add($Address, $SourceWorksheet.Cells[$SourceRange], $pivotTableName)
             }
             else {Write-warning "Could not create a PivotTable with the Source Range provided."; return}
             foreach ($row in $PivotRows) {
@@ -150,8 +150,8 @@
     else {
         Write-Warning -Message "PivotTable defined in $($pivotTableName) already exists, only the data range will be changed."
         $pivotTable = $wsPivot.PivotTables[$pivotTableName]
-        if (-not $SourceRange) { $SourceRange = $SourceWorkSheet.Dimension.Address}
-        $pivotTable.CacheDefinition.SourceRange =  $SourceWorkSheet.cells[$SourceRange]
+        if (-not $SourceRange) { $SourceRange = $SourceWorksheet.Dimension.Address}
+        $pivotTable.CacheDefinition.SourceRange =  $SourceWorksheet.cells[$SourceRange]
         #change for epPlus 4.5 -  Previously needed to hack the xml
       # $pivotTable.CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.ref = $SourceRange
 
