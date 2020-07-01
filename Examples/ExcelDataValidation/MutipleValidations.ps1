@@ -15,8 +15,10 @@
 
 try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$path = "$Env:TEMP\DataValidation.xlsx"
-Remove-Item $path -ErrorAction SilentlyContinue
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $data = ConvertFrom-Csv -InputObject @"
 ID,Region,Product,Quantity,Price
@@ -29,7 +31,7 @@ ID,Region,Product,Quantity,Price
 
 # Export the raw data
 $excelPackage = $Data |
-    Export-Excel -WorksheetName "Sales" -Path $path -PassThru
+    Export-Excel -WorksheetName "Sales" -Path $xlSourcefile -PassThru
 
 # Creates a sheet with data that will be used in a validation rule
 $excelPackage = @('Chisel', 'Crowbar', 'Drill', 'Hammer', 'Nails', 'Saw', 'Screwdriver', 'Wrench') |

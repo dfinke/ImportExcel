@@ -3,6 +3,7 @@
 #We will create links to each race in the first 10 rows of the spreadSheet
 #The next row will be column labels
 #After that will come a block for each race.
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 #Read the data, and decide how much space to leave for the hyperlinks
 $scriptPath = Split-Path -Path $MyInvocation.MyCommand.path -Parent

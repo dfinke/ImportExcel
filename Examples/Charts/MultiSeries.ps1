@@ -1,6 +1,9 @@
 try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-Remove-Item temp.xlsx -ErrorAction Ignore
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $data = Invoke-Sum -data (Get-Process) -dimension Company -measure Handles, PM, VirtualMemorySize
 
@@ -11,4 +14,4 @@ $c = New-ExcelChartDefinition -Title "ProcessStats" `
     -SeriesHeader "PM","VM"
 
 $data |
-    Export-Excel -Path temp.xlsx -AutoSize -TableName Processes -ExcelChartDefinition $c  -Show
+    Export-Excel -Path $xlSourcefile -AutoSize -TableName Processes -ExcelChartDefinition $c  -Show

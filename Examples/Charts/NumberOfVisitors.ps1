@@ -1,4 +1,6 @@
-﻿$xlfile = "$env:TEMP\visitors.xlsx"
+﻿try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
+
+$xlfile = "$env:TEMP\visitors.xlsx"
 Remove-Item $xlfile -ErrorAction SilentlyContinue
 
 $data = ConvertFrom-Csv @"

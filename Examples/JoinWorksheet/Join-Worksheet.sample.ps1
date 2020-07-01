@@ -1,4 +1,6 @@
-﻿#Get rid of pre-exisiting sheet
+﻿try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
+
+#Get rid of pre-exisiting sheet
 $path = "$Env:TEMP\test.xlsx"
 remove-item -Path $path -ErrorAction SilentlyContinue
 

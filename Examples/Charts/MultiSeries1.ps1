@@ -1,6 +1,9 @@
 try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-Remove-Item temp.xlsx -ErrorAction Ignore
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $data = @"
 A,B,C,Date
@@ -15,5 +18,5 @@ $c = New-ExcelChartDefinition -Title Impressions `
     -SeriesHeader 'B data','A data' `
     -Row 0 -Column 0
 
-$data | ConvertFrom-Csv |   Export-Excel -path temp.xlsx -AutoSize -TableName Impressions
-Export-Excel -path temp.xlsx -worksheetName chartPage -ExcelChartDefinition $c  -show
+$data | ConvertFrom-Csv | Export-Excel -path $xlSourcefile -AutoSize -TableName Impressions
+Export-Excel -path $xlSourcefile -worksheetName chartPage -ExcelChartDefinition $c -show
