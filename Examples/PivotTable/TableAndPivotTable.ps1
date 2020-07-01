@@ -1,5 +1,9 @@
-$path = "$Env:TEMP\test.xlsx"
-remove-item -path $path -ErrorAction SilentlyContinue
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
+
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 #Export some sales data to Excel, format it as a table and put a data-bar in.  For this example we won't create the pivot table during the export
 $excel =  ConvertFrom-Csv    @"
@@ -10,7 +14,7 @@ Banana, London , 300, 200
 Orange, Paris,   600, 500
 Banana, Paris,   300, 200
 Apple, New York, 1200,700
-"@  | Export-Excel -PassThru  -Path $path  -TableStyle Medium13 -tablename "RawData" -ConditionalFormat @{Range="C2:C7"; DataBarColor="Green"}
+"@  | Export-Excel -PassThru -Path $xlSourcefile -TableStyle Medium13 -tablename "RawData" -ConditionalFormat @{Range="C2:C7"; DataBarColor="Green"}
 
 #Add a pivot table, specify its address to put it on the same sheet, use the data that was just exported  set the table style and number format.
 #Use the "City" for the row names, and "Product" for the columnnames, and sum both the gross and net values for each City/Product combination; add grand totals to rows and columns.

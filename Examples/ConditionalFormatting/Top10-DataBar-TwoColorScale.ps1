@@ -1,7 +1,9 @@
 ﻿try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$xlfile = "$env:TEMP\test.xlsx"
-Remove-Item $xlfile -ErrorAction SilentlyContinue
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $data = ConvertFrom-csv @"
 Store,January,February,March,April,May,June
@@ -17,12 +19,12 @@ store01,21292,82341,81339,12505,29516,41634
 store82,74047,93325,25002,40113,76278,45707
 "@
 
-Export-Excel -InputObject $data -Path $xlfile -TableName RawData -WorksheetName RawData
-Export-Excel -InputObject $data -Path $xlfile -TableName TopData -WorksheetName StoresTop10Sales 
-Export-Excel -InputObject $data -Path $xlfile -TableName Databar -WorksheetName StoresSalesDataBar
-Export-Excel -InputObject $data -Path $xlfile -TableName TwoColorScale -WorksheetName StoresSalesTwoColorScale
+Export-Excel -InputObject $data -Path $xlSourcefile -TableName RawData -WorksheetName RawData
+Export-Excel -InputObject $data -Path $xlSourcefile -TableName TopData -WorksheetName StoresTop10Sales 
+Export-Excel -InputObject $data -Path $xlSourcefile -TableName Databar -WorksheetName StoresSalesDataBar
+Export-Excel -InputObject $data -Path $xlSourcefile -TableName TwoColorScale -WorksheetName StoresSalesTwoColorScale
 
-$xl = Open-ExcelPackage -Path $xlfile
+$xl = Open-ExcelPackage -Path $xlSourcefile
 
 Set-ExcelRange -Worksheet $xl.StoresTop10Sales -Range $xl.StoresTop10Sales.dimension.address -NumberFormat 'Currency' -AutoSize
 Set-ExcelRange -Worksheet $xl.StoresSalesDataBar -Range $xl.StoresSalesDataBar.dimension.address -NumberFormat 'Currency' -AutoSize
