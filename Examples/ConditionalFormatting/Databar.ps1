@@ -1,12 +1,14 @@
 ﻿try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$path = "$env:temp\test.xlsx"
-Remove-Item -Path $path -ErrorAction Ignore
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 #Export processes, and get an ExcelPackage object representing the file.
 $excel = Get-Process |
     Select-Object -Property Name,Company,Handles,CPU,PM,NPM,WS |
-    Export-Excel -Path $path -ClearSheet -WorkSheetname "Processes" -PassThru
+    Export-Excel -Path $xlSourcefile -ClearSheet -WorkSheetname "Processes" -PassThru
 
 $sheet = $excel.Workbook.Worksheets["Processes"]
 

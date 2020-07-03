@@ -1,10 +1,13 @@
 try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$xlfile = "$env:temp\testFmt.xlsx"
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 Get-Process |
     Select-Object Company,Handles,PM, NPM|
-    Export-Excel $xlfile -Show  -AutoSize -CellStyleSB {
+    Export-Excel $xlSourcefile  -Show  -AutoSize -CellStyleSB {
         param(
             $workSheet,
             $totalRows,

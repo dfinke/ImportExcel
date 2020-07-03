@@ -1,7 +1,9 @@
 try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$xlfile = "$env:temp\testFmt.xlsx"
-Remove-Item $xlfile -ErrorAction Ignore
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $RandomStyle = {
     param(
@@ -17,4 +19,4 @@ $RandomStyle = {
 
 Get-Process |
     Select-Object Company,Handles,PM, NPM|
-    Export-Excel $xlfile -Show  -AutoSize -CellStyleSB $RandomStyle
+    Export-Excel $xlSourcefile -Show  -AutoSize -CellStyleSB $RandomStyle

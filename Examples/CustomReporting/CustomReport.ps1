@@ -1,7 +1,9 @@
 try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$f = "$env:temp\dashboard.xlsx"
-Remove-Item $f -ErrorAction Ignore
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $data = @"
 From,To,RDollars,RPercent,MDollars,MPercent,Revenue,Margin
@@ -13,9 +15,9 @@ New York,San Francisco,3221000,.0629,1088000,.04,436,21
 New York,Phoneix,2782000,.0723,467000,.10,674,33
 "@ | ConvertFrom-Csv
 
-$data | Export-Excel $f -AutoSize
+$data | Export-Excel $xlSourcefile -AutoSize
 
-$excel = Open-ExcelPackage $f
+$excel = Open-ExcelPackage $xlSourcefile
 
 $sheet1 = $excel.Workbook.Worksheets["sheet1"]
 

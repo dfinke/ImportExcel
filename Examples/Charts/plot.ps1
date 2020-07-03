@@ -10,8 +10,10 @@ function plot {
     $minx=[math]::Round($minx,1)
     $maxx=[math]::Round($maxx,1)
 
-    $file = 'C:\temp\plot.xlsx'
-    Remove-Item $file -ErrorAction Ignore
+    #Get rid of pre-exisiting sheet
+    $xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+    Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+    Remove-Item $xlSourcefile -ErrorAction Ignore
 
    # $c = New-ExcelChart -XRange X -YRange Y -ChartType Line -NoLegend -Title Plot -Column 2 -ColumnOffSetPixels 35
 
@@ -20,7 +22,7 @@ function plot {
             X=$i.ToString("N1")
             Y=(&$f $i)
         }
-    }) | Export-Excel $file -Show -AutoNameRange -LineChart -NoLegend  #-ExcelChartDefinition $c
+    }) | Export-Excel $xlSourcefile -Show -AutoNameRange -LineChart -NoLegend  #-ExcelChartDefinition $c
 }
 
 function pi {[math]::pi}

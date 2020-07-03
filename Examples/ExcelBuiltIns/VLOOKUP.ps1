@@ -1,5 +1,9 @@
-﻿$xlfile = "$env:TEMP\test.xlsx"
-Remove-Item $xlfile -ErrorAction SilentlyContinue
+﻿try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
+
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $data = ConvertFrom-Csv @"
 Fruit,Amount
@@ -9,11 +13,11 @@ Bananas,60
 Lemons,40
 "@
 
-$xl = Export-Excel -InputObject $data -Path $xlfile -PassThru -AutoSize
+$xl = Export-Excel -InputObject $data -Path $xlSourcefile -PassThru -AutoSize
 
 Set-ExcelRange -Worksheet $xl.Sheet1 -Range D2 -BackgroundColor LightBlue -Value Apples
 
-$Rows = $xl.Sheet1.Dimension.Rows
-Set-ExcelRange -Worksheet $xl.Sheet1 -Range E2 -Formula "=VLookup(D2,A2:B$($Rows),2,FALSE)"
+$rows = $xl.Sheet1.Dimension.Rows
+Set-ExcelRange -Worksheet $xl.Sheet1 -Range E2 -Formula "=VLookup(D2,A2:B$($rows),2,FALSE)"
 
 Close-ExcelPackage $xl -Show

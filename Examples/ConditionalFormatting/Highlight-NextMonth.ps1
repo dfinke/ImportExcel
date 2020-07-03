@@ -1,10 +1,11 @@
 try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$f = ".\testExport.xlsx"
-
-Remove-Item $f -ErrorAction Ignore
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 .\GenDates.ps1 |
-    Export-Excel $f -Show -AutoSize -ConditionalText $(
+    Export-Excel $xlSourcefile -Show -AutoSize -ConditionalText $(
         New-ConditionalText -ConditionalType NextMonth
     )

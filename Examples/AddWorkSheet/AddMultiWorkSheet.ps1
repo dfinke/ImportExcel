@@ -1,8 +1,8 @@
 try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$xlSourcefile = "$env:TEMP\Source.xlsx"
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
 Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
-
 Remove-Item $xlSourcefile -ErrorAction Ignore
 
 #Put some simple data in a worksheet and Get an excel package object to represent the file

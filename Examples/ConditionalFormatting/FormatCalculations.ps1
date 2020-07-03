@@ -1,8 +1,9 @@
 try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$f = "$env:TEMP\testExport.xlsx"
-
-Remove-Item $f -ErrorAction Ignore
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $data = $(
 
@@ -25,6 +26,6 @@ $data = $(
 # the syntax is used is Export-excel -ConditionalText (New-Conditional text <parameters>) <other parameters>
 
 
-#$data  | Export-Excel $f -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType AboveAverage)
-$data  | Export-Excel $f -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType BelowAverage)
-#$data  | Export-Excel $f -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType TopPercent)
+#$data  | Export-Excel $xlSourcefile -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType AboveAverage)
+$data  | Export-Excel $xlSourcefile -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType BelowAverage)
+#$data  | Export-Excel $xlSourcefile -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType TopPercent)

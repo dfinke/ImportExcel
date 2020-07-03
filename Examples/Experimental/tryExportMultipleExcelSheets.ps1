@@ -1,7 +1,9 @@
 . "$PSScriptRoot\Export-MultipleExcelSheets.ps1"
 
-$xlfile = "$env:TEMP\test.xlsx"
-Remove-Item $xlfile -ErrorAction SilentlyContinue
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $p = Get-Process
 
@@ -14,4 +16,4 @@ $InfoMap = @{
     WillNotGetExported = "Hello World"
 }
 
-Export-MultipleExcelSheets -Path $xlfile -InfoMap $InfoMap -Show -AutoSize
+Export-MultipleExcelSheets -Path $xlSourcefile -InfoMap $InfoMap -Show -AutoSize

@@ -1,4 +1,6 @@
-﻿$data = ConvertFrom-Csv @'
+﻿try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
+
+$data = ConvertFrom-Csv @'
 Item,Quantity,Price,Total Cost
 Footballs,9,21.95,197.55
 Cones,36,7.99,287.64

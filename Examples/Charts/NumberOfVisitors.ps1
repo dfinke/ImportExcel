@@ -1,5 +1,9 @@
-﻿$xlfile = "$env:TEMP\visitors.xlsx"
-Remove-Item $xlfile -ErrorAction SilentlyContinue
+﻿try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
+
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $data = ConvertFrom-Csv @"
 Week, TotalVisitors
@@ -23,5 +27,5 @@ $cd = New-ExcelChartDefinition `
     -NoLegend `
     -ChartTrendLine Linear
 
-$data | Export-Excel $xlfile -Show -AutoNameRange -AutoSize -TableName Visitors -ExcelChartDefinition $cd
+$data | Export-Excel $xlSourcefile -Show -AutoNameRange -AutoSize -TableName Visitors -ExcelChartDefinition $cd
 
