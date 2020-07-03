@@ -7,7 +7,7 @@ param(
     $InterestRate = .065,
     $Term = 30
 )
-
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 function New-CellData {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification='Does not change system state')]
     param(

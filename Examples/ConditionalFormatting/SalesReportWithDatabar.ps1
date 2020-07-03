@@ -1,6 +1,9 @@
 try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-Remove-Item -Path .\test.xlsx -ErrorAction Ignore
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $excel = @"
 Month,Sales
@@ -11,7 +14,7 @@ Apr,952
 May,770
 Jun,621
 "@ | ConvertFrom-csv |
-     Export-Excel -Path .\test.xlsx -WorkSheetname Sheet1 -AutoNameRange -PassThru
+     Export-Excel -Path $xlSourcefile -WorkSheetname Sheet1 -AutoNameRange -PassThru
 
 $sheet = $excel.Workbook.Worksheets["Sheet1"]
 Add-ConditionalFormatting -Worksheet $sheet -Range "B1:B7" -DataBarColor LawnGreen

@@ -1,3 +1,5 @@
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
+
 function Get-DateOffset {
     param($days=0)
 

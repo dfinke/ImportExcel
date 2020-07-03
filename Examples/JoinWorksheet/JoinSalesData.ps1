@@ -1,15 +1,16 @@
 try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$xlfile = "$env:temp\AllSales.xlsx"
-
-Remove-Item $xlfile -ErrorAction Ignore
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $params = @{
     AutoSize             = $true
     AutoFilter           = $true
     AutoNameRange        = $true
     ExcelChartDefinition = New-ExcelChartDefinition -XRange Item -YRange UnitSold -Title 'Units Sold'
-    Path                 = $xlfile
+    Path                 = $xlSourcefile
 }
 #Import 4 sets of sales data from 4 CSV files, using the parameters above.
 Import-Csv $PSScriptRoot\NorthSales.csv | Export-Excel -WorkSheetname North @params

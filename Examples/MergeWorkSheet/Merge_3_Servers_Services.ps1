@@ -1,3 +1,5 @@
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
+
 Remove-Item -Path  "$env:temp\server*.xlsx" , "$env:temp\Combined*.xlsx" -ErrorAction SilentlyContinue
 
 #Get a subset of services into $s and export them

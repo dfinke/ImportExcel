@@ -1,3 +1,4 @@
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 $data = ConvertFrom-Csv @"
 Timestamp,Tenant
 10/29/2018 3:00:00.123,1
@@ -15,8 +16,10 @@ Timestamp,Tenant
 10/29/2018 3:02:00.999,1
 "@ | Select-Object @{n = 'Timestamp'; e = {Get-date $_.timestamp}}, tenant, @{n = 'Bucket'; e = { - (Get-date $_.timestamp).Second % 30}}
 
-$f = "$env:temp\pivottest.xlsx"
-Remove-Item $f -ErrorAction SilentlyContinue
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $pivotDefParams = @{
     PivotTableName = 'Timestamp Buckets'
@@ -29,7 +32,7 @@ $pivotDefParams = @{
 
 $excelParams = @{
     PivotTableDefinition = New-PivotTableDefinition @pivotDefParams
-    Path                 = $f
+    Path                 = $xlSourcefile
     WorkSheetname        = "Log Data"
     AutoSize             = $true
     AutoFilter           = $true

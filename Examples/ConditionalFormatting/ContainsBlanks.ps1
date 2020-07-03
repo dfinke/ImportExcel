@@ -12,8 +12,10 @@ $data = $(
     New-PSItem g h i
 )
 
-$file ="$env:temp\testblanks.xlsx"
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
-Remove-Item $file -ErrorAction Ignore
 #use the conditional format definition created above
-$data | Export-Excel $file -show -ConditionalText $ContainsBlanks
+$data | Export-Excel $xlSourcefile -show -ConditionalText $ContainsBlanks
