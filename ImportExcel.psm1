@@ -7,8 +7,8 @@ if (-not $Strings) {
 try { [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") }
 catch { Write-Warning -Message $Strings.SystemDrawingAvailable }
 
-foreach ($directory in @('Private', 'Public','Charting','InferData','Pivot')) {
-    Get-ChildItem -Path "$PSScriptRoot\$directory\*.ps1" | ForEach-Object {. $_.FullName}
+foreach ($directory in @('Private', 'Public', 'Charting', 'InferData', 'Pivot')) {
+    Get-ChildItem -Path "$PSScriptRoot\$directory\*.ps1" | ForEach-Object { . $_.FullName }
 }
 
 if ($PSVersionTable.PSVersion.Major -ge 5) {
@@ -53,8 +53,8 @@ brew install mono-libgdiplus
 "@
             Write-Warning -Message $msg
         }
-        finally {
-            $ExcelPackage | Close-ExcelPackage -NoSave
-        }
+    }
+    finally {
+        $ExcelPackage | Close-ExcelPackage -NoSave
     }
 }
