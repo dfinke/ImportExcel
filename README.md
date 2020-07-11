@@ -61,7 +61,7 @@ Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfi
 
 # What's new 7.1.1
 
-- Merged [Nate Ferrell](@https://github.com/scrthq) Linux fix. Thanks!
+- Merged [Nate Ferrell](https://github.com/scrthq)'s Linux fix. Thanks!
 - Moved `Export-MultipleExcelSheets` from psm1 to Examples/Experimental
 - Deleted the CI build in Appveyor
 - Thank you [Mikey Bronowski](https://github.com/MikeyBronowski) for 
