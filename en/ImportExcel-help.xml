@@ -18920,7 +18920,7 @@ PS\&gt; $excel = Export-Excel -Path .\test.xlsx -PivotTableDefinition $pt -Show<
       <command:verb>Open</command:verb>
       <command:noun>ExcelPackage</command:noun>
       <maml:description>
-        <maml:para>Returns an ExcelPackage object for the specified XLSX fil.e</maml:para>
+        <maml:para>Returns an ExcelPackage object for the specified XLSX file.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
