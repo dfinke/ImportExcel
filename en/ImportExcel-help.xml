@@ -19064,6 +19064,21 @@ PS\&gt; Close-ExcelPackage $excel -Show</dev:code>
           <maml:para>This will open the password protected file at $xlPath using the password stored in $Password. Sheet1 is selected and formatting applied to two blocks of the sheet; then the file is and saved and loaded into Excel.</maml:para>
         </dev:remarks>
       </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>PS\&gt; $excelA= Open-ExcelPackage -path "$xlPath"
+PS\&gt; $excelA.MyWorksheet.Cells | 
+Where-Object {$_.Formula -ne ''} |
+Sort-Object Address | 
+Select-Object Address, Formula
+PS\&gt; Close-ExcelPackage $excelA -NoSave</dev:code>
+        <dev:remarks>
+          <maml:para>This will open the file at $xlPath and load it into the $excelA variable. 
+The MyWorksheet worksheet of $excelA is accessed and then filtered for all cells containing a value in the Formula property. 
+Next, the address of the cells with values in the Formula property are sorted and displayed along with the formula.
+Finally, the Excel is closed using Close-ExcelPackage.</maml:para>
+        </dev:remarks>
+      </command:example>
     </command:examples>
     <command:relatedLinks />
   </command:command>
