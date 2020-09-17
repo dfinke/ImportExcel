@@ -247,7 +247,8 @@ if (Test-Path $script:warningfile) {
 if (-not $SkipPesterTests -and (Get-ChildItem -Recurse *.tests.ps1)) {
     Import-Module -Force $outputFile
     if (-not (Get-Module -ListAvailable pester | Where-Object -Property version -ge ([version]::new(4, 4, 1)))) {
-        Install-Module Pester -Force -SkipPublisherCheck -MaximumVersion 4.99.99
+        # Install-Module Pester -Force -SkipPublisherCheck -MaximumVersion 4.99.99
+        Install-Module Pester -Force -SkipPublisherCheck
     }
     Import-Module Pester
     $PesterOutputPath = Join-Path $pwd  -ChildPath ('TestResultsPS{0}.xml' -f $PSVersionTable.PSVersion)
