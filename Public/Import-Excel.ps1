@@ -32,6 +32,7 @@
         [Alias('RightColumn')]
         [Int]$EndColumn  ,
         [Switch]$DataOnly,
+        [Switch]$SkipHiddenRows,
         [string[]]$AsText,
         [string[]]$AsDate,
         [ValidateNotNullOrEmpty()]
@@ -186,6 +187,7 @@
                         $TextColRegEx = New-Object -TypeName regex -ArgumentList $TextColExpression , 9
                     }
                     else {$TextColRegEx = $null}
+                    if ($SkipHiddenRows) { $rows = $rows.Where({-not ($Worksheet.Row($_)).Hidden}) }
                     foreach ($R in $rows) {
                         #Disabled write-verbose for speed
                         #  Write-Verbose "Import row '$R'"
