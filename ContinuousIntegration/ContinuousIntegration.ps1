@@ -8,9 +8,12 @@ foreach ($module in $modules) {
     Import-Module $module -Force -PassThru
 }
 
-try {
-    $pesterResults = Invoke-Pester -Output Detailed -PassThru
+$pesterResults = Invoke-Pester -Output Detailed -PassThru
 
+if (!$pesterResults) {
+    Throw "Tests failed"
+}
+else { 
     if ($pesterResults.FailedCount -gt 0) {
         
         '[Progress] Pester Results Failed'
@@ -24,7 +27,4 @@ try {
 
         Throw "Tests failed"
     }
-}
-catch {
-    Throw "Tests failed"    
 }
