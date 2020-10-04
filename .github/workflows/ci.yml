@@ -15,5 +15,6 @@ jobs:
         os: [windows-latest, ubuntu-18.04, macos-latest]
     steps:
     - uses: actions/checkout@v1      
+    - name: Run Continuous Integration
       run : ./ContinuousIntegration/ContinuousIntegration.ps1
       shell: pwsh
