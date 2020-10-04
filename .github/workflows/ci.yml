@@ -15,5 +15,5 @@ jobs:
         os: [windows-latest, ubuntu-18.04, macos-latest]
     steps:
     - uses: actions/checkout@v1      
-      run : "Hello World"
+      run : ./ContinuousIntegration/ContinuousIntegration.ps1
       shell: pwsh
