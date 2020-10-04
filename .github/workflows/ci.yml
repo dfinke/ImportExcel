@@ -1,0 +1,19 @@
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:    
+    branches:
+      - master
+
+jobs:
+  validate:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-18.04, macos-latest]
+    steps:
+    - uses: actions/checkout@v1      
+      run : "Hello World"
+      shell: pwsh
