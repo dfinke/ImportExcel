@@ -11,6 +11,11 @@ Describe "Import-Excel -SkipHiddenRows" {
             Banana,Paris,300,200
             Apple,New York,1200,700
         "
+        $FilteredObjectArray = ConvertFrom-Csv -Header $Header -InputObject "
+            Apple,London,300,250
+            Orange,London,400,350
+            Banana,Paris,300,200
+        "
         $InputObjectArray | Export-Excel -Path $WithHiddenRows
         $ExcelPackage = Open-ExcelPackage -Path $WithHiddenRows
         Set-ExcelRow -ExcelPackage $ExcelPackage -Row 3 -Hide:$true
@@ -25,5 +30,6 @@ Describe "Import-Excel -SkipHiddenRows" {
     It "Should have only visible data" {
         $ObjectArray = Import-Excel -Path $WithHiddenRows -SkipHiddenRows
         $ObjectArray.Count | Should -Be 3
+        Compare-Object -ReferenceObject $ObjectArray -DifferenceObject $FilteredObjectArray | Should -Be $null
     }
 }
