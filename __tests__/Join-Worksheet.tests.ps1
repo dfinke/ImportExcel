@@ -1,46 +1,45 @@
-﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
-param()
-$data1 = ConvertFrom-Csv -InputObject @"
-ID,Product,Quantity,Price,Total
-12001,Nails,37,3.99,147.63
-12002,Hammer,5,12.10,60.5
-12003,Saw,12,15.37,184.44
-12010,Drill,20,8,160
-12011,Crowbar,7,23.48,164.36
-"@
-$data2 = ConvertFrom-Csv -InputObject @"
-ID,Product,Quantity,Price,Total
-12001,Nails,53,3.99,211.47
-12002,Hammer,6,12.10,72.60
-12003,Saw,10,15.37,153.70
-12010,Drill,10,8,80
-12012,Pliers,2,14.99,29.98
-"@
-$data3 = ConvertFrom-Csv -InputObject @"
-ID,Product,Quantity,Price,Total
-12001,Nails,20,3.99,79.80
-12002,Hammer,2,12.10,24.20
-12010,Drill,11,8,88
-12012,Pliers,3,14.99,44.97
-"@
-
+﻿
 Describe "Join Worksheet part 1" {
     BeforeAll {
+        $data1 = ConvertFrom-Csv -InputObject @"
+        ID,Product,Quantity,Price,Total
+        12001,Nails,37,3.99,147.63
+        12002,Hammer,5,12.10,60.5
+        12003,Saw,12,15.37,184.44
+        12010,Drill,20,8,160
+        12011,Crowbar,7,23.48,164.36
+"@
+        $data2 = ConvertFrom-Csv -InputObject @"
+        ID,Product,Quantity,Price,Total
+        12001,Nails,53,3.99,211.47
+        12002,Hammer,6,12.10,72.60
+        12003,Saw,10,15.37,153.70
+        12010,Drill,10,8,80
+        12012,Pliers,2,14.99,29.98
+"@
+        $data3 = ConvertFrom-Csv -InputObject @"
+        ID,Product,Quantity,Price,Total
+        12001,Nails,20,3.99,79.80
+        12002,Hammer,2,12.10,24.20
+        12010,Drill,11,8,88
+        12012,Pliers,3,14.99,44.97
+"@
+
         . "$PSScriptRoot\Samples\Samples.ps1"
         $path = "TestDrive:\test.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         $data1 | Export-Excel -Path $path -WorkSheetname Oxford
         $data2 | Export-Excel -Path $path -WorkSheetname Abingdon
         $data3 | Export-Excel -Path $path -WorkSheetname Banbury
-        $ptdef = New-PivotTableDefinition -PivotTableName "SummaryPivot" -PivotRows "Store" -PivotColumns "Product" -PivotData @{"Total"="SUM"} -IncludePivotChart -ChartTitle "Sales Breakdown" -ChartType ColumnStacked -ChartColumn 10
-        Join-Worksheet -Path $path -WorkSheetName "Total" -Clearsheet -FromLabel "Store" -TableName "SummaryTable" -TableStyle Light1 -AutoSize -BoldTopRow -FreezePane 2,1 -Title "Store Sales Summary" -TitleBold -TitleSize 14  -TitleBackgroundColor  ([System.Drawing.Color]::AliceBlue) -PivotTableDefinition $ptdef
+        $ptdef = New-PivotTableDefinition -PivotTableName "SummaryPivot" -PivotRows "Store" -PivotColumns "Product" -PivotData @{"Total" = "SUM" } -IncludePivotChart -ChartTitle "Sales Breakdown" -ChartType ColumnStacked -ChartColumn 10
+        Join-Worksheet -Path $path -WorkSheetName "Total" -Clearsheet -FromLabel "Store" -TableName "SummaryTable" -TableStyle Light1 -AutoSize -BoldTopRow -FreezePane 2, 1 -Title "Store Sales Summary" -TitleBold -TitleSize 14  -TitleBackgroundColor  ([System.Drawing.Color]::AliceBlue) -PivotTableDefinition $ptdef
 
-       $excel = Export-Excel -path $path -WorkSheetname SummaryPivot -Activate -NoTotalsInPivot -PivotDataToColumn -HideSheet * -UnHideSheet "Total","SummaryPivot" -PassThru
+        $excel = Export-Excel -path $path -WorkSheetname SummaryPivot -Activate -NoTotalsInPivot -PivotDataToColumn -HideSheet * -UnHideSheet "Total", "SummaryPivot" -PassThru
         # Open-ExcelPackage -Path $path
 
-        $ws    = $excel.Workbook.Worksheets["Total"]
-        $pt    = $excel.Workbook.Worksheets["SummaryPivot"].pivottables[0]
-        $pc    = $excel.Workbook.Worksheets["SummaryPivot"].Drawings[0]
+        $ws = $excel.Workbook.Worksheets["Total"]
+        $pt = $excel.Workbook.Worksheets["SummaryPivot"].pivottables[0]
+        $pc = $excel.Workbook.Worksheets["SummaryPivot"].Drawings[0]
     }
     Context "Export-Excel setting spreadsheet visibility" {
         it "Hid the worksheets                                                                     " {
@@ -93,20 +92,22 @@ Describe "Join Worksheet part 1" {
         }
     }
 }
-    $path = "TestDrive:\Test.xlsx"
-    Remove-item -Path $path -ErrorAction SilentlyContinue
+$path = "TestDrive:\Test.xlsx"
+Remove-item -Path $path -ErrorAction SilentlyContinue
 #switched to CIM objects so test runs on V6
 Describe "Join Worksheet part 2" {
-    Get-CimInstance -ClassName win32_logicaldisk |
-        Select-Object -Property DeviceId,VolumeName, Size,Freespace |
-            Export-Excel -Path $path -WorkSheetname Volumes -NumberFormat "0,000"
-    Get-CimInstance -Namespace root/StandardCimv2 -class MSFT_NetAdapter   |
-        Select-Object -Property Name,InterfaceDescription,MacAddress,LinkSpeed |
-            Export-Excel -Path $path -WorkSheetname NetAdapters
+    BeforeEach {
+        Get-CimInstance -ClassName win32_logicaldisk |
+        Select-Object -Property DeviceId, VolumeName, Size, Freespace |
+        Export-Excel -Path $path -WorkSheetname Volumes -NumberFormat "0,000"
+        Get-CimInstance -Namespace root/StandardCimv2 -class MSFT_NetAdapter   |
+        Select-Object -Property Name, InterfaceDescription, MacAddress, LinkSpeed |
+        Export-Excel -Path $path -WorkSheetname NetAdapters
 
-    Join-Worksheet -Path $path -HideSource -WorkSheetName Summary -NoHeader -LabelBlocks  -AutoSize -Title "Summary" -TitleBold -TitleSize 22
-    $excel = Open-ExcelPackage -Path $path
-    $ws    = $excel.Workbook.Worksheets["Summary"]
+        Join-Worksheet -Path $path -HideSource -WorkSheetName Summary -NoHeader -LabelBlocks  -AutoSize -Title "Summary" -TitleBold -TitleSize 22
+        $excel = Open-ExcelPackage -Path $path
+        $ws = $excel.Workbook.Worksheets["Summary"]
+    }
     Context "Bringing 3 Unlinked blocks onto one page" {
         it "Hid the source worksheets                                                              " {
             $excel.Workbook.Worksheets[1].Hidden.tostring()             | Should      -Be "Hidden"
