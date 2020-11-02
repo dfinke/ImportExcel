@@ -34,13 +34,13 @@ Describe "Copy-Worksheet" {
             StrTrailSpace    = '123   '
             Link1            = [uri]"https://github.com/dfinke/ImportExcel"
             Link2            = "https://github.com/dfinke/ImportExcel"     # Links are not copied correctly, hopefully this will be fixed at some future date
-        } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2 -WorkSheetname MixedTypes -Path $path2 
+        } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2 -WorkSheetname MixedTypes -Path $path2
     }
     Context "Simplest copy" {
         BeforeAll {
             $path1 = "TestDrive:\Test1.xlsx"
             $path2 = "TestDrive:\Test2.xlsx"
-    
+
             Copy-ExcelWorksheet -SourceWorkbook $path1 -DestinationWorkbook $path2
             $excel = Open-ExcelPackage -Path $path2
             $ws = $excel.Workbook.Worksheets["Processes"]
@@ -51,8 +51,9 @@ Describe "Copy-Worksheet" {
             $ws.Dimension.Address                                       | Should -Be $ProcRange
         }
     }
-    Context "Mixed types using a package object" -Skip {
+    Context "Mixed types using a package object"  {
         BeforeAll {
+            $excel = Open-ExcelPackage -Path $path2
             Copy-ExcelWorksheet -SourceWorkbook $excel -DestinationWorkbook $excel -DestinationWorkSheet "CopyOfMixedTypes"
             Close-ExcelPackage -ExcelPackage $excel
             $excel = Open-ExcelPackage -Path $path2

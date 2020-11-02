@@ -116,7 +116,7 @@
             Remove-item -Path $path -ErrorAction SilentlyContinue
             #Test -DisplayPropertySet
             $Processes | Export-Excel $path -DisplayPropertySet
-    
+
             $Excel = Open-ExcelPackage -Path $path
             $ws = $Excel.Workbook.Worksheets[1]
             $ws.Name                                                    | Should      -Be "sheet1"
@@ -233,7 +233,7 @@
 
         BeforeEach {
             $Excel = Open-ExcelPackage -Path $path
-            $ws = $Excel.Workbook.Worksheets[1]            
+            $ws = $Excel.Workbook.Worksheets[1]
         }
 
         it "Created a new file                                                                     " {
@@ -340,7 +340,7 @@
                 Link      = [uri]"https://github.com/dfinke/ImportExcel"
             } | Export-Excel  -NoNumberConversion IPAddress, Number1  -Path $path -NoHeader
         }
-        
+
         BeforeEach {
             $Excel = Open-ExcelPackage -Path $path
             $ws = $Excel.Workbook.Worksheets[1]
@@ -382,7 +382,7 @@
         }
     }
 
-    Context "#Example 5      # Adding a single conditional format " -Skip {
+    Context "#Example 5      # Adding a single conditional format "{
         BeforeEach {
             #Test  New-ConditionalText builds correctly
             $ct = New-ConditionalText -ConditionalType GreaterThan 525 -ConditionalTextColor ([System.Drawing.Color]::DarkRed) -BackgroundColor ([System.Drawing.Color]::LightPink)
@@ -392,9 +392,6 @@
             #Test -ConditionalText with a single conditional spec.
             489, 668, 299, 777, 860, 151, 119, 497, 234, 788 | Export-Excel -Path $path -ConditionalText $ct
 
-            it "Created a new file                                                                     " {
-                Test-Path -Path $path -ErrorAction SilentlyContinue         | Should      -Be $true
-            }
 
             #ToDo need to test applying conitional formatting to a pre-existing worksheet and removing = from formula
             $Excel = Open-ExcelPackage -Path $path
@@ -429,7 +426,7 @@
             )
             $ws = $Excel.Workbook.Worksheets[1]
         }
-        
+
         AfterAll {
             Close-ExcelPackage -ExcelPackage $Excel
         }
@@ -487,7 +484,7 @@
         }
     }
 
-    Context "#Examples 8 & 9 # Adding Pivot tables and charts from parameters" -Skip {
+    Context "#Examples 8 & 9 # Adding Pivot tables and charts from parameters"  {
         BeforeAll {
             $path = "TestDrive:\test.xlsx"
             #Test -passthru and -worksheetName creating a new, named, sheet in an existing file.
@@ -503,24 +500,15 @@
             #test adding pivot chart using the already open sheet
             $warnvar = $null
             Export-Excel -ExcelPackage $Excel -WorkSheetname Processes -IncludePivotTable -PivotRows Company -PivotData PM -IncludePivotChart -ChartType PieExploded3D -ShowCategory -ShowPercent  -NoLegend -WarningAction SilentlyContinue -WarningVariable warnvar
-        }
 
-        BeforeEach {
             $Excel = Open-ExcelPackage   $path
-            #Test appending data extends pivot chart (with a warning) .
-            $warnVar = $null
-            Get-Process |  Select-Object -Last 20 -Property Name, cpu, pm, handles, company |   Export-Excel  $path -WorkSheetname Processes -Append -IncludePivotTable -PivotRows Company -PivotData PM -IncludePivotChart -ChartType PieExploded3D -WarningAction SilentlyContinue -WarningVariable warnvar
-            $Excel = Open-ExcelPackage   $path
-            $pt = $Excel.Workbook.Worksheets["ProcessesPivotTable"].PivotTables[0]
-
         }
 
         it "Added the named sheet and pivot table to the workbook                                  " {
             $excel.ProcessesPivotTable                                  | Should -Not -BeNullOrEmpty
-            $PTws                                                       | Should -Not -BeNullOrEmpty
-            $PTws.PivotTables.Count                                     | Should      -Be 1
+            $excel.ProcessesPivotTable.PivotTables.Count                | Should      -Be 1
             $Excel.Workbook.Worksheets["Processes"]                     | Should -Not -BeNullOrEmpty
-            $Excel.Workbook.Worksheets.Count                            | Should      -BeGreaterThan 2
+            $Excel.Workbook.Worksheets.Count                            | Should      -BeGreaterOrEqual 2
             $excel.Workbook.Worksheets["Processes"].Dimension.rows      | Should      -Be 21    #20 data + 1 header
         }
         it "Selected  the Pivottable page                                                          " {
@@ -544,25 +532,35 @@
         it "Generated a message on re-processing the Pivot table                                   " {
             $warnVar                                                    | Should -Not -BeNullOrEmpty
         }
-        it "Appended to the Worksheet and Extended the Pivot table                                 " {
+        it "Appended to the Worksheet and Extended the Pivot table (with a warning)                " {
+
+            #Test appending data extends pivot chart (with a warning) .
+            $warnVar = $null
+            Get-Process |  Select-Object -Last 20 -Property Name, cpu, pm, handles, company |
+               Export-Excel  $path -WorkSheetname Processes -Append -IncludePivotTable -PivotRows Company -PivotData PM -IncludePivotChart -ChartType PieExploded3D -WarningAction SilentlyContinue -WarningVariable warnvar
+            $Excel = Open-ExcelPackage   $path
+            $pt = $Excel.Workbook.Worksheets["ProcessesPivotTable"].PivotTables[0]
+
             $Excel.Workbook.Worksheets.Count                            | Should      -Be $wCount
             $excel.Workbook.Worksheets["Processes"].Dimension.rows      | Should      -Be 41     #appended 20 rows to the previous total
             $pt.CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.ref |
-            Should     be "A1:E41"
-        }
-        it "Generated a message on extending the Pivot table                                       " {
+            Should     -Be "A1:E41"
+
             $warnVar                                                    | Should -Not -BeNullOrEmpty
         }
     }
 
-    Context "                # Add-Worksheet inserted sheets, moved them correctly, and copied a sheet" -Skip {
+    Context "                # Add-Worksheet inserted sheets, moved them correctly, and copied a sheet"  {
         BeforeAll {
             $path = "TestDrive:\test.xlsx"
             #Test the -CopySource and -Movexxxx parameters for Add-Worksheet
+            $Excel = Get-Process |  Select-Object -first 20 -Property Name, cpu, pm, handles, company |
+               Export-Excel  $path -WorkSheetname Processes -IncludePivotTable -PivotRows Company -PivotData PM -NoTotalsInPivot -PivotDataToColumn -Activate
+
             $Excel = Open-ExcelPackage  $path
             #At this point Sheets Should be in the order Sheet1, Processes, ProcessesPivotTable
-            $null = Add-Worksheet -ExcelPackage $Excel -WorkSheetname "Processes" -MoveToEnd   # order now  Sheet1, ProcessesPivotTable, Processes
-            $null = Add-Worksheet -ExcelPackage $Excel -WorkSheetname "NewSheet"  -MoveAfter "*" -CopySource ($excel.Workbook.Worksheets["Sheet1"]) # Now its NewSheet, Sheet1, ProcessesPivotTable, Processes
+            $null = Add-Worksheet -ExcelPackage $Excel -WorkSheetname "Processes" -MoveToEnd   # order now   ProcessesPivotTable, Processes
+            $null = Add-Worksheet -ExcelPackage $Excel -WorkSheetname "NewSheet"  -MoveAfter "*" -CopySource ($excel.Workbook.Worksheets["Processes"]) # Now its NewSheet, ProcessesPivotTable, Processes
             $null = Add-Worksheet -ExcelPackage $Excel -WorkSheetname "Sheet1"    -MoveAfter "Processes"  # Now its NewSheet, ProcessesPivotTable, Processes, Sheet1
             $null = Add-Worksheet -ExcelPackage $Excel -WorkSheetname "Another"   -MoveToStart    # Now its Another, NewSheet, ProcessesPivotTable, Processes, Sheet1
             $null = Add-Worksheet -ExcelPackage $Excel -WorkSheetname "NearDone"  -MoveBefore 5   # Now its  Another, NewSheet, ProcessesPivotTable, Processes, NearDone ,Sheet1
@@ -582,12 +580,9 @@
             $excel.Workbook.Worksheets[7].Name  | Should -Be "Sheet1"
         }
 
-        it "Cloned 'Sheet1' to 'NewSheet'                                                          " {
+        it "Cloned 'Processes' to 'NewSheet'                                                          " {
             $newWs = $excel.Workbook.Worksheets["NewSheet"]
-            $newWs.Dimension.Address                          | Should      -Be ($excel.Workbook.Worksheets["Sheet1"].Dimension.Address)
-            $newWs.ConditionalFormatting.Count                | Should      -Be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting.Count)
-            $newWs.ConditionalFormatting[0].Address.Address   | Should      -Be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting[0].Address.Address)
-            $newWs.ConditionalFormatting[0].Formula           | Should      -Be ($excel.Workbook.Worksheets["Sheet1"].ConditionalFormatting[0].Formula)
+            $newWs.Dimension.Address                          | Should      -Be ($excel.Workbook.Worksheets["Processes"].Dimension.Address)
         }
 
     }
@@ -665,7 +660,7 @@
             $dataWs.cells["C2"].Style.Numberformat.Format               | Should      -Be "General"
             $dataWs.cells["C12"].Style.Numberformat.Format              | Should      -Be "0.00"
         }
-        
+
 
         it "Created a new sheet and explicitly extended named range and autofilter                 " {
             #Test extending autofilter and range when explicitly specified in the append
@@ -687,82 +682,6 @@
     #     $ptDef = [ordered]@{}
     #     $ptDef += New-PivotTableDefinition -PivotTableName "PT1" -SourceWorkSheet 'Sheet1' -PivotRows "Status"  -PivotData @{'Status' = 'Count' } -PivotTotals Columns -PivotFilter "StartType" -IncludePivotChart -ChartType BarClustered3D  -ChartTitle "Services by status" -ChartHeight 512 -ChartWidth 768 -ChartRow 10 -ChartColumn 0 -NoLegend -PivotColumns CanPauseAndContinue
     #     $ptDef += New-PivotTableDefinition -PivotTableName "PT2" -SourceWorkSheet 'Sheet2' -PivotRows "Company" -PivotData @{'Company' = 'Count' } -PivotTotalS Rows                             -IncludePivotChart -ChartType PieExploded3D -ShowPercent -WarningAction SilentlyContinue
-
-    #     it "Built a pivot definition using New-PivotTableDefinition                                " {
-    #         $ptDef.PT1.SourceWorkSheet                                  | Should -Be 'Sheet1'
-    #         $ptDef.PT1.PivotRows                                        | Should -Be 'Status'
-    #         $ptDef.PT1.PivotData.Status                                 | Should -Be 'Count'
-    #         $ptDef.PT1.PivotFilter                                      | Should -Be 'StartType'
-    #         $ptDef.PT1.IncludePivotChart                                | Should -Be  $true
-    #         $ptDef.PT1.ChartType.tostring()                             | Should -Be 'BarClustered3D'
-    #         $ptDef.PT1.PivotTotals                                      | Should -Be 'Columns'
-    #     }
-    #     Remove-Item -Path $path
-    #     #Catch warning
-    #     $warnvar = $null
-    #     #Test create two data pages; as part of adding the second give both their own pivot table, test -autosize switch
-    #     Get-Service | Select-Object    -Property Status, Name, DisplayName, StartType, CanPauseAndContinue | Export-Excel -Path $path  -AutoSize -TableName "All Services"  -TableStyle Medium1 -WarningVariable warnvar -WarningAction SilentlyContinue
-    #     Get-Process | Select-Object    -Property Name, Company, Handles, CPU, VM      | Export-Excel -Path $path  -AutoSize -WorkSheetname 'sheet2' -TableName "Processes"     -TableStyle Light1 -Title "Processes" -TitleFillPattern Solid -TitleBackgroundColor ([System.Drawing.Color]::AliceBlue) -TitleBold -TitleSize 22 -PivotTableDefinition $ptDef
-    #     $Excel = Open-ExcelPackage   $path
-    #     $ws1 = $Excel.Workbook.Worksheets["Sheet1"]
-    #     $ws2 = $Excel.Workbook.Worksheets["Sheet2"]
-
-    #     if ($isWindows) {
-    #         it "Set Column widths (with autosize)                                                      " {
-    #             $ws1.Column(2).Width                                        | Should -Not -Be $ws1.DefaultColWidth
-    #             $ws2.Column(1).width                                        | Should -Not -Be $ws2.DefaultColWidth
-    #         }
-    #     }
-
-    #     it "Added tables to both sheets (handling illegal chars) and a title in sheet 2            " {
-    #         $warnvar.count                                              | Should      -BeGreaterThan 0
-    #         $ws1.tables.Count                                           | Should      -Be 1
-    #         $ws2.tables.Count                                           | Should      -Be 1
-    #         $ws1.Tables[0].Address.Start.Row                            | Should      -Be 1
-    #         $ws2.Tables[0].Address.Start.Row                            | Should      -Be 2 #Title in row 1
-    #         $ws1.Tables[0].Address.End.Address                          | Should      -Be $ws1.Dimension.End.Address
-    #         $ws2.Tables[0].Address.End.Address                          | Should      -Be $ws2.Dimension.End.Address
-    #         $ws2.Tables[0].Name                                         | Should      -Be "Processes"
-    #         $ws2.Tables[0].StyleName                                    | Should      -Be "TableStyleLight1"
-    #         $ws2.Cells["A1"].Value                                      | Should      -Be "Processes"
-    #         $ws2.Cells["A1"].Style.Font.Bold                            | Should      -Be $true
-    #         $ws2.Cells["A1"].Style.Font.Size                            | Should      -Be 22
-    #         $ws2.Cells["A1"].Style.Fill.PatternType.tostring()          | Should      -Be "solid"
-    #         $ws2.Cells["A1"].Style.Fill.BackgroundColor.Rgb             | Should      -Be "fff0f8ff"
-    #     }
-
-    #     $ptsheet1 = $Excel.Workbook.Worksheets["Pt1"]
-    #     $ptsheet2 = $Excel.Workbook.Worksheets["Pt2"]
-    #     $PT1 = $ptsheet1.PivotTables[0]
-    #     $PT2 = $ptsheet2.PivotTables[0]
-    #     $PC1 = $ptsheet1.Drawings[0]
-    #     $PC2 = $ptsheet2.Drawings[0]
-    #     it "Created the pivot tables linked to the right data.                                     " {
-    #         $PT1.CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.name |
-    #         Should     be "All_services"
-    #         $PT2.CacheDefinition.CacheDefinitionXml.pivotCacheDefinition.cacheSource.worksheetSource.name |
-    #         Should     be "Processes"
-    #     }
-    #     it "Set the other pivot tables and chart options from the definitions.                     " {
-    #         $pt1.PageFields[0].Name                                     | Should      -Be 'StartType'
-    #         $pt1.RowFields[0].Name                                      | Should      -Be 'Status'
-    #         $pt1.DataFields[0].Field.name                               | Should      -Be 'Status'
-    #         $pt1.DataFields[0].Function                                 | Should      -Be 'Count'
-    #         $pt1.ColumGrandTotals                                       | Should      -Be $true
-    #         $pt1.RowGrandTotals                                         | Should      -Be $false
-    #         $pt2.ColumGrandTotals                                       | Should      -Be $false
-    #         $pt2.RowGrandTotals                                         | Should      -Be $true
-    #         $pc1.ChartType                                              | Should      -Be 'BarClustered3D'
-    #         $pc1.From.Column                                            | Should      -Be 0                    #chart 1 at 0,10 chart 2 at 4,0 (default)
-    #         $pc2.From.Column                                            | Should      -Be 4
-    #         $pc1.From.Row                                               | Should      -Be 10
-    #         $pc2.From.Row                                               | Should      -Be 0
-    #         $pc1.Legend.Font                                            | Should      -BeNullOrEmpty           #Best check for legend removed.
-    #         $pc2.Legend.Font                                            | Should -Not -BeNullOrEmpty
-    #         $pc1.Title.Text                                             | Should      -Be 'Services by status'
-    #         $pc2.DataLabel.ShowPercent                                  | Should      -Be $true
-    #     }
-    # }
 
     Context "#Example 13     # Formatting and another way to do a pivot.  " {
         BeforeAll {
@@ -837,7 +756,7 @@
         it "Froze the panes                                                                        " {
             $sheet.view.Panes.Count                                     | Should      -Be 3
         }
-        
+
         it "Created the pivot table                                                                " {
             $ptsheet1 = $Excel.Workbook.Worksheets["Pt_procs"]
             $ptsheet1                                                   | Should -Not -BeNullOrEmpty
@@ -876,8 +795,8 @@
             $data[1].PM                                                 | Should -Not -BeNullOrEmpty
             $data[1].VirtualMemorySize                                  | Should -Not -BeNullOrEmpty
         }
-        
-        it "Created the Excel chart definition                                                     " {
+
+        it "Created an Excel chart definition and used it                                          " {
             $c = New-ExcelChartDefinition -Title Stats -ChartType LineMarkersStacked   -XRange "Processes[Name]" -YRange "Processes[PM]", "Processes[VirtualMemorySize]" -SeriesHeader 'PM', 'VMSize'
             $c                                                          | Should -Not -BeNullOrEmpty
             $c.ChartType.gettype().name                                 | Should      -Be "eChartType"
@@ -891,14 +810,11 @@
             $c.Nolegend                                                 | Should -Not -Be $true
             $c.ShowCategory                                             | Should -Not -Be $true
             $c.ShowPercent                                              | Should -Not -Be $true
-        }
 
-        it "Used the Excel chart definition with Export-Excel                                      " -Skip {
-            #Test creating a chart using -ExcelChartDefinition.
             $data | Export-Excel $path -AutoSize -TableName Processes -ExcelChartDefinition $c
             $excel = Open-ExcelPackage -Path $path
             $drawings = $excel.Workbook.Worksheets[1].drawings
-        
+
             $drawings.count                                             | Should      -Be 1
             $drawings[0].ChartType                                      | Should      -Be "LineMarkersStacked"
             $drawings[0].Series.count                                   | Should      -Be 2
@@ -907,8 +823,8 @@
             $drawings[0].Series[1].Series                               | Should      -Be "'Sheet1'!Processes[VirtualMemorySize]"
             $drawings[0].Series[1].XSeries                              | Should      -Be "'Sheet1'!Processes[Name]"
             $drawings[0].Title.text                                     | Should      -Be "Stats"
-        
-            Close-ExcelPackage $excel        
+
+            Close-ExcelPackage $excel
         }
     }
 
@@ -1001,7 +917,7 @@
             $ct.ConditionalType                                         | Should      -Be "ContainsText"
             $ct.Text                                                    | Should      -Be "Microsoft"
         }
-        
+
         BeforeEach {
             #Test -ConditionalFormat & -ConditionalText
             Export-Excel -Path $path -ConditionalFormat $cf -ConditionalText $ct
@@ -1068,9 +984,9 @@
         }
     }
 
-    Context "                # Parameters and ParameterSets" -Skip {
+    Context "                # Parameters and ParameterSets" {
         BeforeAll {
-            $Path = Join-Path (Resolve-Path 'TestDrive:').ProviderPath "test.xlsx"            
+            $Path = Join-Path (Resolve-Path 'TestDrive:').ProviderPath "test.xlsx"
             Remove-Item -Path $Path -ErrorAction SilentlyContinue
             $Processes = Get-Process | Select-Object -first 10 -Property Name, cpu, pm, handles, company
         }
@@ -1086,8 +1002,8 @@
         }
         it "throws when the ExcelPackage is specified with either -path or -Now".PadRight(87) {
             $ExcelPackage = Export-Excel -Path $Path -PassThru
-            { Export-Excel -ExcelPackage $ExcelPackage -Path $Path } | Should  -Throw 'Parameter set cannot be resolved using the specified named parameters'
-            { Export-Excel -ExcelPackage $ExcelPackage -Now } | Should  -Throw 'Parameter set cannot be resolved using the specified named parameters'
+            { Export-Excel -ExcelPackage $ExcelPackage -Path $Path } | Should  -Throw
+            { Export-Excel -ExcelPackage $ExcelPackage -Now } | Should  -Throw
 
             $Processes | Export-Excel -ExcelPackage $ExcelPackage
             Remove-Item -Path $Path

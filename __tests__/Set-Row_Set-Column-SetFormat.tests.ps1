@@ -1,7 +1,7 @@
 ﻿
 
 Describe "Number format expansion and setting" {
-    BeforeEach {
+    BeforeAll {
         $path = "TestDrive:\test.xlsx"
 
         $data = ConvertFrom-Csv -InputObject @"
@@ -12,7 +12,7 @@ Describe "Number format expansion and setting" {
         12010,Drill,20,8
         12011,Crowbar,7,23.48
 "@
-        
+
         $DriverData = convertFrom-CSv @"
         Name,Wikipage,DateOfBirth
         Fernando Alonso,/wiki/Fernando_Alonso,1981-07-29
@@ -21,7 +21,7 @@ Describe "Number format expansion and setting" {
         Lewis Hamilton,/wiki/Lewis_Hamilton,1985-01-07
         Nico Rosberg,/wiki/Nico_Rosberg,1985-06-27
         Sebastian Vettel,/wiki/Sebastian_Vettel,1987-07-03
-"@ | ForEach-Object { $_.DateOfBirth = [datetime]$_.DateofBirth; $_ }        
+"@ | ForEach-Object { $_.DateOfBirth = [datetime]$_.DateofBirth; $_ }
     }
 
     Context "Expand-NumberFormat function" {
@@ -119,8 +119,29 @@ Describe "Number format expansion and setting" {
     }
 }
 
-Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" -Skip {
+Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange"  {
     BeforeAll {
+        $path = "TestDrive:\test.xlsx"
+
+        $data = ConvertFrom-Csv -InputObject @"
+        ID,Product,Quantity,Price
+        12001,Nails,37,3.99
+        12002,Hammer,5,12.10
+        12003,Saw,12,15.37
+        12010,Drill,20,8
+        12011,Crowbar,7,23.48
+"@
+
+        $DriverData = convertFrom-CSv @"
+        Name,Wikipage,DateOfBirth
+        Fernando Alonso,/wiki/Fernando_Alonso,1981-07-29
+        Jenson Button,/wiki/Jenson_Button,1980-01-19
+        Kimi Räikkönen,/wiki/Kimi_R%C3%A4ikk%C3%B6nen,1979-10-17
+        Lewis Hamilton,/wiki/Lewis_Hamilton,1985-01-07
+        Nico Rosberg,/wiki/Nico_Rosberg,1985-06-27
+        Sebastian Vettel,/wiki/Sebastian_Vettel,1987-07-03
+"@    | ForEach-Object { $_.DateOfBirth = [datetime]$_.DateofBirth; $_ }
+
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         $excel = $data | Export-Excel -Path $path -AutoNameRange -PassThru
         $ws = $excel.Workbook.Worksheets["Sheet1"]
@@ -275,7 +296,7 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" -Skip {
 
 Describe "Conditional Formatting" {
     BeforeAll {
-        #Remove-Item $path
+        $path = "TestDrive:\test.xlsx"
         $data = Get-Process | Where-Object company | Select-Object company, name, pm, handles, *mem*
         $cfmt = New-ConditionalFormattingIconSet -Range "c:c" -ConditionalFormat ThreeIconSet -IconType Arrows
         $data | Export-Excel -path $Path  -AutoSize -ConditionalFormat $cfmt
@@ -348,9 +369,26 @@ Sold,ID
     }
 }
 
-Describe "Table Formatting" -Skip {
+Describe "Table Formatting"  {
     BeforeAll {
-        #Remove-Item $path
+        $path = "TestDrive:\test.xlsx"
+        $data2 = ConvertFrom-Csv -InputObject @"
+        ID,Product,Quantity,Price,Total
+        12001,Nails,37,3.99,147.63
+        12002,Hammer,5,12.10,60.5
+        12003,Saw,12,15.37,184.44
+        12010,Drill,20,8,160
+        12011,Crowbar,7,23.48,164.36
+        12001,Nails,53,3.99,211.47
+        12002,Hammer,6,12.10,72.60
+        12003,Saw,10,15.37,153.70
+        12010,Drill,10,8,80
+        12012,Pliers,2,14.99,29.98
+        12001,Nails,20,3.99,79.80
+        12002,Hammer,2,12.10,24.20
+        12010,Drill,11,8,88
+        12012,Pliers,3,14.99,44.97
+"@
         $excel = $data2 | Export-excel -path $path -WorksheetName Hardware -AutoNameRange -AutoSize -BoldTopRow -FreezeTopRow -PassThru
         $ws = $excel.Workbook.Worksheets[1]
         #test showfilter & TotalSettings

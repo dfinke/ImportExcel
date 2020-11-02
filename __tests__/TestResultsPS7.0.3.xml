@@ -1,0 +1,639 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="210" errors="0" failures="4" not-run="3" inconclusive="0" ignored="0" skipped="40" invalid="0" date="2020-11-02" time="13:02:40">
+  <environment clr-version="Unknown" os-version="10.0.19041" user-domain="FLATFISH" nunit-version="2.5.8.0" platform="Microsoft Windows 10 Pro|C:\WINDOWS|\Device\Harddisk0\Partition3" cwd="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__" machine-name="FLATFISH" user="mcp" />
+  <culture-info current-culture="en-GB" current-uiculture="en-GB" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="52.8763" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\AddTrendlinesToAChart.tests.ps1" executed="True" result="Success" success="True" time="0.7174" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\AddTrendlinesToAChart.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Test adding trendlines to charts" executed="True" result="Success" success="True" time="0.595" asserts="0" description="Test adding trendlines to charts">
+            <results>
+              <test-case description="Should add a linear trendline                                                             " name="Test adding trendlines to charts.Should add a linear trendline                                                             " time="0.2583" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should add a MovingAvgerage trendline                                                     " name="Test adding trendlines to charts.Should add a MovingAvgerage trendline                                                     " time="0.242" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Compare-WorkSheet.tests.ps1" executed="True" result="Success" success="True" time="6.8159" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Compare-WorkSheet.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Compare Worksheet" executed="True" result="Success" success="True" time="3.9841" asserts="0" description="Compare Worksheet">
+            <results>
+              <test-suite type="TestFixture" name="Compare Worksheet.Simple comparison output" executed="True" result="Success" success="True" time="0.0937" asserts="0" description="Compare Worksheet.Simple comparison output">
+                <results>
+                  <test-case description="Found the right number of differences                                                  " name="Compare Worksheet.Simple comparison output.Found the right number of differences                                                  " time="0.0034" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Found the data row with a changed property                                             " name="Compare Worksheet.Simple comparison output.Found the data row with a changed property                                             " time="0.0143" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Found the inserted data row                                                            " name="Compare Worksheet.Simple comparison output.Found the inserted data row                                                            " time="0.0077" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Found the deleted data row                                                             " name="Compare Worksheet.Simple comparison output.Found the deleted data row                                                             " time="0.0046" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Compare Worksheet.Setting the background to highlight different rows" executed="True" result="Success" success="True" time="0.84" asserts="0" description="Compare Worksheet.Setting the background to highlight different rows">
+                <results>
+                  <test-case description="Set the background on the right rows                                                   " name="Compare Worksheet.Setting the background to highlight different rows.Set the background on the right rows                                                   " time="0.0048" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Didn't set other cells                                                                 " name="Compare Worksheet.Setting the background to highlight different rows.Didn't set other cells                                                                 " time="0.0042" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Compare Worksheet.Setting the forgound to highlight changed properties" executed="True" result="Success" success="True" time="1.9548" asserts="0" description="Compare Worksheet.Setting the forgound to highlight changed properties">
+                <results>
+                  <test-case description="Added foreground colour to the right cells                                             " name="Compare Worksheet.Setting the forgound to highlight changed properties.Added foreground colour to the right cells                                             " time="0.014" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Didn't set the foreground on other cells                                               " name="Compare Worksheet.Setting the forgound to highlight changed properties.Didn't set the foreground on other cells                                               " time="0.0036" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Compare Worksheet.More complex comparison: output check and different worksheet names " executed="True" result="Success" success="True" time="3.3389" asserts="0" description="Compare Worksheet.More complex comparison: output check and different worksheet names ">
+                <results>
+                  <test-case description="Found the right number of differences                                                  " name="Compare Worksheet.More complex comparison: output check and different worksheet names .Found the right number of differences                                                  " time="0.0031" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Found the data row with a changed property                                             " name="Compare Worksheet.More complex comparison: output check and different worksheet names .Found the data row with a changed property                                             " time="0.0082" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Found the inserted data row                                                            " name="Compare Worksheet.More complex comparison: output check and different worksheet names .Found the inserted data row                                                            " time="0.0043" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Found the deleted data row                                                             " name="Compare Worksheet.More complex comparison: output check and different worksheet names .Found the deleted data row                                                             " time="0.0192" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set the background on the right rows                                                   " name="Compare Worksheet.More complex comparison: output check and different worksheet names .Set the background on the right rows                                                   " time="0.0074" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Didn't set other cells                                                                 " name="Compare Worksheet.More complex comparison: output check and different worksheet names .Didn't set other cells                                                                 " time="0.0056" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="Merge Worksheet" executed="True" result="Success" success="True" time="5.5082" asserts="0" description="Merge Worksheet">
+            <results>
+              <test-suite type="TestFixture" name="Merge Worksheet.Merge with 3 properties" executed="True" result="Success" success="True" time="0.0976" asserts="0" description="Merge Worksheet.Merge with 3 properties">
+                <results>
+                  <test-case description="Created a worksheet with the correct headings                                          " name="Merge Worksheet.Merge with 3 properties.Created a worksheet with the correct headings                                          " time="0.019" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Joined the two sheets correctly                                                        " name="Merge Worksheet.Merge with 3 properties.Joined the two sheets correctly                                                        " time="0.0091" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Highlighted the keys in the added / deleted / changed rows                             " name="Merge Worksheet.Merge with 3 properties.Highlighted the keys in the added / deleted / changed rows                             " time="0.004" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set the background  for the added / deleted / changed rows                             " name="Merge Worksheet.Merge with 3 properties.Set the background  for the added / deleted / changed rows                             " time="0.0062" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Merge Worksheet.Wider data set" executed="True" result="Success" success="True" time="0.7116" asserts="0" description="Merge Worksheet.Wider data set">
+                <results>
+                  <test-case description="Coped with columns beyond Z in the Output sheet                                        " name="Merge Worksheet.Wider data set.Coped with columns beyond Z in the Output sheet                                        " time="0.543" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="Merge Multiple sheets" executed="True" result="Success" success="True" time="6.7095" asserts="0" description="Merge Multiple sheets">
+            <results>
+              <test-suite type="TestFixture" name="Merge Multiple sheets.Merge 3 sheets with 3 properties" executed="True" result="Success" success="True" time="1.1448" asserts="0" description="Merge Multiple sheets.Merge 3 sheets with 3 properties">
+                <results>
+                  <test-case description="Created a worksheet with the correct headings                                          " name="Merge Multiple sheets.Merge 3 sheets with 3 properties.Created a worksheet with the correct headings                                          " time="0.0378" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Joined the three sheets correctly                                                      " name="Merge Multiple sheets.Merge 3 sheets with 3 properties.Joined the three sheets correctly                                                      " time="0.0214" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created Conditional formatting rules                                                   " name="Merge Multiple sheets.Merge 3 sheets with 3 properties.Created Conditional formatting rules                                                   " time="0.0348" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\ConvertFrom-ExcelSheet.Tests.ps1" executed="True" result="Success" success="True" time="0.8961" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\ConvertFrom-ExcelSheet.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="ConvertFrom-ExcelSheet / Export-ExcelSheet" executed="True" result="Success" success="True" time="0.8214" asserts="0" description="ConvertFrom-ExcelSheet / Export-ExcelSheet">
+            <results>
+              <test-suite type="TestFixture" name="ConvertFrom-ExcelSheet / Export-ExcelSheet.Exporting to CSV" executed="True" result="Success" success="True" time="0.0826" asserts="0" description="ConvertFrom-ExcelSheet / Export-ExcelSheet.Exporting to CSV">
+                <results>
+                  <test-case description="Exported the expected columns to a CSV file                                            " name="ConvertFrom-ExcelSheet / Export-ExcelSheet.Exporting to CSV.Exported the expected columns to a CSV file                                            " time="0.0196" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Applied AsText, AsDate and Properties correctly                                        " name="ConvertFrom-ExcelSheet / Export-ExcelSheet.Exporting to CSV.Applied AsText, AsDate and Properties correctly                                        " time="0.0042" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ConvertFrom-ExcelSheet / Export-ExcelSheet.Export aliased to ConvertFrom" executed="True" result="Success" success="True" time="0.1438" asserts="0" description="ConvertFrom-ExcelSheet / Export-ExcelSheet.Export aliased to ConvertFrom">
+                <results>
+                  <test-case description="Definded the alias name with                                                           " name="ConvertFrom-ExcelSheet / Export-ExcelSheet.Export aliased to ConvertFrom.Definded the alias name with                                                           " time="0.0068" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\ConvertFromExcelToSQLInsert.tests.ps1" executed="True" result="Success" success="True" time="0.6166" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\ConvertFromExcelToSQLInsert.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="ConvertFrom-ExcelToSQLInsert" executed="True" result="Success" success="True" time="0.5383" asserts="0" description="ConvertFrom-ExcelToSQLInsert">
+            <results>
+              <test-case description="Should be empty double single quotes                                                      " name="ConvertFrom-ExcelToSQLInsert.Should be empty double single quotes                                                      " time="0.235" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should have NULL                                                                          " name="ConvertFrom-ExcelToSQLInsert.Should have NULL                                                                          " time="0.2343" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Copy-ExcelWorksheet.Tests.ps1" executed="True" result="Ignored" success="True" time="3.3496" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Copy-ExcelWorksheet.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Copy-Worksheet" executed="True" result="Ignored" success="True" time="3.2747" asserts="0" description="Copy-Worksheet">
+            <results>
+              <test-suite type="TestFixture" name="Copy-Worksheet.Simplest copy" executed="True" result="Success" success="True" time="0.3064" asserts="0" description="Copy-Worksheet.Simplest copy">
+                <results>
+                  <test-case description="Inserted a worksheet                                                                   " name="Copy-Worksheet.Simplest copy.Inserted a worksheet                                                                   " time="0.0202" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Copy-Worksheet.Mixed types using a package object" executed="True" result="Ignored" success="True" time="0.3858" asserts="0" description="Copy-Worksheet.Mixed types using a package object">
+                <results>
+                  <test-case description="Copied a worksheet, giving the expected name, number of rows and number of columns     " name="Copy-Worksheet.Mixed types using a package object.Copied a worksheet, giving the expected name, number of rows and number of columns     " time="0.001" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Copied the expected data into the worksheet                                            " name="Copy-Worksheet.Mixed types using a package object.Copied the expected data into the worksheet                                            " time="0.0009" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Copy-Worksheet.Copy worksheet should close all files" executed="True" result="Success" success="True" time="1.8516" asserts="0" description="Copy-Worksheet.Copy worksheet should close all files">
+                <results>
+                  <test-case description="Should copy and remove sheets                                                          " name="Copy-Worksheet.Copy worksheet should close all files.Should copy and remove sheets                                                          " time="0.8013" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Copy-Worksheet.Copy worksheet should support piped input" executed="True" result="Success" success="True" time="2.8958" asserts="0" description="Copy-Worksheet.Copy worksheet should support piped input">
+                <results>
+                  <test-case description="Should copy sheets piped into the command                                              " name="Copy-Worksheet.Copy worksheet should support piped input.Should copy sheets piped into the command                                              " time="0.0225" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Export-Excel.Tests.ps1" executed="True" result="Ignored" success="True" time="23.8298" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Export-Excel.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="ExportExcel" executed="True" result="Ignored" success="True" time="23.7027" asserts="0" description="ExportExcel">
+            <results>
+              <test-suite type="TestFixture" name="ExportExcel.#Example 1      # Creates and opens a file with the right number of rows and columns" executed="True" result="Success" success="True" time="6.9903" asserts="0" description="ExportExcel.#Example 1      # Creates and opens a file with the right number of rows and columns">
+                <results>
+                  <test-case description="Created a new file                                                                     " name="ExportExcel.#Example 1      # Creates and opens a file with the right number of rows and columns.Created a new file                                                                     " time="0.0439" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Killed Excel when Open-Excelpackage was told to                                        " name="ExportExcel.#Example 1      # Creates and opens a file with the right number of rows and columns.Killed Excel when Open-Excelpackage was told to                                        " time="0.0324" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created 1 worksheet, named 'Sheet1'                                                    " name="ExportExcel.#Example 1      # Creates and opens a file with the right number of rows and columns.Created 1 worksheet, named 'Sheet1'                                                    " time="0.0382" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Added a 'Sheet1' property to the Package object                                        " name="ExportExcel.#Example 1      # Creates and opens a file with the right number of rows and columns.Added a 'Sheet1' property to the Package object                                        " time="0.0345" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created the worksheet with the expected name, number of rows and number of columns     " name="ExportExcel.#Example 1      # Creates and opens a file with the right number of rows and columns.Created the worksheet with the expected name, number of rows and number of columns     " time="0.0318" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created the worksheet with the correct header names                                    " name="ExportExcel.#Example 1      # Creates and opens a file with the right number of rows and columns.Created the worksheet with the correct header names                                    " time="0.1017" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Formatted the process StartTime field as 'localized Date-Time'                         " name="ExportExcel.#Example 1      # Creates and opens a file with the right number of rows and columns.Formatted the process StartTime field as 'localized Date-Time'                         " time="0.0316" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Formatted the process ID field as 'General'                                            " name="ExportExcel.#Example 1      # Creates and opens a file with the right number of rows and columns.Formatted the process ID field as 'General'                                            " time="0.0301" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.                # NoAliasOrScriptPropeties -ExcludeProperty and -DisplayPropertySet work" executed="True" result="Success" success="True" time="13.6428" asserts="0" description="ExportExcel.                # NoAliasOrScriptPropeties -ExcludeProperty and -DisplayPropertySet work">
+                <results>
+                  <test-case description="Created a new file with further properties excluded and cleared the old sheet          " name="ExportExcel.                # NoAliasOrScriptPropeties -ExcludeProperty and -DisplayPropertySet work.Created a new file with further properties excluded and cleared the old sheet          " time="0.0038" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created a new file with just the members of the Display Property Set                   " name="ExportExcel.                # NoAliasOrScriptPropeties -ExcludeProperty and -DisplayPropertySet work.Created a new file with just the members of the Display Property Set                   " time="0.1598" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="" name="" time="0.0001" asserts="0" success="False" />
+                  <test-case description="" name="" time="0.0001" asserts="0" success="False" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.#Example 2      # Exports a list of numbers and applies number format " executed="True" result="Success" success="True" time="13.8716" asserts="0" description="ExportExcel.#Example 2      # Exports a list of numbers and applies number format ">
+                <results>
+                  <test-case description="Created 1 worksheet                                                                    " name="ExportExcel.#Example 2      # Exports a list of numbers and applies number format .Created 1 worksheet                                                                    " time="0.0024" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created the worksheet with the expected name, number of rows and number of columns     " name="ExportExcel.#Example 2      # Exports a list of numbers and applies number format .Created the worksheet with the expected name, number of rows and number of columns     " time="0.0211" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set the default style for the sheet as expected                                        " name="ExportExcel.#Example 2      # Exports a list of numbers and applies number format .Set the default style for the sheet as expected                                        " time="0.003" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set the default style and set values for Cells as expected, handling null,0 and ''     " name="ExportExcel.#Example 2      # Exports a list of numbers and applies number format .Set the default style and set values for Cells as expected, handling null,0 and ''     " time="0.0067" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="" name="" time="0.0001" asserts="0" success="False" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.                # Number format parameter" executed="True" result="Success" success="True" time="14.3091" asserts="0" description="ExportExcel.                # Number format parameter">
+                <results>
+                  <test-case description="Set the worksheet default number format correctly                                      " name="ExportExcel.                # Number format parameter.Set the worksheet default number format correctly                                      " time="0.0023" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set number formats on specific blocks of cells                                         " name="ExportExcel.                # Number format parameter.Set number formats on specific blocks of cells                                         " time="0.0042" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type" executed="True" result="Success" success="True" time="14.6858" asserts="0" description="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type">
+                <results>
+                  <test-case description="Created a new file                                                                     " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Created a new file                                                                     " time="0.0052" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created 1 worksheet with no warnings                                                   " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Created 1 worksheet with no warnings                                                   " time="0.0231" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created the worksheet with the expected name, number of rows and number of columns     " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Created the worksheet with the expected name, number of rows and number of columns     " time="0.0102" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set a date     in Cell A2                                                              " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Set a date     in Cell A2                                                              " time="0.0181" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set a formula  in Cell B2                                                              " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Set a formula  in Cell B2                                                              " time="0.0064" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Forced a successful calculation of the Value in Cell B2                                " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Forced a successful calculation of the Value in Cell B2                                " time="0.0134" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set strings    in Cells E2, F2 and R2  (no number conversion)                          " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Set strings    in Cells E2, F2 and R2  (no number conversion)                          " time="0.0067" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set numbers    in Cells K2,L2,M2   (diferent Negative integer formats)                 " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Set numbers    in Cells K2,L2,M2   (diferent Negative integer formats)                 " time="0.012" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set external hyperlinks in Cells U2 and V2                                             " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Set external hyperlinks in Cells U2 and V2                                             " time="0.0059" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set internal hyperlinks in Cells W2 and X2                                             " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Set internal hyperlinks in Cells W2 and X2                                             " time="0.0152" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Processed thousands according to local settings   (Cells H2 and I2)                    " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Processed thousands according to local settings   (Cells H2 and I2)                    " time="0.0051" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Processed local currency as a number and other currency as a string (N2 &amp; O2)          " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Processed local currency as a number and other currency as a string (N2 &amp; O2)          " time="0.0088" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Processed numbers with spaces between digits as strings (P2 &amp; Q2)                      " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Processed numbers with spaces between digits as strings (P2 &amp; Q2)                      " time="0.0055" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Processed numbers leading or trailing speaces as Numbers (S2 &amp; T2)                     " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Processed numbers leading or trailing speaces as Numbers (S2 &amp; T2)                     " time="0.0099" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Converted a nested object to a string (Y2)                                             " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Converted a nested object to a string (Y2)                                             " time="0.0063" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Processed a timespan object (Z2)                                                       " name="ExportExcel.#Examples 3 &amp; 4 # Setting cells for different data types Also added test for URI type.Processed a timespan object (Z2)                                                       " time="0.0142" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.#               # Setting cells for different data types with -noHeader" executed="True" result="Success" success="True" time="14.9426" asserts="0" description="ExportExcel.#               # Setting cells for different data types with -noHeader">
+                <results>
+                  <test-case description="Created a new file                                                                     " name="ExportExcel.#               # Setting cells for different data types with -noHeader.Created a new file                                                                     " time="0.0056" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created 1 worksheet                                                                    " name="ExportExcel.#               # Setting cells for different data types with -noHeader.Created 1 worksheet                                                                    " time="0.0203" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created the worksheet with the expected name, number of rows and number of columns     " name="ExportExcel.#               # Setting cells for different data types with -noHeader.Created the worksheet with the expected name, number of rows and number of columns     " time="0.0118" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set a date      in Cell A1                                                             " name="ExportExcel.#               # Setting cells for different data types with -noHeader.Set a date      in Cell A1                                                             " time="0.0047" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set a formula   in Cell B1                                                             " name="ExportExcel.#               # Setting cells for different data types with -noHeader.Set a formula   in Cell B1                                                             " time="0.0078" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set strings     in Cells E1 and F1                                                     " name="ExportExcel.#               # Setting cells for different data types with -noHeader.Set strings     in Cells E1 and F1                                                     " time="0.0049" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set a number    in Cell I1                                                             " name="ExportExcel.#               # Setting cells for different data types with -noHeader.Set a number    in Cell I1                                                             " time="0.005" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set a hyperlink in Cell N1                                                             " name="ExportExcel.#               # Setting cells for different data types with -noHeader.Set a hyperlink in Cell N1                                                             " time="0.0086" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.#Example 5      # Adding a single conditional format " executed="True" result="Ignored" success="True" time="14.9995" asserts="0" description="ExportExcel.#Example 5      # Adding a single conditional format ">
+                <results>
+                  <test-case description="Added one block of conditional formating for the data range                            " name="ExportExcel.#Example 5      # Adding a single conditional format .Added one block of conditional formating for the data range                            " time="0.0011" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Set the conditional formatting properties correctly                                    " name="ExportExcel.#Example 5      # Adding a single conditional format .Set the conditional formatting properties correctly                                    " time="0.0011" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.#Example 6      # Adding multiple conditional formats using short form syntax. " executed="True" result="Success" success="True" time="15.8298" asserts="0" description="ExportExcel.#Example 6      # Adding multiple conditional formats using short form syntax. ">
+                <results>
+                  <test-case description="Added two blocks of conditional formating for the data range                           " name="ExportExcel.#Example 6      # Adding multiple conditional formats using short form syntax. .Added two blocks of conditional formating for the data range                           " time="0.0049" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set the conditional formatting properties correctly                                    " name="ExportExcel.#Example 6      # Adding multiple conditional formats using short form syntax. .Set the conditional formatting properties correctly                                    " time="0.0046" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.#Example 7      # Update-FirstObjectProperties works " executed="True" result="Success" success="True" time="15.9201" asserts="0" description="ExportExcel.#Example 7      # Update-FirstObjectProperties works ">
+                <results>
+                  <test-case description="Outputs as many objects as it input                                                    " name="ExportExcel.#Example 7      # Update-FirstObjectProperties works .Outputs as many objects as it input                                                    " time="0.0053" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Added properties to item 0                                                             " name="ExportExcel.#Example 7      # Update-FirstObjectProperties works .Added properties to item 0                                                             " time="0.0064" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.#Examples 8 &amp; 9 # Adding Pivot tables and charts from parameters" executed="True" result="Ignored" success="True" time="16.0098" asserts="0" description="ExportExcel.#Examples 8 &amp; 9 # Adding Pivot tables and charts from parameters">
+                <results>
+                  <test-case description="Added the named sheet and pivot table to the workbook                                  " name="ExportExcel.#Examples 8 &amp; 9 # Adding Pivot tables and charts from parameters.Added the named sheet and pivot table to the workbook                                  " time="0.0016" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Selected  the Pivottable page                                                          " name="ExportExcel.#Examples 8 &amp; 9 # Adding Pivot tables and charts from parameters.Selected  the Pivottable page                                                          " time="0.0026" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Built the expected Pivot table                                                         " name="ExportExcel.#Examples 8 &amp; 9 # Adding Pivot tables and charts from parameters.Built the expected Pivot table                                                         " time="0.0036" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Added a chart to the pivot table without rebuilding                                    " name="ExportExcel.#Examples 8 &amp; 9 # Adding Pivot tables and charts from parameters.Added a chart to the pivot table without rebuilding                                    " time="0.0017" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Generated a message on re-processing the Pivot table                                   " name="ExportExcel.#Examples 8 &amp; 9 # Adding Pivot tables and charts from parameters.Generated a message on re-processing the Pivot table                                   " time="0.0036" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Appended to the Worksheet and Extended the Pivot table                                 " name="ExportExcel.#Examples 8 &amp; 9 # Adding Pivot tables and charts from parameters.Appended to the Worksheet and Extended the Pivot table                                 " time="0.0011" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Generated a message on extending the Pivot table                                       " name="ExportExcel.#Examples 8 &amp; 9 # Adding Pivot tables and charts from parameters.Generated a message on extending the Pivot table                                       " time="0.001" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.                # Add-Worksheet inserted sheets, moved them correctly, and copied a sheet" executed="True" result="Ignored" success="True" time="16.0762" asserts="0" description="ExportExcel.                # Add-Worksheet inserted sheets, moved them correctly, and copied a sheet">
+                <results>
+                  <test-case description="Got the Sheets in the right order                                                      " name="ExportExcel.                # Add-Worksheet inserted sheets, moved them correctly, and copied a sheet.Got the Sheets in the right order                                                      " time="0.0011" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Cloned 'Sheet1' to 'NewSheet'                                                          " name="ExportExcel.                # Add-Worksheet inserted sheets, moved them correctly, and copied a sheet.Cloned 'Sheet1' to 'NewSheet'                                                          " time="0.0013" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.                # Create and append with Start row and Start Column, inc ranges and Pivot table. " executed="True" result="Success" success="True" time="16.647" asserts="0" description="ExportExcel.                # Create and append with Start row and Start Column, inc ranges and Pivot table. ">
+                <results>
+                  <test-case description="Created and appended to a sheet offset from the top left corner                        " name="ExportExcel.                # Create and append with Start row and Start Column, inc ranges and Pivot table. .Created and appended to a sheet offset from the top left corner                        " time="0.0201" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Applied and auto-extended an autofilter                                                " name="ExportExcel.                # Create and append with Start row and Start Column, inc ranges and Pivot table. .Applied and auto-extended an autofilter                                                " time="0.0167" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created and auto-extended the named ranges                                             " name="ExportExcel.                # Create and append with Start row and Start Column, inc ranges and Pivot table. .Created and auto-extended the named ranges                                             " time="0.0088" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created and extended the pivot table                                                   " name="ExportExcel.                # Create and append with Start row and Start Column, inc ranges and Pivot table. .Created and extended the pivot table                                                   " time="0.0088" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Generated a message on extending the Pivot table                                       " name="ExportExcel.                # Create and append with Start row and Start Column, inc ranges and Pivot table. .Generated a message on extending the Pivot table                                       " time="0.0086" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.                # Create and append explicit and auto table and range extension" executed="True" result="Success" success="True" time="17.2886" asserts="0" description="ExportExcel.                # Create and append explicit and auto table and range extension">
+                <results>
+                  <test-case description="Created a new sheet and auto-extended a table and explicitly extended named ranges     " name="ExportExcel.                # Create and append explicit and auto table and range extension.Created a new sheet and auto-extended a table and explicitly extended named ranges     " time="0.0061" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set the expected number formats                                                        " name="ExportExcel.                # Create and append explicit and auto table and range extension.Set the expected number formats                                                        " time="0.0047" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created a new sheet and explicitly extended named range and autofilter                 " name="ExportExcel.                # Create and append explicit and auto table and range extension.Created a new sheet and explicitly extended named range and autofilter                 " time="0.2133" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.#Example 13     # Formatting and another way to do a pivot.  " executed="True" result="Success" success="True" time="18.0644" asserts="0" description="ExportExcel.#Example 13     # Formatting and another way to do a pivot.  ">
+                <results>
+                  <test-case description="Returned the rule when calling Add-ConditionalFormatting -passthru                     " name="ExportExcel.#Example 13     # Formatting and another way to do a pivot.  .Returned the rule when calling Add-ConditionalFormatting -passthru                     " time="0.0038" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Applied the formating                                                                  " name="ExportExcel.#Example 13     # Formatting and another way to do a pivot.  .Applied the formating                                                                  " time="0.0297" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created the named ranges                                                               " name="ExportExcel.#Example 13     # Formatting and another way to do a pivot.  .Created the named ranges                                                               " time="0.0139" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Froze the panes                                                                        " name="ExportExcel.#Example 13     # Formatting and another way to do a pivot.  .Froze the panes                                                                        " time="0.0032" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created the pivot table                                                                " name="ExportExcel.#Example 13     # Formatting and another way to do a pivot.  .Created the pivot table                                                                " time="0.0154" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.                # Chart from MultiSeries.ps1 in the Examples\charts Directory" executed="True" result="Ignored" success="True" time="18.4823" asserts="0" description="ExportExcel.                # Chart from MultiSeries.ps1 in the Examples\charts Directory">
+                <results>
+                  <test-case description="Found the same parameters for Add-ExcelChart and New-ExcelChartDefinintion             " name="ExportExcel.                # Chart from MultiSeries.ps1 in the Examples\charts Directory.Found the same parameters for Add-ExcelChart and New-ExcelChartDefinintion             " time="0.0355" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Used Invoke-Sum to create a data set                                                   " name="ExportExcel.                # Chart from MultiSeries.ps1 in the Examples\charts Directory.Used Invoke-Sum to create a data set                                                   " time="0.2998" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created the Excel chart definition                                                     " name="ExportExcel.                # Chart from MultiSeries.ps1 in the Examples\charts Directory.Created the Excel chart definition                                                     " time="0.015" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Used the Excel chart definition with Export-Excel                                      " name="ExportExcel.                # Chart from MultiSeries.ps1 in the Examples\charts Directory.Used the Excel chart definition with Export-Excel                                      " time="0.0014" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.                # variation of plot.ps1 from Examples Directory using Add chart outside ExportExcel" executed="True" result="Success" success="True" time="18.7978" asserts="0" description="ExportExcel.                # variation of plot.ps1 from Examples Directory using Add chart outside ExportExcel">
+                <results>
+                  <test-case description="Controled the axes and title and legend of the chart                                   " name="ExportExcel.                # variation of plot.ps1 from Examples Directory using Add chart outside ExportExcel.Controled the axes and title and legend of the chart                                   " time="0.0277" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Appplied conditional formatting to the data                                            " name="ExportExcel.                # variation of plot.ps1 from Examples Directory using Add chart outside ExportExcel.Appplied conditional formatting to the data                                            " time="0.0026" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.                # Quick line chart" executed="True" result="Success" success="True" time="19.0403" asserts="0" description="ExportExcel.                # Quick line chart">
+                <results>
+                  <test-case description="Created the chart                                                                      " name="ExportExcel.                # Quick line chart.Created the chart                                                                      " time="0.0105" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.                # Quick Pie chart and three icon conditional formating" executed="True" result="Success" success="True" time="20.0093" asserts="0" description="ExportExcel.                # Quick Pie chart and three icon conditional formating">
+                <results>
+                  <test-case description="Created the Conditional formatting rules                                               " name="ExportExcel.                # Quick Pie chart and three icon conditional formating.Created the Conditional formatting rules                                               " time="0.1759" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created the chart with the right series                                                " name="ExportExcel.                # Quick Pie chart and three icon conditional formating.Created the chart with the right series                                                " time="0.1359" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created two Conditional formatting rules                                               " name="ExportExcel.                # Quick Pie chart and three icon conditional formating.Created two Conditional formatting rules                                               " time="0.1424" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.                # Awkward multiple tables" executed="True" result="Success" success="True" time="23.5157" asserts="0" description="ExportExcel.                # Awkward multiple tables">
+                <results>
+                  <test-case description="Created 3 tables                                                                       " name="ExportExcel.                # Awkward multiple tables.Created 3 tables                                                                       " time="0.9032" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created the FileSize table in the right place with the right size and style            " name="ExportExcel.                # Awkward multiple tables.Created the FileSize table in the right place with the right size and style            " time="0.8117" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created the ExtSize  table in the right place with the right size and style            " name="ExportExcel.                # Awkward multiple tables.Created the ExtSize  table in the right place with the right size and style            " time="0.8907" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created the ExtCount table in the right place with the right size                      " name="ExportExcel.                # Awkward multiple tables.Created the ExtCount table in the right place with the right size                      " time="0.8441" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="ExportExcel.                # Parameters and ParameterSets" executed="True" result="Ignored" success="True" time="23.6146" asserts="0" description="ExportExcel.                # Parameters and ParameterSets">
+                <results>
+                  <test-case description="Allows the default parameter set with Path                                             " name="ExportExcel.                # Parameters and ParameterSets.Allows the default parameter set with Path                                             " time="0.001" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="throws when the ExcelPackage is specified with either -path or -Now                    " name="ExportExcel.                # Parameters and ParameterSets.throws when the ExcelPackage is specified with either -path or -Now                    " time="0.0013" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="If TableName and AutoFilter provided AutoFilter will be ignored                        " name="ExportExcel.                # Parameters and ParameterSets.If TableName and AutoFilter provided AutoFilter will be ignored                        " time="0.0018" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Default Set with Path and TableName with generated name                                " name="ExportExcel.                # Parameters and ParameterSets.Default Set with Path and TableName with generated name                                " time="0.0047" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Now will use temp Path, set TableName with generated name and AutoSize                 " name="ExportExcel.                # Parameters and ParameterSets.Now will use temp Path, set TableName with generated name and AutoSize                 " time="0.001" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Now allows override of Path and TableName                                              " name="ExportExcel.                # Parameters and ParameterSets.Now allows override of Path and TableName                                              " time="0.0009" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Now allows override of AutoSize and TableName to AutoFilter                            " name="ExportExcel.                # Parameters and ParameterSets.Now allows override of AutoSize and TableName to AutoFilter                            " time="0.0009" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Now allows to set TableName                                                            " name="ExportExcel.                # Parameters and ParameterSets.Now allows to set TableName                                                            " time="0.0009" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\ExtraLongCmd.tests.ps1" executed="True" result="Ignored" success="True" time="0.4941" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\ExtraLongCmd.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Creating workbook with a single line" executed="True" result="Ignored" success="True" time="0.4232" asserts="0" description="Creating workbook with a single line">
+            <results>
+              <test-suite type="TestFixture" name="Creating workbook with a single line.Data Page" executed="True" result="Success" success="True" time="0.0873" asserts="0" description="Creating workbook with a single line.Data Page">
+                <results>
+                  <test-case description="Inserted the data and created the table                                                " name="Creating workbook with a single line.Data Page.Inserted the data and created the table                                                " time="0.0049" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Applied conditional formatting                                                         " name="Creating workbook with a single line.Data Page.Applied conditional formatting                                                         " time="0.0131" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Added the chart                                                                        " name="Creating workbook with a single line.Data Page.Added the chart                                                                        " time="0.0045" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Creating workbook with a single line.PivotTable" executed="True" result="Ignored" success="True" time="0.1703" asserts="0" description="Creating workbook with a single line.PivotTable">
+                <results>
+                  <test-case description="Created the PivotTable on a new page                                                   " name="Creating workbook with a single line.PivotTable.Created the PivotTable on a new page                                                   " time="0.0115" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Made the PivotTable page active                                                        " name="Creating workbook with a single line.PivotTable.Made the PivotTable page active                                                        " time="0.0044" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Created the Pivot Chart                                                                " name="Creating workbook with a single line.PivotTable.Created the Pivot Chart                                                                " time="0.0109" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\First10Races.tests.ps1" executed="True" result="Ignored" success="True" time="0.7456" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\First10Races.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Creating small named ranges with hyperlinks" executed="True" result="Ignored" success="True" time="0.6677" asserts="0" description="Creating small named ranges with hyperlinks">
+            <results>
+              <test-suite type="TestFixture" name="Creating small named ranges with hyperlinks.Creating hyperlinks" executed="True" result="Success" success="True" time="0.0815" asserts="0" description="Creating small named ranges with hyperlinks.Creating hyperlinks">
+                <results>
+                  <test-case description="Put the data into the sheet and created the expected named ranges                      " name="Creating small named ranges with hyperlinks.Creating hyperlinks.Put the data into the sheet and created the expected named ranges                      " time="0.0061" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Added hyperlinks to the named ranges                                                   " name="Creating small named ranges with hyperlinks.Creating hyperlinks.Added hyperlinks to the named ranges                                                   " time="0.003" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Creating small named ranges with hyperlinks.Adding calculated column" executed="True" result="Ignored" success="True" time="0.168" asserts="0" description="Creating small named ranges with hyperlinks.Adding calculated column">
+                <results>
+                  <test-case description="Populated the cells with the right heading and formulas                                " name="Creating small named ranges with hyperlinks.Adding calculated column.Populated the cells with the right heading and formulas                                " time="0.0051" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Performed the calculation                                                              " name="Creating small named ranges with hyperlinks.Adding calculated column.Performed the calculation                                                              " time="0.0058" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Applied ConditionalFormatting, including StopIfTrue, Priority                          " name="Creating small named ranges with hyperlinks.Adding calculated column.Applied ConditionalFormatting, including StopIfTrue, Priority                          " time="0.0112" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Applied ConditionalFormatting, including Reverse                                       " name="Creating small named ranges with hyperlinks.Adding calculated column.Applied ConditionalFormatting, including Reverse                                       " time="0.0041" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Creating small named ranges with hyperlinks.Adding a table" executed="True" result="Success" success="True" time="0.2386" asserts="0" description="Creating small named ranges with hyperlinks.Adding a table">
+                <results>
+                  <test-case description="Created a table                                                                        " name="Creating small named ranges with hyperlinks.Adding a table.Created a table                                                                        " time="0.0137" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Creating small named ranges with hyperlinks.Adding Pivot tables" executed="True" result="Success" success="True" time="0.3202" asserts="0" description="Creating small named ranges with hyperlinks.Adding Pivot tables">
+                <results>
+                  <test-case description="Added a worksheet with a pivot table grouped by date                                   " name="Creating small named ranges with hyperlinks.Adding Pivot tables.Added a worksheet with a pivot table grouped by date                                   " time="0.0118" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Added a worksheet with a pivot table grouped by Number                                 " name="Creating small named ranges with hyperlinks.Adding Pivot tables.Added a worksheet with a pivot table grouped by Number                                 " time="0.0128" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\FunctionAlias.tests.ps1" executed="True" result="Success" success="True" time="0.1586" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\FunctionAlias.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Check if Function aliases exist" executed="True" result="Success" success="True" time="0.0985" asserts="0" description="Check if Function aliases exist">
+            <results>
+              <test-case description="Set-Column should exist                                                                   " name="Check if Function aliases exist.Set-Column should exist                                                                   " time="0.0023" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Set-Row should exist                                                                      " name="Check if Function aliases exist.Set-Row should exist                                                                      " time="0.0098" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Set-Format should exist                                                                   " name="Check if Function aliases exist.Set-Format should exist                                                                   " time="0.0055" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="New-ExcelChart should exist                                                               " name="Check if Function aliases exist.New-ExcelChart should exist                                                               " time="0.0056" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\ImportExcelHeaderName.tests.ps1" executed="True" result="Success" success="True" time="1.8653" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\ImportExcelHeaderName.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Import-Excel on a sheet with no headings" executed="True" result="Success" success="True" time="1.7939" asserts="0" description="Import-Excel on a sheet with no headings">
+            <results>
+              <test-case description="Import-Excel should have this shape" name="Import-Excel on a sheet with no headings.Import-Excel should have this shape" time="0.1144" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Import-Excel -NoHeader should have this shape" name="Import-Excel on a sheet with no headings.Import-Excel -NoHeader should have this shape" time="0.1111" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Import-Excel -HeaderName should have this shape" name="Import-Excel on a sheet with no headings.Import-Excel -HeaderName should have this shape" time="0.1219" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should work with StartRow" name="Import-Excel on a sheet with no headings.Should work with StartRow" time="0.1529" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should work with -NoHeader" name="Import-Excel on a sheet with no headings.Should work with -NoHeader" time="0.119" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should work with -NoHeader -DataOnly" name="Import-Excel on a sheet with no headings.Should work with -NoHeader -DataOnly" time="0.1454" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should work with -HeaderName -DataOnly -StartRow" name="Import-Excel on a sheet with no headings.Should work with -HeaderName -DataOnly -StartRow" time="0.1139" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should" name="Import-Excel on a sheet with no headings.Should" time="0.2497" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should handle data correctly if there is only a single row" name="Import-Excel on a sheet with no headings.Should handle data correctly if there is only a single row" time="0.2099" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should handle data correctly if there is only a single row and using -NoHeader " name="Import-Excel on a sheet with no headings.Should handle data correctly if there is only a single row and using -NoHeader " time="0.1205" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\InputItemParameter.tests.ps1" executed="True" result="Success" success="True" time="0.0115" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\InputItemParameter.tests.ps1">
+        <results />
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Join-Worksheet.tests.ps1" executed="True" result="Failure" success="False" time="1.2915" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Join-Worksheet.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Join Worksheet part 1" executed="True" result="Ignored" success="True" time="0.8237" asserts="0" description="Join Worksheet part 1">
+            <results>
+              <test-suite type="TestFixture" name="Join Worksheet part 1.Export-Excel setting spreadsheet visibility" executed="True" result="Ignored" success="True" time="0.09" asserts="0" description="Join Worksheet part 1.Export-Excel setting spreadsheet visibility">
+                <results>
+                  <test-case description="Hid the worksheets                                                                     " name="Join Worksheet part 1.Export-Excel setting spreadsheet visibility.Hid the worksheets                                                                     " time="0.016" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Un-hid two of the worksheets                                                           " name="Join Worksheet part 1.Export-Excel setting spreadsheet visibility.Un-hid two of the worksheets                                                           " time="0.003" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Activated the correct worksheet                                                        " name="Join Worksheet part 1.Export-Excel setting spreadsheet visibility.Activated the correct worksheet                                                        " time="0.0121" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Join Worksheet part 1.Merging 3 blocks" executed="True" result="Success" success="True" time="0.1827" asserts="0" description="Join Worksheet part 1.Merging 3 blocks">
+                <results>
+                  <test-case description="Created sheet of the right size with a title and a table                               " name="Join Worksheet part 1.Merging 3 blocks.Created sheet of the right size with a title and a table                               " time="0.012" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Added a from column with the right heading                                             " name="Join Worksheet part 1.Merging 3 blocks.Added a from column with the right heading                                             " time="0.0054" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Filled in the data                                                                     " name="Join Worksheet part 1.Merging 3 blocks.Filled in the data                                                                     " time="0.0074" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created the pivot table                                                                " name="Join Worksheet part 1.Merging 3 blocks.Created the pivot table                                                                " time="0.0099" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="Join Worksheet part 2" executed="True" result="Failure" success="False" time="1.2062" asserts="0" description="Join Worksheet part 2">
+            <results>
+              <test-suite type="TestFixture" name="Join Worksheet part 2.Bringing 3 Unlinked blocks onto one page" executed="True" result="Failure" success="False" time="0.3008" asserts="0" description="Join Worksheet part 2.Bringing 3 Unlinked blocks onto one page">
+                <results>
+                  <test-case description="Hid the source worksheets                                                              " name="Join Worksheet part 2.Bringing 3 Unlinked blocks onto one page.Hid the source worksheets                                                              " time="0.1605" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>UnauthorizedAccessException: Access to the path 'C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__' is denied.
+InvalidOperationException: Error saving file C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__
+MethodInvocationException: Exception calling "Save" with "0" argument(s): "Error saving file C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__"</message>
+                      <stack-trace>at Export-Excel&lt;End&gt;, C:\Users\mcp\Documents\GitHub\ImportExcel\Public\Export-Excel.ps1:672
+at &lt;ScriptBlock&gt;, C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Join-Worksheet.tests.ps1:100</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="Created the Summary sheet with title, and block labels, and copied the correct data    " name="Join Worksheet part 2.Bringing 3 Unlinked blocks onto one page.Created the Summary sheet with title, and block labels, and copied the correct data    " time="0.0559" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>UnauthorizedAccessException: Access to the path 'C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__' is denied.
+InvalidOperationException: Error saving file C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__
+MethodInvocationException: Exception calling "Save" with "0" argument(s): "Error saving file C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__"</message>
+                      <stack-trace>at Export-Excel&lt;End&gt;, C:\Users\mcp\Documents\GitHub\ImportExcel\Public\Export-Excel.ps1:672
+at &lt;ScriptBlock&gt;, C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Join-Worksheet.tests.ps1:100</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\PasswordProtection.tests.ps1" executed="True" result="Ignored" success="True" time="0.1352" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\PasswordProtection.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Password Support" executed="True" result="Ignored" success="True" time="0.0624" asserts="0" description="Password Support">
+            <results>
+              <test-case description="Password Supported" name="Password Support.Password Supported" time="0.0049" asserts="0" success="False" result="Ignored" executed="False" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Path.tests.ps1" executed="True" result="Success" success="True" time="0.706" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Path.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Test reading relative paths" executed="True" result="Success" success="True" time="0.6177" asserts="0" description="Test reading relative paths">
+            <results>
+              <test-case description="Should read local file                                                                    " name="Test reading relative paths.Should read local file                                                                    " time="0.12" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should read with pwd                                                                      " name="Test reading relative paths.Should read with pwd                                                                      " time="0.1129" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should read with just a file name and resolve to cwd                                      " name="Test reading relative paths.Should read with just a file name and resolve to cwd                                      " time="0.1105" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should fail for not found                                                                 " name="Test reading relative paths.Should fail for not found                                                                 " time="0.0046" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should fail for xls extension                                                             " name="Test reading relative paths.Should fail for xls extension                                                             " time="0.0139" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should fail for xlsxs extension                                                           " name="Test reading relative paths.Should fail for xlsxs extension                                                           " time="0.0042" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\ProtectWorksheet.tests.ps1" executed="True" result="Success" success="True" time="0.3731" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\ProtectWorksheet.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Setting worksheet protection " executed="True" result="Success" success="True" time="0.2949" asserts="0" description="Setting worksheet protection ">
+            <results>
+              <test-case description="Turned on protection for the sheet                                                        " name="Setting worksheet protection .Turned on protection for the sheet                                                        " time="0.0126" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Set sheet-wide protection options                                                         " name="Setting worksheet protection .Set sheet-wide protection options                                                         " time="0.0038" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Unprotected some cells                                                                    " name="Setting worksheet protection .Unprotected some cells                                                                    " time="0.0041" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Remove-WorkSheet.tests.ps1" executed="True" result="Success" success="True" time="6.1664" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Remove-WorkSheet.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Remove Worksheet" executed="True" result="Success" success="True" time="6.0809" asserts="0" description="Remove Worksheet">
+            <results>
+              <test-suite type="TestFixture" name="Remove Worksheet.Remove a worksheet output" executed="True" result="Success" success="True" time="6.0017" asserts="0" description="Remove Worksheet.Remove a worksheet output">
+                <results>
+                  <test-case description="Should throw about the Path                                                            " name="Remove Worksheet.Remove a worksheet output.Should throw about the Path                                                            " time="1.0808" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should delete Target2                                                                  " name="Remove Worksheet.Remove a worksheet output.Should delete Target2                                                                  " time="1.2029" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should delete Sheet1                                                                   " name="Remove Worksheet.Remove a worksheet output.Should delete Sheet1                                                                   " time="1.1744" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should delete multiple sheets                                                          " name="Remove Worksheet.Remove a worksheet output.Should delete multiple sheets                                                          " time="1.1347" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should delete sheet from multiple workbooks                                            " name="Remove Worksheet.Remove a worksheet output.Should delete sheet from multiple workbooks                                            " time="1.326" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Set-Row_Set-Column-SetFormat.tests.ps1" executed="True" result="Failure" success="False" time="1.6002" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Set-Row_Set-Column-SetFormat.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Number format expansion and setting" executed="True" result="Failure" success="False" time="0.2539" asserts="0" description="Number format expansion and setting">
+            <results>
+              <test-suite type="TestFixture" name="Number format expansion and setting.Expand-NumberFormat function" executed="True" result="Success" success="True" time="0.1023" asserts="0" description="Number format expansion and setting.Expand-NumberFormat function">
+                <results>
+                  <test-case description="Expanded named number formats as expected                                              " name="Number format expansion and setting.Expand-NumberFormat function.Expanded named number formats as expected                                              " time="0.0178" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Number format expansion and setting.Apply-NumberFormat" executed="True" result="Failure" success="False" time="0.1682" asserts="0" description="Number format expansion and setting.Apply-NumberFormat">
+                <results>
+                  <test-case description="" name="" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" executed="True" result="Ignored" success="True" time="0.589" asserts="0" description="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange">
+            <results>
+              <test-suite type="TestFixture" name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelRow and Set-ExcelColumn" executed="True" result="Ignored" success="True" time="0.0697" asserts="0" description="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelRow and Set-ExcelColumn">
+                <results>
+                  <test-case description="Set a row and a column to have zero width/height                                       " name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelRow and Set-ExcelColumn.Set a row and a column to have zero width/height                                       " time="0.0011" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Set a column formula, with numberformat, color, bold face and alignment                " name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelRow and Set-ExcelColumn.Set a column formula, with numberformat, color, bold face and alignment                " time="0.0011" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Other formatting" executed="True" result="Ignored" success="True" time="0.1328" asserts="0" description="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Other formatting">
+                <results>
+                  <test-case description="Trapped an attempt to hide a range instead of a Row/Column                             " name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Other formatting.Trapped an attempt to hide a range instead of a Row/Column                             " time="0.0011" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Set and calculated a row formula with border font size and underline                   " name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Other formatting.Set and calculated a row formula with border font size and underline                   " time="0.0009" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Set custom font, size, text-wrapping, alignment, superscript, border and Fill          " name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Other formatting.Set custom font, size, text-wrapping, alignment, superscript, border and Fill          " time="0.0009" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelRange value setting " executed="True" result="Ignored" success="True" time="0.1947" asserts="0" description="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelRange value setting ">
+                <results>
+                  <test-case description="Inserted a formula                                                                     " name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelRange value setting .Inserted a formula                                                                     " time="0.0011" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Inserted a value                                                                       " name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelRange value setting .Inserted a value                                                                       " time="0.0009" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Inserted a date with localized date-time format                                        " name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelRange value setting .Inserted a date with localized date-time format                                        " time="0.0009" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelColumn Value Setting" executed="True" result="Ignored" success="True" time="0.2574" asserts="0" description="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelColumn Value Setting">
+                <results>
+                  <test-case description="Inserted Hyperlinks                                                                    " name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelColumn Value Setting.Inserted Hyperlinks                                                                    " time="0.0013" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Inserted and formatted Dates                                                           " name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelColumn Value Setting.Inserted and formatted Dates                                                           " time="0.0011" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Inserted Formulas                                                                      " name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelColumn Value Setting.Inserted Formulas                                                                      " time="0.0041" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Created Named ranges                                                                   " name="Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange.Set-ExcelColumn Value Setting.Created Named ranges                                                                   " time="0.001" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="Conditional Formatting" executed="True" result="Failure" success="False" time="1.2969" asserts="0" description="Conditional Formatting">
+            <results>
+              <test-suite type="TestFixture" name="Conditional Formatting.Using a pre-prepared 3 Arrows rule" executed="True" result="Failure" success="False" time="0" asserts="0" description="Conditional Formatting.Using a pre-prepared 3 Arrows rule">
+                <results>
+                  <test-case description="" name="" time="0" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>This test should run but it did not. Most likely a setup in some parent block failed.</message>
+                      <stack-trace />
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="AutoNameRange data with a single property name" executed="True" result="Success" success="True" time="1.4049" asserts="0" description="AutoNameRange data with a single property name">
+            <results>
+              <test-case description="Should have a single item as a named range                                               " name="AutoNameRange data with a single property name.Should have a single item as a named range                                               " time="0.0193" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should have a more than a single item as a named range                                   " name="AutoNameRange data with a single property name.Should have a more than a single item as a named range                                   " time="0.0243" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="Table Formatting" executed="True" result="Ignored" success="True" time="1.5233" asserts="0" description="Table Formatting">
+            <results>
+              <test-suite type="TestFixture" name="Table Formatting.Setting and not clearing when Export-Excel touches the file again." executed="True" result="Ignored" success="True" time="0.0583" asserts="0" description="Table Formatting.Setting and not clearing when Export-Excel touches the file again.">
+                <results>
+                  <test-case description="Set the Table Options                                                                  " name="Table Formatting.Setting and not clearing when Export-Excel touches the file again..Set the Table Options                                                                  " time="0.0011" asserts="0" success="False" result="Ignored" executed="False" />
+                  <test-case description="Set the Pivot Options                                                                  " name="Table Formatting.Setting and not clearing when Export-Excel touches the file again..Set the Pivot Options                                                                  " time="0.0009" asserts="0" success="False" result="Ignored" executed="False" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Validation.tests.ps1" executed="True" result="Success" success="True" time="0.3413" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\Validation.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Data validation and protection" executed="True" result="Success" success="True" time="0.2736" asserts="0" description="Data validation and protection">
+            <results>
+              <test-suite type="TestFixture" name="Data validation and protection.Data Validation rules" executed="True" result="Success" success="True" time="0.2122" asserts="0" description="Data validation and protection.Data Validation rules">
+                <results>
+                  <test-case description="Created the expected number of rules                                                   " name="Data validation and protection.Data Validation rules.Created the expected number of rules                                                   " time="0.0035" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created a List validation rule against a range of Cells                                " name="Data validation and protection.Data Validation rules.Created a List validation rule against a range of Cells                                " time="0.0047" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Created an integer validation rule for values between X and Y                          " name="Data validation and protection.Data Validation rules.Created an integer validation rule for values between X and Y                          " time="0.0052" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Set Error behaviors for both rules                                                     " name="Data validation and protection.Data Validation rules.Set Error behaviors for both rules                                                     " time="0.018" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\ImportExcelTests\Simple.tests.ps1" executed="True" result="Success" success="True" time="2.3651" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\ImportExcelTests\Simple.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Tests" executed="True" result="Success" success="True" time="1.3336" asserts="0" description="Tests">
+            <results>
+              <test-case description="Should have a valid manifest                                                              " name="Tests.Should have a valid manifest                                                              " time="0.1495" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should have two items in the imported simple data                                         " name="Tests.Should have two items in the imported simple data                                         " time="0.0026" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should have items a and b in the imported simple data                                     " name="Tests.Should have items a and b in the imported simple data                                     " time="0.0038" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should read the simple xlsx in &lt; 2100 milliseconds                                        " name="Tests.Should read the simple xlsx in &lt; 2100 milliseconds                                        " time="0.002" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should read larger xlsx, 4k rows 1 col &lt; 3000 milliseconds                                " name="Tests.Should read larger xlsx, 4k rows 1 col &lt; 3000 milliseconds                                " time="0.186" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should be able to open, read and close as seperate actions                                " name="Tests.Should be able to open, read and close as seperate actions                                " time="0.1124" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should take Paths from parameter                                                          " name="Tests.Should take Paths from parameter                                                          " time="0.234" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should take Paths from pipeline                                                           " name="Tests.Should take Paths from pipeline                                                           " time="0.2825" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should support PipelineVariable                                                           " name="Tests.Should support PipelineVariable                                                           " time="0.119" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\ImportExcelTests\TestImportOnly.tests.ps1" executed="True" result="Success" success="True" time="0.397" asserts="0" description="C:\Users\mcp\Documents\GitHub\ImportExcel\__tests__\ImportExcelTests\TestImportOnly.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Module" executed="True" result="Success" success="True" time="0.3144" asserts="0" description="Module">
+            <results>
+              <test-case description="Should import without error" name="Module.Should import without error" time="0.2408" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

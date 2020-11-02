@@ -19,7 +19,7 @@ $map = @{
 
 (Get-ExcelColumnName 26).columnName  | Should -Be 'Z'
 (Get-ExcelColumnName 27).columnName  | Should -Be 'AA'
-(Get-ExcelColumnName 28).columnNamee | Should -Be 'AB'
+(Get-ExcelColumnName 28).columnName  | Should -Be 'AB'
 (Get-ExcelColumnName 30).columnName  | Should -Be 'AD'
 (Get-ExcelColumnName 48).columnName  | Should -Be 'AV'
 

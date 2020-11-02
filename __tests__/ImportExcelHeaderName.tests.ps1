@@ -204,7 +204,7 @@ Describe "Import-Excel on a sheet with no headings" {
     }
 
     It "Should handle data correctly if there is only a single row" {
-        $actual = Import-Excel $xlfileHeaderOnly
+        $actual = Import-Excel $xlfileHeaderOnly -WarningAction SilentlyContinue
         $names = $actual.psobject.properties.Name
         $names | Should -Be $null
         $actual.Count | Should -Be 0

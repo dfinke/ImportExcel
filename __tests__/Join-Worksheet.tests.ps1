@@ -92,11 +92,12 @@ Describe "Join Worksheet part 1" {
         }
     }
 }
-$path = "TestDrive:\Test.xlsx"
-Remove-item -Path $path -ErrorAction SilentlyContinue
-#switched to CIM objects so test runs on V6
+
 Describe "Join Worksheet part 2" {
     BeforeEach {
+        $path = "TestDrive:\Test.xlsx"
+        Remove-item -Path $path -ErrorAction SilentlyContinue
+        #switched to CIM objects so test runs on V6+
         Get-CimInstance -ClassName win32_logicaldisk |
         Select-Object -Property DeviceId, VolumeName, Size, Freespace |
         Export-Excel -Path $path -WorkSheetname Volumes -NumberFormat "0,000"
@@ -129,4 +130,3 @@ Describe "Join Worksheet part 2" {
         }
     }
 }
-
