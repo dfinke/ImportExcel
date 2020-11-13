@@ -21,4 +21,4 @@ $data | Export-Excel -Path $xlFile -AutoFilter -AutoNameRange -AutoSize -Show -E
 ```
 
 ## Result
-![](MultipleCharts.png)
+![](\MultipleCharts.png)
