@@ -1,0 +1,75 @@
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+    - '*'
+    # - master
+    # - releases/*
+  paths:
+    exclude:
+    - README.md
+    - CHANGELOG.md
+
+jobs:
+  - job: 'Windows_PowerShell_all_options'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    - powershell: 'Install-Module -Name Pester -Force -SkipPublisherCheck'
+      displayName: 'Update Pester'
+    - powershell: './CI/PS-CI.ps1 '
+      displayName: 'Check Build Check Pack Test'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'NUnit'
+        testResultsFiles: '**/TestResults*.xml'
+        failTaskOnFailedTests: true
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/ImportExcel'
+        artifact: 'ImportExcel'
+
+  - job: 'PowerShell_Core_on_Windows_Build_and_Pester_only'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    - pwsh: 'Install-Module -Name Pester -Force'
+      displayName: 'Update Pester'
+    - pwsh: '.\CI\PS-CI.ps1 -SkipPreChecks -SkipHelp -SkipPostChecks'
+      displayName: 'Install and Test'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'NUnit'
+        testResultsFiles: '**/TestResults*.xml'
+        failTaskOnFailedTests: true
+
+  - job: 'Ubuntu_Build_and_Pester_Only'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - powershell: 'Install-Module -Name Pester -Force'
+      displayName: 'Update Pester'
+    - powershell: './CI/PS-CI.ps1 -SkipPreChecks -SkipHelp -SkipPostChecks   '
+      displayName: 'Install and Test'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'NUnit'
+        testResultsFiles: '**/TestResults*.xml'
+        failTaskOnFailedTests: true
+
+  - job: 'macOS_Build_and_Pester_Only'
+    pool:
+      vmImage: 'macOS-latest'
+    steps:
+    - script: brew install mono-libgdiplus
+      displayName: 'Install mono-libgdiplus'
+    - powershell: 'Install-Module -Name Pester -Force'
+      displayName: 'Update Pester'
+    - powershell: './CI/PS-CI.ps1 -SkipPreChecks -SkipHelp -SkipPostChecks'
+      displayName: 'Install and Test'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'NUnit'
+        testResultsFiles: '**/TestResults*.xml'
+        failTaskOnFailedTests: true

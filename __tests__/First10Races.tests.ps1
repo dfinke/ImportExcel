@@ -1,9 +1,12 @@
-﻿$scriptPath = Split-Path -Path $MyInvocation.MyCommand.path -Parent
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
+param()
+$scriptPath = Split-Path -Path $MyInvocation.MyCommand.path -Parent
 $dataPath = Join-Path  -Path $scriptPath -ChildPath "First10Races.csv"
+$WarningAction = "SilentlyContinue"
 
 Describe "Creating small named ranges with hyperlinks" {
     BeforeAll {
-        $path = "$env:TEMP\Results.xlsx"
+        $path = "TestDrive:\Results.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         #Read race results, and group by race name : export 1 row to get headers, leaving enough rows aboce to put in a link for each race
         $results = Import-Csv -Path $dataPath |
@@ -29,7 +32,7 @@ Describe "Creating small named ranges with hyperlinks" {
 
         #create a table which covers all the data. And define a pivot table which uses the same address range.
         $table = Add-ExcelTable -PassThru  -Range  $worksheet.cells[$topRow, 1, $lastDataRow, $columns]  -TableName "AllResults" -TableStyle Light4 `
-            -ShowHeader -ShowFilter -ShowColumnStripes -ShowRowStripes:$false -ShowFirstColumn:$false -ShowLastColumn:$false -ShowTotal:$false   #Test Add-ExcelTable outside export-Excel with as many options as possible.
+            -ShowHeader -ShowFilter -ShowColumnStripes -ShowRowStripes:$false -ShowFirstColumn:$false -ShowLastColumn:$false -ShowTotal:$false   #Test Add-ExcelTable outside Export-Excel with as many options as possible.
         $pt = New-PivotTableDefinition -PivotTableName Analysis -SourceWorkSheet   $worksheet -SourceRange $table.address.address -PivotRows Driver -PivotData @{Points = "SUM"} -PivotTotals None
 
         $cf = Add-ConditionalFormatting -Address  $worksheet.cells[$topRow, $columns, $lastDataRow, $columns] -ThreeIconsSet Arrows  -Passthru                               #Test using cells[r1,c1,r2,c2]
@@ -39,15 +42,15 @@ Describe "Creating small named ranges with hyperlinks" {
         Add-ConditionalFormatting -Address $worksheet.cells["FinishPosition"] -RuleType Equal    -ConditionValue 1 -ForeGroundColor  ([System.Drawing.Color]::Purple) -Bold -Priority 1 -StopIfTrue   #Test Priority and stopIfTrue and using range name
         Add-ConditionalFormatting -Address $worksheet.Cells["GridPosition"]   -RuleType ThreeColorScale -Reverse                                                           #Test Reverse
         $ct = New-ConditionalText -Text "Ferrari"
-        $ct2 = New-ConditionalText -Range $worksheet.Names["FinishPosition"].Address -ConditionalType LessThanOrEqual -Text 3 -ConditionalText ([System.Drawing.Color]::Red) -Background ([System.Drawing.Color]::White)      #Test new-conditionalText in shortest and longest forms.
+        $ct2 = New-ConditionalText -Range $worksheet.Names["FinishPosition"].Address -ConditionalType LessThanOrEqual -Text 3 -ConditionalText ([System.Drawing.Color]::Red) -Background ([System.Drawing.Color]::White)      #Test New-ConditionalText in shortest and longest forms.
         #Create links for each group name (race) and Export them so they start at Cell A1; create a pivot table with definition just created, save the file and open in Excel
         $excel = $results | ForEach-Object {(New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList "Sheet1!$($_.Name)" , "$($_.name) GP")} |                                     #Test Exporting Hyperlinks with display property.
             Export-Excel -ExcelPackage $excel -AutoSize -PivotTableDefinition $pt -Calculate   -ConditionalFormat $ct, $ct2  -PassThru                                        #Test conditional text rules in conditional format (orignally icon sets only )
 
-        $null = Add-WorkSheet -ExcelPackage $excel -WorksheetName "Points1"
+        $null = Add-Worksheet -ExcelPackage $excel -WorksheetName "Points1"
         Add-PivotTable -PivotTableName "Points1" -Address $excel.Points1.Cells["A1"] -ExcelPackage $excel -SourceWorkSheet sheet1 -SourceRange $excel.Sheet1.Tables[0].Address.Address -PivotRows Driver, Date -PivotData @{Points = "SUM"}  -GroupDateRow Date -GroupDatePart Years, Months
 
-        $null = Add-WorkSheet -ExcelPackage $excel -WorksheetName "Places1"
+        $null = Add-Worksheet -ExcelPackage $excel -WorksheetName "Places1"
         $newpt = Add-PivotTable -PivotTableName "Places1" -Address $excel.Places1.Cells["A1"] -ExcelPackage $excel -SourceWorkSheet sheet1 -SourceRange $excel.Sheet1.Tables[0].Address.Address -PivotRows Driver, FinishPosition -PivotData @{Date = "Count"}  -GroupNumericRow FinishPosition -GroupNumericMin 1 -GroupNumericMax 25 -GroupNumericInterval 3 -PassThru
         $newpt.RowFields[0].SubTotalFunctions = [OfficeOpenXml.Table.PivotTable.eSubTotalFunctions]::None
         Close-ExcelPackage -ExcelPackage $excel
@@ -59,81 +62,84 @@ Describe "Creating small named ranges with hyperlinks" {
     }
     Context "Creating hyperlinks" {
         it "Put the data into the sheet and created the expected named ranges                      " {
-            $sheet.Dimension.Rows                                       | should     be  $expectedRows
-            $sheet.Dimension.Columns                                    | should     be  $columns
-            $sheet.Names.Count                                          | should     be ($columns + $results.Count)
-            $sheet.Names[$results[0].Name]                              | should not benullorEmpty
-            $sheet.Names[$results[-1].Name]                             | should not benullorEmpty
+            $sheet.Dimension.Rows                                       | Should      -Be  $expectedRows
+            $sheet.Dimension.Columns                                    | Should      -Be  $columns
+            $sheet.Names.Count                                          | Should      -Be ($columns + $results.Count)
+            $sheet.Names[$results[0].Name]                              | Should -Not -BenullorEmpty
+            $sheet.Names[$results[-1].Name]                             | Should -Not -BenullorEmpty
         }
         it "Added hyperlinks to the named ranges                                                   " {
-            $sheet.cells["a1"].Hyperlink.Display                        | should     match $results[0].Name
-            $sheet.cells["a1"].Hyperlink.ReferenceAddress               | should     match $results[0].Name
+            $sheet.cells["a1"].Hyperlink.Display                        | Should      -Match $results[0].Name
+            $sheet.cells["a1"].Hyperlink.ReferenceAddress               | Should      -Match $results[0].Name
         }
     }
     Context "Adding calculated column" {
         It "Populated the cells with the right heading and formulas                                " {
-            $sheet.Cells[(  $results.Count), $columns]                   | Should     benullorEmpty
-            $sheet.Cells[(1 + $results.Count), $columns].Value             | Should     be "PlacesGained/Lost"
-            $sheet.Cells[(2 + $results.Count), $columns].Formula           | should     be "GridPosition-FinishPosition"
-            $sheet.Names["PlacesGained_Lost"]                           | should not benullorEmpty
+            $sheet.Cells[(  $results.Count), $columns]                   | Should      -BenullorEmpty
+            $sheet.Cells[(1 + $results.Count), $columns].Value             | Should      -Be "PlacesGained/Lost"
+            $sheet.Cells[(2 + $results.Count), $columns].Formula           | Should      -Be "GridPosition-FinishPosition"
+            $sheet.Names["PlacesGained_Lost"]                           | Should -Not -BenullorEmpty
         }
         It "Performed the calculation                                                              " {
             $placesMade = $Sheet.Cells[(2 + $results.Count), 5].value - $Sheet.Cells[(2 + $results.Count), 3].value
-            $sheet.Cells[(2 + $results.Count), $columns].value             | Should be $placesmade
+            $sheet.Cells[(2 + $results.Count), $columns].value             | Should -Be $placesmade
         }
-        It "Applied ConditionalFormatting, including StopIfTrue, Priority and Reverse              " {
-            $sheet.ConditionalFormatting[0].Address.Start.Column        | should     be $columns
-            $sheet.ConditionalFormatting[0].Address.End.Column          | should     be $columns
-            $sheet.ConditionalFormatting[0].Address.End.Row             | should     be $expectedRows
-            $sheet.ConditionalFormatting[0].Address.Start.Row           | should     be ($results.Count + 1)
-            $sheet.ConditionalFormatting[0].Icon3.Type.ToString()       | Should     be "Num"
-            $sheet.ConditionalFormatting[0].Icon3.Value                 | Should     be 1
-            $sheet.ConditionalFormatting[1].Priority                    | Should     be 1
-            $sheet.ConditionalFormatting[1].StopIfTrue                  | Should     be $true
-            $sheet.ConditionalFormatting[3].LowValue.Color.R            | Should     begreaterThan 180
-            $sheet.ConditionalFormatting[3].LowValue.Color.G            | Should     beLessThan 128
-            $sheet.ConditionalFormatting[3].HighValue.Color.R           | Should     beLessThan 128
-            $sheet.ConditionalFormatting[3].HighValue.Color.G           | Should     begreaterThan 180
+        It "Applied ConditionalFormatting, including StopIfTrue, Priority                          " {
+            $sheet.ConditionalFormatting[0].Address.Start.Column        | Should      -Be $columns
+            $sheet.ConditionalFormatting[0].Address.End.Column          | Should      -Be $columns
+            $sheet.ConditionalFormatting[0].Address.End.Row             | Should      -Be $expectedRows
+            $sheet.ConditionalFormatting[0].Address.Start.Row           | Should      -Be ($results.Count + 1)
+            $sheet.ConditionalFormatting[0].Icon3.Type.ToString()       | Should      -Be "Num"
+            $sheet.ConditionalFormatting[0].Icon3.Value                 | Should      -Be 1
+            $sheet.ConditionalFormatting[1].Priority                    | Should      -Be 1
+            $sheet.ConditionalFormatting[1].StopIfTrue                  | Should      -Be $true
+        }
+        It "Applied ConditionalFormatting, including Reverse                                       " {
+            Set-ItResult -Pending -Because "Bug in EPPLus 4.5"
+            $sheet.ConditionalFormatting[3].LowValue.Color.R            | Should      -BegreaterThan 180
+            $sheet.ConditionalFormatting[3].LowValue.Color.G            | Should      -BeLessThan 128
+            $sheet.ConditionalFormatting[3].HighValue.Color.R           | Should      -BeLessThan 128
+            $sheet.ConditionalFormatting[3].HighValue.Color.G           | Should      -BegreaterThan 180
         }
     }
     Context "Adding a table" {
         it "Created a table                                                                        " {
-            $sheet.tables[0]                                            | Should not beNullOrEmpty
-            $sheet.tables[0].Address.Start.Column                       | should     be 1
-            $sheet.tables[0].Address.End.Column                         | should     be $columns
-            $sheet.tables[0].Address.Start.row                          | should     be ($results.Count + 1)
-            $sheet.Tables[0].Address.End.Row                            | should     be $expectedRows
-            $sheet.Tables[0].StyleName                                  | should     be "TableStyleLight4"
-            $sheet.Tables[0].ShowColumnStripes                          | should     be $true
-            $sheet.Tables[0].ShowRowStripes                             | should not be $true
+            $sheet.tables[0]                                            | Should -Not -BeNullOrEmpty
+            $sheet.tables[0].Address.Start.Column                       | Should      -Be 1
+            $sheet.tables[0].Address.End.Column                         | Should      -Be $columns
+            $sheet.tables[0].Address.Start.row                          | Should      -Be ($results.Count + 1)
+            $sheet.Tables[0].Address.End.Row                            | Should      -Be $expectedRows
+            $sheet.Tables[0].StyleName                                  | Should      -Be "TableStyleLight4"
+            $sheet.Tables[0].ShowColumnStripes                          | Should      -Be $true
+            $sheet.Tables[0].ShowRowStripes                             | Should -Not -Be $true
         }
     }
     Context "Adding Pivot tables" {
         it "Added a worksheet with a pivot table grouped by date                                   " {
-            $excel.Points1                                              | should not beNullOrEmpty
-            $excel.Points1.PivotTables.Count                            | should     be 1
+            $excel.Points1                                              | Should -Not -BeNullOrEmpty
+            $excel.Points1.PivotTables.Count                            | Should      -Be 1
             $pt = $excel.Points1.PivotTables[0]
-            $pt.RowFields.Count                                         | should     be 3
-            $pt.RowFields[0].name                                       | should     be "Driver"
-            $pt.RowFields[0].Grouping                                   | should     benullorEmpty
-            $pt.RowFields[1].name                                       | should     be "years"
-            $pt.RowFields[1].Grouping                                   | should not benullorEmpty
-            $pt.RowFields[2].name                                       | should     be "date"
-            $pt.RowFields[2].Grouping                                   | should not benullorEmpty
+            $pt.RowFields.Count                                         | Should      -Be 3
+            $pt.RowFields[0].name                                       | Should      -Be "Driver"
+            $pt.RowFields[0].Grouping                                   | Should      -BenullorEmpty
+            $pt.RowFields[1].name                                       | Should      -Be "years"
+            $pt.RowFields[1].Grouping                                   | Should -Not -BenullorEmpty
+            $pt.RowFields[2].name                                       | Should      -Be "date"
+            $pt.RowFields[2].Grouping                                   | Should -Not -BenullorEmpty
         }
         it "Added a worksheet with a pivot table grouped by Number                                 " {
-            $excel.Places1                                              | should not beNullOrEmpty
-            $excel.Places1.PivotTables.Count                            | should     be 1
+            $excel.Places1                                              | Should -Not -BeNullOrEmpty
+            $excel.Places1.PivotTables.Count                            | Should      -Be 1
             $pt = $excel.Places1.PivotTables[0]
-            $pt.RowFields.Count                                         | should     be 2
-            $pt.RowFields[0].name                                       | should     be "Driver"
-            $pt.RowFields[0].Grouping                                   | should     benullorEmpty
-            $pt.RowFields[0].SubTotalFunctions.ToString()               | should     be "None"
-            $pt.RowFields[1].name                                       | should     be "FinishPosition"
-            $pt.RowFields[1].Grouping                                   | should not benullorEmpty
-            $pt.RowFields[1].Grouping.Start                             | should     be 1
-            $pt.RowFields[1].Grouping.End                               | should     be 25
-            $pt.RowFields[1].Grouping.Interval                          | should     be 3
+            $pt.RowFields.Count                                         | Should      -Be 2
+            $pt.RowFields[0].name                                       | Should      -Be "Driver"
+            $pt.RowFields[0].Grouping                                   | Should      -BenullorEmpty
+            $pt.RowFields[0].SubTotalFunctions.ToString()               | Should      -Be "None"
+            $pt.RowFields[1].name                                       | Should      -Be "FinishPosition"
+            $pt.RowFields[1].Grouping                                   | Should -Not -BenullorEmpty
+            $pt.RowFields[1].Grouping.Start                             | Should      -Be 1
+            $pt.RowFields[1].Grouping.End                               | Should      -Be 25
+            $pt.RowFields[1].Grouping.Interval                          | Should      -Be 3
         }
     }
 }

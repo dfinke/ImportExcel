@@ -7,23 +7,20 @@ If this project helped you reduce the time to get your job done, let me know.
 
 ![](https://media.giphy.com/media/hpXxJ78YtpT0s/giphy.gif)
 
+<br/>
 
-<br/>
-<br/>
-<br/>
-<p align="center">
-<a href="https://ci.appveyor.com/project/dfinke/importexcel/branch/master"><img src="https://ci.appveyor.com/api/projects/status/21hko6eqtpccrkba/branch/master?svg=true"></a>
-<a href="https://dougfinke.visualstudio.com/ImportExcel/_build?definitionId=10"><img src="https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/ImportExcel-CI?branchName=master"></a>
+<p>
+<a href="https://www.powershellgallery.com/packages/ImportExcel"><img src="https://img.shields.io/powershellgallery/v/ImportExcel.svg"></a>
+<a href="https://www.powershellgallery.com/packages/ImportExcel"><img src="https://img.shields.io/powershellgallery/dt/ImportExcel.svg"></a>
+<a href="./LICENSE.txt"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"></a>
 </p>
 
-<p align="center">
-<a href="./LICENSE.txt"><img
-src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"></a>
-<a href="https://www.powershellgallery.com/packages/ImportExcel"><img
-src="https://img.shields.io/powershellgallery/dt/ImportExcel.svg"></a>
-<a href="https://www.powershellgallery.com/packages/ImportExcel"><img
-src="https://img.shields.io/powershellgallery/v/ImportExcel.svg"></a>
-</p>
+| CI System    | Environment                   | Status                                                                                                                                                                                                                                          |
+|--------------|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Azure DevOps | Windows                       | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=Windows)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master)       |
+| Azure DevOps | Windows (Core)                | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=WindowsPSCore)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master) |
+| Azure DevOps | Ubuntu                        | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=Ubuntu)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master)        |
+| Azure DevOps | macOS                         | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=macOS)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master)         |
 
 <!-- /BADGES -->
 
@@ -37,7 +34,8 @@ This PowerShell Module allows you to read and write Excel files without installi
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/testimonial.png)
 
 # How to Videos
-* [PowerShell Excel Module - ImportExcel](https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq)
+
+* [PowerShell Excel Module - ImportExcel](https://www.youtube.com/watch?v=fvKKdIzJCws&list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq)
 
 Installation
 -
@@ -53,12 +51,143 @@ Install-Module ImportExcel -scope CurrentUser
 Install-Module ImportExcel
 ```
 
-# What's new 6.2.1
+# Continuous Integration Updates
+
+Big thanks to [Illy](https://github.com/ili101) for taking the Azure DevOps CI to the next level. Improved badges, improved matrix for cross platform OS testing and more.
+
+Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfinke/ImportExcel/pull/590#issuecomment-488659081) we built into each run as an artifact.
+
+![](./images/ScriptAnalyzerReport.png)
+
+# What's new 7.1.1
+
+- Merged [Nate Ferrell](https://github.com/scrthq)'s Linux fix. Thanks!
+- Moved `Export-MultipleExcelSheets` from psm1 to Examples/Experimental
+- Deleted the CI build in Appveyor
+- Thank you [Mikey Bronowski](https://github.com/MikeyBronowski) for 
+    - Multiple sweeps 
+    - Standardising casing of parameter names, and variables
+    - Plus updating > 50 of the examples and making them consistent. 
+
+# What's new 7.1.0
+
+Fixes, Updates and new Examples
+
+### Fixed
+
+- Odd behavior on the return of Import-Excel function https://github.com/dfinke/ImportExcel/issues/792
+- Export-Excel -FreezeTopRow with -Title https://github.com/dfinke/ImportExcel/issues/795
+- Not importing when first row contains a 0 in a column https://github.com/dfinke/ImportExcel/issues/802
+
+### Updated
+
+- Add `-AsDate` support to `Import-Excel` and `ConvertFrom-ExcelSheet`
+
+### New Examples
+
+|PS1|Description|Link|
+|---|---|---|
+|Pester-To-XLSx|Runs Pester, collects the results, enriches it, and exports it to Excel|[Pester-To-XLSx.ps1](https://github.com/dfinke/ImportExcel/blob/fe68ddbb0dd86e9fd1f3bfe01c4d2b9ce5509510/Examples/Pester-To-XLSx.ps1)
+|DSUM|Sums up the numbers in a field (column) of records in a list or database that match conditions that you specify.|[DSUM.ps1](https://github.com/dfinke/ImportExcel/blob/12fa49e3142af2178ae1c6b18d8c757af0d629ac/Examples/ExcelBuiltIns/DSUM.ps1)
+|VLookup|Setups up a sheet, you enter the name of an item and the amount is looked up|[VLOOKUP.ps1](https://github.com/dfinke/ImportExcel/blob/e42f42fde92ca636af22252b753a8329f48e15f1/Examples/ExcelBuiltIns/VLOOKUP.ps1)
+# What's new 7.0.1
+
+More infrastructure improvements.
+
+- Refine pipeline script analysis
+- Improve artifacts published
+- Add manifest (psd1) checks
+
+# What's new 7.0.0
+## Refactor
+
+- Remove all functions from the `psm1`
+- Move functions into public subdirectory
+- Align TDD and continuous integration workflow for this refactor
+- Move help from functions to mdHelp and use [PlatyPS](https://www.powershellgallery.com/packages/platyPS) to generate external help file
+
+Thanks to [James O'Neill](https://twitter.com/jamesoneill) for the refactor and [Illy](https://twitter.com/ili_z) on the continuous integration.
+
+# What's new 6.5.3
+
+Thanks again to the community for making this module even better.
+
+- [Fix import excel headers](https://github.com/dfinke/ImportExcel/pull/713)
+- Numerous improvements for DataTables and exporting it to Excel [James O'Neill](https://twitter.com/jamesoneill)
+	- Names, styles, proper appending
+- Handles marking the empty row on an empty table as dummy row
+- Re-work code based on linting recommendations
+- Update existing tests and add more
+- Support PipelineVariable thanks to [Luc Dekens](https://twitter.com/LucD22) for reporting and [Ili](https://twitter.com/ili_z) for the PR
+- Fix quoting in ConvertFromExcelToSQLInsert [beckerben](https://github.com/beckerben)
+
+# What's new 6.5.2
+
+Thank you [uSlackr](https://github.com/uSlackr)ill
+- Fixes Column order issue (plus tests) for `Get-ExcelColumnName`
+
+Thank you [jhoneill](https://github.com/jhoneill)
+- Added -Force to Send-SQLDataToExcel so it sends something even if no rows are returned. (see [#703](https://github.com/dfinke/ImportExcel/issues/703))
+- Added -asText to import-Excel see (#164)[https://github.com/dfinke/ImportExcel/issues/164] and multiple others
+- Linux. Now set an environment variable if the support needed for Autosize is present, and use that Environment variable to decide to skip autosize operations.
+- Fixed tests which needed autosize to work so they skip of the environment variable is set.
+- Fixed another break where on azure the module never loaded.
+- Add a comment to ci.ps1 re better .NET version detection and left some commented out code.
+
+Other
+- Added the example [ReadAllSheets.ps1](https://github.com/dfinke/ImportExcel/tree/master/Examples/ReadAllSheets) based on this thread https://github.com/dfinke/ImportExcel/issues/678
+
+# What's new 6.5.0
+
+This is now using the latest version of EPPlus. Unit tests are updated and passing, if you hit problems, please open an issue.
+You can rollback to an older version from the PowerShell Gallery if you are blocked.
+
+- Unit tests were updated and fixed
+- "Set-WorksheetProtection" is now switched on
+- Made a change to make Set-Excel range more friendly when Auto Sizing on non-windows platforms
+- Fixed - Windows only tests don't attempt to run on non-windows systems
+- Tests based on Get-Process don't attempt to run if <20 processes are returned
+- If $env:TEMP is not set (as will be the case on Linux)
+- Join-Path if used so paths are built with / or with \ as suits the OS where the test is running.
+- Excel Sparklines now supported, check out the examples [SalesByQuarter](https://github.com/dfinke/ImportExcel/blob/master/Examples/Sparklines/SalesByQuarter.ps1) and [Sparklines](https://github.com/dfinke/ImportExcel/blob/master/Examples/Sparklines/Sparklines.ps1).
+
+![](./images/Sparklines.png)
+
+
+# What's new 6.2.4
+
+Sensible parameter defaults, make your life easier and gets things done faster.
+
+- Thank you to [DomRRuggeri](https://github.com/DomRRuggeri) for the initial Out-Excel PR and kicking off the conversation on the improvements.
+- Thank you to [ili101](https://github.com/ili101) for refactoring and improving the defaults, and adding the tests for parameters.
+
+- Creates a table, with filtering
+- Chooses a `TableStyle`
+- Displays the Excel spreadsheet automatically
+
+```powershell
+Get-Process | select Company, Name, Handles | Export-Excel
+```
+
+![image](./images/ImproveNowDefaults.png)
+
+# What's new 6.2.3
+
+Thank you [jhoneill](https://github.com/jhoneill).
+
+- Refactored copy sheet and added pipe support
+- Add `ClearAll` to `Set-ExcelRange`
+- Fix broken test & regression for `passwords`
+    - **Note**: Passwords do not work on `pwsh`. The EPPlus library does not support these dotnet core APIs at this time.
+
+# What's new 6.2.2
 
 - Added requested feature, chart trendlines.
     - [Example PowerShell script](https://github.com/dfinke/ImportExcel/blob/master/Examples/Charts/NumberOfVisitors.ps1)
 
 ![](/images/ChartTrendlines.png)
+
+- Fixed Import-Excel and relative path issue, added unit tests.
 
 # What's new 6.2.0
 Thank you to [James O'Neill](https://github.com/jhoneill)

@@ -1,4 +1,4 @@
-﻿Import-Module ..\ImportExcel.psd1 -Force
+﻿try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 $file = "C:\Temp\test.xlsx"
 

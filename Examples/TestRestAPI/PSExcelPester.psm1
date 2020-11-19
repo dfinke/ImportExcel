@@ -5,7 +5,7 @@ function ConvertTo-PesterTest {
         $WorksheetName = 'Sheet1'
     )
 
-    $testFileName = "{0}.tests.ps1" -f (get-date).ToString("yyyyMMddHHmmss")
+    $testFileName = "{0}.tests.ps1" -f (Get-date).ToString("yyyyMMddHHmmss")
 
     $records = Import-Excel $XlFilename
 
@@ -29,7 +29,7 @@ function ConvertTo-PesterTest {
 
         `$target.psobject.Properties.name | ForEach-Object {`$p=@{}} {`$p.`$_=`$(`$target.`$_)}
 
-        Invoke-RestMethod @p | Should Be '$($record.ExpectedResult)'
+        Invoke-RestMethod @p | Should -Be '$($record.ExpectedResult)'
     }
 
 "@

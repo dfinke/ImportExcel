@@ -1,7 +1,7 @@
-﻿try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+﻿try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
 $xlfilename=".\test.xlsx"
-rm $xlfilename -ErrorAction Ignore
+Remove-Item  $xlfilename -ErrorAction Ignore
 
 $ConditionalText = @()
 $ConditionalText += New-ConditionalText -Range "C:C" -Text failed -BackgroundColor red   -ConditionalTextColor black
@@ -26,12 +26,12 @@ $sheet1 = $xlPkg.Workbook.Worksheets["sheet1"]
 $sheet1.View.ShowGridLines = $false
 $sheet1.View.ShowHeaders = $false
 
-Set-Format -Address $sheet1.Cells["A:A"] -AutoSize
-Set-Format -Address $sheet1.Cells["B:D"] -WrapText
+Set-ExcelRange -Address $sheet1.Cells["A:A"] -AutoSize
+Set-ExcelRange -Address $sheet1.Cells["B:D"] -WrapText
 
 $sheet1.InsertColumn(1, 1)
-Set-Format -Address $sheet1.Cells["A:A"] -Width 5
+Set-ExcelRange -Address $sheet1.Cells["A:A"] -Width 5
 
-Set-Format -Address $sheet1.Cells["B1:E1"] -HorizontalAlignment Center -BorderBottom Thick -BorderColor Cyan
+Set-ExcelRange -Address $sheet1.Cells["B1:E1"] -HorizontalAlignment Center -BorderBottom Thick -BorderColor Cyan
 
 Close-ExcelPackage $xlPkg -Show

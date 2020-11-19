@@ -1,11 +1,12 @@
 function Test-APIReadXls {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "", Justification="False Positive")]
     param(
         [parameter(Mandatory)]
         $XlFilename,
         $WorksheetName = 'Sheet1'
     )
 
-    $testFileName = "{0}.tests.ps1" -f (get-date).ToString("yyyyMMddHHmmss")
+    $testFileName = "{0}.tests.ps1" -f (Get-date).ToString("yyyyMMddHHmmss")
 
     $records = Import-Excel $XlFilename
 
@@ -29,7 +30,7 @@ function Test-APIReadXls {
 
         `$target.psobject.Properties.name | ForEach-Object {`$p=@{}} {`$p.`$_=`$(`$target.`$_)}
 
-        Invoke-RestMethod @p | Should Be '$($record.ExpectedResult)'
+        Invoke-RestMethod @p | Should -Be '$($record.ExpectedResult)'
     }
 
 "@

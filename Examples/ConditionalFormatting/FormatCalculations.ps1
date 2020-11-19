@@ -1,12 +1,13 @@
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$f = "$env:TEMP\testExport.xlsx"
-
-Remove-Item $f -ErrorAction Ignore
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $data = $(
 
-    New-PSItem North 111 (echo Region Amount )
+    New-PSItem North 111 @( 'Region', 'Amount' )
     New-PSItem East 111
     New-PSItem West 122
     New-PSItem South 200
@@ -21,10 +22,10 @@ $data = $(
     New-PSItem Westerly 120
     New-PSItem SouthWest 118
 )
-# in this example instead of doing $variable = New-Conditional text <parameters> .... ; Export-excel -conditionalText $variable <other parameters>
-# the syntax is used is Export-excel -conditionalText (New-Conditional text <parameters>) <other parameters>
+# in this example instead of doing $variable = New-Conditional text <parameters> .... ; Export-excel -ConditionalText $variable <other parameters>
+# the syntax is used is Export-excel -ConditionalText (New-Conditional text <parameters>) <other parameters>
 
 
-#$data  | Export-Excel $f -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType AboveAverage)
-$data  | Export-Excel $f -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType BelowAverage)
-#$data  | Export-Excel $f -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType TopPercent)
+#$data  | Export-Excel $xlSourcefile -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType AboveAverage)
+$data  | Export-Excel $xlSourcefile -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType BelowAverage)
+#$data  | Export-Excel $xlSourcefile -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType TopPercent)

@@ -1,12 +1,15 @@
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-Remove-Item "$env:TEMP\testExport.xlsx" -ErrorAction Ignore
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 Get-Process | Where-Object Company | Select-Object Company, Name, PM, Handles, *mem* |
 
 #This example creates a 3 Icon set for the values in the "PM column, and Highlights company names (anywhere in the data) with different colors
 
-    Export-Excel "$env:TEMP\testExport.xlsx" -Show -AutoSize -AutoNameRange `
+    Export-Excel -Path $xlSourcefile -Show -AutoSize -AutoNameRange `
         -ConditionalFormat $(
             New-ConditionalFormattingIconSet -Range "C:C" `
                 -ConditionalFormat ThreeIconSet -IconType Arrows

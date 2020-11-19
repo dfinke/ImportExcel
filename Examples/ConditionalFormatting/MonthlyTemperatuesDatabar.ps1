@@ -1,6 +1,9 @@
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-Remove-Item -Path .\test.xlsx -ErrorAction Ignore
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $excel = @"
 Month,New York City,Austin Texas,Portland Oregon
@@ -17,9 +20,9 @@ Oct,65,82,63
 Nov,54,71,52
 Dec,44,63,46
 "@ | ConvertFrom-csv |
-    Export-Excel -Path .\test.xlsx -WorkSheetname Sheet1 -AutoNameRange -AutoSize -Title "Monthly Temperatures" -PassThru
+    Export-Excel -Path $xlSourcefile -WorkSheetname Sheet1 -AutoNameRange -AutoSize -Title "Monthly Temperatures" -PassThru
 
 $sheet = $excel.Workbook.Worksheets["Sheet1"]
-Add-ConditionalFormatting -WorkSheet $sheet -Range "B1:D14" -DataBarColor CornflowerBlue
+Add-ConditionalFormatting -Worksheet $sheet -Range "B1:D14" -DataBarColor CornflowerBlue
 
 Close-ExcelPackage $excel -Show

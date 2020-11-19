@@ -1,6 +1,9 @@
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-Remove-Item -Path Tools.xlsx
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $data = @"
 ID,Product,Quantity,Price,Total
@@ -16,4 +19,4 @@ $c2 = New-ExcelChartDefinition -YRange "Total   "-XRange "Product" -Title "Total
 $c3 = New-ExcelChartDefinition -YRange "Quantity"-XRange "Product" -Title "Sales volume" -NoLegend -Height 225 -Row 15
 
 $data | ConvertFrom-Csv |
-    Export-Excel -Path  "Tools.xlsx" -AutoFilter -AutoNameRange -AutoSize -ExcelChartDefinition $c1,$c2,$c3  -Show
+    Export-Excel -Path  $xlSourcefile -AutoFilter -AutoNameRange -AutoSize -ExcelChartDefinition $c1,$c2,$c3  -Show

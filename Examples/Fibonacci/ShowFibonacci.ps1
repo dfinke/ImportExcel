@@ -1,9 +1,11 @@
 param ($fibonacciDigits=10)
 
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$file = "fib.xlsx"
-Remove-Item "fib.xlsx" -ErrorAction Ignore
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $(
     New-PSItem 0
@@ -15,4 +17,4 @@ $(
                 New-PSItem ('=a{0}+a{1}' -f ($_+1),$_)
             }
     )
-) | Export-Excel $file -Show
+) | Export-Excel $xlSourcefile -Show

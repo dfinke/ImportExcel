@@ -1,12 +1,13 @@
-try {. $PSScriptRoot\..\..\LoadPSD1.ps1} catch {}
+try {Import-Module $PSScriptRoot\..\..\ImportExcel.psd1} catch {throw ; return}
 
-$f = ".\testExport.xlsx"
-
-Remove-Item $f -ErrorAction Ignore
+#Get rid of pre-exisiting sheet
+$xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
+Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
+Remove-Item $xlSourcefile -ErrorAction Ignore
 
 $data = $(
 
-    New-PSItem North 111 (echo Region Amount )
+    New-PSItem North 111 @('Region', 'Amount' )
     New-PSItem East 11
     New-PSItem West 12
     New-PSItem South 1000
@@ -22,4 +23,4 @@ $data = $(
     New-PSItem SouthWest 11
 )
 
-$data  | Export-Excel $f -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType DuplicateValues)
+$data  | Export-Excel $xlSourcefile -Show -AutoSize -ConditionalText (New-ConditionalText -ConditionalType DuplicateValues)

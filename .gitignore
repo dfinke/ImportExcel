@@ -60,7 +60,8 @@ test.xlsx
 testCCFMT.ps1
 testHide.ps1
 ImportExcel.zip
-.vscode/launch.json
 .vscode/settings.json
 
 ~$*
+# InstallModule.ps1
+# PublishToGallery.ps1
