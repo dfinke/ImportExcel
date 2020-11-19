@@ -1,9 +1,13 @@
 ﻿#region import everything we need
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Refresh stale fork
 $culture = $host.CurrentCulture.Name -replace '-\w*$', ''
 Import-LocalizedData  -UICulture $culture -BindingVariable Strings -FileName Strings -ErrorAction Ignore
 if (-not $Strings) {
     Import-LocalizedData  -UICulture "en" -BindingVariable Strings -FileName Strings -ErrorAction Ignore
+<<<<<<< HEAD
 }
 try { [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") }
 catch { Write-Warning -Message $Strings.SystemDrawingAvailable }
@@ -20,20 +24,24 @@ function Import-ModuleFile
 	
 	if ($doDotSource) { . $Path }
 	else { $ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText($Path))), $null, $null) }
+=======
+>>>>>>> Refresh stale fork
 }
-
-
-# Import all public functions
-foreach ($cmdlet in (Get-ChildItem "$($PSScriptRoot)\cmdlets\*.ps1"))
-{
-	. Import-ModuleFile -Path $cmdlet.FullName
-}
->>>>>>> Moving cmdlets for organization reasons
+try { [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") }
+catch { Write-Warning -Message $Strings.SystemDrawingAvailable }
 
 foreach ($directory in @('Private', 'Public', 'Charting', 'InferData', 'Pivot')) {
     Get-ChildItem -Path "$PSScriptRoot\$directory\*.ps1" | ForEach-Object { . $_.FullName }
 }
+>>>>>>> Moving cmdlets for organization reasons
 
+<<<<<<< HEAD
+foreach ($directory in @('Private', 'Public', 'Charting', 'InferData', 'Pivot')) {
+    Get-ChildItem -Path "$PSScriptRoot\$directory\*.ps1" | ForEach-Object { . $_.FullName }
+}
+
+=======
+>>>>>>> Refresh stale fork
 if ($PSVersionTable.PSVersion.Major -ge 5) {
     . $PSScriptRoot\Plot.ps1
 
