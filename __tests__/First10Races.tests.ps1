@@ -1,17 +1,15 @@
-﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
-param()
-$scriptPath = Split-Path -Path $MyInvocation.MyCommand.path -Parent
-$dataPath = Join-Path  -Path $scriptPath -ChildPath "First10Races.csv"
-$WarningAction = "SilentlyContinue"
-
+﻿
 Describe "Creating small named ranges with hyperlinks" {
     BeforeAll {
+        $scriptPath = $PSScriptRoot
+        $dataPath = Join-Path  -Path $scriptPath -ChildPath "First10Races.csv"
+        $WarningAction = "SilentlyContinue"
         $path = "TestDrive:\Results.xlsx"
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         #Read race results, and group by race name : export 1 row to get headers, leaving enough rows aboce to put in a link for each race
         $results = Import-Csv -Path $dataPath |
-            Select-Object  Race, @{n = "Date"; e = {[datetime]::ParseExact($_.date, "dd/MM/yyyy", (Get-Culture))}}, FinishPosition, Driver, GridPosition, Team, Points |
-            Group-Object -Property RACE
+        Select-Object  Race, @{n = "Date"; e = { [datetime]::ParseExact($_.date, "dd/MM/yyyy", (Get-Culture)) } }, FinishPosition, Driver, GridPosition, Team, Points |
+        Group-Object -Property RACE
         $topRow = $lastDataRow = 1 + $results.Count
         $excel = $results[0].Group[0] | Export-Excel -Path $path -StartRow $TopRow  -BoldTopRow -PassThru
 
@@ -23,7 +21,7 @@ Describe "Creating small named ranges with hyperlinks" {
         $worksheet = $excel.Workbook.Worksheets[1]
         $columns = $worksheet.Dimension.Columns
 
-        1..$columns | ForEach-Object {Add-ExcelName -Range $worksheet.cells[$topRow, $_, $lastDataRow, $_]}                                                                        #Test Add-Excel Name on its own (outside Export-Excel)
+        1..$columns | ForEach-Object { Add-ExcelName -Range $worksheet.cells[$topRow, $_, $lastDataRow, $_] }                                                                        #Test Add-Excel Name on its own (outside Export-Excel)
 
         $scwarnVar = $null
         Set-ExcelColumn -Worksheet $worksheet -StartRow $topRow -Heading "PlacesGained/Lost" `
@@ -33,7 +31,7 @@ Describe "Creating small named ranges with hyperlinks" {
         #create a table which covers all the data. And define a pivot table which uses the same address range.
         $table = Add-ExcelTable -PassThru  -Range  $worksheet.cells[$topRow, 1, $lastDataRow, $columns]  -TableName "AllResults" -TableStyle Light4 `
             -ShowHeader -ShowFilter -ShowColumnStripes -ShowRowStripes:$false -ShowFirstColumn:$false -ShowLastColumn:$false -ShowTotal:$false   #Test Add-ExcelTable outside Export-Excel with as many options as possible.
-        $pt = New-PivotTableDefinition -PivotTableName Analysis -SourceWorkSheet   $worksheet -SourceRange $table.address.address -PivotRows Driver -PivotData @{Points = "SUM"} -PivotTotals None
+        $pt = New-PivotTableDefinition -PivotTableName Analysis -SourceWorkSheet   $worksheet -SourceRange $table.address.address -PivotRows Driver -PivotData @{Points = "SUM" } -PivotTotals None
 
         $cf = Add-ConditionalFormatting -Address  $worksheet.cells[$topRow, $columns, $lastDataRow, $columns] -ThreeIconsSet Arrows  -Passthru                               #Test using cells[r1,c1,r2,c2]
         $cf.Icon2.Type = $cf.Icon3.Type = "Num"
@@ -44,14 +42,14 @@ Describe "Creating small named ranges with hyperlinks" {
         $ct = New-ConditionalText -Text "Ferrari"
         $ct2 = New-ConditionalText -Range $worksheet.Names["FinishPosition"].Address -ConditionalType LessThanOrEqual -Text 3 -ConditionalText ([System.Drawing.Color]::Red) -Background ([System.Drawing.Color]::White)      #Test New-ConditionalText in shortest and longest forms.
         #Create links for each group name (race) and Export them so they start at Cell A1; create a pivot table with definition just created, save the file and open in Excel
-        $excel = $results | ForEach-Object {(New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList "Sheet1!$($_.Name)" , "$($_.name) GP")} |                                     #Test Exporting Hyperlinks with display property.
-            Export-Excel -ExcelPackage $excel -AutoSize -PivotTableDefinition $pt -Calculate   -ConditionalFormat $ct, $ct2  -PassThru                                        #Test conditional text rules in conditional format (orignally icon sets only )
+        $excel = $results | ForEach-Object { (New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList "Sheet1!$($_.Name)" , "$($_.name) GP") } |                                     #Test Exporting Hyperlinks with display property.
+        Export-Excel -ExcelPackage $excel -AutoSize -PivotTableDefinition $pt -Calculate   -ConditionalFormat $ct, $ct2  -PassThru                                        #Test conditional text rules in conditional format (orignally icon sets only )
 
         $null = Add-Worksheet -ExcelPackage $excel -WorksheetName "Points1"
-        Add-PivotTable -PivotTableName "Points1" -Address $excel.Points1.Cells["A1"] -ExcelPackage $excel -SourceWorkSheet sheet1 -SourceRange $excel.Sheet1.Tables[0].Address.Address -PivotRows Driver, Date -PivotData @{Points = "SUM"}  -GroupDateRow Date -GroupDatePart Years, Months
+        Add-PivotTable -PivotTableName "Points1" -Address $excel.Points1.Cells["A1"] -ExcelPackage $excel -SourceWorkSheet sheet1 -SourceRange $excel.Sheet1.Tables[0].Address.Address -PivotRows Driver, Date -PivotData @{Points = "SUM" }  -GroupDateRow Date -GroupDatePart Years, Months
 
         $null = Add-Worksheet -ExcelPackage $excel -WorksheetName "Places1"
-        $newpt = Add-PivotTable -PivotTableName "Places1" -Address $excel.Places1.Cells["A1"] -ExcelPackage $excel -SourceWorkSheet sheet1 -SourceRange $excel.Sheet1.Tables[0].Address.Address -PivotRows Driver, FinishPosition -PivotData @{Date = "Count"}  -GroupNumericRow FinishPosition -GroupNumericMin 1 -GroupNumericMax 25 -GroupNumericInterval 3 -PassThru
+        $newpt = Add-PivotTable -PivotTableName "Places1" -Address $excel.Places1.Cells["A1"] -ExcelPackage $excel -SourceWorkSheet sheet1 -SourceRange $excel.Sheet1.Tables[0].Address.Address -PivotRows Driver, FinishPosition -PivotData @{Date = "Count" }  -GroupNumericRow FinishPosition -GroupNumericMin 1 -GroupNumericMax 25 -GroupNumericInterval 3 -PassThru
         $newpt.RowFields[0].SubTotalFunctions = [OfficeOpenXml.Table.PivotTable.eSubTotalFunctions]::None
         Close-ExcelPackage -ExcelPackage $excel
 

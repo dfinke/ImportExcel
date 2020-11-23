@@ -1,31 +1,29 @@
-﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases','',Justification='Testing for presence of alias')]
-
-param()
-
-$path = "TestDrive:\test.xlsx"
-
-$data = ConvertFrom-Csv -InputObject @"
-ID,Product,Quantity,Price
-12001,Nails,37,3.99
-12002,Hammer,5,12.10
-12003,Saw,12,15.37
-12010,Drill,20,8
-12011,Crowbar,7,23.48
-"@
-
-$DriverData = convertFrom-CSv @"
-Name,Wikipage,DateOfBirth
-Fernando Alonso,/wiki/Fernando_Alonso,1981-07-29
-Jenson Button,/wiki/Jenson_Button,1980-01-19
-Kimi Räikkönen,/wiki/Kimi_R%C3%A4ikk%C3%B6nen,1979-10-17
-Lewis Hamilton,/wiki/Lewis_Hamilton,1985-01-07
-Nico Rosberg,/wiki/Nico_Rosberg,1985-06-27
-Sebastian Vettel,/wiki/Sebastian_Vettel,1987-07-03
-"@ | ForEach-Object {$_.DateOfBirth = [datetime]$_.DateofBirth; $_ }
-
+﻿
 
 Describe "Number format expansion and setting" {
+    BeforeAll {
+        $path = "TestDrive:\test.xlsx"
+
+        $data = ConvertFrom-Csv -InputObject @"
+        ID,Product,Quantity,Price
+        12001,Nails,37,3.99
+        12002,Hammer,5,12.10
+        12003,Saw,12,15.37
+        12010,Drill,20,8
+        12011,Crowbar,7,23.48
+"@
+
+        $DriverData = convertFrom-CSv @"
+        Name,Wikipage,DateOfBirth
+        Fernando Alonso,/wiki/Fernando_Alonso,1981-07-29
+        Jenson Button,/wiki/Jenson_Button,1980-01-19
+        Kimi Räikkönen,/wiki/Kimi_R%C3%A4ikk%C3%B6nen,1979-10-17
+        Lewis Hamilton,/wiki/Lewis_Hamilton,1985-01-07
+        Nico Rosberg,/wiki/Nico_Rosberg,1985-06-27
+        Sebastian Vettel,/wiki/Sebastian_Vettel,1987-07-03
+"@ | ForEach-Object { $_.DateOfBirth = [datetime]$_.DateofBirth; $_ }
+    }
+
     Context "Expand-NumberFormat function" {
         It "Expanded named number formats as expected                                              " {
             $r = [regex]::Escape([cultureinfo]::CurrentCulture.NumberFormat.CurrencySymbol)
@@ -46,7 +44,7 @@ Describe "Number format expansion and setting" {
             Remove-Item -Path $path -ErrorAction SilentlyContinue
             $n = [datetime]::Now.ToOADate()
 
-            $excel = 1..32 | ForEach-Object {$n} | Export-Excel -Path $path -show -WorksheetName s2 -PassThru
+            $excel = 1..32 | ForEach-Object { $n } | Export-Excel -Path $path -show -WorksheetName s2 -PassThru
             $ws = $excel.Workbook.Worksheets[1]
             Set-ExcelRange -Worksheet $ws -Range "A1"   -numberFormat 'General'
             Set-ExcelRange -Worksheet $ws -Range "A2"   -numberFormat 'Number'
@@ -121,14 +119,35 @@ Describe "Number format expansion and setting" {
     }
 }
 
-Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
+Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange"  {
     BeforeAll {
+        $path = "TestDrive:\test.xlsx"
+
+        $data = ConvertFrom-Csv -InputObject @"
+        ID,Product,Quantity,Price
+        12001,Nails,37,3.99
+        12002,Hammer,5,12.10
+        12003,Saw,12,15.37
+        12010,Drill,20,8
+        12011,Crowbar,7,23.48
+"@
+
+        $DriverData = convertFrom-CSv @"
+        Name,Wikipage,DateOfBirth
+        Fernando Alonso,/wiki/Fernando_Alonso,1981-07-29
+        Jenson Button,/wiki/Jenson_Button,1980-01-19
+        Kimi Räikkönen,/wiki/Kimi_R%C3%A4ikk%C3%B6nen,1979-10-17
+        Lewis Hamilton,/wiki/Lewis_Hamilton,1985-01-07
+        Nico Rosberg,/wiki/Nico_Rosberg,1985-06-27
+        Sebastian Vettel,/wiki/Sebastian_Vettel,1987-07-03
+"@    | ForEach-Object { $_.DateOfBirth = [datetime]$_.DateofBirth; $_ }
+
         Remove-Item -Path $path -ErrorAction SilentlyContinue
-        $excel = $data| Export-Excel -Path $path -AutoNameRange -PassThru
+        $excel = $data | Export-Excel -Path $path -AutoNameRange -PassThru
         $ws = $excel.Workbook.Worksheets["Sheet1"]
 
         $c = Set-ExcelColumn -PassThru -Worksheet $ws -Heading "Total" -Value "=Quantity*Price" -NumberFormat "£#,###.00" -FontColor ([System.Drawing.Color]::Blue) -Bold -HorizontalAlignment Right -VerticalAlignment Top
-        $r = Set-ExcelRow    -PassThru -Worksheet $ws -StartColumn 3 -BorderAround Thin -Italic -Underline -FontSize 14 -Value {"=sum($columnName`2:$columnName$endrow)" } -VerticalAlignment Bottom
+        $r = Set-ExcelRow    -PassThru -Worksheet $ws -StartColumn 3 -BorderAround Thin -Italic -Underline -FontSize 14 -Value { "=sum($columnName`2:$columnName$endrow)" } -VerticalAlignment Bottom
         Set-ExcelRange -Address   $excel.Workbook.Worksheets["Sheet1"].Cells["b3"] -HorizontalAlignment Right -VerticalAlignment Center -BorderAround Thick -BorderColor  ([System.Drawing.Color]::Red) -StrikeThru
         Set-ExcelRange -Address   $excel.Workbook.Worksheets["Sheet1"].Cells["c3"] -BorderColor  ([System.Drawing.Color]::Red) -BorderTop DashDot -BorderLeft DashDotDot -BorderBottom Dashed -BorderRight Dotted
         Set-ExcelRange -Worksheet $ws -Range "E3"  -Bold:$false -FontShift Superscript -HorizontalAlignment Left
@@ -229,14 +248,14 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
             $excel = $DriverData | Export-Excel -PassThru -Path $path -AutoSize -AutoNameRange
             $ws = $excel.Workbook.Worksheets[1]
 
-            Set-ExcelColumn -Worksheet $ws -Heading "Link"         -AutoSize -Value {"https://en.wikipedia.org" + $worksheet.Cells["B$Row"].value  }
+            Set-ExcelColumn -Worksheet $ws -Heading "Link"         -AutoSize -Value { "https://en.wikipedia.org" + $worksheet.Cells["B$Row"].value }
             $c = Set-ExcelColumn -PassThru -Worksheet $ws -Heading "NextBirthday" -Value {
                 $bmonth = $worksheet.Cells["C$Row"].value.month ; $bDay = $worksheet.Cells["C$Row"].value.day
                 $cMonth = [datetime]::Now.Month ; $cday = [datetime]::Now.day ; $cyear = [datetime]::Now.Year
                 if (($cmonth -gt $bmonth) -or (($cMonth -eq $bmonth) -and ($cday -ge $bDay))) {
                     [datetime]::new($cyear + 1, $bmonth, $bDay)
                 }
-                else {[datetime]::new($cyear, $bmonth, $bday)  }
+                else { [datetime]::new($cyear, $bmonth, $bday) }
             }
             Set-ExcelColumn -Worksheet $ws -Heading "Age" -Value "=INT((NOW()-DateOfBirth)/365)"
             # Test Piping column Numbers into Set excelColumn
@@ -277,7 +296,7 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange" {
 
 Describe "Conditional Formatting" {
     BeforeAll {
-        #Remove-Item $path
+        $path = "TestDrive:\test.xlsx"
         $data = Get-Process | Where-Object company | Select-Object company, name, pm, handles, *mem*
         $cfmt = New-ConditionalFormattingIconSet -Range "c:c" -ConditionalFormat ThreeIconSet -IconType Arrows
         $data | Export-Excel -path $Path  -AutoSize -ConditionalFormat $cfmt
@@ -293,33 +312,33 @@ Describe "Conditional Formatting" {
     }
 
 }
-$path = "TestDrive:\test.xlsx"
-$data2 = ConvertFrom-Csv -InputObject @"
-ID,Product,Quantity,Price,Total
-12001,Nails,37,3.99,147.63
-12002,Hammer,5,12.10,60.5
-12003,Saw,12,15.37,184.44
-12010,Drill,20,8,160
-12011,Crowbar,7,23.48,164.36
-12001,Nails,53,3.99,211.47
-12002,Hammer,6,12.10,72.60
-12003,Saw,10,15.37,153.70
-12010,Drill,10,8,80
-12012,Pliers,2,14.99,29.98
-12001,Nails,20,3.99,79.80
-12002,Hammer,2,12.10,24.20
-12010,Drill,11,8,88
-12012,Pliers,3,14.99,44.97
-"@
 
 Describe "AutoNameRange data with a single property name" {
     BeforeEach {
+        $path = "TestDrive:\test.xlsx"
+        $data2 = ConvertFrom-Csv -InputObject @"
+        ID,Product,Quantity,Price,Total
+        12001,Nails,37,3.99,147.63
+        12002,Hammer,5,12.10,60.5
+        12003,Saw,12,15.37,184.44
+        12010,Drill,20,8,160
+        12011,Crowbar,7,23.48,164.36
+        12001,Nails,53,3.99,211.47
+        12002,Hammer,6,12.10,72.60
+        12003,Saw,10,15.37,153.70
+        12010,Drill,10,8,80
+        12012,Pliers,2,14.99,29.98
+        12001,Nails,20,3.99,79.80
+        12002,Hammer,2,12.10,24.20
+        12010,Drill,11,8,88
+        12012,Pliers,3,14.99,44.97
+"@
         $xlfile = "TestDrive:\testNamedRange.xlsx"
         Remove-Item $xlfile -ErrorAction SilentlyContinue
     }
 
-      it "Should have a single item as a named range                                               " {
-            $excel = ConvertFrom-Csv @"
+    it "Should have a single item as a named range                                               " {
+        $excel = ConvertFrom-Csv @"
 Sold
 1
 2
@@ -327,14 +346,14 @@ Sold
 4
 "@          | Export-Excel $xlfile -PassThru -AutoNameRange
 
-            $ws = $excel.Workbook.Worksheets["Sheet1"]
+        $ws = $excel.Workbook.Worksheets["Sheet1"]
 
-            $ws.Names.Count | Should -Be 1
-            $ws.Names[0].Name | Should -Be 'Sold'
-      }
+        $ws.Names.Count | Should -Be 1
+        $ws.Names[0].Name | Should -Be 'Sold'
+    }
 
-      it "Should have a more than a single item as a named range                                   " {
-            $excel = ConvertFrom-Csv @"
+    it "Should have a more than a single item as a named range                                   " {
+        $excel = ConvertFrom-Csv @"
 Sold,ID
 1,a
 2,b
@@ -342,17 +361,34 @@ Sold,ID
 4,d
 "@          |  Export-Excel $xlfile -PassThru -AutoNameRange
 
-            $ws = $excel.Workbook.Worksheets["Sheet1"]
+        $ws = $excel.Workbook.Worksheets["Sheet1"]
 
-            $ws.Names.Count | Should -Be 2
-            $ws.Names[0].Name | Should -Be 'Sold'
-            $ws.Names[1].Name | Should -Be 'ID'
-      }
+        $ws.Names.Count | Should -Be 2
+        $ws.Names[0].Name | Should -Be 'Sold'
+        $ws.Names[1].Name | Should -Be 'ID'
+    }
 }
 
-Describe "Table Formatting" {
+Describe "Table Formatting"  {
     BeforeAll {
-        #Remove-Item $path
+        $path = "TestDrive:\test.xlsx"
+        $data2 = ConvertFrom-Csv -InputObject @"
+        ID,Product,Quantity,Price,Total
+        12001,Nails,37,3.99,147.63
+        12002,Hammer,5,12.10,60.5
+        12003,Saw,12,15.37,184.44
+        12010,Drill,20,8,160
+        12011,Crowbar,7,23.48,164.36
+        12001,Nails,53,3.99,211.47
+        12002,Hammer,6,12.10,72.60
+        12003,Saw,10,15.37,153.70
+        12010,Drill,10,8,80
+        12012,Pliers,2,14.99,29.98
+        12001,Nails,20,3.99,79.80
+        12002,Hammer,2,12.10,24.20
+        12010,Drill,11,8,88
+        12012,Pliers,3,14.99,44.97
+"@
         $excel = $data2 | Export-excel -path $path -WorksheetName Hardware -AutoNameRange -AutoSize -BoldTopRow -FreezeTopRow -PassThru
         $ws = $excel.Workbook.Worksheets[1]
         #test showfilter & TotalSettings

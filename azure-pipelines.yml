@@ -20,7 +20,7 @@ jobs:
       vmImage: 'windows-latest'
 
     steps:
-    - powershell: 'Install-Module -Name Pester -Force -SkipPublisherCheck -MaximumVersion 4.99.99'
+    - powershell: 'Install-Module -Name Pester -Force -SkipPublisherCheck'
       displayName: 'Update Pester'
     - powershell: './CI/CI.ps1 -Test'
       displayName: 'Install and Test'
@@ -49,7 +49,7 @@ jobs:
       vmImage: 'windows-latest'
 
     steps:
-    - pwsh: 'Install-Module -Name Pester -Force -MaximumVersion 4.99.99'
+    - pwsh: 'Install-Module -Name Pester -Force'
       displayName: 'Update Pester'
     - pwsh: './CI/CI.ps1 -Test'
       displayName: 'Install and Test'
@@ -65,7 +65,7 @@ jobs:
       vmImage: 'ubuntu-latest'
 
     steps:
-    - powershell: 'Install-Module -Name Pester -Force -MaximumVersion 4.99.99'
+    - powershell: 'Install-Module -Name Pester -Force'
       displayName: 'Update Pester'
     - powershell: './CI/CI.ps1 -Test'
       displayName: 'Install and Test'
@@ -83,7 +83,7 @@ jobs:
     steps:
     - script: brew install mono-libgdiplus
       displayName: 'Install mono-libgdiplus'
-    - powershell: 'Install-Module -Name Pester -Force -MaximumVersion 4.99.99'
+    - powershell: 'Install-Module -Name Pester -Force'
       displayName: 'Update Pester'
     - powershell: './CI/CI.ps1 -Test'
       displayName: 'Install and Test'
@@ -99,7 +99,7 @@ jobs:
       vmImage: 'macOS-latest'
 
     steps:
-    - powershell: 'Install-Module -Name Pester -Force -MaximumVersion 4.99.99'
+    - powershell: 'Install-Module -Name Pester -Force'
       displayName: 'Update Pester'
     - powershell: './CI/CI.ps1 -TestImportOnly'
       displayName: 'Install and Test Import Only'
