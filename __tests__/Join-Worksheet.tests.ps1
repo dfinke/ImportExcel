@@ -1,4 +1,7 @@
-﻿Describe "Join Worksheet part 1" {
+﻿#Requires -Modules Pester
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
+param()
+Describe "Join Worksheet part 1" {
     BeforeAll {
         $data1 = ConvertFrom-Csv -InputObject @"
         ID,Product,Quantity,Price,Total

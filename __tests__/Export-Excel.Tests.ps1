@@ -1,4 +1,8 @@
-﻿Describe ExportExcel -Tag "ExportExcel" {
+﻿#Requires -Modules Pester
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidAssignmentToAutomaticVariable','',Justification='Only executes on versions without the automatic variable')]
+param()
+Describe ExportExcel -Tag "ExportExcel" {
     BeforeAll {
         if ($null -eq $IsWindows) { $IsWindows = [environment]::OSVersion.Platform -like "win*" }
         $WarningAction = "SilentlyContinue"
