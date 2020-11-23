@@ -3,6 +3,9 @@
         if ($null -eq $IsWindows) { $IsWindows = [environment]::OSVersion.Platform -like "win*" }
         $WarningAction = "SilentlyContinue"
         . "$PSScriptRoot\Samples\Samples.ps1"
+        if (-not (Get-command Get-Service -ErrorAction SilentlyContinue)) {
+            Function Get-Service {Import-Clixml $PSScriptRoot\Mockservices.xml}
+        }
         if (Get-process -Name Excel, xlim -ErrorAction SilentlyContinue) {
             It "Excel is open" {
                 $Warning = "You need to close Excel before running the tests."
@@ -443,7 +446,7 @@
             $ws.ConditionalFormatting[1].Type                           | Should      -Be "ContainsText"
             #Add RGB Comparison
         }
-    }
+    } -skip
 
     Context "#Example 7      # Update-FirstObjectProperties works " {
         BeforeAll {

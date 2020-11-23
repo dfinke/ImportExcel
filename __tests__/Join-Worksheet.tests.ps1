@@ -1,5 +1,4 @@
-﻿
-Describe "Join Worksheet part 1" {
+﻿Describe "Join Worksheet part 1" {
     BeforeAll {
         $data1 = ConvertFrom-Csv -InputObject @"
         ID,Product,Quantity,Price,Total
@@ -94,6 +93,14 @@ Describe "Join Worksheet part 1" {
 }
 
 Describe "Join Worksheet part 2" {
+    BeforeAll {
+        if (-not (Get-command Get-CimInstance -ErrorAction SilentlyContinue)) {
+            Function Get-CimInstance {
+                param ($classname  , $namespace)
+                Import-Clixml "$PSScriptRoot\$classname.xml"
+            }
+        }
+    }
     BeforeEach {
         $path = "TestDrive:\Test.xlsx"
         Remove-item -Path $path -ErrorAction SilentlyContinue

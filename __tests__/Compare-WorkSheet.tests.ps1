@@ -12,6 +12,9 @@ Describe "Compare Worksheet" {
             }
         }
         else { Add-Type -AssemblyName System.Windows.Forms } #>
+        if (-not (Get-command Get-Service -ErrorAction SilentlyContinue)) {
+            Function Get-Service {Import-Clixml $PSScriptRoot\Mockservices.xml}
+        }
         . "$PSScriptRoot\Samples\Samples.ps1"
         Remove-Item -Path  "TestDrive:\server*.xlsx"
         [System.Collections.ArrayList]$s = Get-Service | Select-Object -first 25 -Property Name, RequiredServices, CanPauseAndContinue, CanShutdown, CanStop, DisplayName, DependentServices, MachineName
@@ -196,6 +199,9 @@ Describe "Compare Worksheet" {
 
 Describe "Merge Worksheet" {
     BeforeAll {
+        if (-not (Get-command Get-Service -ErrorAction SilentlyContinue)) {
+            Function Get-Service {Import-Clixml $PSScriptRoot\Mockservices.xml}
+        }
         Remove-Item -Path  "TestDrive:\server*.xlsx" , "TestDrive:\combined*.xlsx" -ErrorAction SilentlyContinue
         [System.Collections.ArrayList]$s = Get-service | Select-Object -first 25 -Property *
 
@@ -261,6 +267,11 @@ Describe "Merge Worksheet" {
     }
 }
 Describe "Merge Multiple sheets" {
+    BeforeAll {
+        if (-not (Get-command Get-Service -ErrorAction SilentlyContinue)) {
+            Function Get-Service {Import-Clixml $PSScriptRoot\Mockservices.xml}
+        }
+    }
     Context "Merge 3 sheets with 3 properties" {
         BeforeAll {
             Remove-Item -Path  "TestDrive:\server*.xlsx" , "TestDrive:\combined*.xlsx" -ErrorAction SilentlyContinue
