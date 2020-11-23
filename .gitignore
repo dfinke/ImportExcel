@@ -65,3 +65,4 @@ ImportExcel.zip
 ~$*
 # InstallModule.ps1
 # PublishToGallery.ps1
+.vscode/*

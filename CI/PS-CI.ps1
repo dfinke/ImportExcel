@@ -225,7 +225,7 @@ if (-not $SkipPostChecks) {
                     PivotData            = @{RuleName = 'Count' }
                     PivotRows            = 'Severity', 'RuleName'
                     PivotTotals          = 'Rows'
-                    PivotChartDefinition = $chartDef 
+                    PivotChartDefinition = $chartDef
                 }
             }
         }
@@ -249,9 +249,18 @@ if (-not $SkipPesterTests -and (Get-ChildItem -Recurse *.tests.ps1)) {
     if (-not (Get-Module -ListAvailable pester | Where-Object -Property version -ge ([version]::new(4, 4, 1)))) {
         Install-Module Pester -Force -SkipPublisherCheck -MaximumVersion 4.99.99
     }
-    Import-Module Pester
-    $PesterOutputPath = Join-Path $pwd  -ChildPath ('TestResultsPS{0}.xml' -f $PSVersionTable.PSVersion)
+    $pester = Import-Module Pester -PassThru
+    $pester
+    $pesterOutputPath = Join-Path $pwd  -ChildPath ('TestResultsPS{0}.xml' -f $PSVersionTable.PSVersion)
     if ($PSScriptRoot) { Pop-Location }
-    Invoke-Pester -OutputFile $PesterOutputPath
+    if ($pester.Version.Major -lt 5)  {Invoke-Pester -OutputFile $pesterOutputPath}
+    else {
+        $pesterArgs = [PesterConfiguration]::Default
+        $pesterArgs.Run.Exit = $true
+        $pesterArgs.Output.Verbosity = "Normal"
+        $pesterArgs.TestResult.Enabled = $true
+        $pesterArgs.TestResult.OutputPath = $pesterOutputPath
+        Invoke-Pester -Configuration $pesterArgs
+    }
 }
 elseif ($PSScriptRoot) { Pop-Location }

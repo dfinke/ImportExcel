@@ -2,7 +2,12 @@
 param()
 
 describe "Consistent passing of ranges." {
-   BeforeAll { $path = "TestDrive:\test.xlsx" }
+    BeforeAll {
+       $path = "TestDrive:\test.xlsx"
+       if (-not (Get-command Get-Service -ErrorAction SilentlyContinue)) {
+            Function Get-Service {Import-Clixml $PSScriptRoot\Mockservices.xml}
+        }
+    }
     Context "Conditional Formatting"  {
         it "accepts named ranges, cells['name'], worksheet + Name, worksheet + column              " {
             Remove-Item -path $path  -ErrorAction SilentlyContinue
