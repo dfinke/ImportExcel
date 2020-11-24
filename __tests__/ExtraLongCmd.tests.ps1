@@ -1,9 +1,10 @@
 
 
 Describe "Creating workbook with a single line" {
-    $path = "TestDrive:\test.xlsx"
-    remove-item -path $path -ErrorAction SilentlyContinue
-    ConvertFrom-Csv    @"
+    BeforeAll {
+        $path = "TestDrive:\test.xlsx"
+        remove-item -path $path -ErrorAction SilentlyContinue
+        ConvertFrom-Csv    @"
 Product, City, Gross, Net
 Apple, London , 300, 250
 Orange, London , 400, 350
@@ -12,14 +13,17 @@ Orange, Paris,   600, 500
 Banana, Paris,   300, 200
 Apple, New York, 1200,700
 
-"@  | Export-Excel  -Path $path  -TableStyle Medium13 -tablename "RawData" -ConditionalFormat @{Range="C2:C7"; DataBarColor="Green"} -ExcelChartDefinition @{ChartType="Doughnut";XRange="A2:B7"; YRange="C2:C7"; width=800; }  -PivotTableDefinition @{Sales=@{
-            PivotRows="City"; PivotColumns="Product"; PivotData=@{Gross="Sum";Net="Sum"}; PivotNumberFormat="$#,##0.00"; PivotTotals="Both"; PivotTableStyle="Medium12"; Activate=$true
+"@  | Export-Excel  -Path $path  -TableStyle Medium13 -tablename "RawData" -ConditionalFormat @{Range = "C2:C7"; DataBarColor = "Green" } -ExcelChartDefinition @{ChartType = "Doughnut"; XRange = "A2:B7"; YRange = "C2:C7"; width = 800; }  -PivotTableDefinition @{Sales = @{
+                PivotRows = "City"; PivotColumns = "Product"; PivotData = @{Gross = "Sum"; Net = "Sum" }; PivotNumberFormat = "$#,##0.00"; PivotTotals = "Both"; PivotTableStyle = "Medium12"; Activate = $true
 
-            PivotChartDefinition=@{Title="Gross and net by city and product"; ChartType="ColumnClustered"; Column=6; Width=600; Height=360; YMajorUnit=500; YMinorUnit=100; YAxisNumberformat="$#,##0"; LegendPosition="Bottom"}}}
+                PivotChartDefinition = @{Title = "Gross and net by city and product"; ChartType = "ColumnClustered"; Column = 6; Width = 600; Height = 360; YMajorUnit = 500; YMinorUnit = 100; YAxisNumberformat = "$#,##0"; LegendPosition = "Bottom" }
+            }
+        }
 
-    $excel = Open-ExcelPackage $path
-    $ws1 = $excel.Workbook.Worksheets[1]
-    $ws2  = $excel.Workbook.Worksheets[2]
+        $excel = Open-ExcelPackage $path
+        $ws1 = $excel.Workbook.Worksheets[1]
+        $ws2 = $excel.Workbook.Worksheets[2]
+    }
     Context "Data Page" {
         It "Inserted the data and created the table                                                " {
             $ws1.Tables[0]                                              | Should -Not -BeNullOrEmpty
@@ -39,7 +43,7 @@ Apple, New York, 1200,700
             $ws1.Drawings[0].Series[0].Series                           | Should      -Be "'Sheet1'!C2:C7"
         }
     }
-    Context "PivotTable"    {
+    Context "PivotTable" {
         it "Created the PivotTable on a new page                                                   " {
             $ws2                                                        | Should -Not -BeNullOrEmpty
             $ws2.PivotTables[0]                                         | Should -Not -BeNullOrEmpty

@@ -1,0 +1,1056 @@
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>Microsoft.Management.Infrastructure.CimInstance#root/StandardCimv2/MSFT_NetAdapter</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#ROOT/StandardCimv2/CIM_NetworkPort</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#ROOT/StandardCimv2/CIM_LogicalPort</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#ROOT/StandardCimv2/CIM_LogicalDevice</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#ROOT/StandardCimv2/CIM_EnabledLogicalElement</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#ROOT/StandardCimv2/CIM_LogicalElement</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#ROOT/StandardCimv2/CIM_ManagedSystemElement</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#ROOT/StandardCimv2/CIM_ManagedElement</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#MSFT_NetAdapter</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#CIM_NetworkPort</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#CIM_LogicalPort</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#CIM_LogicalDevice</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#CIM_EnabledLogicalElement</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#CIM_LogicalElement</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#CIM_ManagedSystemElement</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#CIM_ManagedElement</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance</T>
+      <T>System.Object</T>
+    </TN>
+    <ToString>MSFT_NetAdapter (CreationClassName = "MSFT_NetAdapter", DeviceID = "{EABBFFBE-8343-4C69-9EF2-D58081F91769}", SystemCreationClassName = "CIM_NetworkPort", SystemName = "FLATFISH")</ToString>
+    <Props>
+      <Nil N="Caption" />
+      <Nil N="Description" />
+      <Nil N="ElementName" />
+      <S N="InstanceID">{EABBFFBE-8343-4C69-9EF2-D58081F91769}</S>
+      <Nil N="CommunicationStatus" />
+      <Nil N="DetailedStatus" />
+      <Nil N="HealthState" />
+      <Nil N="InstallDate" />
+      <S N="Name">WiFi</S>
+      <Nil N="OperatingStatus" />
+      <Nil N="OperationalStatus" />
+      <Nil N="PrimaryStatus" />
+      <Nil N="Status" />
+      <Nil N="StatusDescriptions" />
+      <Nil N="AvailableRequestedStates" />
+      <U16 N="EnabledDefault">2</U16>
+      <U16 N="EnabledState">5</U16>
+      <Nil N="OtherEnabledState" />
+      <U16 N="RequestedState">12</U16>
+      <Nil N="TimeOfLastStateChange" />
+      <U16 N="TransitioningToState">12</U16>
+      <Nil N="AdditionalAvailability" />
+      <Nil N="Availability" />
+      <S N="CreationClassName">MSFT_NetAdapter</S>
+      <S N="DeviceID">{EABBFFBE-8343-4C69-9EF2-D58081F91769}</S>
+      <Nil N="ErrorCleared" />
+      <Nil N="ErrorDescription" />
+      <Nil N="IdentifyingDescriptions" />
+      <Nil N="LastErrorCode" />
+      <Nil N="MaxQuiesceTime" />
+      <Nil N="OtherIdentifyingInfo" />
+      <Nil N="PowerManagementCapabilities" />
+      <Nil N="PowerManagementSupported" />
+      <Nil N="PowerOnHours" />
+      <Nil N="StatusInfo" />
+      <S N="SystemCreationClassName">CIM_NetworkPort</S>
+      <S N="SystemName">FLATFISH</S>
+      <Nil N="TotalPowerOnHours" />
+      <Nil N="MaxSpeed" />
+      <Nil N="OtherPortType" />
+      <Nil N="PortType" />
+      <Nil N="RequestedSpeed" />
+      <U64 N="Speed">52000000</U64>
+      <Nil N="UsageRestriction" />
+      <U64 N="ActiveMaximumTransmissionUnit">1500</U64>
+      <Nil N="AutoSense" />
+      <B N="FullDuplex">false</B>
+      <Nil N="LinkTechnology" />
+      <Obj N="NetworkAddresses" RefId="1">
+        <TN RefId="1">
+          <T>System.String[]</T>
+          <T>System.Array</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <S>B4AE2BD10C3A</S>
+        </LST>
+      </Obj>
+      <Nil N="OtherLinkTechnology" />
+      <Nil N="OtherNetworkPortType" />
+      <S N="PermanentAddress">B4AE2BD10C3A</S>
+      <U16 N="PortNumber">0</U16>
+      <Nil N="SupportedMaximumTransmissionUnit" />
+      <B N="AdminLocked">false</B>
+      <S N="ComponentID">PCI\VEN_11AB&amp;DEV_2B38&amp;SUBSYS_045E0004</S>
+      <B N="ConnectorPresent">true</B>
+      <S N="DeviceName">\Device\{EABBFFBE-8343-4C69-9EF2-D58081F91769}</S>
+      <B N="DeviceWakeUpEnable">true</B>
+      <S N="DriverDate">2020-01-21</S>
+      <U64 N="DriverDateData">132240384000000000</U64>
+      <S N="DriverDescription">Marvell AVASTAR Wireless-AC Network Controller</S>
+      <By N="DriverMajorNdisVersion">6</By>
+      <By N="DriverMinorNdisVersion">50</By>
+      <S N="DriverName">\SystemRoot\System32\drivers\mrvlpcie8897.sys</S>
+      <S N="DriverProvider">Marvell Semiconductors, Inc.</S>
+      <S N="DriverVersionString">15.68.17018.116</S>
+      <B N="EndPointInterface">false</B>
+      <B N="HardwareInterface">true</B>
+      <B N="Hidden">false</B>
+      <Obj N="HigherLayerInterfaceIndices" RefId="2">
+        <TN RefId="2">
+          <T>System.UInt32[]</T>
+          <T>System.Array</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <U32>12</U32>
+        </LST>
+      </Obj>
+      <B N="IMFilter">false</B>
+      <U32 N="InterfaceAdminStatus">1</U32>
+      <S N="InterfaceDescription">Marvell AVASTAR Wireless-AC Network Controller</S>
+      <S N="InterfaceGuid">{EABBFFBE-8343-4C69-9EF2-D58081F91769}</S>
+      <U32 N="InterfaceIndex">24</U32>
+      <S N="InterfaceName">wireless_32768</S>
+      <U32 N="InterfaceOperationalStatus">1</U32>
+      <U32 N="InterfaceType">71</U32>
+      <B N="iSCSIInterface">false</B>
+      <Nil N="LowerLayerInterfaceIndices" />
+      <U16 N="MajorDriverVersion">1</U16>
+      <U32 N="MediaConnectState">1</U32>
+      <U32 N="MediaDuplexState">1</U32>
+      <U16 N="MinorDriverVersion">0</U16>
+      <U32 N="MtuSize">1500</U32>
+      <U32 N="NdisMedium">16</U32>
+      <U32 N="NdisPhysicalMedium">9</U32>
+      <U64 N="NetLuid">19985273102270464</U64>
+      <U32 N="NetLuidIndex">32768</U32>
+      <B N="NotUserRemovable">false</B>
+      <B N="OperationalStatusDownDefaultPortNotAuthenticated">false</B>
+      <B N="OperationalStatusDownInterfacePaused">false</B>
+      <B N="OperationalStatusDownLowPowerState">false</B>
+      <B N="OperationalStatusDownMediaDisconnected">false</B>
+      <S N="PnPDeviceID">PCI\VEN_11AB&amp;DEV_2B38&amp;SUBSYS_045E0004&amp;REV_00\4&amp;1a5036a5&amp;0&amp;00EB</S>
+      <B N="PromiscuousMode">false</B>
+      <U64 N="ReceiveLinkSpeed">52000000</U64>
+      <U32 N="State">2</U32>
+      <U64 N="TransmitLinkSpeed">52000000</U64>
+      <B N="Virtual">false</B>
+      <Nil N="VlanID" />
+      <B N="WdmInterface">false</B>
+      <Nil N="PSComputerName" />
+    </Props>
+    <MS>
+      <Obj N="__ClassMetadata" RefId="3">
+        <TN RefId="3">
+          <T>System.Collections.ArrayList</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <Obj RefId="4">
+            <MS>
+              <S N="ClassName">CIM_ManagedElement</S>
+              <S N="Namespace">ROOT/StandardCimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1377625085</I32>
+              <S N="MiXml">&lt;CLASS NAME="CIM_ManagedElement"&gt;&lt;QUALIFIER NAME="Abstract" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="locale" TYPE="sint32" TOSUBCLASS="false"&gt;&lt;VALUE&gt;1033&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="UMLPackagePath" TYPE="string"&gt;&lt;VALUE&gt;CIM::Core::CoreElements&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PROPERTY NAME="Caption" TYPE="string"&gt;&lt;QUALIFIER NAME="MaxLen" TYPE="sint32"&gt;&lt;VALUE&gt;64&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="Description" TYPE="string"&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="ElementName" TYPE="string"&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="InstanceID" TYPE="string"&gt;&lt;/PROPERTY&gt;&lt;/CLASS&gt;</S>
+            </MS>
+          </Obj>
+          <Obj RefId="5">
+            <MS>
+              <S N="ClassName">CIM_ManagedSystemElement</S>
+              <S N="Namespace">ROOT/StandardCimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1377600653</I32>
+              <S N="MiXml">&lt;CLASS NAME="CIM_ManagedSystemElement" SUPERCLASS="CIM_ManagedElement"&gt;&lt;QUALIFIER NAME="UMLPackagePath" TYPE="string"&gt;&lt;VALUE&gt;CIM::Core::CoreElements&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Abstract" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="locale" TYPE="sint32" TOSUBCLASS="false"&gt;&lt;VALUE&gt;1033&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PROPERTY NAME="CommunicationStatus" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;..&lt;/VALUE&gt;&lt;VALUE&gt;0x8000..&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="DetailedStatus" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.PrimaryStatus&lt;/VALUE&gt;&lt;VALUE&gt;CIM_ManagedSystemElement.HealthState&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;..&lt;/VALUE&gt;&lt;VALUE&gt;0x8000..&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="HealthState" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;15&lt;/VALUE&gt;&lt;VALUE&gt;20&lt;/VALUE&gt;&lt;VALUE&gt;25&lt;/VALUE&gt;&lt;VALUE&gt;30&lt;/VALUE&gt;&lt;VALUE&gt;..&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="InstallDate" TYPE="datetime"&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="Name" TYPE="string"&gt;&lt;QUALIFIER NAME="MaxLen" TYPE="sint32"&gt;&lt;VALUE&gt;1024&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="OperatingStatus" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.EnabledState&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;8&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;11&lt;/VALUE&gt;&lt;VALUE&gt;12&lt;/VALUE&gt;&lt;VALUE&gt;13&lt;/VALUE&gt;&lt;VALUE&gt;14&lt;/VALUE&gt;&lt;VALUE&gt;15&lt;/VALUE&gt;&lt;VALUE&gt;16&lt;/VALUE&gt;&lt;VALUE&gt;..&lt;/VALUE&gt;&lt;VALUE&gt;0x8000..&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY.ARRAY NAME="OperationalStatus" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ArrayType" TYPE="string" OVERRIDABLE="false"&gt;&lt;VALUE&gt;Indexed&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_ManagedSystemElement.StatusDescriptions&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;8&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;11&lt;/VALUE&gt;&lt;VALUE&gt;12&lt;/VALUE&gt;&lt;VALUE&gt;13&lt;/VALUE&gt;&lt;VALUE&gt;14&lt;/VALUE&gt;&lt;VALUE&gt;15&lt;/VALUE&gt;&lt;VALUE&gt;16&lt;/VALUE&gt;&lt;VALUE&gt;17&lt;/VALUE&gt;&lt;VALUE&gt;18&lt;/VALUE&gt;&lt;VALUE&gt;..&lt;/VALUE&gt;&lt;VALUE&gt;0x8000..&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY.ARRAY&gt;&lt;PROPERTY NAME="PrimaryStatus" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_ManagedSystemElement.DetailedStatus&lt;/VALUE&gt;&lt;VALUE&gt;CIM_ManagedSystemElement.HealthState&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;..&lt;/VALUE&gt;&lt;VALUE&gt;0x8000..&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="Status" TYPE="string"&gt;&lt;QUALIFIER NAME="Deprecated" TYPE="string" TOSUBCLASS="false"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_ManagedSystemElement.OperationalStatus&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="MaxLen" TYPE="sint32"&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;OK&lt;/VALUE&gt;&lt;VALUE&gt;Error&lt;/VALUE&gt;&lt;VALUE&gt;Degraded&lt;/VALUE&gt;&lt;VALUE&gt;Unknown&lt;/VALUE&gt;&lt;VALUE&gt;Pred Fail&lt;/VALUE&gt;&lt;VALUE&gt;Starting&lt;/VALUE&gt;&lt;VALUE&gt;Stopping&lt;/VALUE&gt;&lt;VALUE&gt;Service&lt;/VALUE&gt;&lt;VALUE&gt;Stressed&lt;/VALUE&gt;&lt;VALUE&gt;NonRecover&lt;/VALUE&gt;&lt;VALUE&gt;No Contact&lt;/VALUE&gt;&lt;VALUE&gt;Lost Comm&lt;/VALUE&gt;&lt;VALUE&gt;Stopped&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY.ARRAY NAME="StatusDescriptions" TYPE="string"&gt;&lt;QUALIFIER NAME="ArrayType" TYPE="string" OVERRIDABLE="false"&gt;&lt;VALUE&gt;Indexed&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_ManagedSystemElement.OperationalStatus&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY.ARRAY&gt;&lt;/CLASS&gt;</S>
+            </MS>
+          </Obj>
+          <Obj RefId="6">
+            <MS>
+              <S N="ClassName">CIM_LogicalElement</S>
+              <S N="Namespace">ROOT/StandardCimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1377604813</I32>
+              <S N="MiXml">&lt;CLASS NAME="CIM_LogicalElement" SUPERCLASS="CIM_ManagedSystemElement"&gt;&lt;QUALIFIER NAME="UMLPackagePath" TYPE="string"&gt;&lt;VALUE&gt;CIM::Core::CoreElements&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Abstract" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="locale" TYPE="sint32" TOSUBCLASS="false"&gt;&lt;VALUE&gt;1033&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/CLASS&gt;</S>
+            </MS>
+          </Obj>
+          <Obj RefId="7">
+            <MS>
+              <S N="ClassName">CIM_EnabledLogicalElement</S>
+              <S N="Namespace">ROOT/StandardCimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1377628989</I32>
+              <S N="MiXml">&lt;CLASS NAME="CIM_EnabledLogicalElement" SUPERCLASS="CIM_LogicalElement"&gt;&lt;QUALIFIER NAME="UMLPackagePath" TYPE="string"&gt;&lt;VALUE&gt;CIM::Core::CoreElements&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Abstract" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="locale" TYPE="sint32" TOSUBCLASS="false"&gt;&lt;VALUE&gt;1033&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PROPERTY.ARRAY NAME="AvailableRequestedStates" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.RequestStateChange&lt;/VALUE&gt;&lt;VALUE&gt;CIM_EnabledLogicalElementCapabilities.RequestedStatesSupported&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;8&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;11&lt;/VALUE&gt;&lt;VALUE&gt;..&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY.ARRAY&gt;&lt;PROPERTY NAME="EnabledDefault" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;..&lt;/VALUE&gt;&lt;VALUE&gt;32768..65535&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="write" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="EnabledState" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.OtherEnabledState&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;8&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;11..32767&lt;/VALUE&gt;&lt;VALUE&gt;32768..65535&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="OtherEnabledState" TYPE="string"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.EnabledState&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="RequestedState" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.EnabledState&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;8&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;11&lt;/VALUE&gt;&lt;VALUE&gt;12&lt;/VALUE&gt;&lt;VALUE&gt;..&lt;/VALUE&gt;&lt;VALUE&gt;32768..65535&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;VALUE&gt;12&lt;/VALUE&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="TimeOfLastStateChange" TYPE="datetime"&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="TransitioningToState" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.RequestStateChange&lt;/VALUE&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.RequestedState&lt;/VALUE&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.EnabledState&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;8&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;11&lt;/VALUE&gt;&lt;VALUE&gt;12&lt;/VALUE&gt;&lt;VALUE&gt;..&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;VALUE&gt;12&lt;/VALUE&gt;&lt;/PROPERTY&gt;&lt;METHOD NAME="RequestStateChange" TYPE="uint32"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.RequestedState&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;..&lt;/VALUE&gt;&lt;VALUE&gt;4096&lt;/VALUE&gt;&lt;VALUE&gt;4097&lt;/VALUE&gt;&lt;VALUE&gt;4098&lt;/VALUE&gt;&lt;VALUE&gt;4099&lt;/VALUE&gt;&lt;VALUE&gt;4100..32767&lt;/VALUE&gt;&lt;VALUE&gt;32768..65535&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;PARAMETER NAME="RequestedState" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="In" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.RequestedState&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;8&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;11&lt;/VALUE&gt;&lt;VALUE&gt;..&lt;/VALUE&gt;&lt;VALUE&gt;32768..65535&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;PARAMETER NAME="TimeoutPeriod" TYPE="datetime"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="In" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;PARAMETER.REFERENCE NAME="Job" REFERENCECLASS="CIM_ConcreteJob"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Out" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER.REFERENCE&gt;&lt;/METHOD&gt;&lt;/CLASS&gt;</S>
+            </MS>
+          </Obj>
+          <Obj RefId="8">
+            <MS>
+              <S N="ClassName">CIM_LogicalDevice</S>
+              <S N="Namespace">ROOT/StandardCimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1320694093</I32>
+              <S N="MiXml">&lt;CLASS NAME="CIM_LogicalDevice" SUPERCLASS="CIM_EnabledLogicalElement"&gt;&lt;QUALIFIER NAME="UMLPackagePath" TYPE="string"&gt;&lt;VALUE&gt;CIM::Core::Device&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Abstract" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="locale" TYPE="sint32" TOSUBCLASS="false"&gt;&lt;VALUE&gt;1033&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PROPERTY.ARRAY NAME="AdditionalAvailability" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_LogicalDevice.Availability&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;8&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;11&lt;/VALUE&gt;&lt;VALUE&gt;12&lt;/VALUE&gt;&lt;VALUE&gt;13&lt;/VALUE&gt;&lt;VALUE&gt;14&lt;/VALUE&gt;&lt;VALUE&gt;15&lt;/VALUE&gt;&lt;VALUE&gt;16&lt;/VALUE&gt;&lt;VALUE&gt;17&lt;/VALUE&gt;&lt;VALUE&gt;18&lt;/VALUE&gt;&lt;VALUE&gt;19&lt;/VALUE&gt;&lt;VALUE&gt;20&lt;/VALUE&gt;&lt;VALUE&gt;21&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY.ARRAY&gt;&lt;PROPERTY NAME="Availability" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_LogicalDevice.AdditionalAvailability&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;8&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;11&lt;/VALUE&gt;&lt;VALUE&gt;12&lt;/VALUE&gt;&lt;VALUE&gt;13&lt;/VALUE&gt;&lt;VALUE&gt;14&lt;/VALUE&gt;&lt;VALUE&gt;15&lt;/VALUE&gt;&lt;VALUE&gt;16&lt;/VALUE&gt;&lt;VALUE&gt;17&lt;/VALUE&gt;&lt;VALUE&gt;18&lt;/VALUE&gt;&lt;VALUE&gt;19&lt;/VALUE&gt;&lt;VALUE&gt;20&lt;/VALUE&gt;&lt;VALUE&gt;21&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="CreationClassName" TYPE="string"&gt;&lt;QUALIFIER NAME="key" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="MaxLen" TYPE="sint32"&gt;&lt;VALUE&gt;256&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="DeviceID" TYPE="string"&gt;&lt;QUALIFIER NAME="key" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="MaxLen" TYPE="sint32"&gt;&lt;VALUE&gt;64&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="ErrorCleared" TYPE="boolean"&gt;&lt;QUALIFIER NAME="Deprecated" TYPE="string" TOSUBCLASS="false"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_ManagedSystemElement.OperationalStatus&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="ErrorDescription" TYPE="string"&gt;&lt;QUALIFIER NAME="Deprecated" TYPE="string" TOSUBCLASS="false"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_DeviceErrorData.ErrorDescription&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY.ARRAY NAME="IdentifyingDescriptions" TYPE="string"&gt;&lt;QUALIFIER NAME="ArrayType" TYPE="string" OVERRIDABLE="false"&gt;&lt;VALUE&gt;Indexed&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_LogicalDevice.OtherIdentifyingInfo&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY.ARRAY&gt;&lt;PROPERTY NAME="LastErrorCode" TYPE="uint32"&gt;&lt;QUALIFIER NAME="Deprecated" TYPE="string" TOSUBCLASS="false"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_DeviceErrorData.LastErrorCode&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="MaxQuiesceTime" TYPE="uint64"&gt;&lt;QUALIFIER NAME="Deprecated" TYPE="string" TOSUBCLASS="false"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;No value&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY.ARRAY NAME="OtherIdentifyingInfo" TYPE="string" ARRAYSIZE="256"&gt;&lt;QUALIFIER NAME="ArrayType" TYPE="string" OVERRIDABLE="false"&gt;&lt;VALUE&gt;Indexed&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="MaxLen" TYPE="sint32"&gt;&lt;VALUE&gt;256&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_LogicalDevice.IdentifyingDescriptions&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY.ARRAY&gt;&lt;PROPERTY.ARRAY NAME="PowerManagementCapabilities" TYPE="uint16"&gt;&lt;QUALIFIER NAME="Deprecated" TYPE="string" TOSUBCLASS="false"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_PowerManagementCapabilities.PowerCapabilities&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY.ARRAY&gt;&lt;PROPERTY NAME="PowerManagementSupported" TYPE="boolean"&gt;&lt;QUALIFIER NAME="Deprecated" TYPE="string" TOSUBCLASS="false"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_PowerManagementCapabilities&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="PowerOnHours" TYPE="uint64"&gt;&lt;QUALIFIER NAME="Counter" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="StatusInfo" TYPE="uint16"&gt;&lt;QUALIFIER NAME="Deprecated" TYPE="string" TOSUBCLASS="false"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.EnabledState&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="SystemCreationClassName" TYPE="string"&gt;&lt;QUALIFIER NAME="key" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="MaxLen" TYPE="sint32"&gt;&lt;VALUE&gt;256&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Propagated" TYPE="string" OVERRIDABLE="false"&gt;&lt;VALUE&gt;CIM_System.CreationClassName&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="SystemName" TYPE="string"&gt;&lt;QUALIFIER NAME="key" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="MaxLen" TYPE="sint32"&gt;&lt;VALUE&gt;256&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Propagated" TYPE="string" OVERRIDABLE="false"&gt;&lt;VALUE&gt;CIM_System.Name&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="TotalPowerOnHours" TYPE="uint64"&gt;&lt;QUALIFIER NAME="Counter" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;METHOD NAME="SetPowerState" TYPE="uint32"&gt;&lt;QUALIFIER NAME="Deprecated" TYPE="string" TOSUBCLASS="false"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_PowerManagementService.SetPowerState&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;PARAMETER NAME="PowerState" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="In" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;PARAMETER NAME="Time" TYPE="datetime"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="In" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;/METHOD&gt;&lt;METHOD NAME="Reset" TYPE="uint32"&gt;&lt;/METHOD&gt;&lt;METHOD NAME="EnableDevice" TYPE="uint32"&gt;&lt;QUALIFIER NAME="Deprecated" TYPE="string" TOSUBCLASS="false"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.RequestStateChange&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;PARAMETER NAME="Enabled" TYPE="boolean"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="In" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;/METHOD&gt;&lt;METHOD NAME="OnlineDevice" TYPE="uint32"&gt;&lt;QUALIFIER NAME="Deprecated" TYPE="string" TOSUBCLASS="false"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.RequestStateChange&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;PARAMETER NAME="Online" TYPE="boolean"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="In" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;/METHOD&gt;&lt;METHOD NAME="QuiesceDevice" TYPE="uint32"&gt;&lt;QUALIFIER NAME="Deprecated" TYPE="string" TOSUBCLASS="false"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_EnabledLogicalElement.RequestStateChange&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;PARAMETER NAME="Quiesce" TYPE="boolean"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="In" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;/METHOD&gt;&lt;METHOD NAME="SaveProperties" TYPE="uint32"&gt;&lt;/METHOD&gt;&lt;METHOD NAME="RestoreProperties" TYPE="uint32"&gt;&lt;/METHOD&gt;&lt;/CLASS&gt;</S>
+            </MS>
+          </Obj>
+          <Obj RefId="9">
+            <MS>
+              <S N="ClassName">CIM_LogicalPort</S>
+              <S N="Namespace">ROOT/StandardCimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1350059837</I32>
+              <S N="MiXml">&lt;CLASS NAME="CIM_LogicalPort" SUPERCLASS="CIM_LogicalDevice"&gt;&lt;QUALIFIER NAME="UMLPackagePath" TYPE="string"&gt;&lt;VALUE&gt;CIM::Device::Ports&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="locale" TYPE="sint32" TOSUBCLASS="false"&gt;&lt;VALUE&gt;1033&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PROPERTY NAME="MaxSpeed" TYPE="uint64"&gt;&lt;QUALIFIER NAME="PUnit" TYPE="string"&gt;&lt;VALUE&gt;bit / second&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="OtherPortType" TYPE="string"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_LogicalPort.PortType&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="PortType" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_NetworkPort.OtherNetworkPortType&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3..15999&lt;/VALUE&gt;&lt;VALUE&gt;16000..65535&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="RequestedSpeed" TYPE="uint64"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_LogicalPort.Speed&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="PUnit" TYPE="string"&gt;&lt;VALUE&gt;bit / second&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="write" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="Speed" TYPE="uint64"&gt;&lt;QUALIFIER NAME="PUnit" TYPE="string"&gt;&lt;VALUE&gt;bit / second&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="UsageRestriction" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;/CLASS&gt;</S>
+            </MS>
+          </Obj>
+          <Obj RefId="10">
+            <MS>
+              <S N="ClassName">CIM_NetworkPort</S>
+              <S N="Namespace">ROOT/StandardCimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1350049693</I32>
+              <S N="MiXml">&lt;CLASS NAME="CIM_NetworkPort" SUPERCLASS="CIM_LogicalPort"&gt;&lt;QUALIFIER NAME="UMLPackagePath" TYPE="string"&gt;&lt;VALUE&gt;CIM::Device::Ports&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="locale" TYPE="sint32" TOSUBCLASS="false"&gt;&lt;VALUE&gt;1033&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PROPERTY NAME="Speed" TYPE="uint64"&gt;&lt;QUALIFIER NAME="PUnit" TYPE="string"&gt;&lt;VALUE&gt;bit / second&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Override" TYPE="string" TOSUBCLASS="false"&gt;&lt;VALUE&gt;Speed&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="ActiveMaximumTransmissionUnit" TYPE="uint64"&gt;&lt;QUALIFIER NAME="PUnit" TYPE="string"&gt;&lt;VALUE&gt;byte&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="AutoSense" TYPE="boolean"&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="FullDuplex" TYPE="boolean"&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="LinkTechnology" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_NetworkPort.OtherLinkTechnology&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;8&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;11&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY.ARRAY NAME="NetworkAddresses" TYPE="string" ARRAYSIZE="64"&gt;&lt;QUALIFIER NAME="MaxLen" TYPE="sint32"&gt;&lt;VALUE&gt;64&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY.ARRAY&gt;&lt;PROPERTY NAME="OtherLinkTechnology" TYPE="string"&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_NetworkPort.LinkTechnology&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="OtherNetworkPortType" TYPE="string"&gt;&lt;QUALIFIER NAME="Deprecated" TYPE="string" TOSUBCLASS="false"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_NetworkPort.OtherPortType&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ModelCorrespondence" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;CIM_LogicalPort.PortType&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="PermanentAddress" TYPE="string"&gt;&lt;QUALIFIER NAME="MaxLen" TYPE="sint32"&gt;&lt;VALUE&gt;64&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="PortNumber" TYPE="uint16"&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="SupportedMaximumTransmissionUnit" TYPE="uint64"&gt;&lt;QUALIFIER NAME="PUnit" TYPE="string"&gt;&lt;VALUE&gt;byte&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;/CLASS&gt;</S>
+            </MS>
+          </Obj>
+          <Obj RefId="11">
+            <MS>
+              <S N="ClassName">MSFT_NetAdapter</S>
+              <S N="Namespace">root/StandardCimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1326860669</I32>
+              <S N="MiXml">&lt;CLASS NAME="MSFT_NetAdapter" SUPERCLASS="CIM_NetworkPort"&gt;&lt;QUALIFIER NAME="UMLPackagePath" TYPE="string"&gt;&lt;VALUE&gt;CIM::Device::Ports&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="dynamic" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="locale" TYPE="sint32" TOSUBCLASS="false"&gt;&lt;VALUE&gt;1033&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="provider" TYPE="string"&gt;&lt;VALUE&gt;NetAdapterCim&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PROPERTY NAME="AdminLocked" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="ComponentID" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="ConnectorPresent" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="DeviceName" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="DeviceWakeUpEnable" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="DriverDate" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="DriverDateData" TYPE="uint64"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="DriverDescription" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="DriverMajorNdisVersion" TYPE="uint8"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="DriverMinorNdisVersion" TYPE="uint8"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="DriverName" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="DriverProvider" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="DriverVersionString" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="EndPointInterface" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="HardwareInterface" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="Hidden" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY.ARRAY NAME="HigherLayerInterfaceIndices" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY.ARRAY&gt;&lt;PROPERTY NAME="IMFilter" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="InterfaceAdminStatus" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="InterfaceDescription" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="InterfaceGuid" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="InterfaceIndex" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="InterfaceName" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="InterfaceOperationalStatus" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="InterfaceType" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="iSCSIInterface" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY.ARRAY NAME="LowerLayerInterfaceIndices" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY.ARRAY&gt;&lt;PROPERTY NAME="MajorDriverVersion" TYPE="uint16"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="MediaConnectState" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="MediaDuplexState" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="MinorDriverVersion" TYPE="uint16"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="MtuSize" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="NdisMedium" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;8&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;11&lt;/VALUE&gt;&lt;VALUE&gt;12&lt;/VALUE&gt;&lt;VALUE&gt;13&lt;/VALUE&gt;&lt;VALUE&gt;14&lt;/VALUE&gt;&lt;VALUE&gt;15&lt;/VALUE&gt;&lt;VALUE&gt;16&lt;/VALUE&gt;&lt;VALUE&gt;17&lt;/VALUE&gt;&lt;VALUE&gt;18&lt;/VALUE&gt;&lt;VALUE&gt;19&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="NdisPhysicalMedium" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;8&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;11&lt;/VALUE&gt;&lt;VALUE&gt;12&lt;/VALUE&gt;&lt;VALUE&gt;13&lt;/VALUE&gt;&lt;VALUE&gt;14&lt;/VALUE&gt;&lt;VALUE&gt;15&lt;/VALUE&gt;&lt;VALUE&gt;16&lt;/VALUE&gt;&lt;VALUE&gt;17&lt;/VALUE&gt;&lt;VALUE&gt;18&lt;/VALUE&gt;&lt;VALUE&gt;19&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="NetLuid" TYPE="uint64"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="NetLuidIndex" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="NotUserRemovable" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="OperationalStatusDownDefaultPortNotAuthenticated" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="OperationalStatusDownInterfacePaused" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="OperationalStatusDownLowPowerState" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="OperationalStatusDownMediaDisconnected" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="PnPDeviceID" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="PromiscuousMode" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="ReceiveLinkSpeed" TYPE="uint64"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="State" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="TransmitLinkSpeed" TYPE="uint64"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="Virtual" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="VlanID" TYPE="uint16"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="write" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="WdmInterface" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;METHOD NAME="Enable" TYPE="uint32"&gt;&lt;QUALIFIER NAME="implemented" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PARAMETER NAME="CmdletOutput" TYPE="string"&gt;&lt;QUALIFIER NAME="EmbeddedInstance" TYPE="string"&gt;&lt;VALUE&gt;MSFT_NetAdapter&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Out" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;/METHOD&gt;&lt;METHOD NAME="Disable" TYPE="uint32"&gt;&lt;QUALIFIER NAME="implemented" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PARAMETER NAME="CmdletOutput" TYPE="string"&gt;&lt;QUALIFIER NAME="EmbeddedInstance" TYPE="string"&gt;&lt;VALUE&gt;MSFT_NetAdapter&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Out" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;/METHOD&gt;&lt;METHOD NAME="Restart" TYPE="uint32"&gt;&lt;QUALIFIER NAME="implemented" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PARAMETER NAME="CmdletOutput" TYPE="string"&gt;&lt;QUALIFIER NAME="EmbeddedInstance" TYPE="string"&gt;&lt;VALUE&gt;MSFT_NetAdapter&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Out" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;/METHOD&gt;&lt;METHOD NAME="Lock" TYPE="uint32"&gt;&lt;QUALIFIER NAME="implemented" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PARAMETER NAME="CmdletOutput" TYPE="string"&gt;&lt;QUALIFIER NAME="EmbeddedInstance" TYPE="string"&gt;&lt;VALUE&gt;MSFT_NetAdapter&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Out" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;/METHOD&gt;&lt;METHOD NAME="Unlock" TYPE="uint32"&gt;&lt;QUALIFIER NAME="implemented" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PARAMETER NAME="CmdletOutput" TYPE="string"&gt;&lt;QUALIFIER NAME="EmbeddedInstance" TYPE="string"&gt;&lt;VALUE&gt;MSFT_NetAdapter&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Out" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;/METHOD&gt;&lt;METHOD NAME="Rename" TYPE="uint32"&gt;&lt;QUALIFIER NAME="implemented" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PARAMETER NAME="NewName" TYPE="string"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="In" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;PARAMETER NAME="CmdletOutput" TYPE="string"&gt;&lt;QUALIFIER NAME="EmbeddedInstance" TYPE="string"&gt;&lt;VALUE&gt;MSFT_NetAdapter&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Out" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;/METHOD&gt;&lt;/CLASS&gt;</S>
+            </MS>
+          </Obj>
+        </LST>
+      </Obj>
+    </MS>
+  </Obj>
+  <Obj RefId="12">
+    <TNRef RefId="0" />
+    <ToString>MSFT_NetAdapter (CreationClassName = "MSFT_NetAdapter", DeviceID = "{E50C149F-EACF-48C4-A901-E4A5C1D25DCE}", SystemCreationClassName = "CIM_NetworkPort", SystemName = "FLATFISH")</ToString>
+    <Props>
+      <Nil N="Caption" />
+      <Nil N="Description" />
+      <Nil N="ElementName" />
+      <S N="InstanceID">{E50C149F-EACF-48C4-A901-E4A5C1D25DCE}</S>
+      <Nil N="CommunicationStatus" />
+      <Nil N="DetailedStatus" />
+      <Nil N="HealthState" />
+      <Nil N="InstallDate" />
+      <S N="Name">Ethernet 3</S>
+      <Nil N="OperatingStatus" />
+      <Nil N="OperationalStatus" />
+      <Nil N="PrimaryStatus" />
+      <Nil N="Status" />
+      <Nil N="StatusDescriptions" />
+      <Nil N="AvailableRequestedStates" />
+      <U16 N="EnabledDefault">2</U16>
+      <U16 N="EnabledState">5</U16>
+      <Nil N="OtherEnabledState" />
+      <U16 N="RequestedState">12</U16>
+      <Nil N="TimeOfLastStateChange" />
+      <U16 N="TransitioningToState">12</U16>
+      <Nil N="AdditionalAvailability" />
+      <Nil N="Availability" />
+      <S N="CreationClassName">MSFT_NetAdapter</S>
+      <S N="DeviceID">{E50C149F-EACF-48C4-A901-E4A5C1D25DCE}</S>
+      <Nil N="ErrorCleared" />
+      <Nil N="ErrorDescription" />
+      <Nil N="IdentifyingDescriptions" />
+      <Nil N="LastErrorCode" />
+      <Nil N="MaxQuiesceTime" />
+      <Nil N="OtherIdentifyingInfo" />
+      <Nil N="PowerManagementCapabilities" />
+      <Nil N="PowerManagementSupported" />
+      <Nil N="PowerOnHours" />
+      <Nil N="StatusInfo" />
+      <S N="SystemCreationClassName">CIM_NetworkPort</S>
+      <S N="SystemName">FLATFISH</S>
+      <Nil N="TotalPowerOnHours" />
+      <Nil N="MaxSpeed" />
+      <Nil N="OtherPortType" />
+      <Nil N="PortType" />
+      <Nil N="RequestedSpeed" />
+      <Nil N="Speed" />
+      <Nil N="UsageRestriction" />
+      <U64 N="ActiveMaximumTransmissionUnit">1500</U64>
+      <Nil N="AutoSense" />
+      <Nil N="FullDuplex" />
+      <Nil N="LinkTechnology" />
+      <Obj N="NetworkAddresses" RefId="13">
+        <TNRef RefId="1" />
+        <LST>
+          <S>5882A899DC1F</S>
+        </LST>
+      </Obj>
+      <Nil N="OtherLinkTechnology" />
+      <Nil N="OtherNetworkPortType" />
+      <S N="PermanentAddress">5882A899DC1F</S>
+      <U16 N="PortNumber">0</U16>
+      <Nil N="SupportedMaximumTransmissionUnit" />
+      <B N="AdminLocked">false</B>
+      <S N="ComponentID">USB\VID_045E&amp;PID_07C6&amp;REV_3000</S>
+      <B N="ConnectorPresent">true</B>
+      <S N="DeviceName">\Device\{E50C149F-EACF-48C4-A901-E4A5C1D25DCE}</S>
+      <B N="DeviceWakeUpEnable">true</B>
+      <S N="DriverDate">2019-06-04</S>
+      <U64 N="DriverDateData">132040800000000000</U64>
+      <S N="DriverDescription">Surface Ethernet Adapter</S>
+      <By N="DriverMajorNdisVersion">6</By>
+      <By N="DriverMinorNdisVersion">40</By>
+      <S N="DriverName">\SystemRoot\System32\DriverStore\FileRepository\msux64w10.inf_amd64_1f233e36981f33bd\msux64w10.sys</S>
+      <S N="DriverProvider">Surface</S>
+      <S N="DriverVersionString">10.12.604.2019</S>
+      <B N="EndPointInterface">false</B>
+      <B N="HardwareInterface">true</B>
+      <B N="Hidden">false</B>
+      <Obj N="HigherLayerInterfaceIndices" RefId="14">
+        <TNRef RefId="2" />
+        <LST>
+          <U32>28</U32>
+        </LST>
+      </Obj>
+      <B N="IMFilter">false</B>
+      <U32 N="InterfaceAdminStatus">1</U32>
+      <S N="InterfaceDescription">Surface Ethernet Adapter</S>
+      <S N="InterfaceGuid">{E50C149F-EACF-48C4-A901-E4A5C1D25DCE}</S>
+      <U32 N="InterfaceIndex">21</U32>
+      <S N="InterfaceName">ethernet_32772</S>
+      <U32 N="InterfaceOperationalStatus">2</U32>
+      <U32 N="InterfaceType">6</U32>
+      <B N="iSCSIInterface">false</B>
+      <Nil N="LowerLayerInterfaceIndices" />
+      <U16 N="MajorDriverVersion">10</U16>
+      <U32 N="MediaConnectState">2</U32>
+      <U32 N="MediaDuplexState">0</U32>
+      <U16 N="MinorDriverVersion">34</U16>
+      <U32 N="MtuSize">1500</U32>
+      <U32 N="NdisMedium">0</U32>
+      <U32 N="NdisPhysicalMedium">14</U32>
+      <U64 N="NetLuid">1689399683186688</U64>
+      <U32 N="NetLuidIndex">32772</U32>
+      <B N="NotUserRemovable">false</B>
+      <B N="OperationalStatusDownDefaultPortNotAuthenticated">false</B>
+      <B N="OperationalStatusDownInterfacePaused">false</B>
+      <B N="OperationalStatusDownLowPowerState">false</B>
+      <B N="OperationalStatusDownMediaDisconnected">true</B>
+      <S N="PnPDeviceID">USB\VID_045E&amp;PID_07C6\000001000000</S>
+      <B N="PromiscuousMode">true</B>
+      <Nil N="ReceiveLinkSpeed" />
+      <U32 N="State">2</U32>
+      <Nil N="TransmitLinkSpeed" />
+      <B N="Virtual">false</B>
+      <Nil N="VlanID" />
+      <B N="WdmInterface">true</B>
+      <Nil N="PSComputerName" />
+    </Props>
+    <MS>
+      <Obj N="__ClassMetadata" RefId="15">
+        <TNRef RefId="3" />
+        <LST>
+          <Obj RefId="16">
+            <MS>
+              <S N="ClassName">MSFT_NetAdapter</S>
+              <S N="Namespace">root/StandardCimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1326860669</I32>
+            </MS>
+          </Obj>
+        </LST>
+      </Obj>
+    </MS>
+  </Obj>
+  <Obj RefId="17">
+    <TNRef RefId="0" />
+    <ToString>MSFT_NetAdapter (CreationClassName = "MSFT_NetAdapter", DeviceID = "{CDC88A91-293E-4B2C-AEC2-D60F89D1DB8C}", SystemCreationClassName = "CIM_NetworkPort", SystemName = "FLATFISH")</ToString>
+    <Props>
+      <Nil N="Caption" />
+      <Nil N="Description" />
+      <Nil N="ElementName" />
+      <S N="InstanceID">{CDC88A91-293E-4B2C-AEC2-D60F89D1DB8C}</S>
+      <Nil N="CommunicationStatus" />
+      <Nil N="DetailedStatus" />
+      <Nil N="HealthState" />
+      <Nil N="InstallDate" />
+      <S N="Name">Bluetooth Network Connection</S>
+      <Nil N="OperatingStatus" />
+      <Nil N="OperationalStatus" />
+      <Nil N="PrimaryStatus" />
+      <Nil N="Status" />
+      <Nil N="StatusDescriptions" />
+      <Nil N="AvailableRequestedStates" />
+      <U16 N="EnabledDefault">2</U16>
+      <U16 N="EnabledState">5</U16>
+      <Nil N="OtherEnabledState" />
+      <U16 N="RequestedState">12</U16>
+      <Nil N="TimeOfLastStateChange" />
+      <U16 N="TransitioningToState">12</U16>
+      <Nil N="AdditionalAvailability" />
+      <Nil N="Availability" />
+      <S N="CreationClassName">MSFT_NetAdapter</S>
+      <S N="DeviceID">{CDC88A91-293E-4B2C-AEC2-D60F89D1DB8C}</S>
+      <Nil N="ErrorCleared" />
+      <Nil N="ErrorDescription" />
+      <Nil N="IdentifyingDescriptions" />
+      <Nil N="LastErrorCode" />
+      <Nil N="MaxQuiesceTime" />
+      <Nil N="OtherIdentifyingInfo" />
+      <Nil N="PowerManagementCapabilities" />
+      <Nil N="PowerManagementSupported" />
+      <Nil N="PowerOnHours" />
+      <Nil N="StatusInfo" />
+      <S N="SystemCreationClassName">CIM_NetworkPort</S>
+      <S N="SystemName">FLATFISH</S>
+      <Nil N="TotalPowerOnHours" />
+      <Nil N="MaxSpeed" />
+      <Nil N="OtherPortType" />
+      <Nil N="PortType" />
+      <Nil N="RequestedSpeed" />
+      <U64 N="Speed">3000000</U64>
+      <Nil N="UsageRestriction" />
+      <U64 N="ActiveMaximumTransmissionUnit">1500</U64>
+      <Nil N="AutoSense" />
+      <B N="FullDuplex">true</B>
+      <Nil N="LinkTechnology" />
+      <Obj N="NetworkAddresses" RefId="18">
+        <TNRef RefId="1" />
+        <LST>
+          <S>B4AE2BD10C3B</S>
+        </LST>
+      </Obj>
+      <Nil N="OtherLinkTechnology" />
+      <Nil N="OtherNetworkPortType" />
+      <S N="PermanentAddress">B4AE2BD10C3B</S>
+      <U16 N="PortNumber">0</U16>
+      <Nil N="SupportedMaximumTransmissionUnit" />
+      <B N="AdminLocked">false</B>
+      <S N="ComponentID">BTH\MS_BTHPAN</S>
+      <B N="ConnectorPresent">false</B>
+      <S N="DeviceName">\Device\{CDC88A91-293E-4B2C-AEC2-D60F89D1DB8C}</S>
+      <B N="DeviceWakeUpEnable">false</B>
+      <S N="DriverDate">2006-06-21</S>
+      <U64 N="DriverDateData">127953216000000000</U64>
+      <S N="DriverDescription">Bluetooth Device (Personal Area Network)</S>
+      <By N="DriverMajorNdisVersion">6</By>
+      <By N="DriverMinorNdisVersion">30</By>
+      <S N="DriverName">\SystemRoot\System32\drivers\bthpan.sys</S>
+      <S N="DriverProvider">Microsoft</S>
+      <S N="DriverVersionString">10.0.19041.1</S>
+      <B N="EndPointInterface">false</B>
+      <B N="HardwareInterface">false</B>
+      <B N="Hidden">false</B>
+      <Nil N="HigherLayerInterfaceIndices" />
+      <B N="IMFilter">false</B>
+      <U32 N="InterfaceAdminStatus">1</U32>
+      <S N="InterfaceDescription">Bluetooth Device (Personal Area Network)</S>
+      <S N="InterfaceGuid">{CDC88A91-293E-4B2C-AEC2-D60F89D1DB8C}</S>
+      <U32 N="InterfaceIndex">19</U32>
+      <S N="InterfaceName">ethernet_32770</S>
+      <U32 N="InterfaceOperationalStatus">2</U32>
+      <U32 N="InterfaceType">6</U32>
+      <B N="iSCSIInterface">false</B>
+      <Nil N="LowerLayerInterfaceIndices" />
+      <U16 N="MajorDriverVersion">0</U16>
+      <U32 N="MediaConnectState">2</U32>
+      <U32 N="MediaDuplexState">2</U32>
+      <U16 N="MinorDriverVersion">0</U16>
+      <U32 N="MtuSize">1500</U32>
+      <U32 N="NdisMedium">0</U32>
+      <U32 N="NdisPhysicalMedium">10</U32>
+      <U64 N="NetLuid">1689399649632256</U64>
+      <U32 N="NetLuidIndex">32770</U32>
+      <B N="NotUserRemovable">false</B>
+      <B N="OperationalStatusDownDefaultPortNotAuthenticated">false</B>
+      <B N="OperationalStatusDownInterfacePaused">false</B>
+      <B N="OperationalStatusDownLowPowerState">false</B>
+      <B N="OperationalStatusDownMediaDisconnected">true</B>
+      <S N="PnPDeviceID">BTH\MS_BTHPAN\6&amp;e3528ed&amp;0&amp;2</S>
+      <B N="PromiscuousMode">false</B>
+      <U64 N="ReceiveLinkSpeed">3000000</U64>
+      <U32 N="State">2</U32>
+      <U64 N="TransmitLinkSpeed">3000000</U64>
+      <B N="Virtual">true</B>
+      <Nil N="VlanID" />
+      <B N="WdmInterface">true</B>
+      <Nil N="PSComputerName" />
+    </Props>
+    <MS>
+      <Obj N="__ClassMetadata" RefId="19">
+        <TNRef RefId="3" />
+        <LST>
+          <Obj RefId="20">
+            <MS>
+              <S N="ClassName">MSFT_NetAdapter</S>
+              <S N="Namespace">root/StandardCimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1326860669</I32>
+            </MS>
+          </Obj>
+        </LST>
+      </Obj>
+    </MS>
+  </Obj>
+  <Obj RefId="21">
+    <TNRef RefId="0" />
+    <ToString>MSFT_NetAdapter (CreationClassName = "MSFT_NetAdapter", DeviceID = "{C39E98D7-DB6C-4509-9E68-36369B652EC3}", SystemCreationClassName = "CIM_NetworkPort", SystemName = "FLATFISH")</ToString>
+    <Props>
+      <Nil N="Caption" />
+      <Nil N="Description" />
+      <Nil N="ElementName" />
+      <S N="InstanceID">{C39E98D7-DB6C-4509-9E68-36369B652EC3}</S>
+      <Nil N="CommunicationStatus" />
+      <Nil N="DetailedStatus" />
+      <Nil N="HealthState" />
+      <Nil N="InstallDate" />
+      <S N="Name">vEthernet (nat)</S>
+      <Nil N="OperatingStatus" />
+      <Nil N="OperationalStatus" />
+      <Nil N="PrimaryStatus" />
+      <Nil N="Status" />
+      <Nil N="StatusDescriptions" />
+      <Nil N="AvailableRequestedStates" />
+      <U16 N="EnabledDefault">2</U16>
+      <U16 N="EnabledState">5</U16>
+      <Nil N="OtherEnabledState" />
+      <U16 N="RequestedState">12</U16>
+      <Nil N="TimeOfLastStateChange" />
+      <U16 N="TransitioningToState">12</U16>
+      <Nil N="AdditionalAvailability" />
+      <Nil N="Availability" />
+      <S N="CreationClassName">MSFT_NetAdapter</S>
+      <S N="DeviceID">{C39E98D7-DB6C-4509-9E68-36369B652EC3}</S>
+      <Nil N="ErrorCleared" />
+      <Nil N="ErrorDescription" />
+      <Nil N="IdentifyingDescriptions" />
+      <Nil N="LastErrorCode" />
+      <Nil N="MaxQuiesceTime" />
+      <Nil N="OtherIdentifyingInfo" />
+      <Nil N="PowerManagementCapabilities" />
+      <Nil N="PowerManagementSupported" />
+      <Nil N="PowerOnHours" />
+      <Nil N="StatusInfo" />
+      <S N="SystemCreationClassName">CIM_NetworkPort</S>
+      <S N="SystemName">FLATFISH</S>
+      <Nil N="TotalPowerOnHours" />
+      <Nil N="MaxSpeed" />
+      <Nil N="OtherPortType" />
+      <Nil N="PortType" />
+      <Nil N="RequestedSpeed" />
+      <U64 N="Speed">10000000000</U64>
+      <Nil N="UsageRestriction" />
+      <U64 N="ActiveMaximumTransmissionUnit">1500</U64>
+      <Nil N="AutoSense" />
+      <Nil N="FullDuplex" />
+      <Nil N="LinkTechnology" />
+      <Obj N="NetworkAddresses" RefId="22">
+        <TNRef RefId="1" />
+        <LST>
+          <S>00155D1ECE3F</S>
+        </LST>
+      </Obj>
+      <Nil N="OtherLinkTechnology" />
+      <Nil N="OtherNetworkPortType" />
+      <S N="PermanentAddress">00155D1ECE3F</S>
+      <U16 N="PortNumber">0</U16>
+      <Nil N="SupportedMaximumTransmissionUnit" />
+      <B N="AdminLocked">false</B>
+      <S N="ComponentID">vms_mp</S>
+      <B N="ConnectorPresent">false</B>
+      <S N="DeviceName">\Device\{C39E98D7-DB6C-4509-9E68-36369B652EC3}</S>
+      <B N="DeviceWakeUpEnable">false</B>
+      <S N="DriverDate">2006-06-21</S>
+      <U64 N="DriverDateData">127953216000000000</U64>
+      <S N="DriverDescription">Hyper-V Virtual Ethernet Adapter</S>
+      <Nil N="DriverMajorNdisVersion" />
+      <Nil N="DriverMinorNdisVersion" />
+      <S N="DriverName">\SystemRoot\System32\drivers\VmsProxyHNic.sys</S>
+      <S N="DriverProvider">Microsoft</S>
+      <S N="DriverVersionString">10.0.19041.1</S>
+      <B N="EndPointInterface">false</B>
+      <B N="HardwareInterface">false</B>
+      <B N="Hidden">false</B>
+      <Obj N="HigherLayerInterfaceIndices" RefId="23">
+        <TNRef RefId="2" />
+        <LST>
+          <U32>38</U32>
+        </LST>
+      </Obj>
+      <B N="IMFilter">false</B>
+      <U32 N="InterfaceAdminStatus">1</U32>
+      <S N="InterfaceDescription">Hyper-V Virtual Ethernet Adapter #3</S>
+      <S N="InterfaceGuid">{C39E98D7-DB6C-4509-9E68-36369B652EC3}</S>
+      <U32 N="InterfaceIndex">37</U32>
+      <S N="InterfaceName">ethernet_32778</S>
+      <U32 N="InterfaceOperationalStatus">1</U32>
+      <U32 N="InterfaceType">6</U32>
+      <B N="iSCSIInterface">false</B>
+      <Obj N="LowerLayerInterfaceIndices" RefId="24">
+        <TNRef RefId="2" />
+        <LST>
+          <U32>54</U32>
+        </LST>
+      </Obj>
+      <Nil N="MajorDriverVersion" />
+      <U32 N="MediaConnectState">1</U32>
+      <U32 N="MediaDuplexState">0</U32>
+      <Nil N="MinorDriverVersion" />
+      <U32 N="MtuSize">1500</U32>
+      <U32 N="NdisMedium">0</U32>
+      <U32 N="NdisPhysicalMedium">0</U32>
+      <U64 N="NetLuid">1689399783849984</U64>
+      <U32 N="NetLuidIndex">32778</U32>
+      <B N="NotUserRemovable">true</B>
+      <B N="OperationalStatusDownDefaultPortNotAuthenticated">false</B>
+      <B N="OperationalStatusDownInterfacePaused">false</B>
+      <B N="OperationalStatusDownLowPowerState">false</B>
+      <B N="OperationalStatusDownMediaDisconnected">false</B>
+      <S N="PnPDeviceID">ROOT\VMS_MP\0002</S>
+      <B N="PromiscuousMode">false</B>
+      <U64 N="ReceiveLinkSpeed">10000000000</U64>
+      <U32 N="State">2</U32>
+      <U64 N="TransmitLinkSpeed">10000000000</U64>
+      <B N="Virtual">true</B>
+      <Nil N="VlanID" />
+      <B N="WdmInterface">false</B>
+      <Nil N="PSComputerName" />
+    </Props>
+    <MS>
+      <Obj N="__ClassMetadata" RefId="25">
+        <TNRef RefId="3" />
+        <LST>
+          <Obj RefId="26">
+            <MS>
+              <S N="ClassName">MSFT_NetAdapter</S>
+              <S N="Namespace">root/StandardCimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1326860669</I32>
+            </MS>
+          </Obj>
+        </LST>
+      </Obj>
+    </MS>
+  </Obj>
+  <Obj RefId="27">
+    <TNRef RefId="0" />
+    <ToString>MSFT_NetAdapter (CreationClassName = "MSFT_NetAdapter", DeviceID = "{B01AB642-6C1D-4CB5-9F4C-F926862A0166}", SystemCreationClassName = "CIM_NetworkPort", SystemName = "FLATFISH")</ToString>
+    <Props>
+      <Nil N="Caption" />
+      <Nil N="Description" />
+      <Nil N="ElementName" />
+      <S N="InstanceID">{B01AB642-6C1D-4CB5-9F4C-F926862A0166}</S>
+      <Nil N="CommunicationStatus" />
+      <Nil N="DetailedStatus" />
+      <Nil N="HealthState" />
+      <Nil N="InstallDate" />
+      <S N="Name">vEthernet (Default Switch)</S>
+      <Nil N="OperatingStatus" />
+      <Nil N="OperationalStatus" />
+      <Nil N="PrimaryStatus" />
+      <Nil N="Status" />
+      <Nil N="StatusDescriptions" />
+      <Nil N="AvailableRequestedStates" />
+      <U16 N="EnabledDefault">2</U16>
+      <U16 N="EnabledState">5</U16>
+      <Nil N="OtherEnabledState" />
+      <U16 N="RequestedState">12</U16>
+      <Nil N="TimeOfLastStateChange" />
+      <U16 N="TransitioningToState">12</U16>
+      <Nil N="AdditionalAvailability" />
+      <Nil N="Availability" />
+      <S N="CreationClassName">MSFT_NetAdapter</S>
+      <S N="DeviceID">{B01AB642-6C1D-4CB5-9F4C-F926862A0166}</S>
+      <Nil N="ErrorCleared" />
+      <Nil N="ErrorDescription" />
+      <Nil N="IdentifyingDescriptions" />
+      <Nil N="LastErrorCode" />
+      <Nil N="MaxQuiesceTime" />
+      <Nil N="OtherIdentifyingInfo" />
+      <Nil N="PowerManagementCapabilities" />
+      <Nil N="PowerManagementSupported" />
+      <Nil N="PowerOnHours" />
+      <Nil N="StatusInfo" />
+      <S N="SystemCreationClassName">CIM_NetworkPort</S>
+      <S N="SystemName">FLATFISH</S>
+      <Nil N="TotalPowerOnHours" />
+      <Nil N="MaxSpeed" />
+      <Nil N="OtherPortType" />
+      <Nil N="PortType" />
+      <Nil N="RequestedSpeed" />
+      <U64 N="Speed">10000000000</U64>
+      <Nil N="UsageRestriction" />
+      <U64 N="ActiveMaximumTransmissionUnit">1500</U64>
+      <Nil N="AutoSense" />
+      <Nil N="FullDuplex" />
+      <Nil N="LinkTechnology" />
+      <Obj N="NetworkAddresses" RefId="28">
+        <TNRef RefId="1" />
+        <LST>
+          <S>00155DA8007A</S>
+        </LST>
+      </Obj>
+      <Nil N="OtherLinkTechnology" />
+      <Nil N="OtherNetworkPortType" />
+      <S N="PermanentAddress">00155DA8007A</S>
+      <U16 N="PortNumber">0</U16>
+      <Nil N="SupportedMaximumTransmissionUnit" />
+      <B N="AdminLocked">false</B>
+      <S N="ComponentID">vms_mp</S>
+      <B N="ConnectorPresent">false</B>
+      <S N="DeviceName">\Device\{B01AB642-6C1D-4CB5-9F4C-F926862A0166}</S>
+      <B N="DeviceWakeUpEnable">false</B>
+      <S N="DriverDate">2006-06-21</S>
+      <U64 N="DriverDateData">127953216000000000</U64>
+      <S N="DriverDescription">Hyper-V Virtual Ethernet Adapter</S>
+      <Nil N="DriverMajorNdisVersion" />
+      <Nil N="DriverMinorNdisVersion" />
+      <S N="DriverName">\SystemRoot\System32\drivers\VmsProxyHNic.sys</S>
+      <S N="DriverProvider">Microsoft</S>
+      <S N="DriverVersionString">10.0.19041.1</S>
+      <B N="EndPointInterface">false</B>
+      <B N="HardwareInterface">false</B>
+      <B N="Hidden">false</B>
+      <Obj N="HigherLayerInterfaceIndices" RefId="29">
+        <TNRef RefId="2" />
+        <LST>
+          <U32>32</U32>
+        </LST>
+      </Obj>
+      <B N="IMFilter">false</B>
+      <U32 N="InterfaceAdminStatus">1</U32>
+      <S N="InterfaceDescription">Hyper-V Virtual Ethernet Adapter</S>
+      <S N="InterfaceGuid">{B01AB642-6C1D-4CB5-9F4C-F926862A0166}</S>
+      <U32 N="InterfaceIndex">31</U32>
+      <S N="InterfaceName">ethernet_32777</S>
+      <U32 N="InterfaceOperationalStatus">1</U32>
+      <U32 N="InterfaceType">6</U32>
+      <B N="iSCSIInterface">false</B>
+      <Obj N="LowerLayerInterfaceIndices" RefId="30">
+        <TNRef RefId="2" />
+        <LST>
+          <U32>54</U32>
+        </LST>
+      </Obj>
+      <Nil N="MajorDriverVersion" />
+      <U32 N="MediaConnectState">1</U32>
+      <U32 N="MediaDuplexState">0</U32>
+      <Nil N="MinorDriverVersion" />
+      <U32 N="MtuSize">1500</U32>
+      <U32 N="NdisMedium">0</U32>
+      <U32 N="NdisPhysicalMedium">0</U32>
+      <U64 N="NetLuid">1689399767072768</U64>
+      <U32 N="NetLuidIndex">32777</U32>
+      <B N="NotUserRemovable">true</B>
+      <B N="OperationalStatusDownDefaultPortNotAuthenticated">false</B>
+      <B N="OperationalStatusDownInterfacePaused">false</B>
+      <B N="OperationalStatusDownLowPowerState">false</B>
+      <B N="OperationalStatusDownMediaDisconnected">false</B>
+      <S N="PnPDeviceID">ROOT\VMS_MP\0000</S>
+      <B N="PromiscuousMode">false</B>
+      <U64 N="ReceiveLinkSpeed">10000000000</U64>
+      <U32 N="State">2</U32>
+      <U64 N="TransmitLinkSpeed">10000000000</U64>
+      <B N="Virtual">true</B>
+      <Nil N="VlanID" />
+      <B N="WdmInterface">false</B>
+      <Nil N="PSComputerName" />
+    </Props>
+    <MS>
+      <Obj N="__ClassMetadata" RefId="31">
+        <TNRef RefId="3" />
+        <LST>
+          <Obj RefId="32">
+            <MS>
+              <S N="ClassName">MSFT_NetAdapter</S>
+              <S N="Namespace">root/StandardCimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1326860669</I32>
+            </MS>
+          </Obj>
+        </LST>
+      </Obj>
+    </MS>
+  </Obj>
+  <Obj RefId="33">
+    <TNRef RefId="0" />
+    <ToString>MSFT_NetAdapter (CreationClassName = "MSFT_NetAdapter", DeviceID = "{8E56A068-79F4-418D-A52D-9E0E210BB928}", SystemCreationClassName = "CIM_NetworkPort", SystemName = "FLATFISH")</ToString>
+    <Props>
+      <Nil N="Caption" />
+      <Nil N="Description" />
+      <Nil N="ElementName" />
+      <S N="InstanceID">{8E56A068-79F4-418D-A52D-9E0E210BB928}</S>
+      <Nil N="CommunicationStatus" />
+      <Nil N="DetailedStatus" />
+      <Nil N="HealthState" />
+      <Nil N="InstallDate" />
+      <S N="Name">vEthernet (WSL)</S>
+      <Nil N="OperatingStatus" />
+      <Nil N="OperationalStatus" />
+      <Nil N="PrimaryStatus" />
+      <Nil N="Status" />
+      <Nil N="StatusDescriptions" />
+      <Nil N="AvailableRequestedStates" />
+      <U16 N="EnabledDefault">2</U16>
+      <U16 N="EnabledState">5</U16>
+      <Nil N="OtherEnabledState" />
+      <U16 N="RequestedState">12</U16>
+      <Nil N="TimeOfLastStateChange" />
+      <U16 N="TransitioningToState">12</U16>
+      <Nil N="AdditionalAvailability" />
+      <Nil N="Availability" />
+      <S N="CreationClassName">MSFT_NetAdapter</S>
+      <S N="DeviceID">{8E56A068-79F4-418D-A52D-9E0E210BB928}</S>
+      <Nil N="ErrorCleared" />
+      <Nil N="ErrorDescription" />
+      <Nil N="IdentifyingDescriptions" />
+      <Nil N="LastErrorCode" />
+      <Nil N="MaxQuiesceTime" />
+      <Nil N="OtherIdentifyingInfo" />
+      <Nil N="PowerManagementCapabilities" />
+      <Nil N="PowerManagementSupported" />
+      <Nil N="PowerOnHours" />
+      <Nil N="StatusInfo" />
+      <S N="SystemCreationClassName">CIM_NetworkPort</S>
+      <S N="SystemName">FLATFISH</S>
+      <Nil N="TotalPowerOnHours" />
+      <Nil N="MaxSpeed" />
+      <Nil N="OtherPortType" />
+      <Nil N="PortType" />
+      <Nil N="RequestedSpeed" />
+      <U64 N="Speed">10000000000</U64>
+      <Nil N="UsageRestriction" />
+      <U64 N="ActiveMaximumTransmissionUnit">1500</U64>
+      <Nil N="AutoSense" />
+      <Nil N="FullDuplex" />
+      <Nil N="LinkTechnology" />
+      <Obj N="NetworkAddresses" RefId="34">
+        <TNRef RefId="1" />
+        <LST>
+          <S>00155D493D76</S>
+        </LST>
+      </Obj>
+      <Nil N="OtherLinkTechnology" />
+      <Nil N="OtherNetworkPortType" />
+      <S N="PermanentAddress">00155D493D76</S>
+      <U16 N="PortNumber">0</U16>
+      <Nil N="SupportedMaximumTransmissionUnit" />
+      <B N="AdminLocked">false</B>
+      <S N="ComponentID">vms_mp</S>
+      <B N="ConnectorPresent">false</B>
+      <S N="DeviceName">\Device\{8E56A068-79F4-418D-A52D-9E0E210BB928}</S>
+      <B N="DeviceWakeUpEnable">false</B>
+      <S N="DriverDate">2006-06-21</S>
+      <U64 N="DriverDateData">127953216000000000</U64>
+      <S N="DriverDescription">Hyper-V Virtual Ethernet Adapter</S>
+      <Nil N="DriverMajorNdisVersion" />
+      <Nil N="DriverMinorNdisVersion" />
+      <S N="DriverName">\SystemRoot\System32\drivers\VmsProxyHNic.sys</S>
+      <S N="DriverProvider">Microsoft</S>
+      <S N="DriverVersionString">10.0.19041.1</S>
+      <B N="EndPointInterface">false</B>
+      <B N="HardwareInterface">false</B>
+      <B N="Hidden">false</B>
+      <Obj N="HigherLayerInterfaceIndices" RefId="35">
+        <TNRef RefId="2" />
+        <LST>
+          <U32>61</U32>
+        </LST>
+      </Obj>
+      <B N="IMFilter">false</B>
+      <U32 N="InterfaceAdminStatus">1</U32>
+      <S N="InterfaceDescription">Hyper-V Virtual Ethernet Adapter #4</S>
+      <S N="InterfaceGuid">{8E56A068-79F4-418D-A52D-9E0E210BB928}</S>
+      <U32 N="InterfaceIndex">60</U32>
+      <S N="InterfaceName">ethernet_32784</S>
+      <U32 N="InterfaceOperationalStatus">1</U32>
+      <U32 N="InterfaceType">6</U32>
+      <B N="iSCSIInterface">false</B>
+      <Obj N="LowerLayerInterfaceIndices" RefId="36">
+        <TNRef RefId="2" />
+        <LST>
+          <U32>46</U32>
+        </LST>
+      </Obj>
+      <Nil N="MajorDriverVersion" />
+      <U32 N="MediaConnectState">1</U32>
+      <U32 N="MediaDuplexState">0</U32>
+      <Nil N="MinorDriverVersion" />
+      <U32 N="MtuSize">1500</U32>
+      <U32 N="NdisMedium">0</U32>
+      <U32 N="NdisPhysicalMedium">0</U32>
+      <U64 N="NetLuid">1689399884513280</U64>
+      <U32 N="NetLuidIndex">32784</U32>
+      <B N="NotUserRemovable">true</B>
+      <B N="OperationalStatusDownDefaultPortNotAuthenticated">false</B>
+      <B N="OperationalStatusDownInterfacePaused">false</B>
+      <B N="OperationalStatusDownLowPowerState">false</B>
+      <B N="OperationalStatusDownMediaDisconnected">false</B>
+      <S N="PnPDeviceID">ROOT\VMS_MP\0003</S>
+      <B N="PromiscuousMode">false</B>
+      <U64 N="ReceiveLinkSpeed">10000000000</U64>
+      <U32 N="State">2</U32>
+      <U64 N="TransmitLinkSpeed">10000000000</U64>
+      <B N="Virtual">true</B>
+      <Nil N="VlanID" />
+      <B N="WdmInterface">false</B>
+      <Nil N="PSComputerName" />
+    </Props>
+    <MS>
+      <Obj N="__ClassMetadata" RefId="37">
+        <TNRef RefId="3" />
+        <LST>
+          <Obj RefId="38">
+            <MS>
+              <S N="ClassName">MSFT_NetAdapter</S>
+              <S N="Namespace">root/StandardCimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1326860669</I32>
+            </MS>
+          </Obj>
+        </LST>
+      </Obj>
+    </MS>
+  </Obj>
+  <Obj RefId="39">
+    <TNRef RefId="0" />
+    <ToString>MSFT_NetAdapter (CreationClassName = "MSFT_NetAdapter", DeviceID = "{4F19B550-1149-46F1-A5DB-3D8DECAED5BB}", SystemCreationClassName = "CIM_NetworkPort", SystemName = "FLATFISH")</ToString>
+    <Props>
+      <Nil N="Caption" />
+      <Nil N="Description" />
+      <Nil N="ElementName" />
+      <S N="InstanceID">{4F19B550-1149-46F1-A5DB-3D8DECAED5BB}</S>
+      <Nil N="CommunicationStatus" />
+      <Nil N="DetailedStatus" />
+      <Nil N="HealthState" />
+      <Nil N="InstallDate" />
+      <S N="Name">vEthernet (New Virtual Switch)</S>
+      <Nil N="OperatingStatus" />
+      <Nil N="OperationalStatus" />
+      <Nil N="PrimaryStatus" />
+      <Nil N="Status" />
+      <Nil N="StatusDescriptions" />
+      <Nil N="AvailableRequestedStates" />
+      <U16 N="EnabledDefault">2</U16>
+      <U16 N="EnabledState">5</U16>
+      <Nil N="OtherEnabledState" />
+      <U16 N="RequestedState">12</U16>
+      <Nil N="TimeOfLastStateChange" />
+      <U16 N="TransitioningToState">12</U16>
+      <Nil N="AdditionalAvailability" />
+      <Nil N="Availability" />
+      <S N="CreationClassName">MSFT_NetAdapter</S>
+      <S N="DeviceID">{4F19B550-1149-46F1-A5DB-3D8DECAED5BB}</S>
+      <Nil N="ErrorCleared" />
+      <Nil N="ErrorDescription" />
+      <Nil N="IdentifyingDescriptions" />
+      <Nil N="LastErrorCode" />
+      <Nil N="MaxQuiesceTime" />
+      <Nil N="OtherIdentifyingInfo" />
+      <Nil N="PowerManagementCapabilities" />
+      <Nil N="PowerManagementSupported" />
+      <Nil N="PowerOnHours" />
+      <Nil N="StatusInfo" />
+      <S N="SystemCreationClassName">CIM_NetworkPort</S>
+      <S N="SystemName">FLATFISH</S>
+      <Nil N="TotalPowerOnHours" />
+      <Nil N="MaxSpeed" />
+      <Nil N="OtherPortType" />
+      <Nil N="PortType" />
+      <Nil N="RequestedSpeed" />
+      <U64 N="Speed">10000000000</U64>
+      <Nil N="UsageRestriction" />
+      <U64 N="ActiveMaximumTransmissionUnit">1500</U64>
+      <Nil N="AutoSense" />
+      <Nil N="FullDuplex" />
+      <Nil N="LinkTechnology" />
+      <Obj N="NetworkAddresses" RefId="40">
+        <TNRef RefId="1" />
+        <LST>
+          <S>5882A899DC1F</S>
+        </LST>
+      </Obj>
+      <Nil N="OtherLinkTechnology" />
+      <Nil N="OtherNetworkPortType" />
+      <S N="PermanentAddress">5882A899DC1F</S>
+      <U16 N="PortNumber">0</U16>
+      <Nil N="SupportedMaximumTransmissionUnit" />
+      <B N="AdminLocked">false</B>
+      <S N="ComponentID">vms_mp</S>
+      <B N="ConnectorPresent">false</B>
+      <S N="DeviceName">\Device\{4F19B550-1149-46F1-A5DB-3D8DECAED5BB}</S>
+      <B N="DeviceWakeUpEnable">false</B>
+      <S N="DriverDate">2006-06-21</S>
+      <U64 N="DriverDateData">127953216000000000</U64>
+      <S N="DriverDescription">Hyper-V Virtual Ethernet Adapter</S>
+      <Nil N="DriverMajorNdisVersion" />
+      <Nil N="DriverMinorNdisVersion" />
+      <S N="DriverName">\SystemRoot\System32\drivers\VmsProxyHNic.sys</S>
+      <S N="DriverProvider">Microsoft</S>
+      <S N="DriverVersionString">10.0.19041.1</S>
+      <B N="EndPointInterface">false</B>
+      <B N="HardwareInterface">false</B>
+      <B N="Hidden">false</B>
+      <Obj N="HigherLayerInterfaceIndices" RefId="41">
+        <TNRef RefId="2" />
+        <LST>
+          <U32>30</U32>
+        </LST>
+      </Obj>
+      <B N="IMFilter">false</B>
+      <U32 N="InterfaceAdminStatus">1</U32>
+      <S N="InterfaceDescription">Hyper-V Virtual Ethernet Adapter #2</S>
+      <S N="InterfaceGuid">{4F19B550-1149-46F1-A5DB-3D8DECAED5BB}</S>
+      <U32 N="InterfaceIndex">8</U32>
+      <S N="InterfaceName">ethernet_32780</S>
+      <U32 N="InterfaceOperationalStatus">2</U32>
+      <U32 N="InterfaceType">6</U32>
+      <B N="iSCSIInterface">false</B>
+      <Obj N="LowerLayerInterfaceIndices" RefId="42">
+        <TNRef RefId="2" />
+        <LST>
+          <U32>55</U32>
+        </LST>
+      </Obj>
+      <Nil N="MajorDriverVersion" />
+      <U32 N="MediaConnectState">2</U32>
+      <U32 N="MediaDuplexState">0</U32>
+      <Nil N="MinorDriverVersion" />
+      <U32 N="MtuSize">1500</U32>
+      <U32 N="NdisMedium">0</U32>
+      <U32 N="NdisPhysicalMedium">0</U32>
+      <U64 N="NetLuid">1689399817404416</U64>
+      <U32 N="NetLuidIndex">32780</U32>
+      <B N="NotUserRemovable">true</B>
+      <B N="OperationalStatusDownDefaultPortNotAuthenticated">false</B>
+      <B N="OperationalStatusDownInterfacePaused">false</B>
+      <B N="OperationalStatusDownLowPowerState">false</B>
+      <B N="OperationalStatusDownMediaDisconnected">true</B>
+      <S N="PnPDeviceID">ROOT\VMS_MP\0001</S>
+      <B N="PromiscuousMode">false</B>
+      <U64 N="ReceiveLinkSpeed">10000000000</U64>
+      <U32 N="State">2</U32>
+      <U64 N="TransmitLinkSpeed">10000000000</U64>
+      <B N="Virtual">true</B>
+      <Nil N="VlanID" />
+      <B N="WdmInterface">false</B>
+      <Nil N="PSComputerName" />
+    </Props>
+    <MS>
+      <Obj N="__ClassMetadata" RefId="43">
+        <TNRef RefId="3" />
+        <LST>
+          <Obj RefId="44">
+            <MS>
+              <S N="ClassName">MSFT_NetAdapter</S>
+              <S N="Namespace">root/StandardCimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1326860669</I32>
+            </MS>
+          </Obj>
+        </LST>
+      </Obj>
+    </MS>
+  </Obj>
+</Objs>

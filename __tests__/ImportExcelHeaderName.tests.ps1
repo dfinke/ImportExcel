@@ -1,9 +1,9 @@
-$xlfile = "TestDrive:\testImportExcel.xlsx"
-$xlfileHeaderOnly = "TestDrive:\testImportExcelHeaderOnly.xlsx"
 
 Describe "Import-Excel on a sheet with no headings" {
     BeforeAll {
 
+        $xlfile = "TestDrive:\testImportExcel.xlsx"
+        $xlfileHeaderOnly = "TestDrive:\testImportExcelHeaderOnly.xlsx"
         $xl = "" | Export-excel $xlfile -PassThru
 
         Set-ExcelRange -Worksheet $xl.Sheet1 -Range A1 -Value 'A'
@@ -204,24 +204,24 @@ Describe "Import-Excel on a sheet with no headings" {
     }
 
     It "Should handle data correctly if there is only a single row" {
-        $actual = Import-Excel $xlfileHeaderOnly
+        $actual = Import-Excel $xlfileHeaderOnly -WarningAction SilentlyContinue
         $names = $actual.psobject.properties.Name
-        $names | should be $null
-        $actual.Count | should be 0
+        $names | Should -Be $null
+        $actual.Count | Should -Be 0
     }
 
     It "Should handle data correctly if there is only a single row and using -NoHeader " {
         $actual = @(Import-Excel $xlfileHeaderOnly -WorksheetName Sheet1 -NoHeader)
 
         $names = $actual[0].psobject.properties.Name
-        $names.count | should be 3
-        $names[0] | should be 'P1'
-        $names[1] | should be 'P2'
-        $names[2] | should be 'P3'
+        $names.count | Should -Be 3
+        $names[0] | Should -Be 'P1'
+        $names[1] | Should -Be 'P2'
+        $names[2] | Should -Be 'P3'
 
-        $actual.Count | should be 1
-        $actual[0].P1 | should be 'A'
-        $actual[0].P2 | should be 'B'
-        $actual[0].P3 | should be 'C'
+        $actual.Count | Should -Be 1
+        $actual[0].P1 | Should -Be 'A'
+        $actual[0].P2 | Should -Be 'B'
+        $actual[0].P3 | Should -Be 'C'
     }
 }

@@ -1,0 +1,252 @@
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>Microsoft.Management.Infrastructure.CimInstance#root/cimv2/Win32_LogicalDisk</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#ROOT/cimv2/CIM_LogicalDisk</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#ROOT/cimv2/CIM_StorageExtent</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#ROOT/cimv2/CIM_LogicalDevice</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#ROOT/cimv2/CIM_LogicalElement</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#ROOT/cimv2/CIM_ManagedSystemElement</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#Win32_LogicalDisk</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#CIM_LogicalDisk</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#CIM_StorageExtent</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#CIM_LogicalDevice</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#CIM_LogicalElement</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance#CIM_ManagedSystemElement</T>
+      <T>Microsoft.Management.Infrastructure.CimInstance</T>
+      <T>System.Object</T>
+    </TN>
+    <ToString>Win32_LogicalDisk: C: (DeviceID = "C:")</ToString>
+    <Props>
+      <S N="Caption">C:</S>
+      <S N="Description">Local Fixed Disk</S>
+      <Nil N="InstallDate" />
+      <S N="Name">C:</S>
+      <Nil N="Status" />
+      <Nil N="Availability" />
+      <Nil N="ConfigManagerErrorCode" />
+      <Nil N="ConfigManagerUserConfig" />
+      <S N="CreationClassName">Win32_LogicalDisk</S>
+      <S N="DeviceID">C:</S>
+      <Nil N="ErrorCleared" />
+      <Nil N="ErrorDescription" />
+      <Nil N="LastErrorCode" />
+      <Nil N="PNPDeviceID" />
+      <Nil N="PowerManagementCapabilities" />
+      <Nil N="PowerManagementSupported" />
+      <Nil N="StatusInfo" />
+      <S N="SystemCreationClassName">Win32_ComputerSystem</S>
+      <S N="SystemName">FLATFISH</S>
+      <U16 N="Access">0</U16>
+      <Nil N="BlockSize" />
+      <Nil N="ErrorMethodology" />
+      <Nil N="NumberOfBlocks" />
+      <Nil N="Purpose" />
+      <U64 N="FreeSpace">17877114880</U64>
+      <U64 N="Size">510653362176</U64>
+      <B N="Compressed">false</B>
+      <U32 N="DriveType">3</U32>
+      <S N="FileSystem">NTFS</S>
+      <U32 N="MaximumComponentLength">255</U32>
+      <U32 N="MediaType">12</U32>
+      <Nil N="ProviderName" />
+      <Nil N="QuotasDisabled" />
+      <Nil N="QuotasIncomplete" />
+      <Nil N="QuotasRebuilding" />
+      <B N="SupportsDiskQuotas">false</B>
+      <B N="SupportsFileBasedCompression">true</B>
+      <Nil N="VolumeDirty" />
+      <S N="VolumeName">Local Disk</S>
+      <S N="VolumeSerialNumber">D470C5ED</S>
+      <Nil N="PSComputerName" />
+    </Props>
+    <MS>
+      <Obj N="__ClassMetadata" RefId="1">
+        <TN RefId="1">
+          <T>System.Collections.ArrayList</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <Obj RefId="2">
+            <MS>
+              <S N="ClassName">CIM_ManagedSystemElement</S>
+              <S N="Namespace">ROOT/cimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1335234525</I32>
+              <S N="MiXml">&lt;CLASS NAME="CIM_ManagedSystemElement"&gt;&lt;QUALIFIER NAME="Abstract" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Locale" TYPE="sint32"&gt;&lt;VALUE&gt;1033&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="UUID" TYPE="string"&gt;&lt;VALUE&gt;{8502C517-5FBB-11D2-AAC1-006008C78BC7}&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PROPERTY NAME="Caption" TYPE="string"&gt;&lt;QUALIFIER NAME="MaxLen" TYPE="sint32"&gt;&lt;VALUE&gt;64&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="Description" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="InstallDate" TYPE="datetime"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;MIF.DMTF|ComponentID|001.5&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="Name" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="Status" TYPE="string"&gt;&lt;QUALIFIER NAME="MaxLen" TYPE="sint32"&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;OK&lt;/VALUE&gt;&lt;VALUE&gt;Error&lt;/VALUE&gt;&lt;VALUE&gt;Degraded&lt;/VALUE&gt;&lt;VALUE&gt;Unknown&lt;/VALUE&gt;&lt;VALUE&gt;Pred Fail&lt;/VALUE&gt;&lt;VALUE&gt;Starting&lt;/VALUE&gt;&lt;VALUE&gt;Stopping&lt;/VALUE&gt;&lt;VALUE&gt;Service&lt;/VALUE&gt;&lt;VALUE&gt;Stressed&lt;/VALUE&gt;&lt;VALUE&gt;NonRecover&lt;/VALUE&gt;&lt;VALUE&gt;No Contact&lt;/VALUE&gt;&lt;VALUE&gt;Lost Comm&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;/CLASS&gt;</S>
+            </MS>
+          </Obj>
+          <Obj RefId="3">
+            <MS>
+              <S N="ClassName">CIM_LogicalElement</S>
+              <S N="Namespace">ROOT/cimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1335213213</I32>
+              <S N="MiXml">&lt;CLASS NAME="CIM_LogicalElement" SUPERCLASS="CIM_ManagedSystemElement"&gt;&lt;QUALIFIER NAME="Locale" TYPE="sint32"&gt;&lt;VALUE&gt;1033&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="UUID" TYPE="string"&gt;&lt;VALUE&gt;{8502C518-5FBB-11D2-AAC1-006008C78BC7}&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Abstract" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/CLASS&gt;</S>
+            </MS>
+          </Obj>
+          <Obj RefId="4">
+            <MS>
+              <S N="ClassName">CIM_LogicalDevice</S>
+              <S N="Namespace">ROOT/cimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1335222317</I32>
+              <S N="MiXml">&lt;CLASS NAME="CIM_LogicalDevice" SUPERCLASS="CIM_LogicalElement"&gt;&lt;QUALIFIER NAME="Locale" TYPE="sint32"&gt;&lt;VALUE&gt;1033&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="UUID" TYPE="string"&gt;&lt;VALUE&gt;{8502C529-5FBB-11D2-AAC1-006008C78BC7}&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Abstract" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PROPERTY NAME="Availability" TYPE="uint16"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;MIF.DMTF|Operational State|003.5&lt;/VALUE&gt;&lt;VALUE&gt;MIB.IETF|HOST-RESOURCES-MIB.hrDeviceStatus&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;8&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;11&lt;/VALUE&gt;&lt;VALUE&gt;12&lt;/VALUE&gt;&lt;VALUE&gt;13&lt;/VALUE&gt;&lt;VALUE&gt;14&lt;/VALUE&gt;&lt;VALUE&gt;15&lt;/VALUE&gt;&lt;VALUE&gt;16&lt;/VALUE&gt;&lt;VALUE&gt;17&lt;/VALUE&gt;&lt;VALUE&gt;18&lt;/VALUE&gt;&lt;VALUE&gt;19&lt;/VALUE&gt;&lt;VALUE&gt;20&lt;/VALUE&gt;&lt;VALUE&gt;21&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="ConfigManagerErrorCode" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Schema" TYPE="string"&gt;&lt;VALUE&gt;Win32&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;VALUE&gt;7&lt;/VALUE&gt;&lt;VALUE&gt;8&lt;/VALUE&gt;&lt;VALUE&gt;9&lt;/VALUE&gt;&lt;VALUE&gt;10&lt;/VALUE&gt;&lt;VALUE&gt;11&lt;/VALUE&gt;&lt;VALUE&gt;12&lt;/VALUE&gt;&lt;VALUE&gt;13&lt;/VALUE&gt;&lt;VALUE&gt;14&lt;/VALUE&gt;&lt;VALUE&gt;15&lt;/VALUE&gt;&lt;VALUE&gt;16&lt;/VALUE&gt;&lt;VALUE&gt;17&lt;/VALUE&gt;&lt;VALUE&gt;18&lt;/VALUE&gt;&lt;VALUE&gt;19&lt;/VALUE&gt;&lt;VALUE&gt;20&lt;/VALUE&gt;&lt;VALUE&gt;21&lt;/VALUE&gt;&lt;VALUE&gt;22&lt;/VALUE&gt;&lt;VALUE&gt;23&lt;/VALUE&gt;&lt;VALUE&gt;24&lt;/VALUE&gt;&lt;VALUE&gt;25&lt;/VALUE&gt;&lt;VALUE&gt;26&lt;/VALUE&gt;&lt;VALUE&gt;27&lt;/VALUE&gt;&lt;VALUE&gt;28&lt;/VALUE&gt;&lt;VALUE&gt;29&lt;/VALUE&gt;&lt;VALUE&gt;30&lt;/VALUE&gt;&lt;VALUE&gt;31&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="ConfigManagerUserConfig" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Schema" TYPE="string"&gt;&lt;VALUE&gt;Win32&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="CreationClassName" TYPE="string"&gt;&lt;QUALIFIER NAME="CIM_Key" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="DeviceID" TYPE="string"&gt;&lt;QUALIFIER NAME="CIM_Key" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="ErrorCleared" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="ErrorDescription" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="LastErrorCode" TYPE="uint32"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="PNPDeviceID" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Schema" TYPE="string"&gt;&lt;VALUE&gt;Win32&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY.ARRAY NAME="PowerManagementCapabilities" TYPE="uint16"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY.ARRAY&gt;&lt;PROPERTY NAME="PowerManagementSupported" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="StatusInfo" TYPE="uint16"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;MIF.DMTF|Operational State|003.3&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="SystemCreationClassName" TYPE="string"&gt;&lt;QUALIFIER NAME="CIM_Key" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Propagated" TYPE="string"&gt;&lt;VALUE&gt;CIM_System.CreationClassName&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="SystemName" TYPE="string"&gt;&lt;QUALIFIER NAME="CIM_Key" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Propagated" TYPE="string"&gt;&lt;VALUE&gt;CIM_System.Name&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;METHOD NAME="SetPowerState" TYPE="uint32"&gt;&lt;PARAMETER NAME="PowerState" TYPE="uint16"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="IN" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="ValueMap" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;VALUE&gt;6&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;PARAMETER NAME="Time" TYPE="datetime"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="IN" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;/METHOD&gt;&lt;METHOD NAME="Reset" TYPE="uint32"&gt;&lt;/METHOD&gt;&lt;/CLASS&gt;</S>
+            </MS>
+          </Obj>
+          <Obj RefId="5">
+            <MS>
+              <S N="ClassName">CIM_StorageExtent</S>
+              <S N="Namespace">ROOT/cimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1335220237</I32>
+              <S N="MiXml">&lt;CLASS NAME="CIM_StorageExtent" SUPERCLASS="CIM_LogicalDevice"&gt;&lt;QUALIFIER NAME="Locale" TYPE="sint32"&gt;&lt;VALUE&gt;1033&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="UUID" TYPE="string"&gt;&lt;VALUE&gt;{8502C538-5FBB-11D2-AAC1-006008C78BC7}&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Abstract" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PROPERTY NAME="Access" TYPE="uint16"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="BlockSize" TYPE="uint64"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;MIB.IETF|HOST-RESOURCES-MIB.hrStorageAllocationUnits&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="ErrorMethodology" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="NumberOfBlocks" TYPE="uint64"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;MIB.IETF|HOST-RESOURCES-MIB.hrStorageSize&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="Purpose" TYPE="string"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;/CLASS&gt;</S>
+            </MS>
+          </Obj>
+          <Obj RefId="6">
+            <MS>
+              <S N="ClassName">CIM_LogicalDisk</S>
+              <S N="Namespace">ROOT/cimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1335229325</I32>
+              <S N="MiXml">&lt;CLASS NAME="CIM_LogicalDisk" SUPERCLASS="CIM_StorageExtent"&gt;&lt;QUALIFIER NAME="Locale" TYPE="sint32"&gt;&lt;VALUE&gt;1033&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="UUID" TYPE="string"&gt;&lt;VALUE&gt;{8502C539-5FBB-11D2-AAC1-006008C78BC7}&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Abstract" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PROPERTY NAME="FreeSpace" TYPE="uint64"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="Size" TYPE="uint64"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;/CLASS&gt;</S>
+            </MS>
+          </Obj>
+          <Obj RefId="7">
+            <MS>
+              <S N="ClassName">Win32_LogicalDisk</S>
+              <S N="Namespace">root/cimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1323049133</I32>
+              <S N="MiXml">&lt;CLASS NAME="Win32_LogicalDisk" SUPERCLASS="CIM_LogicalDisk"&gt;&lt;QUALIFIER NAME="Locale" TYPE="sint32"&gt;&lt;VALUE&gt;1033&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="UUID" TYPE="string"&gt;&lt;VALUE&gt;{8502C4B7-5FBB-11D2-AAC1-006008C78BC7}&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="dynamic" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="provider" TYPE="string"&gt;&lt;VALUE&gt;CIMWin32&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="SupportsUpdate" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PROPERTY NAME="DeviceID" TYPE="string"&gt;&lt;QUALIFIER NAME="CIM_Key" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="key" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;WMI&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Override" TYPE="string"&gt;&lt;VALUE&gt;DeviceId&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="Compressed" TYPE="boolean"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;Win32API|File System Functions|GetVolumeInformation|FS_VOL_IS_COMPRESSED&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="DriveType" TYPE="uint32"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;Win32API|FileFunctions|GetDriveType&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="FileSystem" TYPE="string"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;Win32API|File System Functions|GetVolumeInformation&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="MaximumComponentLength" TYPE="uint32"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;Win32API|File System Functions|GetVolumeInformation&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="MediaType" TYPE="uint32"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;Win32API|Device Input and Output Functions|DeviceIoControl&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="ProviderName" TYPE="string"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;Win32API|Windows Networking Functions|WNetGetConnection&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="QuotasDisabled" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="QuotasIncomplete" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="QuotasRebuilding" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="SupportsDiskQuotas" TYPE="boolean"&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="SupportsFileBasedCompression" TYPE="boolean"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;Win32API|File System Functions|GetVolumeInformation|FS_FILE_COMPRESSION&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="VolumeDirty" TYPE="boolean"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;FSCTL_IS_VOLUME_DIRTY&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="VolumeName" TYPE="string"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;Win32API|File System Functions|GetVolumeInformation&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="write" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;PROPERTY NAME="VolumeSerialNumber" TYPE="string"&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;Win32API|File System Functions|GetVolumeInformation&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="read" TYPE="boolean"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PROPERTY&gt;&lt;METHOD NAME="Chkdsk" TYPE="uint32"&gt;&lt;QUALIFIER NAME="Implemented" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;Fmifs.dll | Method ChkDskExRoutine&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;PARAMETER NAME="FixErrors" TYPE="boolean"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="in" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;PARAMETER NAME="ForceDismount" TYPE="boolean"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;3&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="in" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;PARAMETER NAME="OkToRunAtBootUp" TYPE="boolean"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;5&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="in" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;PARAMETER NAME="RecoverBadSectors" TYPE="boolean"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;4&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="in" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;PARAMETER NAME="SkipFolderCycle" TYPE="boolean"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;2&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="in" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;PARAMETER NAME="VigorousIndexCheck" TYPE="boolean"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;1&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="in" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER&gt;&lt;/METHOD&gt;&lt;METHOD NAME="ScheduleAutoChk" TYPE="uint32"&gt;&lt;QUALIFIER NAME="Implemented" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;Chkntfs.exe&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Static" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PARAMETER.ARRAY NAME="LogicalDisk" TYPE="string"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="in" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER.ARRAY&gt;&lt;/METHOD&gt;&lt;METHOD NAME="ExcludeFromAutochk" TYPE="uint32"&gt;&lt;QUALIFIER NAME="Implemented" TYPE="boolean" TOSUBCLASS="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="MappingStrings" TYPE="string"&gt;&lt;VALUE.ARRAY&gt;&lt;VALUE&gt;Chkntfs.exe&lt;/VALUE&gt;&lt;/VALUE.ARRAY&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="Static" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;PARAMETER.ARRAY NAME="LogicalDisk" TYPE="string"&gt;&lt;QUALIFIER NAME="ID" TYPE="sint32" OVERRIDABLE="false"&gt;&lt;VALUE&gt;0&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;QUALIFIER NAME="in" TYPE="boolean" OVERRIDABLE="false"&gt;&lt;VALUE&gt;true&lt;/VALUE&gt;&lt;/QUALIFIER&gt;&lt;/PARAMETER.ARRAY&gt;&lt;/METHOD&gt;&lt;/CLASS&gt;</S>
+            </MS>
+          </Obj>
+        </LST>
+      </Obj>
+    </MS>
+  </Obj>
+  <Obj RefId="8">
+    <TNRef RefId="0" />
+    <ToString>Win32_LogicalDisk: D: (DeviceID = "D:")</ToString>
+    <Props>
+      <S N="Caption">D:</S>
+      <S N="Description">Local Fixed Disk</S>
+      <Nil N="InstallDate" />
+      <S N="Name">D:</S>
+      <Nil N="Status" />
+      <Nil N="Availability" />
+      <Nil N="ConfigManagerErrorCode" />
+      <Nil N="ConfigManagerUserConfig" />
+      <S N="CreationClassName">Win32_LogicalDisk</S>
+      <S N="DeviceID">D:</S>
+      <Nil N="ErrorCleared" />
+      <Nil N="ErrorDescription" />
+      <Nil N="LastErrorCode" />
+      <Nil N="PNPDeviceID" />
+      <Nil N="PowerManagementCapabilities" />
+      <Nil N="PowerManagementSupported" />
+      <Nil N="StatusInfo" />
+      <S N="SystemCreationClassName">Win32_ComputerSystem</S>
+      <S N="SystemName">FLATFISH</S>
+      <U16 N="Access">0</U16>
+      <Nil N="BlockSize" />
+      <Nil N="ErrorMethodology" />
+      <Nil N="NumberOfBlocks" />
+      <Nil N="Purpose" />
+      <U64 N="FreeSpace">124505268224</U64>
+      <U64 N="Size">1000202272768</U64>
+      <B N="Compressed">false</B>
+      <U32 N="DriveType">3</U32>
+      <S N="FileSystem">NTFS</S>
+      <U32 N="MaximumComponentLength">255</U32>
+      <U32 N="MediaType">12</U32>
+      <Nil N="ProviderName" />
+      <Nil N="QuotasDisabled" />
+      <Nil N="QuotasIncomplete" />
+      <Nil N="QuotasRebuilding" />
+      <B N="SupportsDiskQuotas">false</B>
+      <B N="SupportsFileBasedCompression">true</B>
+      <B N="VolumeDirty">false</B>
+      <S N="VolumeName">Samsung_T3</S>
+      <S N="VolumeSerialNumber">245C4248</S>
+      <Nil N="PSComputerName" />
+    </Props>
+    <MS>
+      <Obj N="__ClassMetadata" RefId="9">
+        <TNRef RefId="1" />
+        <LST>
+          <Obj RefId="10">
+            <MS>
+              <S N="ClassName">Win32_LogicalDisk</S>
+              <S N="Namespace">root/cimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1323049133</I32>
+            </MS>
+          </Obj>
+        </LST>
+      </Obj>
+    </MS>
+  </Obj>
+  <Obj RefId="11">
+    <TNRef RefId="0" />
+    <ToString>Win32_LogicalDisk: E: (DeviceID = "E:")</ToString>
+    <Props>
+      <S N="Caption">E:</S>
+      <S N="Description">Removable Disk</S>
+      <Nil N="InstallDate" />
+      <S N="Name">E:</S>
+      <Nil N="Status" />
+      <Nil N="Availability" />
+      <Nil N="ConfigManagerErrorCode" />
+      <Nil N="ConfigManagerUserConfig" />
+      <S N="CreationClassName">Win32_LogicalDisk</S>
+      <S N="DeviceID">E:</S>
+      <Nil N="ErrorCleared" />
+      <Nil N="ErrorDescription" />
+      <Nil N="LastErrorCode" />
+      <Nil N="PNPDeviceID" />
+      <Nil N="PowerManagementCapabilities" />
+      <Nil N="PowerManagementSupported" />
+      <Nil N="StatusInfo" />
+      <S N="SystemCreationClassName">Win32_ComputerSystem</S>
+      <S N="SystemName">FLATFISH</S>
+      <U16 N="Access">0</U16>
+      <Nil N="BlockSize" />
+      <Nil N="ErrorMethodology" />
+      <Nil N="NumberOfBlocks" />
+      <Nil N="Purpose" />
+      <U64 N="FreeSpace">5516288000</U64>
+      <U64 N="Size">15824056320</U64>
+      <B N="Compressed">false</B>
+      <U32 N="DriveType">2</U32>
+      <S N="FileSystem">NTFS</S>
+      <U32 N="MaximumComponentLength">255</U32>
+      <Nil N="MediaType" />
+      <Nil N="ProviderName" />
+      <Nil N="QuotasDisabled" />
+      <Nil N="QuotasIncomplete" />
+      <Nil N="QuotasRebuilding" />
+      <B N="SupportsDiskQuotas">false</B>
+      <B N="SupportsFileBasedCompression">true</B>
+      <B N="VolumeDirty">false</B>
+      <S N="VolumeName"></S>
+      <S N="VolumeSerialNumber">2645DC17</S>
+      <Nil N="PSComputerName" />
+    </Props>
+    <MS>
+      <Obj N="__ClassMetadata" RefId="12">
+        <TNRef RefId="1" />
+        <LST>
+          <Obj RefId="13">
+            <MS>
+              <S N="ClassName">Win32_LogicalDisk</S>
+              <S N="Namespace">root/cimv2</S>
+              <S N="ServerName">FLATFISH</S>
+              <I32 N="Hash">1323049133</I32>
+            </MS>
+          </Obj>
+        </LST>
+      </Obj>
+    </MS>
+  </Obj>
+</Objs>

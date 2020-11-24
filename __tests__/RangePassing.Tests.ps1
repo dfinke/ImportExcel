@@ -1,11 +1,19 @@
+#Requires -Modules Pester
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases','',Justification='Testing for presence of alias')]
 param()
-$path = "TestDrive:\test.xlsx"
+
 describe "Consistent passing of ranges." {
+    BeforeAll {
+       $path = "TestDrive:\test.xlsx"
+       if (-not (Get-command Get-Service -ErrorAction SilentlyContinue)) {
+            Function Get-Service {Import-Clixml $PSScriptRoot\Mockservices.xml}
+        }
+    }
     Context "Conditional Formatting"  {
-        Remove-Item -path $path  -ErrorAction SilentlyContinue
-        $excel = Get-Service | Export-Excel -Path $path -WorksheetName Services -PassThru -AutoSize -DisplayPropertySet -AutoNameRange -Title "Services on $Env:COMPUTERNAME"
         it "accepts named ranges, cells['name'], worksheet + Name, worksheet + column              " {
+            Remove-Item -path $path  -ErrorAction SilentlyContinue
+            $excel = Get-Service | Export-Excel -Path $path -WorksheetName Services -PassThru -AutoSize -DisplayPropertySet -AutoNameRange -Title "Services on $Env:COMPUTERNAME"
             {Add-ConditionalFormatting $excel.Services.Names["Status"]  -StrikeThru -RuleType ContainsText -ConditionValue "Stopped" } | Should -Not -Throw
             $excel.Services.ConditionalFormatting.Count                                                                                | Should      -Be 1
             {Add-ConditionalFormatting $excel.Services.Cells["Name"] -Italic -RuleType ContainsText -ConditionValue "SVC"            } | Should -Not -Throw
@@ -23,11 +31,12 @@ describe "Consistent passing of ranges." {
             {Add-ConditionalFormatting "Status"  -Worksheet $excel.Services `
                 -ForeGroundColor ([System.Drawing.Color]::Green) -RuleType ContainsText -ConditionValue "Running"}                     | Should -Not -Throw
             $excel.Services.ConditionalFormatting.Count                                                                                | Should      -Be 4
+            Close-ExcelPackage -NoSave $excel
         }
-        Close-ExcelPackage -NoSave $excel
-        $excel = Get-Service | Export-Excel -Path $path -WorksheetName Services -PassThru -AutoSize -DisplayPropertySet -TableName servicetable -Title "Services on $Env:COMPUTERNAME"
+
         it "accepts table, table.Address and worksheet + 'C:C'                                     " {
-            {Add-ConditionalFormatting $excel.Services.Tables[0] `
+               $excel = Get-Service | Export-Excel -Path $path -WorksheetName Services -PassThru -AutoSize -DisplayPropertySet -TableName servicetable -Title "Services on $Env:COMPUTERNAME"
+               {Add-ConditionalFormatting $excel.Services.Tables[0] `
                 -Italic -RuleType ContainsText -ConditionValue "Svc"                                                                 } | Should -Not -Throw
             $excel.Services.ConditionalFormatting.Count                                                                                | Should      -Be 1
             {Add-ConditionalFormatting $excel.Services.Tables["ServiceTable"].Address `
@@ -36,8 +45,8 @@ describe "Consistent passing of ranges." {
             {Add-ConditionalFormatting -Worksheet $excel.Services -Address "a:a" `
                 -RuleType ContainsText -ConditionValue "stopped" -ForeGroundColor ([System.Drawing.Color]::Red)                      } | Should -Not -Throw
             $excel.Services.ConditionalFormatting.Count                                                                                | Should      -Be 3
+            Close-ExcelPackage -NoSave $excel
         }
-        Close-ExcelPackage -NoSave $excel
     }
 
     Context "Formating (Set-ExcelRange or its alias Set-Format) " {
@@ -54,8 +63,9 @@ describe "Consistent passing of ranges." {
             $excel.Services.cells["B3"].Style.Font.Strike                                                                              | Should      -Be $true
             {Set-ExcelRange -Worksheet $excel.Services -Range "A5:B6" -FontSize 8                                                    } | Should -Not -Throw
             $excel.Services.cells["A5"].Style.Font.Size                                                                                | Should      -Be 8
+            Close-ExcelPackage -NoSave $excel
         }
-        Close-ExcelPackage -NoSave $excel
+
         it "Accepts Table, Table.Address , worksheet + Name, Column," {
             $excel = Get-Service | Export-Excel -Path test2.xlsx -WorksheetName Services -PassThru -AutoNameRange -AutoSize -DisplayPropertySet -TableName servicetable -Title "Services on $Env:COMPUTERNAME"
             {Set-ExcelRange $excel.Services.Tables[0] -Italic                                                                        } | Should -Not -Throw
@@ -66,8 +76,9 @@ describe "Consistent passing of ranges." {
             $excel.Services.cells["B4"].Style.Font.Bold                                                                                | Should      -Be $true
            {$excel.Services.Column(3) | Set-ExcelRange -FontColor ([System.Drawing.Color]::Red)                                      } | Should -Not -Throw
             $excel.Services.cells["C4"].Style.Font.Color.Rgb                                                                           | Should      -Be "FFFF0000"
+            Close-ExcelPackage -NoSave $excel
         }
-        Close-ExcelPackage -NoSave $excel
+
     }
 
     Context "PivotTables" {
@@ -109,8 +120,5 @@ describe "Consistent passing of ranges." {
             $excel.Workbook.Worksheets["pt2"]                                                                                          | Should -Not -BeNullOrEmpty
             Close-ExcelPackage   -NoSave   $excel
         }
-
-
-
     }
 }
