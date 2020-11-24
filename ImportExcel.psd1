@@ -50,7 +50,8 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'DoChart',
         'Expand-NumberFormat',
         'Export-Excel',
-        'Export-ExcelSheet',        
+		'Export-ExcelSheet',        
+		'Get-ExcelCellComment',
         'Get-ExcelColumnName',
         'Get-ExcelSheetInfo',
         'Get-ExcelWorkbookInfo',
@@ -76,11 +77,13 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'New-PSItem',
         'Open-ExcelPackage',
         'PieChart',
-        'Pivot',
+		'Pivot',
+		'Remove-ExcelCellComment',
         'Remove-Worksheet'
         'Select-Worksheet',
         'Send-SQLDataToExcel',
-        'Set-CellStyle',
+		'Set-CellStyle',
+		'Set-ExcelCellComment',
         'Set-ExcelColumn',
         'Set-ExcelRange',
         'Set-ExcelRow',
@@ -89,9 +92,9 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Test-Date',
         'Test-Integer',
         'Test-Number',
-        'Test-String',
-        'Update-FirstObjectProperties'
-    )
+		'Test-String',
+		'Update-FirstObjectProperties'
+)
 
     # Aliases to export from this module
     AliasesToExport    = @(
