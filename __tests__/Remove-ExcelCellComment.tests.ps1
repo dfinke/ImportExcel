@@ -1,4 +1,4 @@
-Describe "Testing comment retrieval " {
+Describe "Testing comment Removal " {
     BeforeAll {
 		$path = "TestDrive:\test.xlsx"
 		

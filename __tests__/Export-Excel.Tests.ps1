@@ -450,7 +450,7 @@ Describe ExportExcel -Tag "ExportExcel" {
             $ws.ConditionalFormatting[1].Type                           | Should      -Be "ContainsText"
             #Add RGB Comparison
         }
-    } -skip
+    } #-skip
 
     Context "#Example 7      # Update-FirstObjectProperties works " {
         BeforeAll {
