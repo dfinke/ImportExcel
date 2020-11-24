@@ -17,10 +17,10 @@ $sheet.Column(1) | Set-ExcelRange -Bold -AutoFit
 $sheet.Column(2) | Set-ExcelRange -Width 29 -WrapText
 $sheet.Column(3) | Set-ExcelRange -HorizontalAlignment Right -NFormat "#,###"
 
-Set-ExcelRange -Range -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NFormat "#,###"
+Set-ExcelRange -Range $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NFormat "#,###"
 
-Set-ExcelRange -Range   $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#,##0.0" -Bold
-#In Set-ExcelRange   "-Address" is an alias for "-Range"
+Set-ExcelRange -Range $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#,##0.0" -Bold
+#In Set-ExcelRange "-Address" is an alias for "-Range"
 Set-ExcelRange -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
 
 #Create a Red Data-bar for the values in Column D
