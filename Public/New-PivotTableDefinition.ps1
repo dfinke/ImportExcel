@@ -5,6 +5,8 @@ function New-PivotTableDefinition {
         [Parameter(Mandatory)]
         [Alias("PivtoTableName")]#Previous typo - use alias to avoid breaking scripts
         $PivotTableName,
+        [OfficeOpenXml.ExcelAddressBase]
+        $Address,
         $SourceWorksheet,
         $SourceRange,
         $PivotRows,
