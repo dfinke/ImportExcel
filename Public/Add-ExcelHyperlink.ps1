@@ -30,9 +30,9 @@ function Add-ExcelHyperlink {
         Write-verbose -Message "Adding hyperlink [$Hyperlink] to the [$Cell] cell on [$WorksheetName] worksheet"
         $null = $ws.Cells[$Cell].Hyperlink = $hyperlinkObj
 
-        if(($ws.Workbook.Styles.NamedStyles.Name  -EQ 'hyperlink').Count -eq 1) {
+        if(($ws.Workbook.Styles.NamedStyles.Name  -EQ 'hyperlink').Count -eq 0) {
             Write-verbose -Message "The NamedStyle Hyperlink does not exist - creating one"
-            $namedStyle=$ws.Workbook.Styles.CreateNamedStyle("Hyperlink")
+            $namedStyle=$ws.Workbook.Styles.CreateNamedStyle("hyperlink")
             $namedStyle.Style.Font.UnderLine = $true
             $namedStyle.Style.Font.Color.SetColor("Blue")
         }
