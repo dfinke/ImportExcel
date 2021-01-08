@@ -11,8 +11,8 @@ function Add-ExcelHyperlink {
         [switch]$Show
     )
     
-        Write-verbose -Message "Opening ExcelPackge via Path [$Path]"
-        if ($Path -and -not $ExcelPackage) {$ExcelPackage = Open-ExcelPackage -path $Path }
+        Write-verbose -Message "Opening ExcelPackage via Path [$Path]"
+        if ($Path -and -not $ExcelPackage) {$ExcelPackage = Open-ExcelPackage -Path $Path}
 
         Write-verbose -Message "Setting the Worksheet to [$WorksheetName]"
         $ws = $ExcelPackage.Workbook.Worksheets[$WorksheetName]
@@ -26,14 +26,20 @@ function Add-ExcelHyperlink {
 
         Write-verbose -Message "Creating a hyperlink [$Hyperlink] under [$DisplayName]"
         $hyperlinkObj = New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList $Hyperlink , $DisplayName
-
+        
         Write-verbose -Message "Adding hyperlink [$Hyperlink] to the [$Cell] cell on [$WorksheetName] worksheet"
         $null = $ws.Cells[$Cell].Hyperlink = $hyperlinkObj
 
-        Write-verbose -Message "Changing [$Cell] cell style from Normal to Hyperlink"
-        $null = $ws.Cells[$Cell].StyleID = 1
+        if(($ws.Workbook.Styles.NamedStyles.Name  -EQ 'hyperlink').Count -eq 1) {
+            Write-verbose -Message "The NamedStyle Hyperlink does not exist - creating one"
+            $namedStyle=$ws.Workbook.Styles.CreateNamedStyle("Hyperlink")
+            $namedStyle.Style.Font.UnderLine = $true
+            $namedStyle.Style.Font.Color.SetColor("Blue")
+        }
+
+        Write-verbose -Message "Changing [$Cell] cell style from [$($ws.Cells[$Cell].StyleName)] to [$($namedStyle.Name)]"
+        $null = $ws.Cells[$Cell].StyleName = $($namedStyle.Name)
 
         Write-verbose -Message "Closing the ExcelPackage"
-        try{Close-ExcelPackage -ExcelPackage $ExcelPackage -Show:$Show}
-        catch { Write-Warning "Error occured while Closing the package. Check if the [$Path] file is closed."}
+        Close-ExcelPackage -ExcelPackage $ExcelPackage -Show:$Show
 }
