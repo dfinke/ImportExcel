@@ -12,7 +12,7 @@ function Add-ExcelHyperlink {
     )
     
         Write-verbose -Message "Opening ExcelPackage via Path [$Path]"
-        if ($Path -and -not $ExcelPackage) {$ExcelPackage = Open-ExcelPackage -Path $Path}
+        if ($Path -and -not $ExcelPackage) { $ExcelPackage = Open-ExcelPackage -Path $Path }
 
         Write-verbose -Message "Setting the Worksheet to [$WorksheetName]"
         $ws = $ExcelPackage.Workbook.Worksheets[$WorksheetName]
@@ -27,7 +27,7 @@ function Add-ExcelHyperlink {
         Write-verbose -Message "Creating a hyperlink [$Hyperlink] under [$DisplayName]"
         $hyperlinkObj = New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList $Hyperlink , $DisplayName
         
-        Write-verbose -Message "Adding hyperlink [$Hyperlink] to the [$Cell] cell on [$WorksheetName] worksheet"
+        Write-verbose -Message "Adding hyperlink [$Hyperlink] in the [$Cell] cell on [$WorksheetName] worksheet"
         $null = $ws.Cells[$Cell].Hyperlink = $hyperlinkObj
 
         if(($ws.Workbook.Styles.NamedStyles.Name  -EQ 'hyperlink').Count -eq 0) {
