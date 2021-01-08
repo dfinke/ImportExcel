@@ -1,6 +1,7 @@
 Describe "Testing adding hyperlink" {
     BeforeAll {
-		$path = "TestDrive:\hyperlink.xlsx"
+		$path = "TestDrive:\addhyperlink.xlsx"
+        $path = "$ENV:TEMP\addhyperlink.xlsx"
         $worksheetName = "Sheet1"
         $cell = "A2"
         $hyperlink = "NamedRange"
@@ -17,18 +18,18 @@ Describe "Testing adding hyperlink" {
         Close-ExcelPackage -ExcelPackage $excelPackage
 	}
 	It "Hyperlink does not exist" {
-		$hyperlink = Get-ExcelHyperlink -Path $path -WorksheetName $worksheetName  -Cell $Cell
+		$hyperlink = Get-ExcelHyperlink -Path $path
 		$hyperlink | Should -Be $null
 
 	}
-	It "Hyperlink is been added" {
+	It "Hyperlink is added" {
 		Add-ExcelHyperlink -Path $path -WorksheetName $worksheetName -Cell $Cell -Hyperlink $rangeName -DisplayName 'display text'
 
 		$hyperlink2 = Get-ExcelHyperlink -Path $path -WorksheetName $worksheetName -Cell $Cell 
         ($hyperlink2).Address| Should -Be $Cell
 	}
 
-	It "Cell style is changed from Normal to Hyperlink" {
+	It "Cell with hyperlink style is changed from Normal to Hyperlink" {
         ($hyperlink2).StyleName| Should -Be 'Hyperlink'
 	}
 }
