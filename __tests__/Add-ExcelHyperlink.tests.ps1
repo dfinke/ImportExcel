@@ -1,6 +1,6 @@
 Describe "Testing adding hyperlink" {
     BeforeAll {
-		$path = "TestDrive:\hyperlinkAdd.xlsx"
+		$path = "TestDrive:\hyperlink.xlsx"
         $worksheetName = "Sheet1"
         $cell = "A2"
         $hyperlink = "NamedRange"
@@ -8,7 +8,7 @@ Describe "Testing adding hyperlink" {
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         1..5 | Export-Excel -Path $path -WorksheetName $worksheetName 
 
-        $excelPackage = Open-ExcelPackage -Path $path -KillExcel
+        $excelPackage = Open-ExcelPackage -Path $path
         $excel = $excelPackage.Workbook.Worksheets[$worksheetName]
 
         $rangeCells=$excel.Cells["D1:E12"]
@@ -30,5 +30,5 @@ Describe "Testing adding hyperlink" {
 
 	It "Cell style is changed from Normal to Hyperlink" {
         ($hyperlink2).StyleName| Should -Be 'Hyperlink'
-	}  
+	}
 }
