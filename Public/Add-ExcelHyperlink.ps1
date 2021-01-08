@@ -5,7 +5,9 @@ function Add-ExcelHyperlink {
         [String]$Path,
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [String]$WorksheetName,
+        [Parameter(Mandatory)]
         [String]$Cell,
+        [Parameter(Mandatory)]
         [String]$Hyperlink,
         [String]$DisplayName,
         [switch]$Show
