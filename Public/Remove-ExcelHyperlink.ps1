@@ -1,7 +1,7 @@
-function Get-ExcelHyperlink {
+function Remove-ExcelHyperlink {
     <#
             .SYNOPSIS
-                Get the hyperlink within workbook (supports local named range only at the moment)
+                Removes the hyperlink from cell(s) or worksheet(s) or entire workbook
     
             .PARAMETER Path
                 The Excel workbook path
@@ -10,10 +10,10 @@ function Get-ExcelHyperlink {
                 The Excel package
          
             .PARAMETER WorksheetName
-                The worksheet containing the target cell
+                The worksheet to remove hyperlink(s) from
      
             .PARAMETER Cell
-                Target cell that will have hyperlink set
+                The cell to remove hyperlink from
             
             .NOTES
                 Author: Mikey Bronowski (@MikeyBronowski), bronowski.it
@@ -48,7 +48,8 @@ function Get-ExcelHyperlink {
         [String]$Path,
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [String[]]$WorksheetName,
-        [String[]]$Cell
+        [String[]]$Cell,
+        [switch]$Show
     )
     
         if (-not $WorksheetName -and $Cell) { Write-Warning -Message "Please provide the WorksheetName" ; return }
@@ -62,23 +63,30 @@ function Get-ExcelHyperlink {
             $WorksheetName = $WorksheetInfo
         }
 
-        Write-verbose -Message "Looping through the ExcelSheets"
+        Write-verbose -Message "Looping through the worksheets"
         $cells = @()
         foreach ($worksheet in $WorksheetName) {
             if ($worksheet -notin $WorksheetInfo) { Write-Warning -Message "Worksheet [$worksheet] does not exist" ; continue }
-            Write-verbose -Message "Looping through the ExcelSheets: $worksheet"
+            Write-verbose -Message "... worksheet: $worksheet"
             $ws = $ExcelPackage.Workbook.Worksheets[$worksheet]
 
-            if($Cell) {
-                foreach ($cellItem in $Cell) {
-                    Write-verbose -Message "Checking [$cellItem] cell only"
-                    $ws.Cells["$cellItem"] | SELECT Worksheet, Address, StyleName, Hyperlink
+            if(!$Cell) {
+                Write-verbose -Message "No cell specified - checking all"
+                $Cell = (Get-ExcelHyperlink -Path $path -WorksheetName $worksheet).Cell
+            }
+            foreach ($cellItem in $Cell) {
+
+                if ($ws.Cells["$cellItem"].Hyperlink) {
+                    $cellValue = $ws.Cells[$cellItem].Value
+                    Write-verbose -Message "Removing hyperlink from [$cellItem] cell"
+                    $ws.Cells["$cellItem"].Hyperlink = $null
+
+                    Write-verbose -Message "Changing [$cellItem] cell style from [$($ws.Cells[$cellItem].StyleName)] to [Normal]"
+                    $null = $ws.Cells[$cellItem].StyleName = 'Normal'
+                    $ws.Cells[$cellItem].Value = $cellValue
+                    }
                 }
-            }
-            else {
-                $ws.Cells | Where-Object {$_.Hyperlink -ne $null} | SELECT Worksheet, Address, StyleName, Hyperlink
-            }
         }
         Write-verbose -Message "Closing the ExcelPackage"
-        Close-ExcelPackage -ExcelPackage $ExcelPackage -NoSave -Show:$Show      
+        Close-ExcelPackage -ExcelPackage $ExcelPackage -Show:$Show      
 }
