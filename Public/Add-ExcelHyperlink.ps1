@@ -1,12 +1,12 @@
 function Add-ExcelHyperlink {
     <#
             .SYNOPSIS
-                Add the hyperlink to the specified cell
+                Add the hyperlink in a cell (supports local named range only at the moment)
     
             .PARAMETER Path
                 The Excel workbook path
     
-            .PARAMETER ExcelPackage object
+            .PARAMETER ExcelPackage
                 The Excel package
          
             .PARAMETER WorksheetName
