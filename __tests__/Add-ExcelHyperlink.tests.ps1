@@ -1,7 +1,6 @@
 Describe "Testing adding hyperlink" {
     BeforeAll {
 		$path = "TestDrive:\addhyperlink.xlsx"
-        $path = "$ENV:TEMP\addhyperlink.xlsx"
         $worksheetName = "Sheet1"
         $cell = "A8"
         $cell2 = "A9"
@@ -24,8 +23,8 @@ Describe "Testing adding hyperlink" {
         $excelPackage = Open-ExcelPackage -Path $path -KillExcel
         Close-ExcelPackage -ExcelPackage $excelPackage -NoSave
         Remove-Item -Path $path -ErrorAction SilentlyContinue
-    
     }
+    
 	It "Hyperlink does not exist" {
 		$hyperlink = Get-ExcelHyperlink -Path $path
 		$hyperlink | Should -Be $null

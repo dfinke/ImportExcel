@@ -1,13 +1,54 @@
 function Get-ExcelHyperlink {
+    <#
+            .SYNOPSIS
+                Get the hyperlink within workbook (supports local named range only at the moment)
+    
+            .PARAMETER Path
+                The Excel workbook path
+    
+            .PARAMETER ExcelPackage
+                The Excel package
+         
+            .PARAMETER WorksheetName
+                The worksheet containing the target cell
+     
+            .PARAMETER Cell
+                Target cell that will have hyperlink set
+            
+            .NOTES
+                Author: Mikey Bronowski (@MikeyBronowski), bronowski.it
+    
+            .EXAMPLE		
+                Get-ExcelHyperlink -Path $path
+    
+                Get all hyperlinks within Excel file
+    
+            .EXAMPLE		
+                Get-ExcelHyperlink -Path $path -WorksheetName Sheet1
+
+                Get all hyperlinks within worksheet
+
+            .EXAMPLE		
+                Get-ExcelHyperlink -Path $path -WorksheetName Sheet1 -Cell A2
+
+                Get hyperlink details from the cell
+    
+            .EXAMPLE	
+                Remove-Item -Path $path -ErrorAction SilentlyContinue
+                $excelPackage = 'Some text' | Export-Excel -Path $path -WorksheetName Sheet1 -PassThru
+                $excel=$excelPackage.Workbook.Worksheets['Sheet1']
+                $excelPackage.Workbook.Names.Add('NamedRange',$excel.cells['D1:F50'])
+                Close-ExcelPackage $excelPackage
+                Add-ExcelHyperlink -Path $path -WorksheetName Sheet1 -Hyperlink 'NamedRange'-Cell A3 -DisplayName 'Link to NamedRange' -Show
+    
+                Add a hyperlink in A3 to NamedRange with a custom DisplayName
+            #>
     [CmdletBinding()]
     param(     
         [String]$Path,
         [OfficeOpenXml.ExcelPackage]$ExcelPackage,
         [String[]]$WorksheetName,
-        [String[]]$Cell,
-        [String]$Hyperlink,
-        [String]$DisplayName,
-        [switch]$Show
+        [String[]]$Cell
     )
     
         if (-not $WorksheetName -and $Cell) { Write-Warning -Message "Please provide the WorksheetName" ; return }
