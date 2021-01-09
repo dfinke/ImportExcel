@@ -70,8 +70,11 @@ function Get-ExcelHyperlink {
             Write-verbose -Message "Looping through the ExcelSheets: $worksheet"
             $ws = $ExcelPackage.Workbook.Worksheets[$worksheet]
 
-            if($Cell) {Write-verbose -Message "Checking [$Cell] cell only"
-                $ws.Cells["$Cell"] | SELECT Worksheet, Address, StyleName, Hyperlink
+            if($Cell) {
+                foreach ($cellItem in $Cell) {
+                    Write-verbose -Message "Checking [$cellItem] cell only"
+                    $ws.Cells["$cellItem"] | SELECT Worksheet, Address, StyleName, Hyperlink
+                }
             }
             else {
                 $ws.Cells | Where-Object {$_.Hyperlink -ne $null} | SELECT Worksheet, Address, StyleName, Hyperlink
