@@ -98,10 +98,14 @@ function Add-ExcelHyperlink {
                 $namedStyle=$ws.Workbook.Styles.CreateNamedStyle('Hyperlink')
                 $namedStyle.Style.Font.UnderLine = $true
                 $namedStyle.Style.Font.Color.SetColor('Blue')
+                $hyperlinkStyle = $namedStyle.Name
+            }
+            else {
+                $hyperlinkStyle = 'Hyperlink'
             }
     
-            Write-verbose -Message "Changing [$Cell] cell style from [$($ws.Cells[$Cell].StyleName)] to [$($namedStyle.Name)]"
-            $null = $ws.Cells[$Cell].StyleName = $namedStyle.Name
+            Write-verbose -Message "Changing [$Cell] cell style from [$($ws.Cells[$Cell].StyleName)] to [$($hyperlinkStyle)]"
+            $null = $ws.Cells[$Cell].StyleName = $hyperlinkStyle
     
             Write-verbose -Message "Closing the ExcelPackage"
             Close-ExcelPackage -ExcelPackage $ExcelPackage -Show:$Show
