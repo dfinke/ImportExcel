@@ -8,17 +8,14 @@ Describe "Testing removing hyperlinks" {
         $cell2 = "B3"
         $rangeName = "NamedRange"
 
-        
-
         Remove-Item -Path $path -ErrorAction SilentlyContinue
-        1..5 | Export-Excel -Path $path -WorksheetName $worksheetName 
+        1..5 | Export-Excel -Path $path -WorksheetName $worksheetName
+        1..5 | Export-Excel -Path $path -WorksheetName $worksheetName2
 
         $excelPackage = Open-ExcelPackage -Path $path
-        Copy-ExcelWorksheet -SourceWorkbook $excelPackage -DestinationWorkbook $excelPackage -DestinationWorksheet $worksheetName2
 
         $excel = $excelPackage.Workbook.Worksheets[$worksheetName]
         
-
         $rangeCells=$excel.Cells["D1:E12"]
         $excelPackage.Workbook.Names.Add($rangeName,$rangeCells)
 
