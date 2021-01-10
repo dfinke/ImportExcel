@@ -58,6 +58,7 @@ Describe "Testing removing hyperlinks" {
         }
 
     It "StyleName from the cell is reset to Normal" {
+            $hyperlink3 = Get-ExcelHyperlink -Path $path -WorksheetName $worksheetName -Cell $cell
             $hyperlink3.StyleName | Should -Be 'Normal'
         }
 
