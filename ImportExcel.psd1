@@ -33,6 +33,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Add-ConditionalFormatting',
         'Add-ExcelChart',
         'Add-ExcelDataValidationRule',
+        'Add-ExcelHyperlink',
         'Add-ExcelName',
         'Add-ExcelTable',
         'Add-PivotTable',
@@ -52,6 +53,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Export-Excel',
         'Export-ExcelSheet',        
         'Get-ExcelColumnName',
+        'Get-ExcelHyperlink',
         'Get-ExcelSheetInfo',
         'Get-ExcelWorkbookInfo',
         'Get-HtmlTable',
@@ -77,6 +79,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Open-ExcelPackage',
         'PieChart',
         'Pivot',
+        'Remove-ExcelHyperlink',
         'Remove-Worksheet'
         'Select-Worksheet',
         'Send-SQLDataToExcel',
