@@ -76,7 +76,7 @@ function Get-ExcelHyperlink {
                 }
             }
             else {
-                $ws.Cells | Where-Object {$_.Hyperlink -ne $null} | SELECT Worksheet, Address, StyleName, Hyperlink
+                $ws.Cells | Where-Object {$_.Hyperlink -ne $null} | SELECT Worksheet, @{N='Cell';E={$_.Address}}, StyleName, Hyperlink
             }
         }
         Write-verbose -Message "Closing the ExcelPackage"

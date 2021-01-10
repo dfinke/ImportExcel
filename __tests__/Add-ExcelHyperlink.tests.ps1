@@ -38,18 +38,19 @@ Describe "Testing adding hyperlink" {
 		$null = Add-ExcelHyperlink -Path $path -WorksheetName $worksheetName -Cell $cell -Hyperlink $rangeName -DisplayName 'display text'
 		$hyperlink2 = Get-ExcelHyperlink -Path $path -WorksheetName $worksheetName -Cell $cell
 
-        ($hyperlink2).Address| Should -Be $Cell
+        ($hyperlink2).Address | Should -Be $cell
 	}
 
 	It "The first cell's style with hyperlink is changed from Normal to Hyperlink" {
-        ($hyperlink2).StyleName| Should -Be 'Hyperlink'
+        $hyperlink2 = Get-ExcelHyperlink -Path $path -WorksheetName $worksheetName -Cell $cell
+        ($hyperlink2).StyleName | Should -Be 'Hyperlink'
 	}
 
 	It "The next cell's style with hyperlink is changed from Normal to Hyperlink" {
         $null = Add-ExcelHyperlink -Path $path -WorksheetName $worksheetName -Cell $cell2 -Hyperlink $rangeName
         $hyperlink3 = Get-ExcelHyperlink -Path $path -WorksheetName $worksheetName -Cell $cell2
 
-        ($hyperlink3).StyleName| Should -Be 'Hyperlink'
+        ($hyperlink3).StyleName | Should -Be 'Hyperlink'
 	}
 
 	It "Cell without value gets DisplayName set by default" {
