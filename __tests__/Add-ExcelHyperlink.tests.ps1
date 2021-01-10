@@ -4,7 +4,7 @@ Describe "Testing adding hyperlink" {
         $worksheetName = "Sheet1"
         $cell = "A8"
         $cell2 = "A9"
-        $hyperlink = "NamedRange"
+        $rangeName = "NamedRange"
 
         Remove-Item -Path $path -ErrorAction SilentlyContinue
         1..5 | Export-Excel -Path $path -WorksheetName $worksheetName 
@@ -24,7 +24,7 @@ Describe "Testing adding hyperlink" {
         Close-ExcelPackage -ExcelPackage $excelPackage -NoSave
         Remove-Item -Path $path -ErrorAction SilentlyContinue
     }
-    
+
 	It "Hyperlink does not exist" {
 		$hyperlink = Get-ExcelHyperlink -Path $path
 		$hyperlink | Should -Be $null

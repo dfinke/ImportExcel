@@ -6,7 +6,7 @@ Describe "Testing getting hyperlinks" {
     
             $cell = "A2"
             $cell2 = "B3"
-            $hyperlink = "NamedRange"
+            $rangeName = "NamedRange"
     
             Remove-Item -Path $path -ErrorAction SilentlyContinue
             1..5 | Export-Excel -Path $path -WorksheetName $worksheetName 

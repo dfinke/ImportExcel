@@ -6,7 +6,7 @@ Describe "Testing removing hyperlinks" {
 
         $cell = "A2"
         $cell2 = "B3"
-        $hyperlink = "NamedRange"
+        $rangeName = "NamedRange"
 
         
 
