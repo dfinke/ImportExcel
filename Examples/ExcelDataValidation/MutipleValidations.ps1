@@ -71,7 +71,7 @@ Add-ExcelDataValidationRule @ValidationParams @MoreValidationParams
 
 #region Creating a rule for numbers to be between 0 an 10000
 $MoreValidationParams = @{
-    Range          = 'F2:F1001'
+    Range          = 'D2:D1001'
     ValidationType = 'Integer'
     Operator       = 'between'
     Value          = 0
