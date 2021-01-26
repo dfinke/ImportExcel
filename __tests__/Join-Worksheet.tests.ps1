@@ -95,7 +95,7 @@ Describe "Join Worksheet part 1" {
     }
 }
 
-Describe "Join Worksheet part 2" {
+Describe "Join Worksheet part 2" -Skip {
     BeforeAll {
         if (-not (Get-command Get-CimInstance -ErrorAction SilentlyContinue)) {
             Function Get-CimInstance {
