@@ -1,5 +1,5 @@
 ﻿#Requires -Modules Pester
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'False Positives')]
 param()
 Describe "Join Worksheet part 1" {
     BeforeAll {
@@ -95,48 +95,109 @@ Describe "Join Worksheet part 1" {
     }
 }
 
-Describe "Join Worksheet part 2" {
-    BeforeAll {
-        if (-not (Get-command Get-CimInstance -ErrorAction SilentlyContinue)) {
-            Function Get-CimInstance {
-                param ($classname  , $namespace)
-                Import-Clixml "$PSScriptRoot\$classname.xml"
-            }
-        }
-    }
-    BeforeEach {
-        $path = "TestDrive:\Test.xlsx"
-        Remove-item -Path $path -ErrorAction SilentlyContinue
-        #switched to CIM objects so test runs on V6+
-        Get-CimInstance -ClassName win32_logicaldisk |
-        Select-Object -Property DeviceId, VolumeName, Size, Freespace |
-        Export-Excel -Path $path -WorkSheetname Volumes -NumberFormat "0,000"
-        Get-CimInstance -Namespace root/StandardCimv2 -class MSFT_NetAdapter   |
-        Select-Object -Property Name, InterfaceDescription, MacAddress, LinkSpeed |
-        Export-Excel -Path $path -WorkSheetname NetAdapters
+# Describe "Join Worksheet part 2" -Tags JoinWorksheetPart2 -Skip {
+#     BeforeAll {
+#         if (-not (Get-command Get-CimInstance -ErrorAction SilentlyContinue)) {
+#             Function Get-CimInstance {
+#                 param ($classname  , $namespace)
+#                 Import-Clixml "$PSScriptRoot\$classname.xml"
+#             }
+#         }
+#     }
+#     BeforeEach {
+#         $path = "TestDrive:\Test.xlsx"
+#         Remove-item -Path $path -ErrorAction SilentlyContinue
+#         #switched to CIM objects so test runs on V6+
+#         Get-CimInstance -ClassName win32_logicaldisk |
+#         Select-Object -Property DeviceId, VolumeName, Size, Freespace |
+#         Export-Excel -Path $path -WorkSheetname Volumes -NumberFormat "0,000"
+#         Get-CimInstance -Namespace root/StandardCimv2 -class MSFT_NetAdapter   |
+#         Select-Object -Property Name, InterfaceDescription, MacAddress, LinkSpeed |
+#         Export-Excel -Path $path -WorkSheetname NetAdapters
 
-        Join-Worksheet -Path $path -HideSource -WorkSheetName Summary -NoHeader -LabelBlocks  -AutoSize -Title "Summary" -TitleBold -TitleSize 22
-        $excel = Open-ExcelPackage -Path $path
+#         Join-Worksheet -Path $path -HideSource -WorkSheetName Summary -NoHeader -LabelBlocks  -AutoSize -Title "Summary" -TitleBold -TitleSize 22
+#         $excel = Open-ExcelPackage -Path $path
+#         $ws = $excel.Workbook.Worksheets["Summary"]
+#     }
+#     Context "Bringing 3 Unlinked blocks onto one page" {
+#         it "Hid the source worksheets                                                              " {
+#             $excel.Workbook.Worksheets[1].Hidden.tostring()             | Should      -Be "Hidden"
+#             $excel.Workbook.Worksheets[2].Hidden.tostring()             | Should      -Be "Hidden"
+#         }
+#         it "Created the Summary sheet with title, and block labels, and copied the correct data    " {
+#             $ws.Cells["A1"].Value                                       | Should      -Be "Summary"
+#             $ws.Cells["A2"].Value                                       | Should      -Be $excel.Workbook.Worksheets[1].name
+#             $ws.Cells["A3"].Value                                       | Should      -Be $excel.Workbook.Worksheets[1].Cells["A1"].value
+#             $ws.Cells["A4"].Value                                       | Should      -Be $excel.Workbook.Worksheets[1].Cells["A2"].value
+#             $ws.Cells["B4"].Value                                       | Should      -Be $excel.Workbook.Worksheets[1].Cells["B2"].value
+#             $nextRow = $excel.Workbook.Worksheets[1].Dimension.Rows + 3
+#             $ws.Cells["A$NextRow"].Value                                | Should      -Be $excel.Workbook.Worksheets[2].name
+#             $nextRow ++
+#             $ws.Cells["A$NextRow"].Value                                | Should      -Be $excel.Workbook.Worksheets[2].Cells["A1"].value
+#             $nextRow ++
+#             $ws.Cells["A$NextRow"].Value                                | Should      -Be $excel.Workbook.Worksheets[2].Cells["A2"].value
+#             $ws.Cells["B$NextRow"].Value                                | Should      -Be $excel.Workbook.Worksheets[2].Cells["B2"].value
+#         }
+#     }
+# }
+
+Describe "Join Worksheet part 2" -Tags JoinWorksheetPart2 {
+    BeforeEach {
+        $Sales = ConvertFrom-Csv -InputObject @"
+        ID,Product,Quantity,Price,Total
+        12001,Nails,37,3.99,147.63
+        12002,Hammer,5,12.10,60.5
+        12003,Saw,12,15.37,184.44
+        12010,Drill,20,8,159
+        12011,Crowbar,7,23.48,164.36
+"@
+        
+        $SalesInfo = ConvertFrom-Csv -InputObject @"
+        ID,SalesId
+        12001,100
+        12002,101
+        12003,102
+        12010,103
+        12011,104
+"@
+        
+        $xlfile = "$env:TEMP\testJoin.xlsx"
+        Remove-Item $xlfile -ErrorAction SilentlyContinue
+        
+        $Sales | Export-Excel $xlfile -WorksheetName Sales
+        $SalesInfo | Export-Excel $xlfile -WorksheetName SalesInfo
+        
+        $excel = Join-Worksheet -Path $xlfile -WorkSheetName Summary -PassThru -HideSource -NoHeader -LabelBlocks  -AutoSize -Title "Summary" -TitleBold -TitleSize 22        
         $ws = $excel.Workbook.Worksheets["Summary"]
     }
+    
+    AfterEach {
+        Close-ExcelPackage $excel
+    }
+
     Context "Bringing 3 Unlinked blocks onto one page" {
-        it "Hid the source worksheets                                                              " {
-            $excel.Workbook.Worksheets[1].Hidden.tostring()             | Should      -Be "Hidden"
-            $excel.Workbook.Worksheets[2].Hidden.tostring()             | Should      -Be "Hidden"
-        }
-        it "Created the Summary sheet with title, and block labels, and copied the correct data    " {
-            $ws.Cells["A1"].Value                                       | Should      -Be "Summary"
-            $ws.Cells["A2"].Value                                       | Should      -Be $excel.Workbook.Worksheets[1].name
-            $ws.Cells["A3"].Value                                       | Should      -Be $excel.Workbook.Worksheets[1].Cells["A1"].value
-            $ws.Cells["A4"].Value                                       | Should      -Be $excel.Workbook.Worksheets[1].Cells["A2"].value
-            $ws.Cells["B4"].Value                                       | Should      -Be $excel.Workbook.Worksheets[1].Cells["B2"].value
+        It "Tests hiding the source worksheets" {
+            $excel.Workbook.Worksheets.Count | Should -Be 3
+            $excel.Workbook.Worksheets[1].Hidden.ToString() | Should -Be "Hidden"
+            $excel.Workbook.Worksheets[2].Hidden.ToString() | Should -Be "Hidden"
+        }       
+
+        It "Tests creating the Summary sheet with title, and block labels, and copied the correct data    " {
+            $ws.Cells["A1"].Value | Should -Be "Summary"
+            $ws.Cells["A2"].Value | Should -Be $excel.Workbook.Worksheets[1].name
+            $ws.Cells["A3"].Value | Should -Be $excel.Workbook.Worksheets[1].Cells["A1"].value
+            $ws.Cells["A4"].Value | Should -Be $excel.Workbook.Worksheets[1].Cells["A2"].value
+            $ws.Cells["B4"].Value | Should -Be $excel.Workbook.Worksheets[1].Cells["B2"].value
+            
             $nextRow = $excel.Workbook.Worksheets[1].Dimension.Rows + 3
-            $ws.Cells["A$NextRow"].Value                                | Should      -Be $excel.Workbook.Worksheets[2].name
-            $nextRow ++
-            $ws.Cells["A$NextRow"].Value                                | Should      -Be $excel.Workbook.Worksheets[2].Cells["A1"].value
-            $nextRow ++
-            $ws.Cells["A$NextRow"].Value                                | Should      -Be $excel.Workbook.Worksheets[2].Cells["A2"].value
-            $ws.Cells["B$NextRow"].Value                                | Should      -Be $excel.Workbook.Worksheets[2].Cells["B2"].value
+            $ws.Cells["A$NextRow"].Value | Should -Be $excel.Workbook.Worksheets[2].name
+            
+            $nextRow++
+            $ws.Cells["A$NextRow"].Value | Should -Be $excel.Workbook.Worksheets[2].Cells["A1"].value
+            
+            $nextRow++
+            $ws.Cells["A$NextRow"].Value | Should -Be $excel.Workbook.Worksheets[2].Cells["A2"].value
+            $ws.Cells["B$NextRow"].Value | Should -Be $excel.Workbook.Worksheets[2].Cells["B2"].value
         }
     }
 }
