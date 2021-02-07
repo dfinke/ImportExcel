@@ -160,8 +160,8 @@ Describe "Join Worksheet part 2" -Tags JoinWorksheetPart2 {
         12010,103
         12011,104
 "@
-        
-        $xlfile = "$env:TEMP\testJoin.xlsx"
+  
+        $xlfile = "TestDrive:\Test.xlsx"
         Remove-Item $xlfile -ErrorAction SilentlyContinue
         
         $Sales | Export-Excel $xlfile -WorksheetName Sales
