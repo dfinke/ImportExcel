@@ -1,0 +1,11 @@
+{
+  "Run": {
+    "Path": "."
+  },
+  "TestResult": {
+    "Enabled": false,
+    "OutputFormat": "NUnitXml",
+    "OutputPath": "PesterTestResults.xml",
+    "OutputEncoding": "UTF8"
+  }
+}
