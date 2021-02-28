@@ -6,7 +6,7 @@
     RootModule         = 'ImportExcel.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '7.1.1'
+    ModuleVersion      = '7.1.2'
 
     # ID used to uniquely identify this module
     GUID               = '60dd4136-feff-401a-ba27-a84458c57ede'
@@ -52,6 +52,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Export-Excel',
         'Export-ExcelSheet',        
         'Get-ExcelColumnName',
+        'Get-ExcelFileSummary',        
         'Get-ExcelSheetInfo',
         'Get-ExcelWorkbookInfo',
         'Get-HtmlTable',

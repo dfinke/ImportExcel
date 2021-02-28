@@ -87,6 +87,9 @@ Fixes, Updates and new Examples
 | DSUM | Sums up the numbers in a field \(column\) of records in a list or database that match conditions that you specify. | [DSUM.ps1](https://github.com/dfinke/ImportExcel/blob/12fa49e3142af2178ae1c6b18d8c757af0d629ac/Examples/ExcelBuiltIns/DSUM.ps1) |
 | VLookup | Setups up a sheet, you enter the name of an item and the amount is looked up | [VLOOKUP.ps1](https://github.com/dfinke/ImportExcel/blob/e42f42fde92ca636af22252b753a8329f48e15f1/Examples/ExcelBuiltIns/VLOOKUP.ps1) |
 
+## What's new 7.1.2
+
+- Added `Get-ExcelFileSummary`. Gets summary information on an Excel file like number of rows, columns, and more.
 ## What's new 7.0.1
 
 More infrastructure improvements.
