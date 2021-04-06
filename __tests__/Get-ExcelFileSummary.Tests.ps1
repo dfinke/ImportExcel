@@ -17,7 +17,7 @@ Describe 'All tests for Get-ExcelFileSummary' -Tag "Get-ExcelFileSummary" {
             $actual.Rows | Should -Be 3
             $actual.Columns | Should -Be 2
             $actual.Address | Should -BeExactly 'A1:B3'
-            $actual.Path | Should -BeExactly "$PSScriptRoot\ImportExcelTests"
+            $actual.Path | Should -Not -BeNullOrEmpty
         }
 
         It "Tests summary on xlsx with multiple sheets" {
@@ -29,14 +29,14 @@ Describe 'All tests for Get-ExcelFileSummary' -Tag "Get-ExcelFileSummary" {
             $actual[0].Rows | Should -Be 1
             $actual[0].Columns | Should -Be 4
             $actual[0].Address | Should -BeExactly 'A1:D1'
-            $actual[0].Path | Should -BeExactly "$PSScriptRoot\ImportExcelTests"
+            $actual[0].Path | Should -Not -BeNullOrEmpty
 
             $actual[1].ExcelFile | Should -BeExactly 'MultipleSheets.xlsx'
             $actual[1].WorksheetName | Should -BeExactly 'Sheet2'
             $actual[1].Rows | Should -Be 2
             $actual[1].Columns | Should -Be 2
             $actual[1].Address | Should -BeExactly 'A1:B2'
-            $actual[1].Path | Should -BeExactly "$PSScriptRoot\ImportExcelTests"
+            $actual[1].Path | Should -Not -BeNullOrEmpty
         }
 
     }
