@@ -55,6 +55,25 @@ Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfi
 
 ![](.gitbook/assets/ScriptAnalyzerReport.png)
 
+## What's new 7.1.2
+
+- `Get-ExcelFileSummary` - Gets summary information on an Excel file like number of rows, columns, and more
+
+```
+dir . -r *.xlsx | Get-ExcelFileSummary | ft
+
+ExcelFile          WorksheetName Rows Columns Address Path
+---------          ------------- ---- ------- ------- ----
+Grades.xlsx        Sheet1          21       3 A1:C21  D:\temp\ExcelYouTube\Grades
+GradesAverage.xlsx Sheet1          21       5 A1:E21  D:\temp\ExcelYouTube\Grades
+AllShifts.xlsx     Sheet1          21       2 A1:B21  D:\temp\ExcelYouTube\SeparateData
+Shift_1.xlsx       Sheet1          10       2 A1:B10  D:\temp\ExcelYouTube\SeparateData
+Shift_2.xlsx       Sheet1           8       2 A1:B8   D:\temp\ExcelYouTube\SeparateData
+Shift_3.xlsx       Sheet1           5       2 A1:B5   D:\temp\ExcelYouTube\SeparateData
+Shifts.xlsx        Shift_1         10       2 A1:B10  D:\temp\ExcelYouTube\SeparateData
+Shifts.xlsx        Shift_2          8       2 A1:B8   D:\temp\ExcelYouTube\SeparateData
+```
+
 ## What's new 7.1.1
 
 * Merged [Nate Ferrell](https://github.com/scrthq)'s Linux fix. Thanks!
