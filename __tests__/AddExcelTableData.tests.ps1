@@ -3,8 +3,7 @@ if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
 }
 
 Describe "Test Add Excel Table Data" -Tag 'Add-ExcelTableData' {
-    BeforeEach {
-        
+    BeforeAll {
         $script:data = ConvertFrom-Csv @"
     Region,State,Units,Price
     East,Illinois,424,141.07
@@ -23,13 +22,13 @@ East,NYC1,4,1
 East,NYC2,4,1
 South,NYC2,4,1
 West,NYC2,4,1
-"@        
-    }
-    
-    It 'Should update a table' {
+"@
         $xlfile = "TestDrive:\testdata.xlsx"
         $data | Export-Excel -Path $xlfile -TableName salesData
 
+    }
+
+    It 'Should update a table' {
         $actual = Get-ExcelTable $xlfile
  
         $actual[0].WorksheetName | Should -BeExactly 'Sheet1'
@@ -47,12 +46,39 @@ West,NYC2,4,1
         $actual = Get-ExcelTable $xlfile
  
         $actual[0].WorksheetName | Should -BeExactly 'Sheet1'
-        $actual[0].TableName | Should -BeExactly 'salesData'
- 
+        $actual[0].TableName | Should -BeExactly 'salesData' 
         $actual[0].Address | Should -BeExactly 'A1:D13'
         $actual[0].Columns[0].Name | Should -BeExactly 'Region'
         $actual[0].Columns[1].Name | Should -BeExactly 'State'
         $actual[0].Columns[2].Name | Should -BeExactly 'Units'
         $actual[0].Columns[3].Name | Should -BeExactly 'Price'
+    }
+
+    It 'Handles multiple tables' {
+        $data | Export-Excel -Path $xlfile -TableName salesData2 -WorksheetName Sheet2
+
+        Add-ExcelTableData -Path $xlfile -WorksheetName Sheet2 -TableName salesData2 -Data $newData        
+        
+        Get-ChildItem TestDrive: | Get-ExcelTable | Add-ExcelTableData -Data $newData
+
+        $actual = Get-ChildItem $xlfile | Get-ExcelTable
+
+        $actual.Count | Should -Be 2 
+
+        $actual[0].WorksheetName | Should -BeExactly 'Sheet1'
+        $actual[0].TableName | Should -BeExactly 'salesData' 
+        $actual[0].Address | Should -BeExactly 'A1:D17'
+        $actual[0].Columns[0].Name | Should -BeExactly 'Region'
+        $actual[0].Columns[1].Name | Should -BeExactly 'State'
+        $actual[0].Columns[2].Name | Should -BeExactly 'Units'
+        $actual[0].Columns[3].Name | Should -BeExactly 'Price'
+
+        $actual[1].WorksheetName | Should -BeExactly 'Sheet2'
+        $actual[1].TableName | Should -BeExactly 'salesData2' 
+        $actual[1].Address | Should -BeExactly 'A1:D17'
+        $actual[1].Columns[0].Name | Should -BeExactly 'Region'
+        $actual[1].Columns[1].Name | Should -BeExactly 'State'
+        $actual[1].Columns[2].Name | Should -BeExactly 'Units'
+        $actual[1].Columns[3].Name | Should -BeExactly 'Price'
     }
 }
