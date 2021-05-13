@@ -19,7 +19,7 @@ function ConvertFrom-ExcelSheet {
         [string[]]$AsDate = @()
     )
 
-    $Path = (Resolve-Path $Path).Path
+    $Path = (Resolve-Path $Path).ProviderPath
     $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
     $workbook = $xl.Workbook
 
