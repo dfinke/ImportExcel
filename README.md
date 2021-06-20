@@ -55,6 +55,10 @@ Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfi
 
 ![](.gitbook/assets/ScriptAnalyzerReport.png)
 
+## What's new 7.1.3
+
+- Changed to `ProviderPath`. Thanks [Trevor Walker](https://github.com/sporkabob)
+
 ## What's new 7.1.2
 
 - `Get-ExcelFileSummary` - Gets summary information on an Excel file like number of rows, columns, and more
