@@ -1,14 +1,18 @@
-# README
+# PowerShell + Excel = Better Together
 
-### Donation
+Automate Excel via PowerShell without having Excel installed. Runs on Windows, Linux and MAC. Creating Tables, Pivot Tables, Charts and much more has just become a lot easier.
 
-If this project helped you reduce the time to get your job done, let me know.
+<br/>
 
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UCSB9YVPFSNCY)
+[![](https://img.shields.io/powershellgallery/v/ImportExcel.svg)](https://www.powershellgallery.com/packages/ImportExcel) [![](https://img.shields.io/powershellgallery/dt/ImportExcel.svg)](https://www.powershellgallery.com/packages/ImportExcel) [![](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/dfinke/ImportExcel/tree/70ab9e46c776e96fb287682d5b9b4b51a0ec3bac/LICENSE.txt)
 
-![](https://media.giphy.com/media/hpXxJ78YtpT0s/giphy.gif)
+<br/>
 
- [![](https://img.shields.io/powershellgallery/v/ImportExcel.svg)](https://www.powershellgallery.com/packages/ImportExcel) [![](https://img.shields.io/powershellgallery/dt/ImportExcel.svg)](https://www.powershellgallery.com/packages/ImportExcel) [![](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/dfinke/ImportExcel/tree/70ab9e46c776e96fb287682d5b9b4b51a0ec3bac/LICENSE.txt)
+Open `ImportExcel` as a remote repo in VS Code, without cloning it.
+
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/dfinke/importexcel)
+
+<br/>
 
 | CI System | Environment | Status |
 | :--- | :--- | :--- |
@@ -17,11 +21,22 @@ If this project helped you reduce the time to get your job done, let me know.
 | Azure DevOps | Ubuntu | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=Ubuntu)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master) |
 | Azure DevOps | macOS | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=macOS)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master) |
 
-PowerShell Import-Excel -
+<br/>
 
-Install from the [PowerShell Gallery](https://www.powershellgallery.com/packages/ImportExcel/).
+Install from the [PowerShell Gallery](https://www.powershellgallery.com/packages/ImportExcel/).   
 
-This PowerShell Module allows you to read and write Excel files without installing Microsoft Excel on your system. No need to bother with the cumbersome Excel COM-object. Creating Tables, Pivot Tables, Charts and much more has just become a lot easier.
+```powershell
+Install-Module -Name ImportExcel
+```
+### Donation
+
+If this project helped you reduce the time to get your job done, let me know, send a coffee.
+
+<br/>
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UCSB9YVPFSNCY)
+
+![](https://media.giphy.com/media/hpXxJ78YtpT0s/giphy.gif)
 
 ![](https://raw.githubusercontent.com/dfinke/ImportExcel/master/images/testimonial.png)
 
