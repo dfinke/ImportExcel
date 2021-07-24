@@ -1,4 +1,7 @@
 
+# v7.2.1
+
+- Improve auto-detection of data on the clipboard
 # v7.2.0
 
 - Added `Read-Clipboard` support for Windows. Read text from clipboard. It can read CSV or JSON. Plus, you can specify the delimiter and headers.

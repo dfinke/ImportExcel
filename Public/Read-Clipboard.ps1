@@ -62,7 +62,9 @@ function ReadClipboardImpl {
             ConvertFrom-Json $data
         }
         catch {
-            if ($data.indexof(",") -gt -1) {
+            $dataLines = @($data -split "`r`n?" | Select-Object -First 1)
+
+            if ($dataLines[0].indexOf(',') -gt -1) {
                 ConvertFrom-Csv $data
             }
             else {
