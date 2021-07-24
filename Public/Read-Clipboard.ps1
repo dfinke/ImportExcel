@@ -5,43 +5,27 @@ function Read-Clipboard {
         Check out the how to video - https://youtu.be/dv2GOH5sbpA
 
         .DESCRIPTION
-        Read text from clipboard. It is tuned to read tab delimited data. It can read CSV or JSON
+        Read text from clipboard. It can read CSV or JSON. Plus, you can specify the delimiter and headers.
 
         .EXAMPLE
-        Read-Clipboard # delimter default is tab `t
+        Read-Clipboard # Detects if the clipboard contains CSV, JSON, or Tab delimited data.
 
         .EXAMPLE
-        Read-Clipboard -Delimiter ',' # Converts CSV
+        Read-Clipboard -Delimiter '|' # Converts data using a pipe delimiter
 
         .EXAMPLE
-        Read-Clipboard -AsJson # Converts JSON
+        Read-Clipboard -Header 'P1', 'P2', 'P3' # Specify the header columns to be used
         
     #>
     param(
-        $Delimiter = "`t",
-        $Header,
-        [Switch]$AsJson
+        $Delimiter,
+        $Header   
     )
     
     if ($IsWindows) {
         $osInfo = Get-CimInstance -ClassName Win32_OperatingSystem
         if ($osInfo.ProductType -eq 1) {
-            $clipboardData = Get-Clipboard -Raw
-            if ($AsJson) {
-                ConvertFrom-Json -InputObject $clipboardData
-            }
-            else {
-                $cvtParams = @{
-                    InputObject = $clipboardData
-                    Delimiter   = $Delimiter
-                }
-
-                if ($Header) {
-                    $cvtParams.Header = $Header
-                }
-                
-                ConvertFrom-Csv @cvtParams
-            }
+            ReadClipboardImpl (Get-Clipboard -Raw)
         }
         else {
             Write-Error "This command is only supported on the desktop."
@@ -49,5 +33,44 @@ function Read-Clipboard {
     }
     else {
         Write-Error "This function is only available on Windows desktop"
+    }
+}
+
+function ReadClipboardImpl {
+    param(
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
+        [String] $data,
+        $Delimiter,
+        $Header
+    )
+
+    if (!$PSBoundParameters.ContainsKey('Delimiter') -and !$PSBoundParameters.ContainsKey('Header')) {
+        try {
+            ConvertFrom-Json $data
+        }
+        catch {
+            if ($data.indexof(",") -gt -1) {
+                ConvertFrom-Csv $data
+            }
+            else {
+                ConvertFrom-Csv $data -Delimiter "`t"
+            }
+        }
+    }
+    else {
+        $cvtParams = @{
+            InputObject = $data                 
+        }
+
+        if ($Delimiter) {
+            $cvtParams.Delimiter = $Delimiter
+        }
+
+        if ($Header) {
+            $cvtParams.Header = $Header
+        }
+        
+        ConvertFrom-Csv @cvtParams
     }
 }
