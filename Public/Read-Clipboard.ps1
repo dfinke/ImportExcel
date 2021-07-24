@@ -25,7 +25,19 @@ function Read-Clipboard {
     if ($IsWindows) {
         $osInfo = Get-CimInstance -ClassName Win32_OperatingSystem
         if ($osInfo.ProductType -eq 1) {
-            ReadClipboardImpl (Get-Clipboard -Raw)
+            $cvtParams = @{
+                Data = Get-Clipboard -Raw
+            }
+    
+            if ($Delimiter) {
+                $cvtParams.Delimiter = $Delimiter
+            }
+    
+            if ($Header) {
+                $cvtParams.Header = $Header
+            }
+    
+            ReadClipboardImpl @cvtParams
         }
         else {
             Write-Error "This command is only supported on the desktop."
