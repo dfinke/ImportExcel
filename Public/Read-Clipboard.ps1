@@ -22,7 +22,7 @@ function Read-Clipboard {
         $Header   
     )
     
-    if ($IsWindows) {
+    if ($IsWindows -or $PSVersionTable.PSEdition -eq "Desktop") {
         $osInfo = Get-CimInstance -ClassName Win32_OperatingSystem
         if ($osInfo.ProductType -eq 1) {
             $cvtParams = @{
