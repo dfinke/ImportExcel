@@ -1,3 +1,4 @@
+#Requires -Version 5
 function Read-Clipboard {
     <#
         .SYNOPSIS
@@ -22,30 +23,24 @@ function Read-Clipboard {
         $Header   
     )
     
-    if ($IsWindows) {
-        $osInfo = Get-CimInstance -ClassName Win32_OperatingSystem
-        if ($osInfo.ProductType -eq 1) {
-            $cvtParams = @{
-                Data = Get-Clipboard -Raw
-            }
-    
-            if ($Delimiter) {
-                $cvtParams.Delimiter = $Delimiter
-            }
-    
-            if ($Header) {
-                $cvtParams.Header = $Header
-            }
-    
-            ReadClipboardImpl @cvtParams
-        }
-        else {
-            Write-Error "This command is only supported on the desktop."
-        }
+    if ($IsLinux -or $IsMacOS) {
+        Write-Error "Read-Clipboard only runs on Windows"
+        return
     }
-    else {
-        Write-Error "This function is only available on Windows desktop"
+
+    $cvtParams = @{
+        Data = Get-Clipboard -Raw
     }
+    
+    if ($Delimiter) {
+        $cvtParams.Delimiter = $Delimiter
+    }
+    
+    if ($Header) {
+        $cvtParams.Header = $Header
+    }
+    
+    ReadClipboardImpl @cvtParams
 }
 
 function ReadClipboardImpl {
