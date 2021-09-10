@@ -9,7 +9,7 @@ schema: 2.0.0
 
 ## SYNOPSIS
 
-Returns an ExcelPackage object for the specified XLSX fil.e
+Returns an ExcelPackage object for the specified XLSX file.
 
 ## SYNTAX
 
