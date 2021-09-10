@@ -1,3 +1,8 @@
+# v7.2.3
+
+- Fix inline help, thank you [Wes Stahler](https://github.com/stahler)
+
+
 # v7.2.2
 
 - Improved checks for Linux, Mac and PS 5.1
