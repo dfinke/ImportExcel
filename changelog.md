@@ -1,7 +1,10 @@
+# v7.3.0
+
+- Fix throwing error when a Worksheet name collides with a method, or property name on the `OfficeOpenXml.ExcelPackage` package
+
 # v7.2.3
 
 - Fix inline help, thank you [Wes Stahler](https://github.com/stahler)
-
 
 # v7.2.2
 
