@@ -1,10 +1,10 @@
-﻿function Open-ExcelPackage  {
+﻿function Open-ExcelPackage {
     [CmdLetBinding()]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword","")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
     [OutputType([OfficeOpenXml.ExcelPackage])]
     param(
         #The path to the file to open.
-        [Parameter(Mandatory=$true)]$Path,
+        [Parameter(Mandatory = $true)]$Path,
         #If specified, any running instances of Excel will be terminated before opening the file.
         [switch]$KillExcel,
         #The password for a protected worksheet, as a [normal] string (not a secure string).
@@ -13,7 +13,7 @@
         [switch]$Create
     )
 
-    if($KillExcel)         {
+    if ($KillExcel) {
         Get-Process -Name "excel" -ErrorAction Ignore | Stop-Process
         while (Get-Process -Name "excel" -ErrorAction Ignore) {}
     }
@@ -24,21 +24,26 @@
         #Create the directory if required.
         $targetPath = Split-Path -Parent -Path $Path
         if (!(Test-Path -Path $targetPath)) {
-                Write-Debug "Base path $($targetPath) does not exist, creating"
-                $null = New-item -ItemType Directory -Path $targetPath -ErrorAction Ignore
+            Write-Debug "Base path $($targetPath) does not exist, creating"
+            $null = New-item -ItemType Directory -Path $targetPath -ErrorAction Ignore
         }
         New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
     }
     elseif (Test-Path -Path $path) {
-        if ($Password) {$pkgobj = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path , $Password }
-        else           {$pkgobj = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path }
+        if ($Password) { $pkgobj = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path , $Password }
+        else { $pkgobj = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path }
         if ($pkgobj) {
             foreach ($w in $pkgobj.Workbook.Worksheets) {
                 $sb = [scriptblock]::Create(('$this.workbook.Worksheets["{0}"]' -f $w.name))
-                Add-Member -InputObject $pkgobj -MemberType ScriptProperty -Name $w.name -Value $sb
+                try { 
+                    Add-Member -InputObject $pkgobj -MemberType ScriptProperty -Name $w.name -Value $sb -ErrorAction Stop
+                }
+                catch {
+                    Write-Warning "Could not add sheet $($w.name) as 'short cut', you need to access it via `$wb.Worksheets['$($w.name)'] "
+                }
             }
             return $pkgobj
         }
     }
-    else   {Write-Warning "Could not find $path" }
- }
+    else { Write-Warning "Could not find $path" }
+}
