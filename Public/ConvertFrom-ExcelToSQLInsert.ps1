@@ -38,7 +38,12 @@ function ConvertFrom-ExcelToSQLInsert {
                 'NULL'
             }
             else {
-                "'" + $record.$propertyName + "'"
+                $value = $record.$propertyName
+                if ($value.GetType().Name -eq "String") {
+                    # escape ' characters in SQL content
+                    $value = $value.replace("'","''")
+                }
+                "'" +  $value + "'"
             }
         }
         $targetValues = ($values -join ", ")
