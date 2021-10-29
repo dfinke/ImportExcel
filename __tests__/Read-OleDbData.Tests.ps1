@@ -1,4 +1,3 @@
-. .\Read-OleDbData.ps1
 Describe "Read-OleDbData" {
     BeforeAll{
         $tfp = (Get-ChildItem Read-OleDbData.xlsx).fullname # test file path
