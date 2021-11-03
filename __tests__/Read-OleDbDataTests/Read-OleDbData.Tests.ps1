@@ -47,7 +47,7 @@ Describe "Read-OleDbData" -Tag "Read-OleDbData" {
         It "Should return 7 result with where sum values 1-6 = value 7" {
             $Results = Read-OleDbData -ConnectionString $cs -SqlStatement (Get-Content "$scriptPath\Read-OleDbData.TestB.sql" -raw)
             $a = $Results.A1
-            $a.length + ($a[0..5] | Measure-Object -sum).sum | Should -Be (7+$a[6])
+            $a.length + ($a[0..5] | Measure-Object -sum).sum | Should -Be (7 + $a[6])
         }
     }
     Context "Sheet1`$:A1:E10, Sql from file" {

@@ -26,7 +26,6 @@ function Read-OleDbData {
             ConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=file.xlsx;Extended Properties='Excel 12.0 Xml;HDR=NO;IMEX=1;'"
         }
         $Results = Read-OleDbData @ReadDataArgs
-        
     #>
     param(
         [Parameter(Mandatory)]
@@ -61,7 +60,7 @@ function Read-OleDbData {
     #      and get rid of the extra fields that come back with the datatable or rows.
     
     $DataTable = new-object System.Data.DataTable
-    $DataAdapter = new-object System.Data.OleDb.OleDbDataAdapter $SqlStatement,$ConnectionString
+    $DataAdapter = new-object System.Data.OleDb.OleDbDataAdapter $SqlStatement, $ConnectionString
     $null = $DataAdapter.Fill($DataTable)
     $null = $DataAdapter.Dispose()
     $DataTable.Rows | Select-Object $DataTable.Columns.ColumnName
