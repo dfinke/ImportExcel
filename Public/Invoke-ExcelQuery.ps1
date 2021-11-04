@@ -1,5 +1,5 @@
 #Requires -Version 5
-function Read-XlsxUsingOleDb {
+function Invoke-ExcelQuery {
     <#
         .SYNOPSIS
         Helper method for executing Read-OleDbData with some basic defaults.
@@ -17,7 +17,7 @@ function Read-XlsxUsingOleDb {
             -SqlStatement $Query
 
         .EXAMPLE
-        Read-XlsxUsingOleDb .\test.xlsx 'select ROUND(F1) as [A1] from [sheet3$A1:A1]'
+        Invoke-ExcelQuery .\test.xlsx 'select ROUND(F1) as [A1] from [sheet3$A1:A1]'
 
         .EXAMPLE
         $Path = (Get-ChildItem 'test.xlsx').FullName
@@ -29,7 +29,7 @@ function Read-XlsxUsingOleDb {
             Path = .\test.xlsx
             Query = Get-Content query.sql -Raw
         }
-        $Results = Read-XlsxUsingOleDb @ReadDataArgs
+        $Results = Invoke-ExcelQuery @ReadDataArgs
     #>
     param(
         #The path to the file to open.
@@ -41,7 +41,7 @@ function Read-XlsxUsingOleDb {
         [String] $Query # var name consistent with Invoke-Sqlcmd
     )
     $FullName = (Get-ChildItem $Path).FullName
-    Read-OleDbData `
+    Invoke-ExcelQuery `
         -ConnectionString "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$FullName;Extended Properties='Excel 12.0 Xml;HDR=NO;IMEX=1;'" `
         -SqlStatement $Query
 }
