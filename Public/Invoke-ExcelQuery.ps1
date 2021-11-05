@@ -41,7 +41,7 @@ function Invoke-ExcelQuery {
         [String] $Query # var name consistent with Invoke-Sqlcmd
     )
     $FullName = (Get-ChildItem $Path).FullName
-    Invoke-ExcelQuery `
+    Read-OleDbData `
         -ConnectionString "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$FullName;Extended Properties='Excel 12.0 Xml;HDR=NO;IMEX=1;'" `
         -SqlStatement $Query
 }

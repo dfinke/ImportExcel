@@ -1,9 +1,9 @@
 #Requires -Modules Pester
-Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 -Force
 $scriptPath = $PSScriptRoot
+Import-Module $scriptPath\..\..\ImportExcel.psd1 -Force
 $tfp = "$scriptPath\Read-OleDbData.xlsx"
-$cs = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$tfp;Extended Properties='Excel 12.0 Xml;HDR=NO;IMEX=1;'"
 $ACEnotWorking = $false
+$cs = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$tfp;Extended Properties='Excel 12.0 Xml;HDR=NO;IMEX=1;'"
 try {
     $Results = Read-OleDbData -ConnectionString $cs -SqlStatement "select 1"             
 }
