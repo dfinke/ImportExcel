@@ -364,4 +364,18 @@ Describe "Import-Excel on a sheet with no headings" {
 
         $actual[0].E | Should -Be '5'
     }
+
+    It "Should arrange the columns if -ImportColumns is not in order" {
+        $actual = @(Import-Excel $xlfileImportColumns -ImportColumns @(5,1,4))
+        $actualNames = $actual[0].psobject.properties.Name
+
+        $actualNames.Count | Should -Be 3
+        $actualNames[0] | Should -Be 'E'
+        $actualNames[1] | Should -Be 'A'
+        $actualNames[2] | Should -Be 'D'
+
+        $actual[0].E | Should -Be '5'
+        $actual[0].A | Should -Be '1'
+        $actual[0].D | Should -Be '4'
+    }
 }

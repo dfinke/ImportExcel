@@ -163,6 +163,17 @@
                 }
                 else {
                     if ($ImportColumns) {
+                        # Safe the original array because $ImportColumns needs to be sorted for calculation
+                        $tempArray = $ImportColumns 
+                        $ImportColumns = $ImportColumns | Sort-Object
+                        # Check order
+                        if (($tempArray[0] -ne $ImportColumns[0]) -or ($tempArray[$tempArray.Count - 1] -ne $ImportColumns[$ImportColumns.Count - 1])) {
+                            $arrange = $true
+                        } else {
+                            for ($i = 0; $i -lt $ImportColumns.Count; $i++) {
+                                if ($ImportColumns[$i] -ne $tempArray[$i]) { $arrange = $true;break }
+                            }
+                        }
                         $end = $Worksheet.Dimension.End.Column
                         if (($StartColumn -ne 1) -or ($EndColumn -ne $end)) { Write-Warning -Message "If ImportColumns is set than individual StartColumn and EndColumn will be ignored." }
                         # Variable to store all removed columns
@@ -191,6 +202,16 @@
                                 $removedColumns = $removedColumns + $count
                             }
                             $ExcelPackage = Clear-ExcelPackage -Start $start -Count $count
+                        }
+                        # Arrange columns accordingly to $ImportColumns
+                        if ($arrange) {
+                            for ($i = 0; $i -lt $ImportColumns.Count; $i++) {
+                                $srcCol = [array]::IndexOf($ImportColumns,$tempArray[$i]) + 1
+                                $destCol = $ImportColumns.Count + ($i + 1)
+                                $Worksheet.Cells[1,$srcCol,$EndRow,$srcCol].Copy(($Worksheet.Cells[1,$destCol,$EndRow,$destCol]))
+                            }
+                            $ExcelPackage = Clear-ExcelPackage -Start 1 -Count $ImportColumns.Count
+                            Remove-Variable -Name 'tempArray'
                         }
                         # Create new array out of the $ImportColumns.Count for the further processing
                         $columns = 1..$ImportColumns.Count
