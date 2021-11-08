@@ -7,6 +7,10 @@ $IsMissingACE = $null -eq ((New-Object system.data.oledb.oledbenumerator).GetEle
 if($IsMissingACE){
     Write-Host "MICROSOFT.ACE.OLEDB is missing! Tests will be skipped. Please see https://www.microsoft.com/en-us/download/details.aspx?id=54920"
 }
+write-host "`$tfp = '$tfp'"
+write-host "`Test-Path $tfp = '$(Test-Path $tfp)'"
+write-host "`$cs = '$cs'"
+write-host "`$IsMissingACE = '$IsMissingACE'"
 Describe "Read-OleDbData" -Tag "Read-OleDbData" {
     $PSDefaultParameterValues = @{ 'It:Skip' = $IsMissingACE }
     Context "Basic Tests" {
