@@ -1,33 +1,43 @@
 #Requires -Modules Pester
-Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 -Force
-$skip = $true
+if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
+    Import-Module $PSScriptRoot\..\ImportExcel.psd1
+}
+
+$skip = $false
+if ($IsLinux -or $IsMacOS) {
+    $skip = $true
+    Write-Warning "Read-OleDbData: Linux and MacOs are not supported. Skipping tests."
+}
 try {
-    $IsMissingACE = $null -eq ((New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME -like "Microsoft.ACE.OLEDB*")    
-    if ($IsMissingACE) {
-        Write-Warning "MICROSOFT.ACE.OLEDB is missing! Tests will be skipped."
+    if ((New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME -notcontains "Microsoft.ACE.OLEDB.12.0") {
+        $skip = $true
+        Write-Warning "Read-OleDbData: Microsoft.ACE.OLEDB.12.0 provider not found. Skipping tests."
     }
     $skip = $IsMissingACE
 }
 catch {
-    Write-Warning "Unable to get sources from System.Data.OleDb. Tests will be skipped."
+    $skip = $true
+    Write-Warning "Read-OleDbData: Calls to System.Data.OleDb failed. Skipping tests."
 }
 
 Describe "Read-OleDbData" -Tag "Read-OleDbData" {
     $PSDefaultParameterValues = @{ 'It:Skip' = $skip }
-    BeforeAll{
+    BeforeAll {
         $scriptPath = $PSScriptRoot
         $tfp = "$scriptPath\Read-OleDbData.xlsx"
         $cs = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$tfp;Extended Properties='Excel 12.0 Xml;HDR=NO;IMEX=1;'"
-        Write-Warning "`$tfp = '$tfp'"
-        Write-Warning "`Test-Path $tfp = '$(Test-Path $tfp)'"
-        Write-Warning "`$cs = '$cs'"
+        if (!$skip) {
+            Write-Warning "`$tfp = '$tfp'"
+            Write-Warning "`Test-Path $tfp = '$(Test-Path $tfp)'"
+            Write-Warning "`$cs = '$cs'"
+        }
     }
     Context "Basic Tests" {
         It "Should have a valid Test file" {
             Test-Path $tfp | Should -Be $true
         }
         It "Should have the Read-OleDbData command loaded" {
-            (Get-Command Read-OleDbData) -ne $null | Should -Be $true
+            (Get-Command Read-OleDbData -ErrorAction SilentlyContinue) -ne $null | Should -Be $true
         }
         It "Should be able to open spreadsheet" {
             $null = Read-OleDbData -ConnectionString $cs -SqlStatement "select 1"
