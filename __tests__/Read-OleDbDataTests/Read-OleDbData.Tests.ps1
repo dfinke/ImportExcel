@@ -1,25 +1,39 @@
 #Requires -Modules Pester
-$scriptPath = $PSScriptRoot
-Import-Module $scriptPath\..\..\ImportExcel.psd1 -Force
-$tfp = "$scriptPath\Read-OleDbData.xlsx"
-$cs = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$tfp;Extended Properties='Excel 12.0 Xml;HDR=NO;IMEX=1;'"
-$IsMissingACE = $null -eq ((New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME -like "Microsoft.ACE.OLEDB*")
-if($IsMissingACE){
-    Write-Warning "MICROSOFT.ACE.OLEDB is missing! Tests will be skipped. Please see https://www.microsoft.com/en-us/download/details.aspx?id=54920"
+Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 -Force
+$skip = $true
+try {
+    $IsMissingACE = $null -eq ((New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME -like "Microsoft.ACE.OLEDB*")    
+    if ($IsMissingACE) {
+        Write-Warning "MICROSOFT.ACE.OLEDB is missing! Tests will be skipped."
+    }
+    $skip = $IsMissingACE
 }
-Write-Warning "`$tfp = '$tfp'"
-Write-Warning "`Test-Path $tfp = '$(Test-Path $tfp)'"
-Write-Warning "`$cs = '$cs'"
-Write-Warning "`$IsMissingACE = '$IsMissingACE'"
-$skip = ($IsLinux -or $IsMacOS) -and $IsMissingACE
+catch {
+    Write-Warning "Unable to get sources from System.Data.OleDb. Tests will be skipped."
+}
+
 Describe "Read-OleDbData" -Tag "Read-OleDbData" {
     $PSDefaultParameterValues = @{ 'It:Skip' = $skip }
+    BeforeAll{
+        $scriptPath = $PSScriptRoot
+        $tfp = "$scriptPath\Read-OleDbData.xlsx"
+        $cs = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$tfp;Extended Properties='Excel 12.0 Xml;HDR=NO;IMEX=1;'"
+        Write-Warning "`$tfp = '$tfp'"
+        Write-Warning "`Test-Path $tfp = '$(Test-Path $tfp)'"
+        Write-Warning "`$cs = '$cs'"
+    }
     Context "Basic Tests" {
-        It "should be able to open spreadsheet" {
+        It "Should have a valid Test file" {
+            Test-Path $tfp | Should -Be $true
+        }
+        It "Should have the Read-OleDbData command loaded" {
+            (Get-Command Read-OleDbData) -ne $null | Should -Be $true
+        }
+        It "Should be able to open spreadsheet" {
             $null = Read-OleDbData -ConnectionString $cs -SqlStatement "select 1"
             $true | Should -Be $true
         }
-        It "should return PSCustomObject for single result" {
+        It "Should return PSCustomObject for single result" {
             #multiple records will come back as Object[], but not going to test for that
             $Results = Read-OleDbData -ConnectionString $cs -SqlStatement "select 1"
             $Results.GetType().Name | Should -Be 'PSCustomObject'
