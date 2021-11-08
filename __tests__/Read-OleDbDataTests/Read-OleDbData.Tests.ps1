@@ -5,14 +5,15 @@ $tfp = "$scriptPath\Read-OleDbData.xlsx"
 $cs = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$tfp;Extended Properties='Excel 12.0 Xml;HDR=NO;IMEX=1;'"
 $IsMissingACE = $null -eq ((New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME -like "Microsoft.ACE.OLEDB*")
 if($IsMissingACE){
-    Write-Host "MICROSOFT.ACE.OLEDB is missing! Tests will be skipped. Please see https://www.microsoft.com/en-us/download/details.aspx?id=54920"
+    Write-Warning "MICROSOFT.ACE.OLEDB is missing! Tests will be skipped. Please see https://www.microsoft.com/en-us/download/details.aspx?id=54920"
 }
-write-host "`$tfp = '$tfp'"
-write-host "`Test-Path $tfp = '$(Test-Path $tfp)'"
-write-host "`$cs = '$cs'"
-write-host "`$IsMissingACE = '$IsMissingACE'"
+Write-Warning "`$tfp = '$tfp'"
+Write-Warning "`Test-Path $tfp = '$(Test-Path $tfp)'"
+Write-Warning "`$cs = '$cs'"
+Write-Warning "`$IsMissingACE = '$IsMissingACE'"
+$skip = $IsLinux -or $IsMacOS -or $IsMissingACE
 Describe "Read-OleDbData" -Tag "Read-OleDbData" {
-    $PSDefaultParameterValues = @{ 'It:Skip' = $IsMissingACE }
+    $PSDefaultParameterValues = @{ 'It:Skip' = $skip }
     Context "Basic Tests" {
         It "should be able to open spreadsheet" {
             $null = Read-OleDbData -ConnectionString $cs -SqlStatement "select 1"
