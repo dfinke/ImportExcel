@@ -31,10 +31,10 @@ Describe "Invoke-ExcelQuery" -Tag "Invoke-ExcelQuery" {
             Test-Path $tfp | Should -Be $true
         }
         It "Should have the Read-OleDbData command loaded" {
-            (Get-Command Read-OleDbData) -ne $null | Should -Be $true
+            (Get-Command Read-OleDbData -ErrorAction SilentlyContinue) -ne $null | Should -Be $true
         }
         It "Should have the Invoke-ExcelQuery command loaded" {
-            (Get-Command Invoke-ExcelQuery) -ne $null | Should -Be $true
+            (Get-Command Invoke-ExcelQuery -ErrorAction SilentlyContinue) -ne $null | Should -Be $true
         }
     }
     Context "Sheet1`$A1" {
