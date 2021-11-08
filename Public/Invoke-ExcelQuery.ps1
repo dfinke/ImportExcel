@@ -45,9 +45,14 @@ function Invoke-ExcelQuery {
         [String] $Query # var name consistent with Invoke-Sqlcmd
     )
 
-    $IsMissingACE = $null -eq ((New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME -like "Microsoft.ACE.OLEDB*")
-    if($IsMissingACE){
-        Write-Error "MICROSOFT.ACE.OLEDB is missing! Please see https://www.microsoft.com/en-us/download/details.aspx?id=54920"
+    try {
+        if ((New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME -notcontains "Microsoft.ACE.OLEDB.12.0") {
+            Write-Error "Microsoft.ACE.OLEDB.12.0 provider is missing! Please install from https://www.microsoft.com/en-us/download/details.aspx?id=54920"
+            return
+        }
+    }
+    catch {
+        Write-Error "System.Data.OleDb is not working or you are on an unsupported platform."
         return
     }
 
