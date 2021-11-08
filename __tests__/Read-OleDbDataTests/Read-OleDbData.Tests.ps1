@@ -19,18 +19,12 @@ if ($IsLinux -or $IsMacOS) {
         Write-Warning "Read-OleDbData: Calls to System.Data.OleDb failed. Skipping tests."
     }
 }
-
 Describe "Read-OleDbData" -Tag "Read-OleDbData" {
     $PSDefaultParameterValues = @{ 'It:Skip' = $skip }
     BeforeAll {
         $scriptPath = $PSScriptRoot
         $tfp = "$scriptPath\Read-OleDbData.xlsx"
         $cs = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$tfp;Extended Properties='Excel 12.0 Xml;HDR=NO;IMEX=1;'"
-        if (!$skip) {
-            Write-Warning "`$tfp = '$tfp'"
-            Write-Warning "`Test-Path $tfp = '$(Test-Path $tfp)'"
-            Write-Warning "`$cs = '$cs'"
-        }
     }
     Context "Basic Tests" {
         It "Should have a valid Test file" {
