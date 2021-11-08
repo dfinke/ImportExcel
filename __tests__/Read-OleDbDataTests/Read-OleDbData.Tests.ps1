@@ -13,7 +13,6 @@ if ($IsLinux -or $IsMacOS) {
             $skip = $true
             Write-Warning "Read-OleDbData: Microsoft.ACE.OLEDB.12.0 provider not found. Skipping tests."
         }
-        $skip = $IsMissingACE
     }
     catch {
         $skip = $true
