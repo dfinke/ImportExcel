@@ -6,17 +6,17 @@ if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
 $skip = $false
 if ($IsLinux -or $IsMacOS) {
     $skip = $true
-    Write-Warning "Read-OleDbData: Linux and MacOs are not supported. Skipping tests."
+    Write-Warning "Invoke-ExcelQuery: Linux and MacOs are not supported. Skipping tests."
 }else{
     try {
         if ((New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME -notcontains "Microsoft.ACE.OLEDB.12.0") {
             $skip = $true
-            Write-Warning "Read-OleDbData: Microsoft.ACE.OLEDB.12.0 provider not found. Skipping tests."
+            Write-Warning "Invoke-ExcelQuery: Microsoft.ACE.OLEDB.12.0 provider not found. Skipping tests."
         }
     }
     catch {
         $skip = $true
-        Write-Warning "Read-OleDbData: Calls to System.Data.OleDb failed. Skipping tests."
+        Write-Warning "Invoke-ExcelQuery: Calls to System.Data.OleDb failed. Skipping tests."
     }
 }
 
