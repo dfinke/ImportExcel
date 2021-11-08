@@ -7,17 +7,18 @@ $skip = $false
 if ($IsLinux -or $IsMacOS) {
     $skip = $true
     Write-Warning "Read-OleDbData: Linux and MacOs are not supported. Skipping tests."
-}
-try {
-    if ((New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME -notcontains "Microsoft.ACE.OLEDB.12.0") {
-        $skip = $true
-        Write-Warning "Read-OleDbData: Microsoft.ACE.OLEDB.12.0 provider not found. Skipping tests."
+}else{
+    try {
+        if ((New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME -notcontains "Microsoft.ACE.OLEDB.12.0") {
+            $skip = $true
+            Write-Warning "Read-OleDbData: Microsoft.ACE.OLEDB.12.0 provider not found. Skipping tests."
+        }
+        $skip = $IsMissingACE
     }
-    $skip = $IsMissingACE
-}
-catch {
-    $skip = $true
-    Write-Warning "Read-OleDbData: Calls to System.Data.OleDb failed. Skipping tests."
+    catch {
+        $skip = $true
+        Write-Warning "Read-OleDbData: Calls to System.Data.OleDb failed. Skipping tests."
+    }
 }
 
 Describe "Read-OleDbData" -Tag "Read-OleDbData" {
