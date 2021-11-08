@@ -2,16 +2,13 @@
 $scriptPath = $PSScriptRoot
 Import-Module $scriptPath\..\..\ImportExcel.psd1 -Force
 $tfp = "$scriptPath\Read-OleDbData.xlsx"
-$ACEnotWorking = $false
 $cs = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$tfp;Extended Properties='Excel 12.0 Xml;HDR=NO;IMEX=1;'"
-try {
-    $Results = Read-OleDbData -ConnectionString $cs -SqlStatement "select 1"             
-}
-catch {
-    $ACEnotWorking = $true
+$IsMissingACE = $null -eq ((New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME -like "Microsoft.ACE.OLEDB*")
+if($IsMissingACE){
+    Write-Host "MICROSOFT.ACE.OLEDB is missing! Tests will be skipped. Please see https://www.microsoft.com/en-us/download/details.aspx?id=54920"
 }
 Describe "Read-OleDbData" -Tag "Read-OleDbData" {
-    $PSDefaultParameterValues = @{ 'It:Skip' = $ACEnotWorking }
+    $PSDefaultParameterValues = @{ 'It:Skip' = $IsMissingACE }
     Context "Basic Tests" {
         It "should be able to open spreadsheet" {
             $null = Read-OleDbData -ConnectionString $cs -SqlStatement "select 1"
