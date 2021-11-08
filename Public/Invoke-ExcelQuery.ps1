@@ -16,6 +16,10 @@ function Invoke-ExcelQuery {
             -ConnectionString "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$FullName;Extended Properties='Excel 12.0 Xml;HDR=NO;IMEX=1;'" `
             -SqlStatement $Query
 
+        Note that this command uses the MICROSOFT.ACE.OLEDB provider and will not work without it.
+        
+        If needed, please download the appropriate package from https://www.microsoft.com/en-us/download/details.aspx?id=54920.
+        
         .EXAMPLE
         Invoke-ExcelQuery .\test.xlsx 'select ROUND(F1) as [A1] from [sheet3$A1:A1]'
 
@@ -40,6 +44,13 @@ function Invoke-ExcelQuery {
         [ValidateNotNullOrEmpty()]
         [String] $Query # var name consistent with Invoke-Sqlcmd
     )
+
+    $IsMissingACE = $null -eq ((New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME -like "Microsoft.ACE.OLEDB*")
+    if($IsMissingACE){
+        Write-Error "MICROSOFT.ACE.OLEDB is missing! Please see https://www.microsoft.com/en-us/download/details.aspx?id=54920"
+        return
+    }
+
     $FullName = (Get-ChildItem $Path).FullName
     Read-OleDbData `
         -ConnectionString "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=$FullName;Extended Properties='Excel 12.0 Xml;HDR=NO;IMEX=1;'" `
