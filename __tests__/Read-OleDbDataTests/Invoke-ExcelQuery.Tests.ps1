@@ -8,7 +8,7 @@ try {
     if ($IsMissingACE) {
         Write-Warning "MICROSOFT.ACE.OLEDB is missing! Tests will be skipped."
     }
-    $skip = $skip -or $IsMissingACE
+    $skip = $skip -and $IsMissingACE
 }
 catch {
     Write-Warning "Unable to get sources from System.Data.OleDb. Tests will be skipped."

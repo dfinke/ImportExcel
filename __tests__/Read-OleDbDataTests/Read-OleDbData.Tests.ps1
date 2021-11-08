@@ -11,7 +11,7 @@ Write-Warning "`$tfp = '$tfp'"
 Write-Warning "`Test-Path $tfp = '$(Test-Path $tfp)'"
 Write-Warning "`$cs = '$cs'"
 Write-Warning "`$IsMissingACE = '$IsMissingACE'"
-$skip = $IsLinux -or $IsMacOS -or $IsMissingACE
+$skip = ($IsLinux -or $IsMacOS) -and $IsMissingACE
 Describe "Read-OleDbData" -Tag "Read-OleDbData" {
     $PSDefaultParameterValues = @{ 'It:Skip' = $skip }
     Context "Basic Tests" {
