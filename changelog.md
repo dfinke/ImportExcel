@@ -1,3 +1,41 @@
+# v7.3.1
+
+- Added query Excel spreadsheets, with SQL queries!
+
+```powershell
+$query = 'select F2 as [Category], F5 as [Discount], F5*2 as [DiscountPlus] from [sheet1$A2:E11]'
+
+Invoke-ExcelQuery .\testOleDb.xlsx $query
+```
+
+![](./images/SQL-Spreadsheet.png)
+
+## Result
+
+```
+Category    Discount DiscountPlus
+--------    -------- ------------
+Cosmetics        0.7          1.4
+Grocery          0.3          0.6
+Apparels         0.2          0.4
+Electronics      0.1          0.2
+Electronics        0            0
+Apparels         0.8          1.6
+Electronics      0.7          1.4
+Cosmetics        0.6          1.2
+Grocery          0.4          0.8
+Grocery          0.3          0.6
+```
+
+- Thank you to Roy Ashbrook for the SQL query code. Catch up with Roy:
+
+|Media|Link|
+|---|---|
+|twitter|https://twitter.com/royashbrook
+|github|https://github.com/royashbrook
+|linkedin|https://linkedin.com/in/royashbrook
+|blog|https://ashbrook.io
+
 # v7.3.0
 
 - Fix throwing error when a Worksheet name collides with a method, or property name on the `OfficeOpenXml.ExcelPackage` package
