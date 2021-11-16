@@ -67,6 +67,8 @@ jobs:
     pool:
       vmImage: 'windows-latest'
 
+    steps:
+
     # BEGIN - ACE support for Invoke-ExcelQuery testing
     - task: Cache@2
       inputs:
@@ -85,7 +87,6 @@ jobs:
       displayName: 'Install ACE for Invoke-ExcelQuery testing'
     # END - ACE support for Invoke-ExcelQuery testing
 
-    steps:
     - pwsh: 'Install-Module -Name Pester -Force'
       displayName: 'Update Pester'
     - pwsh: './CI/CI.ps1 -Test'
