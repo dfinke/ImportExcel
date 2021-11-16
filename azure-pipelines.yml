@@ -23,19 +23,21 @@ jobs:
 
     - task: Cache@2
       inputs:
-        key: 'v2 | ace | "$(Agent.OS)" | ace.exe'
-        path: $(Pipeline.Workspace)
+        key: v2 | ace
+        path: /ace
         cacheHitVar: CACHE_RESTORED
       displayName: Cache ACE
+
+    - bash: |
+        mkdir ./ace
+        curl -o ./ace/ace.exe https://download.microsoft.com/download/3/5/C/35C84C36-661A-44E6-9324-8786B8DBE231/accessdatabaseengine_X64.exe
+      displayName: 'Download ACE'
+      condition: ne(variables.CACHE_RESTORED, 'true')
 
     - powershell: (New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME
       displayName: 'Show data sources before ACE'
 
-    - bash: curl -o ace.exe https://download.microsoft.com/download/3/5/C/35C84C36-661A-44E6-9324-8786B8DBE231/accessdatabaseengine_X64.exe
-      displayName: 'Download ACE'
-      condition: ne(variables.CACHE_RESTORED, 'true')
-
-    - powershell: Start-Process (join-path $env:ACE_FOLDER ace.exe) -Wait -ArgumentList "/quiet /passive /norestart"
+    - powershell: Start-Process ./ace/ace.exe -Wait -ArgumentList "/quiet /passive /norestart"
       displayName: 'Install ACE'
 
     - powershell: (New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME
