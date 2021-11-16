@@ -21,6 +21,14 @@ jobs:
 
     steps:
 
+    - task: Cache@2
+      inputs:
+        key: ace
+        restoreKeys: ace
+        path: ace.exe
+        cacheHitVar: CACHE_RESTORED
+      displayName: Cache ACE
+
     - powershell: (New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME
       displayName: 'Show data sources before ACE'
 
@@ -30,6 +38,7 @@ jobs:
         irm $uri -outfile ace.exe
         $ProgressPreference = 'Continue'
       displayName: 'Download ACE'
+      condition: ne(variables.CACHE_RESTORED, 'true')
 
     - powershell: Start-Process .\ace.exe -Wait -ArgumentList "/quiet /passive /norestart"
       displayName: 'Install ACE'
@@ -37,29 +46,29 @@ jobs:
     - powershell: (New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME
       displayName: 'Show data sources after ACE'
 
-    - powershell: 'Install-Module -Name Pester -Force -SkipPublisherCheck'
-      displayName: 'Update Pester'
-    - powershell: './CI/CI.ps1 -Test'
-      displayName: 'Install and Test'
+    # - powershell: 'Install-Module -Name Pester -Force -SkipPublisherCheck'
+    #   displayName: 'Update Pester'
+    # - powershell: './CI/CI.ps1 -Test'
+    #   displayName: 'Install and Test'
 
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFormat: 'NUnit'
-        testResultsFiles: '**/TestResults*.xml'
-        failTaskOnFailedTests: true
+    # - task: PublishTestResults@2
+    #   inputs:
+    #     testResultsFormat: 'NUnit'
+    #     testResultsFiles: '**/TestResults*.xml'
+    #     failTaskOnFailedTests: true
 
-    - powershell: './CI/CI.ps1 -Artifact'
-      displayName: 'Prepare Artifact'
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: '$(Build.ArtifactStagingDirectory)'
-        artifact: 'Modules'
-    - powershell: './CI/CI.ps1 -Analyzer'
-      displayName: 'Invoke ScriptAnalyzer'
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: '$(Build.SourcesDirectory)'
-        artifact: 'Source'
+    # - powershell: './CI/CI.ps1 -Artifact'
+    #   displayName: 'Prepare Artifact'
+    # - task: PublishPipelineArtifact@1
+    #   inputs:
+    #     targetPath: '$(Build.ArtifactStagingDirectory)'
+    #     artifact: 'Modules'
+    # - powershell: './CI/CI.ps1 -Analyzer'
+    #   displayName: 'Invoke ScriptAnalyzer'
+    # - task: PublishPipelineArtifact@1
+    #   inputs:
+    #     targetPath: '$(Build.SourcesDirectory)'
+    #     artifact: 'Source'
 
   # - job: WindowsPSCore
   #   pool:
