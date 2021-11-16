@@ -19,13 +19,17 @@ jobs:
     pool:
       vmImage: 'windows-latest'
 
+    variables:
+      ACE_FOLDER: $(Pipeline.Workspace)/ACE
+
     steps:
 
     - task: Cache@2
       inputs:
-        key: ace
-        restoreKeys: ace
-        path: .\ace
+        key: 'ace | "$(Agent.OS)" | ace.exe'
+        restoreKeys: |
+          ace | "$(Agent.OS)"
+        path: $(ACE_FOLDER)
         cacheHitVar: CACHE_RESTORED
       displayName: Cache ACE
 
@@ -35,8 +39,8 @@ jobs:
     - powershell: |
         $ProgressPreference = 'SilentlyContinue'
         $uri = 'https://download.microsoft.com/download/3/5/C/35C84C36-661A-44E6-9324-8786B8DBE231/accessdatabaseengine_X64.exe'
-        md .\cache
-        irm $uri -outfile .\ace\ace.exe
+        md $(ACE_FOLDER)
+        irm $uri -outfile (join-path $(ACE_FOLDER) ace.exe)
         $ProgressPreference = 'Continue'
       displayName: 'Download ACE'
       condition: ne(variables.CACHE_RESTORED, 'true')
