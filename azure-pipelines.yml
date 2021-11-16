@@ -39,13 +39,13 @@ jobs:
     - powershell: |
         $ProgressPreference = 'SilentlyContinue'
         $uri = 'https://download.microsoft.com/download/3/5/C/35C84C36-661A-44E6-9324-8786B8DBE231/accessdatabaseengine_X64.exe'
-        md $(ACE_FOLDER)
-        irm $uri -outfile (join-path $(ACE_FOLDER) ace.exe)
+        md $env:ACE_FOLDER
+        irm $uri -outfile (join-path $env:ACE_FOLDER ace.exe)
         $ProgressPreference = 'Continue'
       displayName: 'Download ACE'
       condition: ne(variables.CACHE_RESTORED, 'true')
 
-    - powershell: Start-Process .\ace\ace.exe -Wait -ArgumentList "/quiet /passive /norestart"
+    - powershell: Start-Process (join-path $env:ACE_FOLDER ace.exe) -Wait -ArgumentList "/quiet /passive /norestart"
       displayName: 'Install ACE'
 
     - powershell: (New-Object system.data.oledb.oledbenumerator).GetElements().SOURCES_NAME
