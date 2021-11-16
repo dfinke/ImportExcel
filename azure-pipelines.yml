@@ -21,9 +21,10 @@ jobs:
 
     steps:
 
+    # BEGIN - ACE support for Invoke-ExcelQuery testing
     - task: Cache@2
       inputs:
-        key: v2 | ace
+        key: v2 | "$(Agent.OS)" | ace
         path: ace
         cacheHitVar: CACHE_RESTORED
       displayName: Cache ACE
@@ -36,6 +37,7 @@ jobs:
 
     - powershell: Start-Process ./ace/ace.exe -Wait -ArgumentList "/quiet /passive /norestart"
       displayName: 'Install ACE for Invoke-ExcelQuery testing'
+    # END - ACE support for Invoke-ExcelQuery testing
 
     - powershell: 'Install-Module -Name Pester -Force -SkipPublisherCheck'
       displayName: 'Update Pester'
@@ -61,21 +63,39 @@ jobs:
         targetPath: '$(Build.SourcesDirectory)'
         artifact: 'Source'
 
-  # - job: WindowsPSCore
-  #   pool:
-  #     vmImage: 'windows-latest'
+  - job: WindowsPSCore
+    pool:
+      vmImage: 'windows-latest'
 
-  #   steps:
-  #   - pwsh: 'Install-Module -Name Pester -Force'
-  #     displayName: 'Update Pester'
-  #   - pwsh: './CI/CI.ps1 -Test'
-  #     displayName: 'Install and Test'
+    # BEGIN - ACE support for Invoke-ExcelQuery testing
+    - task: Cache@2
+      inputs:
+        key: v2 | "$(Agent.OS)" | ace
+        path: ace
+        cacheHitVar: CACHE_RESTORED
+      displayName: Cache ACE
 
-  #   - task: PublishTestResults@2
-  #     inputs:
-  #       testResultsFormat: 'NUnit'
-  #       testResultsFiles: '**/TestResults*.xml'
-  #       failTaskOnFailedTests: true
+    - bash: |
+        mkdir ./ace
+        curl -o ./ace/ace.exe https://download.microsoft.com/download/3/5/C/35C84C36-661A-44E6-9324-8786B8DBE231/accessdatabaseengine_X64.exe
+      displayName: 'Download ACE'
+      condition: ne(variables.CACHE_RESTORED, 'true')
+
+    - powershell: Start-Process ./ace/ace.exe -Wait -ArgumentList "/quiet /passive /norestart"
+      displayName: 'Install ACE for Invoke-ExcelQuery testing'
+    # END - ACE support for Invoke-ExcelQuery testing
+
+    steps:
+    - pwsh: 'Install-Module -Name Pester -Force'
+      displayName: 'Update Pester'
+    - pwsh: './CI/CI.ps1 -Test'
+      displayName: 'Install and Test'
+
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'NUnit'
+        testResultsFiles: '**/TestResults*.xml'
+        failTaskOnFailedTests: true
 
   # - job: Ubuntu
   #   pool:
