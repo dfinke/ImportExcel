@@ -1,3 +1,12 @@
+# v7.4.0
+
+- Thank you to [Max Goczall](https://github.com/muschebubusche) for this contribution!
+    - `ImportColumns` parameter added to `ImportExcel`. It is used to define which columns of the ExcelPackage should be imported.
+
+```powershell
+Import-Excel -Path $xlFile -ImportColumns @(6,7,12,25,46)
+```
+
 # v7.3.1
 
 - Added query Excel spreadsheets, with SQL queries!
