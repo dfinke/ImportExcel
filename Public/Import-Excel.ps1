@@ -63,6 +63,16 @@
             )
 
             try {
+                if ($ImportColumns) {
+                    $end = $Worksheet.Dimension.End.Column
+                    # Check $ImportColumns
+                    if ($ImportColumns[0] -le 0) { throw "The first entry in ImportColumns must be equal or greater 1" ; return }
+                    # Check $StartColumn and $EndColumn
+                    if (($StartColumn -ne 1) -or ($EndColumn -ne $end)) { Write-Warning -Message "If ImportColumns is set than individual StartColumn and EndColumn will be ignored." }
+                    # Replace $Columns with $ImportColumns
+                    $Columns = $ImportColumns
+                }
+
                 if ($HeaderName) {
                     $i = 0
                     foreach ($H in $HeaderName) {
@@ -92,26 +102,6 @@
             catch {
                 throw "Failed creating property names: $_" ; return
             }
-        }
-        function Clear-ExcelPackage {
-            <#
-            .SYNOPSIS
-                Clear given ExcelPackage from specified columns.
-            #>
-            param (
-                # Column from where the cleaning will start.
-                [Parameter(Mandatory)]
-                [Int]
-                $Start,
-                # Count of columns that will be removed.
-                [Parameter(Mandatory)]
-                [Int]
-                $Count
-            )
-
-            $Worksheet.DeleteColumn($Start, $Count)
-            # Return $ExcelPackage to update the variable
-            return $ExcelPackage
         }
         foreach ($Path in $Paths) {
             if ($path) {
@@ -162,63 +152,7 @@
                     $columns = ($StartColumn..$EndColumn).Where( { $colHash[$_] })
                 }
                 else {
-                    if ($ImportColumns) {
-                        # Safe the original array because $ImportColumns needs to be sorted for calculation
-                        $tempArray = $ImportColumns 
-                        $ImportColumns = $ImportColumns | Sort-Object
-                        # Check order
-                        if (($tempArray[0] -ne $ImportColumns[0]) -or ($tempArray[$tempArray.Count - 1] -ne $ImportColumns[$ImportColumns.Count - 1])) {
-                            $arrange = $true
-                        } else {
-                            for ($i = 0; $i -lt $ImportColumns.Count; $i++) {
-                                if ($ImportColumns[$i] -ne $tempArray[$i]) { $arrange = $true;break }
-                            }
-                        }
-                        $end = $Worksheet.Dimension.End.Column
-                        if (($StartColumn -ne 1) -or ($EndColumn -ne $end)) { Write-Warning -Message "If ImportColumns is set than individual StartColumn and EndColumn will be ignored." }
-                        # Variable to store all removed columns
-                        $removedColumns = 0
-                        # Preparation run
-                        $start = 1
-                        $count = $ImportColumns[0] - 1
-                        $ExcelPackage = Clear-ExcelPackage -Start $start -Count $count
-                        $removedColumns = $removedColumns + $count
-                        for ($i = 0; $i -lt $ImportColumns.Count; $i++) {
-                            # Check if the current iteration is the last one for cleanup meassures
-                            if ($i -eq ($ImportColumns.Count - 1)) { $lastLoop = $true }
-                            if ($lastLoop) {
-                                # Only clean up if the endcolumn does not match the last entry in the $ImportColumns array
-                                if ($ImportColumns[$i] -ne $end) {
-                                    $start = $ImportColumns.Count + 1
-                                    $count = $end - ($removedColumns + $ImportColumns.Count)
-                                } else {
-                                    # This means that the endcolumn gets imported
-                                    continue
-                                }
-                            } else {
-                                # Calculate the StartColumn and ColumnCount for the removal
-                                $start = ($i + 1) + 1 # 1 is from the preparation run
-                                $count = $ImportColumns[$i + 1] - ($removedColumns + $start)
-                                $removedColumns = $removedColumns + $count
-                            }
-                            $ExcelPackage = Clear-ExcelPackage -Start $start -Count $count
-                        }
-                        # Arrange columns accordingly to $ImportColumns
-                        if ($arrange) {
-                            for ($i = 0; $i -lt $ImportColumns.Count; $i++) {
-                                $srcCol = [array]::IndexOf($ImportColumns,$tempArray[$i]) + 1
-                                $destCol = $ImportColumns.Count + ($i + 1)
-                                $Worksheet.Cells[1,$srcCol,$EndRow,$srcCol].Copy(($Worksheet.Cells[1,$destCol,$EndRow,$destCol]))
-                            }
-                            $ExcelPackage = Clear-ExcelPackage -Start 1 -Count $ImportColumns.Count
-                            Remove-Variable -Name 'tempArray'
-                        }
-                        # Create new array out of the $ImportColumns.Count for the further processing
-                        $columns = 1..$ImportColumns.Count
-                    }
-                    else {
-                        $Columns = $StartColumn .. $EndColumn  ; if ($StartColumn -gt $EndColumn) { Write-Warning -Message "Selecting columns $StartColumn to $EndColumn might give odd results." }
-                    }
+                    $Columns = $StartColumn .. $EndColumn  ; if ($StartColumn -gt $EndColumn) { Write-Warning -Message "Selecting columns $StartColumn to $EndColumn might give odd results." }
                     if ($NoHeader) { $rows = $StartRow..$EndRow ; if ($StartRow -gt $EndRow) { Write-Warning -Message "Selecting rows $StartRow to $EndRow might give odd results." } }
                     elseif ($HeaderName) { $rows = $StartRow..$EndRow }
                     else {
