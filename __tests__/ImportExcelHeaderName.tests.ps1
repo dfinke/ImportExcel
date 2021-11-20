@@ -1,33 +1,66 @@
+#Requires -Modules Pester
+
+if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
+    Import-Module $PSScriptRoot\..\ImportExcel.psd1
+}
 
 Describe "Import-Excel on a sheet with no headings" {
     BeforeAll {
 
-        $xlfile = "TestDrive:\testImportExcel.xlsx"
-        $xlfileHeaderOnly = "TestDrive:\testImportExcelHeaderOnly.xlsx"
-        $xl = "" | Export-excel $xlfile -PassThru
+        $xlfile = "$PSScriptRoot\testImportExcel.xlsx"
+        $xlfileHeaderOnly = "$PSScriptRoot\testImportExcelHeaderOnly.xlsx"
+        $xlfileImportColumns = "$PSScriptRoot\testImportExcelImportColumns.xlsx"
 
-        Set-ExcelRange -Worksheet $xl.Sheet1 -Range A1 -Value 'A'
-        Set-ExcelRange -Worksheet $xl.Sheet1 -Range B1 -Value 'B'
-        Set-ExcelRange -Worksheet $xl.Sheet1 -Range C1 -Value 'C'
+        # Create $xlfile if it does not exist
+        if (!(Test-Path -Path $xlfile)) {
+            $xl = "" | Export-excel $xlfile -PassThru
 
-        Set-ExcelRange -Worksheet $xl.Sheet1 -Range A2 -Value 'D'
-        Set-ExcelRange -Worksheet $xl.Sheet1 -Range B2 -Value 'E'
-        Set-ExcelRange -Worksheet $xl.Sheet1 -Range C2 -Value 'F'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range A1 -Value 'A'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range B1 -Value 'B'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range C1 -Value 'C'
+    
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range A2 -Value 'D'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range B2 -Value 'E'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range C2 -Value 'F'
+    
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range A3 -Value 'G'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range B3 -Value 'H'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range C3 -Value 'I'
+    
+            Close-ExcelPackage $xl
+        }
 
-        Set-ExcelRange -Worksheet $xl.Sheet1 -Range A3 -Value 'G'
-        Set-ExcelRange -Worksheet $xl.Sheet1 -Range B3 -Value 'H'
-        Set-ExcelRange -Worksheet $xl.Sheet1 -Range C3 -Value 'I'
+        # Create $xlfileHeaderOnly if it does not exist
+        if (!(Test-Path -Path $xlfileHeaderOnly)) {
+            $xl = "" | Export-excel $xlfileHeaderOnly -PassThru
 
-        Close-ExcelPackage $xl
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range A1 -Value 'A'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range B1 -Value 'B'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range C1 -Value 'C'
 
-        # crate $xlfileHeaderOnly
-        $xl = "" | Export-excel $xlfileHeaderOnly -PassThru
+            Close-ExcelPackage $xl
+        }
 
-        Set-ExcelRange -Worksheet $xl.Sheet1 -Range A1 -Value 'A'
-        Set-ExcelRange -Worksheet $xl.Sheet1 -Range B1 -Value 'B'
-        Set-ExcelRange -Worksheet $xl.Sheet1 -Range C1 -Value 'C'
+        # Create $xlfileImportColumns if it does not exist
+        if (!(Test-Path -Path $xlfileImportColumns)) {
+            $xl = "" | Export-Excel $xlfileImportColumns -PassThru
 
-        Close-ExcelPackage $xl
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range A1 -Value 'A'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range B1 -Value 'B'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range C1 -Value 'C'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range D1 -Value 'D'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range E1 -Value 'E'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range F1 -Value 'F'
+    
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range A2 -Value '1'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range B2 -Value '2'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range C2 -Value '3'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range D2 -Value '4'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range E2 -Value '5'
+            Set-ExcelRange -Worksheet $xl.Sheet1 -Range F2 -Value '6'
+    
+            Close-ExcelPackage $xl
+        }
     }
 
     It "Import-Excel should have this shape" {
@@ -167,7 +200,7 @@ Describe "Import-Excel on a sheet with no headings" {
     }
 
     It "Should" {
-        $xlfile = "TestDrive:\testImportExcelSparse.xlsx"
+        $xlfile = "$PSScriptRoot\testImportExcelSparse.xlsx"
         $xl = "" | Export-excel $xlfile -PassThru
 
         Set-ExcelRange -Worksheet $xl.Sheet1 -Range A1 -Value 'Chuck'
@@ -223,5 +256,140 @@ Describe "Import-Excel on a sheet with no headings" {
         $actual[0].P1 | Should -Be 'A'
         $actual[0].P2 | Should -Be 'B'
         $actual[0].P3 | Should -Be 'C'
+    }
+
+    It "Should import correct data if -ImportColumns is used with the first column" {
+        $actual = @(Import-Excel $xlfileImportColumns -ImportColumns @(1,2,4,5))
+        $actualNames = $actual[0].psobject.properties.Name
+
+        $actualNames.Count | Should -Be 4
+        $actualNames[0] | Should -Be 'A'
+        $actualNames[2] | Should -Be 'D'
+
+        $actual.Count | Should -Be 1
+        $actual[0].A | Should -Be 1
+        $actual[0].B | Should -Be 2
+        $actual[0].D | Should -Be 4
+        $actual[0].E | Should -Be 5
+    }
+
+    It "Should import correct data if -ImportColumns is used with the first column" {
+        $actual = @(Import-Excel $xlfileImportColumns -ImportColumns @(1,3,4,5))
+        $actualNames = $actual[0].psobject.properties.Name
+
+        $actualNames.Count | Should -Be 4
+        $actualNames[0] | Should -Be 'A'
+        $actualNames[2] | Should -Be 'D'
+
+        $actual.Count | Should -Be 1
+        $actual[0].A | Should -Be 1
+        $actual[0].C | Should -Be 3
+        $actual[0].D | Should -Be 4
+        $actual[0].E | Should -Be 5
+    }
+
+    It "Should import correct data if -ImportColumns is used without the first column" {
+        $actual = @(Import-Excel $xlfileImportColumns -ImportColumns @(2,3,6))
+        $actualNames = $actual[0].psobject.properties.Name
+
+        $actualNames.Count | Should -Be 3
+        $actualNames[0] | Should -Be 'B'
+        $actualNames[2] | Should -Be 'F'
+
+        $actual.Count | Should -Be 1
+        $actual[0].B | Should -Be 2
+        $actual[0].C | Should -Be 3
+        $actual[0].F | Should -Be 6
+    }
+
+    It "Should import correct data if -ImportColumns is used without the first column" {
+        $actual = @(Import-Excel $xlfileImportColumns -ImportColumns @(2,5,6))
+        $actualNames = $actual[0].psobject.properties.Name
+
+        $actualNames.Count | Should -Be 3
+        $actualNames[0] | Should -Be 'B'
+        $actualNames[2] | Should -Be 'F'
+
+        $actual.Count | Should -Be 1
+        $actual[0].B | Should -Be 2
+        $actual[0].E | Should -Be 5
+        $actual[0].F | Should -Be 6
+    }
+
+    It "Should import correct data if -ImportColumns is used with only 1 column" {
+        $actual = @(Import-Excel $xlfile -ImportColumns @(2))
+        $actualNames = $actual[0].psobject.properties.Name
+
+        $actualNames.Count | Should -Be 1
+        $actualNames[0] | Should -Be 'B'
+
+        $actual.Count | Should -Be 2
+        $actual[0].B | Should -Be 'E'
+    }
+    
+    It "Should import correct data if -ImportColumns is used with only 1 column which is also the last" {
+        $actual = @(Import-Excel $xlfile -ImportColumns @(3))
+        $actualNames = $actual[0].psobject.properties.Name
+
+        $actualNames.Count | Should -Be 1
+        $actualNames[0] | Should -Be 'C'
+
+        $actual.Count | Should -Be 2
+        $actual[1].C | Should -Be 'I'
+    }
+
+    It "Should import correct data if -ImportColumns contains all columns" {
+        $actual = @(Import-Excel $xlfileImportColumns -ImportColumns @(1,2,3,4,5,6))
+        $actualNames = $actual[0].psobject.properties.Name
+
+        $actualNames.Count | Should -Be 6
+        $actualNames[0] | Should -Be 'A'
+        $actualNames[2] | Should -Be 'C'
+
+        $actual.Count | Should -Be 1
+        $actual[0].A | Should -Be 1
+        $actual[0].B | Should -Be 2
+        $actual[0].C | Should -Be 3
+        $actual[0].D | Should -Be 4
+        $actual[0].E | Should -Be 5
+        $actual[0].F | Should -Be 6
+    }
+
+    It "Should ignore -StartColumn and -EndColumn if -ImportColumns is set aswell" {
+        $actual = @(Import-Excel $xlfileImportColumns -ImportColumns @(5) -StartColumn 2 -EndColumn 7)
+        $actualNames = $actual[0].psobject.properties.Name
+
+        $actualNames.Count | Should -Be 1
+        $actualNames[0] | Should -Be 'E'
+
+        $actual[0].E | Should -Be '5'
+    }
+
+    It "Should arrange the columns if -ImportColumns is not in order" {
+        $actual = @(Import-Excel $xlfileImportColumns -ImportColumns @(5,1,4))
+        $actualNames = $actual[0].psobject.properties.Name
+
+        $actualNames.Count | Should -Be 3
+        $actualNames[0] | Should -Be 'E'
+        $actualNames[1] | Should -Be 'A'
+        $actualNames[2] | Should -Be 'D'
+
+        $actual[0].E | Should -Be '5'
+        $actual[0].A | Should -Be '1'
+        $actual[0].D | Should -Be '4'
+    }
+
+    It "Should arrange the columns if -ImportColumns is not in order and -NoHeader is used" {
+        $actual = @(Import-Excel $xlfileImportColumns -ImportColumns @(5,1,4) -NoHeader -StartRow 2)
+        $actualNames = $actual[0].psobject.properties.Name
+
+        $actualNames.Count | Should -Be 3
+        $actualNames[0] | Should -Be 'P1'
+        $actualNames[1] | Should -Be 'P2'
+        $actualNames[2] | Should -Be 'P3'
+
+        $actual[0].P1 | Should -Be '5'
+        $actual[0].P2 | Should -Be '1'
+        $actual[0].P3 | Should -Be '4'
     }
 }

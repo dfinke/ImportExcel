@@ -35,7 +35,8 @@
         [string[]]$AsText,
         [string[]]$AsDate,
         [ValidateNotNullOrEmpty()]
-        [String]$Password
+        [String]$Password,
+        [Int[]]$ImportColumns
     )
     end {
         $sw = [System.Diagnostics.Stopwatch]::StartNew()
@@ -62,6 +63,16 @@
             )
 
             try {
+                if ($ImportColumns) {
+                    $end = $Worksheet.Dimension.End.Column
+                    # Check $ImportColumns
+                    if ($ImportColumns[0] -le 0) { throw "The first entry in ImportColumns must be equal or greater 1" ; return }
+                    # Check $StartColumn and $EndColumn
+                    if (($StartColumn -ne 1) -or ($EndColumn -ne $end)) { Write-Warning -Message "If ImportColumns is set than individual StartColumn and EndColumn will be ignored." }
+                    # Replace $Columns with $ImportColumns
+                    $Columns = $ImportColumns
+                }
+
                 if ($HeaderName) {
                     $i = 0
                     foreach ($H in $HeaderName) {
