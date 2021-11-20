@@ -68,7 +68,7 @@
                     # Check $ImportColumns
                     if ($ImportColumns[0] -le 0) { throw "The first entry in ImportColumns must be equal or greater 1" ; return }
                     # Check $StartColumn and $EndColumn
-                    if (($StartColumn -ne 1) -or ($EndColumn -ne $end)) { Write-Warning -Message "If ImportColumns is set than individual StartColumn and EndColumn will be ignored." }
+                    if (($StartColumn -ne 1) -or ($EndColumn -ne $end)) { Write-Warning -Message "If ImportColumns is set, then individual StartColumn and EndColumn will be ignored." }
                     # Replace $Columns with $ImportColumns
                     $Columns = $ImportColumns
                 }
@@ -95,7 +95,7 @@
 
                     foreach ($C in $Columns) {
                         #allow "False" or "0" to be column headings
-                        $Worksheet.Cells[$StartRow, $C] | Where-Object {-not [string]::IsNullOrEmpty($_.Value) } | Select-Object @{N = 'Column'; E = { $C } }, Value
+                        $Worksheet.Cells[$StartRow, $C] | Where-Object { -not [string]::IsNullOrEmpty($_.Value) } | Select-Object @{N = 'Column'; E = { $C } }, Value
                     }
                 }
             }
@@ -196,7 +196,7 @@
                         }
                         $TextColRegEx = New-Object -TypeName regex -ArgumentList $TextColExpression , 9
                     }
-                    else {$TextColRegEx = $null}
+                    else { $TextColRegEx = $null }
                     foreach ($R in $rows) {
                         #Disabled write-verbose for speed
                         #  Write-Verbose "Import row '$R'"
@@ -205,12 +205,12 @@
                             foreach ($P in $PropertyNames) {
                                 $MatchTest = $TextColRegEx.Match($P.value)
                                 if ($MatchTest.groups.name -eq "astext") {
-                                        $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Text
+                                    $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Text
                                 }
                                 elseif ($MatchTest.groups.name -eq "asdate" -and $Worksheet.Cells[$R, $P.Column].Value -is [System.ValueType]) {
-                                        $NewRow[$P.Value] = [datetime]::FromOADate(($Worksheet.Cells[$R, $P.Column].Value))
+                                    $NewRow[$P.Value] = [datetime]::FromOADate(($Worksheet.Cells[$R, $P.Column].Value))
                                 }
-                                else {  $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value }
+                                else { $NewRow[$P.Value] = $Worksheet.Cells[$R, $P.Column].Value }
                             }
                         }
                         else {
