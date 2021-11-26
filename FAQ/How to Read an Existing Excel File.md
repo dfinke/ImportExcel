@@ -2,7 +2,7 @@
 
 ```powershell
 Import-Module ImportExcel
-#Loads the Excel file into a is a custom PS Object
+#Loads the Excel file into a PSCustomObject
 $ExcelFile = Import-Excel "C:\Test\file.xlsx" -WorksheetName "Sheet1" 
 ```
 
@@ -17,7 +17,7 @@ After Loading this data into ```$ExcelFile``` the data is stored like:
 
 ### Load a Column
 ```powershell
-$SpecificColumn = $ExcelFile."anotherHeader" #loads column with the header "another header" store into an array
+$SpecificColumn = $ExcelFile."anotherHeader" #loads column with the header "anotherHeader" Data stored in an array
 ```
 
 ### Load a Row
