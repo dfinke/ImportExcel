@@ -22,6 +22,7 @@ Can also load a value at a specific index:
 ```powershell
 $ValueAtIndex = $WorkSheet[2,1].Value #Loads the value at row 2, column A
 ```
+```$ValueAtIndex``` now contains: ![ValueAtIndexData](/images/FAQ_Images/ValueAtIndexData.png)  
 ### Save File After Modifying
 The changes will not display in the Excel file until Close-ExcelPackage is called.  
 ```powershell
