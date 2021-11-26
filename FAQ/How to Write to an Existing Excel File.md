@@ -12,13 +12,14 @@ $WorkSheet = $ExcelPkgFile.Workbook.Worksheets["sheet1"].Cells #open excel works
 Visual of Data Structure:  
 ![DataStructureExcelPkg](/images/FAQ_Images/DataStructureExcelPkg.png)
 
-Modify a specific value by accessing row/col like a 2D Array:
+### Modify a Specific Value in a File 
+Values can be accessed by row, col. Similar to a 2D array.
 ```powershell
 $WorkSheet[1,4].Value = "New Column Header" #Starts at index 1 not 0
 ```
 Contents of file.xlsx after modifying:  
-![ExcelFileContentsPostAdd](/images/FAQ_Images/ExcelFileContentsPostAdd.png)
-Can also load a value at a specific index:
+![ExcelFileContentsPostAdd](/images/FAQ_Images/ExcelFileContentsPostAdd.png)  
+### Load Value at Specific Index
 ```powershell
 $ValueAtIndex = $WorkSheet[2,1].Value #Loads the value at row 2, column A
 ```
