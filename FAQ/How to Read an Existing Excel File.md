@@ -1,4 +1,4 @@
-# How to Read an existing Excel File
+# How to Read an Existing Excel File
 
 ```powershell
 Import-Module ImportExcel
@@ -10,7 +10,7 @@ $ExcelFile = Import-Excel "C:\Test\file.xlsx" -WorksheetName "Sheet1"
 The File C:\Test\file.xlsx contains  
 ![ExcelFileContents](/images/FAQ_Images/ExcelFileContents.png)
 
-After Loading this data into ```$ExcelFile``` the data is stored like:  
+After loading this data into ```$ExcelFile``` the data is stored like:  
 ![ExcelFileDebugImg](/images/FAQ_Images/ExcelFileDebugImg.jpg)
 
 ## Other Common Operations
@@ -25,14 +25,14 @@ $SpecificColumn = $ExcelFile."anotherHeader" #loads column with the header "anot
 $SpecificRow = $ExcelFile[1] #Loads row at index 1. Index 1 is the first row instead of 0. 
 ```
 
-### Map Contents to Hashtable to interpret data
-Sometimes mapping to a HashTable is more convenient to have access to common Hashtable operations. Enumerate a Hashtable with the row's data by:
+### Map Contents to Hashtable to Interpret Data
+Sometimes mapping to a Hashtable is more convenient to have access to common Hashtable operations. Enumerate a Hashtable with the row's data by:
 ```powershell
 $HashTable = @{}
 $SpecificRow= $ExcelFile[2]
 $SpecificRow.psobject.properties | ForEach-Object {$HashTable[$_.Name] = $_.Value}
 ```
-To then iterate through the enumerated hash...
+To then iterate through the enumerated Hashtable:
 ```powershell
 ForEach ($Key in ($HashTable.GetEnumerator()) | Where-Object {$_.Value -eq "x"}){ #Only grabs a key where the value is "x"
     #values accessible with $Key.Name or $Key.Value
