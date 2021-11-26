@@ -17,7 +17,7 @@ After Loading this data into ```$ExcelFile``` the data is stored like:
 
 ### Load a Column
 ```powershell
-$SpecificColumn = $ExcelFile."anotherHeader" #loads column with the header "anotherHeader" Data stored in an array
+$SpecificColumn = $ExcelFile."anotherHeader" #loads column with the header "anotherHeader" -- data stored in an array
 ```
 
 ### Load a Row
@@ -25,8 +25,8 @@ $SpecificColumn = $ExcelFile."anotherHeader" #loads column with the header "anot
 $SpecificRow = $ExcelFile[1] #Loads row at index 1. Index 1 is the first row instead of 0. 
 ```
 
-### Map Contents to HashTable to interpret data
-Sometimes mapping to a HashTable is more convenient to have access to common Hashtable operations. Enumerate a HashTable with the Row data properties by:
+### Map Contents to Hashtable to interpret data
+Sometimes mapping to a HashTable is more convenient to have access to common Hashtable operations. Enumerate a Hashtable with the row's data by:
 ```powershell
 $HashTable = @{}
 $SpecificRow= $ExcelFile[2]
