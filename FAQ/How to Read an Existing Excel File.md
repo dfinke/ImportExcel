@@ -30,7 +30,9 @@ Sometimes mapping to a Hashtable is more convenient to have access to common Has
 ```powershell
 $HashTable = @{}
 $SpecificRow= $ExcelFile[2]
-$SpecificRow.psobject.properties | ForEach-Object {$HashTable[$_.Name] = $_.Value}
+$SpecificRow.psobject.properties | ForEach-Object { 
+    $HashTable[$_.Name] = $_.Value
+}
 ```
 To then iterate through the enumerated Hashtable:
 ```powershell
