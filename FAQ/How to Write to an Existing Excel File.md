@@ -1,5 +1,6 @@
 # Write to an Existing Excel File
 ### Enumerate the Excel File
+The cmdlets ```Open-ExcelPackage``` and ```Close-ExcelPackage``` allow for direct modification to Excel file contents.
 ```powershell
 $ExcelPkg = Open-ExcelPackage -Path  "C:\Test\file.xlsx"
 ```
