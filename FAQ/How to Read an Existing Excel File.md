@@ -1,8 +1,7 @@
 # How to Read an Existing Excel File
-
+## Enumerate the Excel File Contents
 ```powershell
-Import-Module ImportExcel
-#Loads the Excel file into a PSCustomObject
+#Load the Excel file into a PSCustomObject
 $ExcelFile = Import-Excel "C:\Test\file.xlsx" -WorksheetName "Sheet1" 
 ```
 
