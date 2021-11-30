@@ -1,3 +1,10 @@
+# v7.4.1
+
+- Implements: https://github.com/dfinke/ImportExcel/issues/1111
+- Refactored ReZip into separate function
+- Deletes temp folder after rezipping
+- Added -ReZip to `Close-ExcelPackage`
+
 # v7.4.0
 
 - Thank you to [Max Goczall](https://github.com/muschebubusche) for this contribution!
