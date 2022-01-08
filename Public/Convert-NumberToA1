@@ -1,7 +1,6 @@
 Function Convert-NumberToA1 {
   Param([parameter(Mandatory=$true)]
         [decimal]$number)
- 
   $number = $number -replace "\..*",""
   $a1Value = $null
   While ($number -gt 0) {
