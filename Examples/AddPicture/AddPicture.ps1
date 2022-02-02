@@ -25,10 +25,10 @@ try {
     $xlpkg = $data | Export-Excel -Path $path -PassThru
     $xlpkg.Sheet1 | Add-ExcelImage -Image $image -Row 4 -Column 6 -ResizeCell
 } finally {
-    $image.Dispose()
+    if ($image) {
+        $image.Dispose()
+    }
     if ($xlpkg) {
         Close-ExcelPackage -ExcelPackage $xlpkg -Show
     }
 }
-
-
