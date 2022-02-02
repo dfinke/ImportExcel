@@ -8,7 +8,7 @@ cell location, and optionally resize the row and column to fit the image.
 
 ## Running the example
 
-To try this example, run the script `AddPicture.ps1`. The `Add-ExcelImage`
+To try this example, run the script `AddImage.ps1`. The `Add-ExcelImage`
 function will be dot-sourced, and an Excel document will be created in the same
 folder with a sample data set. The Octocat image will then be embedded into
 Sheet1.
