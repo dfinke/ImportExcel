@@ -75,6 +75,10 @@ function Add-ExcelImage {
     )
 
     begin {
+        if ($IsWindows -eq $false) {
+            throw "This only works on Windows and won't run on $([environment]::OSVersion)"
+        }
+        
         <#
           These ratios work on my machine but it feels fragile. Need to better
           understand how row and column sizing works in Excel and what the

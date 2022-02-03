@@ -1,3 +1,7 @@
+if ($IsWindows -eq $false) {
+    throw "This only works on Windows and won't run on $([environment]::OSVersion)"
+}
+
 Add-Type -AssemblyName System.Drawing
 
 . $PSScriptRoot\Add-ExcelImage.ps1
@@ -24,7 +28,8 @@ try {
     $image = [System.Drawing.Image]::FromFile($octocat)
     $xlpkg = $data | Export-Excel -Path $path -PassThru
     $xlpkg.Sheet1 | Add-ExcelImage -Image $image -Row 4 -Column 6 -ResizeCell
-} finally {
+}
+finally {
     if ($image) {
         $image.Dispose()
     }
