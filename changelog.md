@@ -1,5 +1,6 @@
-- Add images to spreadsheets. [Check it out](.\Examples\AddImage)
-    - Thank you to Josh Hendricks [GitHub](https://github.com/joshooaj) [Twitter](https://twitter.com/joshooaj) for the idea
+- Thank you to Josh Hendricks
+    - Add images to spreadsheets. [Check it out](.\Examples\AddImage)
+        - Catch up with him on [GitHub](https://github.com/joshooaj) and [Twitter](https://twitter.com/joshooaj) for the idea
 
 # v7.4.1
 
