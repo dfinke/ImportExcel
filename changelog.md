@@ -1,3 +1,6 @@
+- Add images to spreadsheets. [Check it out](.\Examples\AddImage)
+    - Thank you to Josh Hendricks [GitHub](https://github.com/joshooaj) [Twitter](https://twitter.com/joshooaj) for the idea
+
 # v7.4.1
 
 - Implements: https://github.com/dfinke/ImportExcel/issues/1111
