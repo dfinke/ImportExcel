@@ -8,12 +8,6 @@ Automate Excel via PowerShell without having Excel installed. Runs on Windows, L
 
 <br/>
 
-Open `ImportExcel` as a remote repo in VS Code, without cloning it.
-
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/dfinke/importexcel)
-
-<br/>
-
 | CI System | Environment | Status |
 | :--- | :--- | :--- |
 | Azure DevOps | Windows | [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master&jobName=Windows)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master) |
