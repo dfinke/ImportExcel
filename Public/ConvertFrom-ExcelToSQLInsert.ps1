@@ -16,7 +16,9 @@ function ConvertFrom-ExcelToSQLInsert {
         [switch]$NoHeader,
         [switch]$DataOnly,
         [switch]$ConvertEmptyStringsToNull,
-        [switch]$UseMsSqlSyntax
+        [switch]$UseMsSqlSyntax,
+        [String[]]$HeaderName,
+        [Int[]]$ImportColumns
     )
 
     $null = $PSBoundParameters.Remove('TableName')
