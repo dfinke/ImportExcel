@@ -447,6 +447,23 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ImportColumns
+Accepts an array of integers listing the columns to import
+The first entry in ImportColumns must be equal or greater 1.
+If ImportColumns is set, then individual StartColumn and EndColumn will be ignored.
+
+```yaml
+Type: Int[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about\_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
