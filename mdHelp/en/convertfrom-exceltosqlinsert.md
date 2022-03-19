@@ -137,7 +137,7 @@ Accept wildcard characters: False
 
 ### -Header
 
-Specifies custom property names to use, instead of the values defined in the column headers of the TopRow. If you provide fewr header names than there is data in the worksheet, then only the data with a corresponding header name will be imported and the data without header name will be disregarded. If you provide more header names than there is data in the worksheet, then all data will be imported and all objects will have all the property names you defined in the header names. As such, the last properties will be blank as there is no data for them.
+Specifies custom property names to use, instead of the values defined in the column headers of the TopRow. If you provide fewer header names than there is data in the worksheet, then only the data with a corresponding header name will be imported and the data without header name will be disregarded. If you provide more header names than there is data in the worksheet, then all data will be imported and all objects will have all the property names you defined in the header names. As such, the last properties will be blank as there is no data for them.
 
 ```yaml
 Type: String[]
@@ -203,6 +203,42 @@ Accept wildcard characters: False
 
 ```yaml
 Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -HeaderName
+Specifies custom property names to use, instead of the values defined in the column headers of the TopRow.
+
+If you provide fewer header names than there are columns of data in the worksheet, then data will only be imported from that number of columns - the others will be ignored.
+
+If you provide more header names than there are columns of data in the worksheet, it will result in blank properties being added to the objects returned.
+
+This parameter is passed to Import-Excel as is.
+
+```yaml
+Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ImportColumns
+List of columns to import. This parameter is passed to Import-Excel as is.
+
+```yaml
+Type: Int[]
 Parameter Sets: (All)
 Aliases:
 
