@@ -11,7 +11,9 @@ function ConvertFrom-ExcelData {
         [int]$HeaderRow = 1,
         [string[]]$Header,
         [switch]$NoHeader,
-        [switch]$DataOnly
+        [switch]$DataOnly,
+        [String[]]$HeaderName,
+        [Int[]]$ImportColumns
     )
 
     $null = $PSBoundParameters.Remove('ScriptBlock')
