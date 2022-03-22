@@ -64,14 +64,14 @@ If the default behavior is not desired and you want to import the complete works
 ### EXAMPLE 1
 
 ```text
-----------------------------------------------
+|--------------------------------------------|
 | File: Movies.xlsx     -      Sheet: Actors |
-----------------------------------------------
+|--------------------------------------------|
 |           A           B            C       |
 |1     First Name                 Address    |
 |2     Chuck         Norris       California |
 |3     Jean-Claude   Vandamme     Brussels   |
-----------------------------------------------
+|--------------------------------------------|
 
 PS C:> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Actors
 
@@ -82,6 +82,7 @@ First Name: Jean-Claude
 Address   : Brussels
 ```
 
+
 Import data from an Excel worksheet. One object is created for each row. The property names of the objects consist of the column names defined in the first row. In case a column doesn't have a column header \(usually in row 1 when '-StartRow' is not used\), then the unnamed columns will be skipped and the data in those columns will not be imported.
 
 Notice that column 'B' is not imported because there's no value in cell 'B1' that can be used as property name for the objects.
@@ -89,14 +90,14 @@ Notice that column 'B' is not imported because there's no value in cell 'B1' tha
 ### EXAMPLE 2
 
 ```text
-----------------------------------------------
+|--------------------------------------------|
 | File: Movies.xlsx     -      Sheet: Actors |
-----------------------------------------------
+|--------------------------------------------|
 |           A           B            C       |
 |1     First Name                 Address    |
 |2     Chuck         Norris       California |
 |3     Jean-Claude   Vandamme     Brussels   |
-----------------------------------------------
+|--------------------------------------------|
 
 PS\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Actors -NoHeader
 
@@ -120,15 +121,15 @@ Notice that the column header \(row 1\) is imported as an object too.
 ### EXAMPLE 3
 
 ```text
-----------------------------------------------------------
+|--------------------------------------------------------|
 | File: Movies.xlsx            -           Sheet: Movies |
-----------------------------------------------------------
+|--------------------------------------------------------|
 |           A            B            C          D       |
 |1     The Bodyguard   1992           9                  |
 |2     The Matrix      1999           8                  |
 |3                                                       |
 |4     Skyfall         2012           9                  |
-----------------------------------------------------------
+|--------------------------------------------------------|
 
 PS\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Movies -HeaderName 'Movie name', 'Year', 'Rating', 'Genre'
 
@@ -160,15 +161,15 @@ Notice that empty rows are imported and that data for the property 'Genre' is no
 ### EXAMPLE 4
 
 ```text
-----------------------------------------------------------
+|--------------------------------------------------------|
 | File: Movies.xlsx            -           Sheet: Movies |
-----------------------------------------------------------
+|--------------------------------------------------------|
 |           A            B            C          D       |
 |1     The Bodyguard   1992           9                  |
 |2     The Matrix      1999           8                  |
 |3                                                       |
 |4     Skyfall         2012           9                  |
-----------------------------------------------------------
+|--------------------------------------------------------|
 
 PS\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Movies -NoHeader -DataOnly
 
@@ -192,14 +193,14 @@ Notice that empty rows and empty columns are not imported.
 ### EXAMPLE 5
 
 ```text
-----------------------------------------------------------
+|--------------------------------------------------------|
 | File: Movies.xlsx            -           Sheet: Actors |
-----------------------------------------------------------
+|--------------------------------------------------------|
 |           A           B           C            D       |
 |1     Chuck                     Norris       California |
 |2                                                       |
 |3     Jean-Claude               Vandamme     Brussels   |
-----------------------------------------------------------
+|--------------------------------------------------------|
 
 PS\> Import-Excel -Path 'C:\Movies.xlsx' -WorkSheetname Actors -DataOnly -HeaderName 'FirstName', 'SecondName', 'City' -StartRow 2
 
