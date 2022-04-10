@@ -6,7 +6,7 @@
     RootModule         = 'ImportExcel.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '7.4.1'
+    ModuleVersion      = '7.4.2'
 
     # ID used to uniquely identify this module
     GUID               = '60dd4136-feff-401a-ba27-a84458c57ede'
@@ -25,8 +25,6 @@
 PowerShell module to import/export Excel spreadsheets, without Excel.
 Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq
 '@
-
-
 
     # Functions to export from this module
     FunctionsToExport  = @(
@@ -81,6 +79,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Pivot',
         'Read-Clipboard',
         'ReadClipboardImpl',
+        'Read-Excel',
         'Read-OleDbData',
         'Remove-Worksheet',
         'Select-Worksheet',
