@@ -67,12 +67,23 @@ South,Delaware,712,508.55,$SheetName
         It 'Should return a hashtable' {
             $actual = Read-Excel $path -AsHashtable
 
-            $actual.keys.Count | Should -Be 2
-            $actual.Contains('Sheet1') | Should -Be True
-            $actual.Contains('Sheet2') | Should -Be True
+            $actual.keys.Count | Should -Be 1
+            
+            $actual[0].Count | Should -Be 2
+            
+            $actual[0][0].keys.Contains('Sheet1') | Should -Be True
+            $actual[0][1].keys.Contains('Sheet2') | Should -Be True
 
-            $actual['Sheet1'].Count | Should -Be 9
-            $actual['Sheet2'].Count | Should -Be 9
+            $actual[0][0]['Sheet1'].Count | Should -Be 9
+            $actual[0][1]['Sheet2'].Count | Should -Be 9
+        }
+
+        It 'Should read piped data' {
+            $actual = Get-ChildItem "TestDrive:" *.xlsx | Read-Excel
+        }
+
+        It 'Should read piped data as a hashtable' {
+            $actual = Get-ChildItem "TestDrive:" *.xlsx | Read-Excel -AsHashtable
         }
     }
 }

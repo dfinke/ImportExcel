@@ -57,13 +57,17 @@ function Read-Excel {
             $WorksheetName = Get-ExcelSheetInfo $Path | Select-Object -ExpandProperty Name
         }
 
-        $importResults = foreach ($sheetname in $WorksheetName) {
-            $null = $boundParameters.Remove('WorksheetName')
-            $null = $boundParameters.Remove('AsHashtable')
+        $null = $boundParameters.Remove('Path')
+        $null = $boundParameters.Remove('WorksheetName')
+        $null = $boundParameters.Remove('AsHashtable')
 
-            $result = Import-Excel -WorksheetName $sheetname @boundParameters
-            if ($AsHashtable) {
-                $importedData["$sheetname"] = $result
+        foreach ($sheetname in $WorksheetName) {
+            $result = Import-Excel -Path $Path -WorksheetName $sheetname @boundParameters
+            if ($AsHashtable) {                
+                if (!$importedData.Contains($Path)) {
+                    $importedData["$Path"] = @()
+                }
+                $importedData["$Path"] += @{$sheetname = $result }
             }
             else {
                 $result
@@ -74,9 +78,6 @@ function Read-Excel {
     End {
         if ($AsHashtable) {
             $importedData
-        }
-        else {
-            $importResults
-        }
+        }        
     }
 }
