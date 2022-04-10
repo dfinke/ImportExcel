@@ -63,5 +63,16 @@ South,Delaware,712,508.55,$SheetName
         It 'Should fail if sheet not found' {
             { Read-Excel $path sheet1x } | Should -Throw 
         }
+
+        It 'Should return a hashtable' {
+            $actual = Read-Excel $path -AsHashtable
+
+            $actual.keys.Count | Should -Be 2
+            $actual.Contains('Sheet1') | Should -Be True
+            $actual.Contains('Sheet2') | Should -Be True
+
+            $actual['Sheet1'].Count | Should -Be 9
+            $actual['Sheet2'].Count | Should -Be 9
+        }
     }
 }

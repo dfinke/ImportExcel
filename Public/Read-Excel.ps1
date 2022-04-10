@@ -36,11 +36,14 @@ function Read-Excel {
         [Int]$EndColumn,
         [Switch]$DataOnly,
         [string[]]$AsText,
-        [string[]]$AsDate
+        [string[]]$AsDate,
+        # Return data in a map, where the key is the worksheet name
+        [Switch]$AsHashtable
     )
 
     Begin {
         $boundParameters = @{} + $PSBoundParameters
+        $importedData = [Ordered]@{}
     }
 
     Process {
@@ -54,9 +57,26 @@ function Read-Excel {
             $WorksheetName = Get-ExcelSheetInfo $Path | Select-Object -ExpandProperty Name
         }
 
-        foreach ($sheetname in $WorksheetName) {
-            $null = $boundParameters.Remove('WorksheetName')            
-            Import-Excel -WorksheetName $sheetname @boundParameters
+        $importResults = foreach ($sheetname in $WorksheetName) {
+            $null = $boundParameters.Remove('WorksheetName')
+            $null = $boundParameters.Remove('AsHashtable')
+
+            $result = Import-Excel -WorksheetName $sheetname @boundParameters
+            if ($AsHashtable) {
+                $importedData["$sheetname"] = $result
+            }
+            else {
+                $result
+            }
+        }
+    }
+
+    End {
+        if ($AsHashtable) {
+            $importedData
+        }
+        else {
+            $importResults
         }
     }
 }
