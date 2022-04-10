@@ -3,7 +3,7 @@ function Read-Excel {
         .SYNOPSIS
         Read an Excel file into PowerShell
         .DESCRIPTION
-        Supports an option to read a single sheet or a list of sheets, or all the sheets
+        Supports the ability to read a single sheet, a list of sheets, or all the sheets
 
         .EXAMPLE
         # Read all the sales sheets
@@ -16,18 +16,36 @@ function Read-Excel {
         .EXAMPLE
         # Read all the sheets from all the Excel files in the current directory
         dir *.xlsx | Read-Excel
-        #>
+    #>
     param(
         [Parameter(ValueFromPipelineByPropertyName)]
         [Alias('FullName')]
         $Path,
         # Don't specify a worksheet name and all sheets will be read
-        [string[]]$WorksheetName
-    )    
+        [string[]]$WorksheetName,
+        [String[]]$HeaderName,
+        [Switch]$NoHeader,
+        [Alias('HeaderRow', 'TopRow')]
+        [ValidateRange(1, 9999)]
+        [Int]$StartRow = 1,
+        [Alias('StopRow', 'BottomRow')]
+        [Int]$EndRow ,
+        [Alias('LeftColumn')]
+        [Int]$StartColumn = 1,
+        [Alias('RightColumn')]
+        [Int]$EndColumn,
+        [Switch]$DataOnly,
+        [string[]]$AsText,
+        [string[]]$AsDate
+    )
+
+    Begin {
+        $boundParameters = @{} + $PSBoundParameters
+    }
 
     Process {
-
-        if(!$Path) {
+        
+        if (!$Path) {
             Write-Error "Excel file(s) not specified and are required"
             return
         }
@@ -37,7 +55,8 @@ function Read-Excel {
         }
 
         foreach ($sheetname in $WorksheetName) {
-            Import-Excel -Path $Path -WorksheetName $sheetname
+            # Import-Excel -Path $Path -WorksheetName $sheetname
+            Import-Excel -WorksheetName $sheetname @boundParameters
         }
     }
 }
