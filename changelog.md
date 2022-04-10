@@ -1,6 +1,10 @@
+# v7.4.2
+
 - Thank you to Josh Hendricks
     - Add images to spreadsheets. [Check it out](https://github.com/dfinke/ImportExcel/tree/master/Examples/AddImage)
         - Catch up with him on [GitHub](https://github.com/joshooaj) and [Twitter](https://twitter.com/joshooaj) for the idea
+- Added `Read-Excel` function - supports the ability to read a single sheet, a list of sheets, or all the sheets
+    - Check the [Read Excel examples](https://github.com/dfinke/ImportExcel/blob/Add-Read-Excel/Examples/ReadExcel/)    
 
 # v7.4.1
 
