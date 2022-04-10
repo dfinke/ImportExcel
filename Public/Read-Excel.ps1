@@ -55,7 +55,7 @@ function Read-Excel {
         }
 
         foreach ($sheetname in $WorksheetName) {
-            # Import-Excel -Path $Path -WorksheetName $sheetname
+            $null = $boundParameters.Remove('WorksheetName')            
             Import-Excel -WorksheetName $sheetname @boundParameters
         }
     }
