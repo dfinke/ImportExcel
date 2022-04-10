@@ -1,8 +1,22 @@
 function Read-Excel {
     <#
         .SYNOPSIS
+        Read an Excel file into PowerShell
+        .DESCRIPTION
+        Supports an option to read a single sheet or a list of sheets, or all the sheets
+
         .EXAMPLE
-    #>
+        # Read all the sales sheets
+        Read-Excel "./yearlySales.xlsx"
+
+        .EXAMPLE
+        # Read two sales data sheets april and may
+        Read-Excel "./yearlySales.xlsx" april, may
+
+        .EXAMPLE
+        # Read all the sheets from all the Excel files in the current directory
+        dir *.xlsx | Read-Excel
+        #>
     param(
         [Parameter(ValueFromPipelineByPropertyName)]
         [Alias('FullName')]
