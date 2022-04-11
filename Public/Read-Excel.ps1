@@ -73,6 +73,7 @@ function Read-Excel {
                 $result
             }
         }
+        $WorksheetName = $null
     }
 
     End {
