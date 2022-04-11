@@ -131,7 +131,10 @@
                     throw "Worksheet '$WorksheetName' not found, the workbook only contains the worksheets '$($ExcelPackage.Workbook.Worksheets)'. If you only wish to select the first worksheet, please remove the '-WorksheetName' parameter." ; return
                 }
 
+                $xlBook = [Ordered]@{}
                 foreach ($sheet in $Worksheet) {
+                    $targetSheetname = $sheet.Name
+                    $xlBook["$targetSheetname"] = @()
                     #region Get rows and columns
                     #If we are doing dataonly it is quicker to work out which rows to ignore before processing the cells.
                     if (-not $EndRow   ) { $EndRow = $sheet.Dimension.End.Row }
@@ -221,7 +224,7 @@
                                     #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
                                 }
                             }
-                            [PSCustomObject]$NewRow
+                            $xlBook["$targetSheetname"] += [PSCustomObject]$NewRow
                         }
                         #endregion
                     }
@@ -230,6 +233,13 @@
             catch { throw "Failed importing the Excel workbook '$Path' with worksheet '$WorksheetName': $_"; return }
             finally {
                 if ($Path) { $stream.close(); $ExcelPackage.Dispose() }
+
+                if ($Worksheet.Count -eq 1) {
+                    $xlBook["$targetSheetname"]
+                }
+                else {
+                    $xlBook
+                }
             }
         }
     }
