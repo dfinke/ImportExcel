@@ -37,7 +37,7 @@
         [ValidateNotNullOrEmpty()]
         [String]$Password,
         [Int[]]$ImportColumns,
-        [Switch]$NoHashtable
+        [Switch]$NotAsDictionary
     )
     end {
         $sw = [System.Diagnostics.Stopwatch]::StartNew()
@@ -235,7 +235,7 @@
             finally {
                 if ($Path) { $stream.close(); $ExcelPackage.Dispose() }
 
-                if ($NoHashtable) {
+                if ($NotAsDictionary) {
                     foreach ($entry in $xlbook.GetEnumerator()) {
                         $entry.Value
                     }

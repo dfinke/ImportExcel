@@ -50,7 +50,7 @@ Describe 'Different ways to import sheets' -Tag ImportExcelReadSheets {
         }
 
         It 'Should return an array not a dictionary' {
-            $actual = Import-Excel $xlFilename april, june -NoHashtable
+            $actual = Import-Excel $xlFilename april, june -NotAsDictionary
             
             $actual.Count | Should -Be 200
             $group = $actual | Group-Object month -NoElement
