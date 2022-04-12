@@ -1,5 +1,5 @@
 #Requires -Modules Pester
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'False Positives')]
 param()
 
 Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 -Force
@@ -47,6 +47,17 @@ Describe 'Different ways to import sheets' -Tag ImportExcelReadSheets {
 
         It 'Should throw if it cannot find the sheet' {
             { Import-Excel $xlFilename april, june, notthere } | Should -Throw
+        }
+
+        It 'Should return an array not a dictionary' {
+            $actual = Import-Excel $xlFilename april, june -NoHashtable
+            
+            $actual.Count | Should -Be 200
+            $group = $actual | Group-Object month -NoElement
+
+            $group.Count | Should -Be 2
+            $group[0].Name | Should -BeExactly 'April'
+            $group[1].Name | Should -BeExactly 'June'
         }
     }
 }

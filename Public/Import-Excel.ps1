@@ -36,7 +36,8 @@
         [string[]]$AsDate,
         [ValidateNotNullOrEmpty()]
         [String]$Password,
-        [Int[]]$ImportColumns
+        [Int[]]$ImportColumns,
+        [Switch]$NoHashtable
     )
     end {
         $sw = [System.Diagnostics.Stopwatch]::StartNew()
@@ -234,7 +235,12 @@
             finally {
                 if ($Path) { $stream.close(); $ExcelPackage.Dispose() }
 
-                if ($Worksheet.Count -eq 1) {
+                if ($NoHashtable) {
+                    foreach ($entry in $xlbook.GetEnumerator()) {
+                        $entry.Value
+                    }
+                }
+                elseif ($Worksheet.Count -eq 1) {
                     $xlBook["$targetSheetname"]
                 }
                 else {
