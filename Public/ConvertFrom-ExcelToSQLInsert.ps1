@@ -16,12 +16,15 @@ function ConvertFrom-ExcelToSQLInsert {
         [switch]$NoHeader,
         [switch]$DataOnly,
         [switch]$ConvertEmptyStringsToNull,
-        [switch]$UseMsSqlSyntax
+        [switch]$UseMsSqlSyntax,
+		[Parameter(Mandatory = $false)]
+		$SingleQuoteStyle
     )
 
     $null = $PSBoundParameters.Remove('TableName')
     $null = $PSBoundParameters.Remove('ConvertEmptyStringsToNull')
     $null = $PSBoundParameters.Remove('UseMsSqlSyntax')
+    $null = $PSBoundParameters.Remove('SingleQuoteStyle')
 
     $params = @{} + $PSBoundParameters
 
@@ -38,7 +41,12 @@ function ConvertFrom-ExcelToSQLInsert {
                 'NULL'
             }
             else {
-                "'" + $record.$propertyName + "'"
+                if ( $SingleQuoteStyle ) {
+					"'" + $record.$propertyName.ToString().Replace("'",${SingleQuoteStyle}) + "'" 
+					}
+				else {
+				 "'" + $record.$propertyName + "'"
+				}
             }
         }
         $targetValues = ($values -join ", ")
