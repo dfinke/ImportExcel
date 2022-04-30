@@ -6,7 +6,7 @@
     RootModule         = 'ImportExcel.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '7.4.3'
+    ModuleVersion      = '7.5.0'
 
     # ID used to uniquely identify this module
     GUID               = '60dd4136-feff-401a-ba27-a84458c57ede'
@@ -49,6 +49,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Copy-ExcelWorksheet',
         'DoChart',
         'Enable-ExcelAutoFilter',
+        'Enable-ExcelAutofit',
         'Expand-NumberFormat',
         'Export-Excel',
         'Export-ExcelSheet',        
@@ -65,7 +66,6 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Import-UPS',
         'Import-USPS',
         'Invoke-AllTests',
-        'Enable-ExcelAutofit',
         'Invoke-ExcelQuery',
         'Invoke-Sum',
         'Join-Worksheet',
@@ -83,8 +83,8 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'PieChart',
         'Pivot',
         'Read-Clipboard',
-        'ReadClipboardImpl',
         'Read-OleDbData',
+        'ReadClipboardImpl',
         'Remove-Worksheet',
         'Select-Worksheet',
         'Send-SQLDataToExcel',
