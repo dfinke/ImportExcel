@@ -4,6 +4,12 @@
 
 - Importing multiple files with Import-Excel by pipeline uses only the first file for the row count https://github.com/dfinke/ImportExcel/issues/1172
 
+## New Features
+
+- Import-Excel now supports importing multiple sheets. It can either return a dictionary of all sheets, or as a single array of all sheets combined.
+    - `Import-Excel $xlfile *`                  # reads all sheets, returns all data in a dictionary
+    - `Import-Excel $xlfile * -NotAsDictionary` # reads all sheets, returns all data in a single array
+
 # v7.4.2
 
 - Thank you [James Mueller](https://github.com/jamesmmueller) Updated `ConvertFrom-ExcelToSQLInsert` to handle single quotes in the SQL statement.
