@@ -1,3 +1,13 @@
+# v7.5.0
+
+## Fixes
+
+- Importing multiple files with Import-Excel by pipeline uses only the first file for the row count https://github.com/dfinke/ImportExcel/issues/1172
+
+# v7.4.2
+
+- Thank you [James Mueller](https://github.com/jamesmmueller) Updated `ConvertFrom-ExcelToSQLInsert` to handle single quotes in the SQL statement.
+
 - Thank you to Josh Hendricks
     - Add images to spreadsheets. [Check it out](https://github.com/dfinke/ImportExcel/tree/master/Examples/AddImage)
         - Catch up with him on [GitHub](https://github.com/joshooaj) and [Twitter](https://twitter.com/joshooaj) for the idea

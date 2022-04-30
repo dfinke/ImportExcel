@@ -234,6 +234,7 @@ Describe "Import-Excel on a sheet with no headings" {
 
         $actual.Count | Should -Be 1
 
+        Remove-Item $xlfile
         # Looks like -DataOnly does not handle empty columns
         # $actual[0].FirstName | Should -BeExactly 'Jean-Claude'
         # $actual[0].SecondName | Should -BeExactly 'Vandamme'

@@ -233,6 +233,8 @@
             }
             catch { throw "Failed importing the Excel workbook '$Path' with worksheet '$WorksheetName': $_"; return }
             finally {
+                $EndRow = 0
+                $EndColumn = 0
                 if ($Path) { $stream.close(); $ExcelPackage.Dispose() }
 
                 if ($NotAsDictionary) {
