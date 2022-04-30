@@ -1,5 +1,4 @@
 # v7.5.0
-
 ## Fixes
 
 - Importing multiple files with Import-Excel by pipeline uses only the first file for the row count https://github.com/dfinke/ImportExcel/issues/1172
@@ -9,6 +8,10 @@
 - Import-Excel now supports importing multiple sheets. It can either return a dictionary of all sheets, or as a single array of all sheets combined.
     - `Import-Excel $xlfile *`                  # reads all sheets, returns all data in a dictionary
     - `Import-Excel $xlfile * -NotAsDictionary` # reads all sheets, returns all data in a single array
+- Added helper functions. Useful for working with an Excel package via `Open-ExcelPackage` or `-PassThru` 
+    - `Enable-ExcelAutoFilter`
+    - `Enable-ExcelAutofit`
+    - `Get-ExcelSheetDimensionAddress`
 
 # v7.4.2
 
