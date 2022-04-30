@@ -63,6 +63,10 @@ Describe "Import-Excel on a sheet with no headings" {
         }
     }
 
+    AfterAll {
+        Remove-Item $PSScriptRoot\testImportExcelSparse.xlsx -ErrorAction SilentlyContinue
+    }
+
     It "Import-Excel should have this shape" {
         $actual = @(Import-Excel $xlfile)
 
