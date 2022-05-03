@@ -134,6 +134,8 @@
 
                 $xlBook = [Ordered]@{}
                 foreach ($sheet in $Worksheet) {
+                    $EndRow = 0
+                    $EndColumn = 0
                     $targetSheetname = $sheet.Name
                     $xlBook["$targetSheetname"] = @()
                     #region Get rows and columns
@@ -233,8 +235,8 @@
             }
             catch { throw "Failed importing the Excel workbook '$Path' with worksheet '$WorksheetName': $_"; return }
             finally {
-                $EndRow = 0
-                $EndColumn = 0
+                # $EndRow = 0
+                # $EndColumn = 0
                 if ($Path) { $stream.close(); $ExcelPackage.Dispose() }
 
                 if ($NotAsDictionary) {

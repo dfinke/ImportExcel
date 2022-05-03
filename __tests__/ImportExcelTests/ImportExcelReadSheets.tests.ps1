@@ -59,5 +59,15 @@ Describe 'Different ways to import sheets' -Tag ImportExcelReadSheets {
             $group[0].Name | Should -BeExactly 'April'
             $group[1].Name | Should -BeExactly 'June'
         }
+
+        It "Should read multiple sheets with diff number of rows correctly" {
+            $xlFilename = "$PSScriptRoot\construction.xlsx"
+
+            $actual = Import-Excel $xlFilename 2015, 2016
+            $actual.keys.Count | Should -Be 2
+
+            $actual["2015"].Count | Should -Be 12
+            $actual["2016"].Count | Should -Be 1
+        }
     }
 }
