@@ -1,3 +1,5 @@
+# v7.5.1
+- Fixed `Import-Excel` - Reset `EndRow` and `EndColumn` in the correct place.
 # v7.5.0
 ## Fixes
 
