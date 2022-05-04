@@ -1,3 +1,6 @@
+# v7.5.2
+- Changed the switch `-NotAsDictionary` to `-Raw`. Works with `-Worksheetname *` reads all the sheets in the xlsx file and returns an array.
+
 # v7.5.1
 - Fixed `Import-Excel` - Reset `EndRow` and `EndColumn` in the correct place.
 # v7.5.0
