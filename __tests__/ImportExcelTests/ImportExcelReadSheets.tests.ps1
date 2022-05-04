@@ -50,7 +50,7 @@ Describe 'Different ways to import sheets' -Tag ImportExcelReadSheets {
         }
 
         It 'Should return an array not a dictionary' {
-            $actual = Import-Excel $xlFilename april, june -NotAsDictionary
+            $actual = Import-Excel $xlFilename april, june -Raw
             
             $actual.Count | Should -Be 200
             $group = $actual | Group-Object month -NoElement
@@ -69,5 +69,14 @@ Describe 'Different ways to import sheets' -Tag ImportExcelReadSheets {
             $actual["2015"].Count | Should -Be 12
             $actual["2016"].Count | Should -Be 1
         }
+
+        It "Should read multiple sheets with diff number of rows correctly and flatten it" {
+            $xlFilename = "$PSScriptRoot\construction.xlsx"
+
+            $actual = Import-Excel $xlFilename 2015, 2016 -Raw
+
+            $actual.Count | Should -Be 13
+        }
+
     }
 }
