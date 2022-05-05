@@ -117,9 +117,35 @@ Do you have a Excel file with multiple sheets and you need to convert each sheet
 
 The `yearlyRetailSales.xlsx` has 12 sheets of retail data for the year.
 
-This single line of PowerShell converts any number of sheets in an Excel workbook to a separate CSV file.
+This single line of PowerShell converts any number of sheets in an Excel workbook to separate CSV files.
 
 ```powershell
 (Import-Excel .\yearlyRetailSales.xlsx *).GetEnumerator() |
 ForEach-Object { $_.Value | Export-Csv ($_.key + '.csv') }
 ```
+
+# Getting Started
+
+## Videos
+
+- [Export-Excel Hello World](https://youtu.be/fvKKdIzJCws?list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq)
+- [Make Excel Data Pop](https://youtu.be/gQaYI5hxqM4?list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq)
+- [Slice And Dice Data](https://youtu.be/kzllxvqr3TY?list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq)
+- [Lightning talk - PowerShell Excel Module](https://youtu.be/znVu2q11Rp4?list=PL5uoqS92stXioZw-u-ze_NtvSo0k0K0kq)
+
+## More Videos
+
+- [Look smarter: deliver your work in Excel](https://youtu.be/tu8Mfkwi8zI) - James O'Neill
+- [Module Monday: ImportExcel](https://youtu.be/rBA_IeTmCb8?t=5) - Adam Driscoll
+- [Tutorials Excel Module Part 1](https://youtu.be/2cwBuYbZ3To)
+- [Tutorials Excel Module Part 2](https://youtu.be/8ojg-qjOnVI)
+- [Tutorials Excel Module Part 3](https://youtu.be/3IgASPD0UrQ)
+- [PowerShell Excel - Invoke-ExcelQuery](https://youtu.be/_7xuhsZm0Ao)
+- [Powershell Excel - Data Validation](https://youtu.be/NGhahuY8j1M)
+- [Creating Dashboards xPlatform](https://youtu.be/qMWkZt6ikgM)
+
+## Articles
+
+- [Creating beautiful Powershell Reports in Excel](https://dfinke.github.io/powershell/2019/07/31/Creating-beautiful-Powershell-Reports-in-Excel.html)
+- [PowerShell Excel and Conditional Formatting](https://dfinke.github.io/powershell/2020/05/02/PowerShell-Excel-and-Conditional-Formatting.html)
+- [Learn to Automate Excel like a Pro with PowerShell](https://dfinke.github.io/powershell/2019/08/29/Learn-to-Automate-Excel-like-a-Pro-with-PowerShell.html)
