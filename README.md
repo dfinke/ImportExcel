@@ -9,8 +9,6 @@
 [![](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/dfinke/ImportExcel/tree/70ab9e46c776e96fb287682d5b9b4b51a0ec3bac/LICENSE.txt)
 <a href="https://www.paypal.com/paypalme/DougCharlesFinke"><img src="https://img.shields.io/badge/Donate-PayPal-green.svg" alt="Donate"></a>
 
-<br/>
-
 # Overview
 
 Automate Excel with PowerShell without having Excel installed. Works on Windows, Linux and MAC. Creating Tables, Pivot Tables, Charts and much more has just become a lot easier.
