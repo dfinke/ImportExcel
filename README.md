@@ -118,7 +118,7 @@ $data | Export-Excel .\salesData.xlsx -AutoNameRange -Show -PivotRows Region -Pi
 
 ## Create a separate CSV file for each Excel sheet
 
-Do you have a Excel file with multiple sheets and you need to convert each sheet to CSV file?
+Do you have an Excel file with multiple sheets and you need to convert each sheet to CSV file?
 
 ### Problem Solved
 
