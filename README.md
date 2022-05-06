@@ -11,7 +11,10 @@
 
 # Overview
 
-Automate Excel with PowerShell without having Excel installed. Works on Windows, Linux and MAC. Creating Tables, Pivot Tables, Charts and much more has just become a lot easier.
+Automate Excel with PowerShell without having Excel installed. Works on Windows, Linux and MAC. Creating Tables, Pivot Tables, Charts and much more just got a lot easier.
+
+## Examples 
+Check out [more than 100 examples](Examples/) on ways use this PowerShell Excel module.
 
 # Basic Usage
 ## Installation
