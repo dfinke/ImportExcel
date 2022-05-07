@@ -52,6 +52,8 @@ Quickly read a spreadsheet document into a PowerShell array.
 
 ```powershell
 $data = Import-Excel .\salesData.xlsx
+
+$data
 ```
 
 ```powershell
