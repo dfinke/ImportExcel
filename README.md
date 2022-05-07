@@ -170,3 +170,5 @@ ForEach-Object { $_.Value | Export-Csv ($_.key + '.csv') }
 
 ## Contributing
 Contributions are welcome! Open a pull request to fix a bug, or open an issue to discuss a new feature or change.
+
+Original [README.md](./README.original.md)
