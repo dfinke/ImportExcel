@@ -15,7 +15,7 @@
 Automate Excel with PowerShell without having Excel installed. Works on Windows, Linux and MAC. Creating Tables, Pivot Tables, Charts and much more just got a lot easier.
 
 ## Examples 
-Check out [more than 100 examples](Examples/) on ways use this PowerShell Excel module.
+Check out [more than 100 examples](Examples/) on ways to make you more productive.
 
 # Basic Usage
 ## Installation
@@ -118,7 +118,7 @@ $data | Export-Excel .\salesData.xlsx -AutoNameRange -Show -PivotRows Region -Pi
 
 ![](images/SalesDataChartPivotTable.png)
 
-# Bonus Points
+# Convert Excel data to other formats
 
 ## Create a separate CSV file for each Excel sheet
 
@@ -135,7 +135,7 @@ This single line of PowerShell converts any number of sheets in an Excel workboo
 ForEach-Object { $_.Value | Export-Csv ($_.key + '.csv') }
 ```
 
-# Getting Started
+# Additional Resources
 
 ## Videos
 
@@ -146,8 +146,8 @@ ForEach-Object { $_.Value | Export-Csv ($_.key + '.csv') }
 
 ## More Videos
 
-- [Look smarter: deliver your work in Excel](https://youtu.be/tu8Mfkwi8zI) - James O'Neill
-- [Module Monday: ImportExcel](https://youtu.be/rBA_IeTmCb8?t=5) - Adam Driscoll
+- [Look smarter: deliver your work in Excel](https://youtu.be/tu8Mfkwi8zI) - James O'Neill [@jamesoneill](https://twitter.com/jamesoneill)
+- [Module Monday: ImportExcel](https://youtu.be/rBA_IeTmCb8?t=5) - Adam Driscoll [@adamdriscoll](https://twitter.com/adamdriscoll)
 - [Tutorials Excel Module Part 1](https://youtu.be/2cwBuYbZ3To)
 - [Tutorials Excel Module Part 2](https://youtu.be/8ojg-qjOnVI)
 - [Tutorials Excel Module Part 3](https://youtu.be/3IgASPD0UrQ)
@@ -157,9 +157,16 @@ ForEach-Object { $_.Value | Export-Csv ($_.key + '.csv') }
 
 ## Articles
 
-- [Creating beautiful Powershell Reports in Excel](https://dfinke.github.io/powershell/2019/07/31/Creating-beautiful-Powershell-Reports-in-Excel.html)
-- [PowerShell Excel and Conditional Formatting](https://dfinke.github.io/powershell/2020/05/02/PowerShell-Excel-and-Conditional-Formatting.html)
-- [Learn to Automate Excel like a Pro with PowerShell](https://dfinke.github.io/powershell/2019/08/29/Learn-to-Automate-Excel-like-a-Pro-with-PowerShell.html)
+|Title|Author|Twitter|
+|------|------|------|
+|[More tricks with PowerShell and Excel](https://jamesone111.wordpress.com/2018/05/31/more-tricks-with-powershell-and-excel/)|James O'Neill|[@jamesoneill](https://twitter.com/jamesoneill)|
+|[Using the Import-Excel module: Part 1 Importing](https://jamesone111.wordpress.com/2017/12/05/using-the-import-excel-part-1-importing/)|James O'Neill|[@jamesoneill](https://twitter.com/jamesoneill)|
+|[Using the Import Excel module part 2: putting data into .XLSx files](https://jamesone111.wordpress.com/2017/12/11/using-the-import-excel-module-part-2-putting-data-into-xlsx-files/)|James O'Neill|[@jamesoneill](https://twitter.com/jamesoneill)|
+|[Using the import Excel Module: Part 3, Pivots and charts, data and calculations](https://jamesone111.wordpress.com/2017/12/12/using-the-import-excel-module-part-3-pivots-and-charts-data-and-calculations/)|James O'Neill|[@jamesoneill](https://twitter.com/jamesoneill)|
+|[Export AdventureWorksDW2017 to Excel for a Power BI Demo with Export-Excel](https://sqlvariant.com/2019/03/export-adventureworksdw2017-to-excel-for-a-powerbi-demo-with-export-excel-in-powershell/)|Aaron Nelson|[@sqlvariant](https://twitter.com/sqlvariant)
+|[Creating beautiful Powershell Reports in Excel](https://dfinke.github.io/powershell/2019/07/31/Creating-beautiful-Powershell-Reports-in-Excel.html)|Doug Finke|[@dfinke](https://twitter.com/dfinke)
+|[PowerShell Excel and Conditional Formatting](https://dfinke.github.io/powershell/2020/05/02/PowerShell-Excel-and-Conditional-Formatting.html)|Doug Finke|[@dfinke](https://twitter.com/dfinke)
+|[Learn to Automate Excel like a Pro with PowerShell](https://dfinke.github.io/powershell/2019/08/29/Learn-to-Automate-Excel-like-a-Pro-with-PowerShell.html)|Doug Finke|[@dfinke](https://twitter.com/dfinke)
 
 ## Contributing
-Contributions are welcome! Open a pull request to add a feature, fix a bug, or open an issue to discuss a new feature or change.
+Contributions are welcome! Open a pull request to fix a bug, or open an issue to discuss a new feature or change.
