@@ -1,10 +1,10 @@
 # PowerShell and Excel 
 
-![](images/logo.png)
+![](images/logoWithInstall.png)
 
 <br/>
 
-[![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=update-read-me)](https://dougfinke.visualstudio.com/ImportExcel/_build/latest?definitionId=21&branchName=master)
+[![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master)](https://dougfinke.visualstudio.com/ImportExcel/_build)
 [![](https://img.shields.io/powershellgallery/v/ImportExcel.svg)](https://www.powershellgallery.com/packages/ImportExcel)
 [![](https://img.shields.io/powershellgallery/dt/ImportExcel.svg)](https://www.powershellgallery.com/packages/ImportExcel)
 [![](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/dfinke/ImportExcel/tree/70ab9e46c776e96fb287682d5b9b4b51a0ec3bac/LICENSE.txt)
