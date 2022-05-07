@@ -95,7 +95,7 @@ $chart = New-ExcelChartDefinition -XRange State -YRange Units -Title "Units by S
 $data | Export-Excel .\salesData.xlsx -AutoNameRange -ExcelChartDefinition $chart -Show
 ```
 
-![](images/salesDataChart.png)
+![](images/SalesDataChart.png)
 
 ## Add a pivot table to spreadsheet
 
