@@ -126,7 +126,7 @@ Do you have an Excel file with multiple sheets and you need to convert each shee
 
 ### Problem Solved
 
-The [yearlyRetailSales.xlsx](Examples\Import-Excel\yearlySales.xlsx) has 12 sheets of retail data for the year.
+The [yearlyRetailSales.xlsx](Examples\Import-Excel\) has 12 sheets of retail data for the year.
 
 This single line of PowerShell converts any number of sheets in an Excel workbook to separate CSV files.
 
