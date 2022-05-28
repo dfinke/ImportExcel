@@ -6,7 +6,7 @@
     RootModule         = 'ImportExcel.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '7.5.2'
+    ModuleVersion      = '7.5.3'
 
     # ID used to uniquely identify this module
     GUID               = '60dd4136-feff-401a-ba27-a84458c57ede'
@@ -131,9 +131,8 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         '.\Charting\Charting.ps1',
         '.\InferData\InferData.ps1',
         '.\Pivot\Pivot.ps1',
-        '.\spikes\ConvertFrom-ExcelColumnName.ps1',
-        '.\Examples', '.\images', '.\Testimonials'
-
+        '.\Examples', 
+        '.\Testimonials'
     )
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess

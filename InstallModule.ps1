@@ -7,5 +7,5 @@ if (-not $fullPath) {
             $fullPath = Join-Path $fullPath -ChildPath "ImportExcel"
 }
 Push-location $PSScriptRoot
-Robocopy . $fullPath /mir /XD .vscode .git CI __tests__ data mdHelp /XF appveyor.yml azure-pipelines.yml .gitattributes .gitignore filelist.txt install.ps1 InstallModule.ps1
+Robocopy . $fullPath /mir /XD .vscode images .git .github CI __tests__ data mdHelp spikes /XF README.md README.original.md appveyor.yml azure-pipelines.yml .gitattributes .gitignore filelist.txt install.ps1 InstallModule.ps1 PublishToGallery.ps1
 Pop-Location
