@@ -139,16 +139,16 @@
                     $targetSheetname = $sheet.Name
                     $xlBook["$targetSheetname"] = @()
                     #region Get rows and columns
-                    #If we are doing dataonly it is quicker to work out which rows to ignore before processing the cells.
+                    #If we are doing DataOnly it is quicker to work out which rows to ignore before processing the cells.
                     if (-not $EndRow   ) { $EndRow = $sheet.Dimension.End.Row }
                     if (-not $EndColumn) { $EndColumn = $sheet.Dimension.End.Column }
                     $endAddress = [OfficeOpenXml.ExcelAddress]::TranslateFromR1C1("R[$EndRow]C[$EndColumn]", 0, 0)
                     if ($DataOnly) {
-                        #If we are using headers startrow will be the header-row so examine data from startRow + 1,
+                        #If we are using headers StartRow will be the header-row so examine data from StartRow + 1,
                         if ($NoHeader) { $range = "A" + ($StartRow     ) + ":" + $endAddress }
                         else { $range = "A" + ($StartRow + 1 ) + ":" + $endAddress }
                         #We're going to look at every cell and build 2 hash tables holding rows & columns which contain data.
-                        #Want to Avoid 'select unique' operations & large Sorts, becuse time time taken increases with square
+                        #Want to Avoid 'select unique' operations & large Sorts, because time time taken increases with square
                         #of number of items (PS uses heapsort at large size). Instead keep a list of what we have seen,
                         #using Hash tables: "we've seen it" is all we need, no need to worry about "seen it before" / "Seen it many times".
                         $colHash = @{ }
