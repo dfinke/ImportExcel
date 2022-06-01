@@ -105,26 +105,27 @@
             }
         }
         foreach ($Path in $Paths) {
-            if ($path) {
-                $extension = [System.IO.Path]::GetExtension($Path)
-                if ($extension -notmatch '.xlsx$|.xlsm$') {
-                    throw "Import-Excel does not support reading this extension type $($extension)"
-                }
-
-                $resolvedPath = (Resolve-Path $Path -ErrorAction SilentlyContinue)
-                if ($resolvedPath) {
-                    $Path = $resolvedPath.ProviderPath
-                }
-                else {
-                    throw "'$($Path)' file not found"
-                }
-
-                $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
-                $ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage
-                if ($Password) { $ExcelPackage.Load($stream, $Password) }
-                else { $ExcelPackage.Load($stream) }
-            }
             try {
+                if ($path) {
+                    $extension = [System.IO.Path]::GetExtension($Path)
+                    if ($extension -notmatch '.xlsx$|.xlsm$') {
+                        throw "Extension type '$($extension)' not supported"
+                    }
+    
+                    $resolvedPath = (Resolve-Path $Path -ErrorAction SilentlyContinue)
+                    if ($resolvedPath) {
+                        $Path = $resolvedPath.ProviderPath
+                    }
+                    else {
+                        throw 'File not found'
+                    }
+    
+                    $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
+                    $ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage
+                    if ($Password) { $ExcelPackage.Load($stream, $Password) }
+                    else { $ExcelPackage.Load($stream) }
+                }
+
                 #Select worksheet
                 if ($WorksheetName -eq '*') { $Worksheet = $ExcelPackage.Workbook.Worksheets }
                 elseif (-not  $WorksheetName) { $Worksheet = $ExcelPackage.Workbook.Worksheets[1] }
@@ -247,7 +248,11 @@
                 }
                 #endregion
             }
-            catch { throw "Failed importing the Excel workbook '$Path' with worksheet '$WorksheetName': $_"; return }
+            catch { 
+                $errorMessage = $_
+                $error.RemoveAt(0)
+                throw "Failed importing the Excel workbook '$Path' with worksheet '$WorksheetName': $errorMessage"
+            }
             finally {
                 # $EndRow = 0
                 # $EndColumn = 0
