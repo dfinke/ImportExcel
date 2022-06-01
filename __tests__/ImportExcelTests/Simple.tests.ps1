@@ -35,7 +35,7 @@ Describe "Tests" {
         $timer.TotalMilliseconds | Should -BeLessThan 3000
     }
 
-    It "Should be able to open, read and close as seperate actions".PadRight(90) {
+    It "Should be able to open, read and close as separate actions".PadRight(90) {
         $timer = Measure-Command {
             $excel = Open-ExcelPackage $PSScriptRoot\Simple.xlsx
             $data = Import-Excel -ExcelPackage $excel
