@@ -232,13 +232,8 @@
                         #endregion
                     }
                 }
-            }
-            catch { throw "Failed importing the Excel workbook '$Path' with worksheet '$WorksheetName': $_"; return }
-            finally {
-                # $EndRow = 0
-                # $EndColumn = 0
-                if ($Path) { $stream.close(); $ExcelPackage.Dispose() }
 
+                #region Return data
                 if ($Raw) {
                     foreach ($entry in $xlbook.GetEnumerator()) {
                         $entry.Value
@@ -249,6 +244,16 @@
                 }
                 else {
                     $xlBook
+                }
+                #endregion
+            }
+            catch { throw "Failed importing the Excel workbook '$Path' with worksheet '$WorksheetName': $_"; return }
+            finally {
+                # $EndRow = 0
+                # $EndColumn = 0
+                if ($Path) { 
+                    if ($stream) { $stream.close() }
+                    if ($ExcelPackage) { $ExcelPackage.Dispose() }
                 }
             }
         }
