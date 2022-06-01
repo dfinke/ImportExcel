@@ -26,7 +26,6 @@ Describe "Tests" {
     It "Should read the simple xlsx in < 2100 milliseconds".PadRight(90) {
         $timer.TotalMilliseconds | Should -BeLessThan 2100
     }
-
     It "Should read larger xlsx, 4k rows 1 col < 3000 milliseconds".PadRight(90) {
         $timer = Measure-Command {
             $null = Import-Excel $PSScriptRoot\LargerFile.xlsx
@@ -34,7 +33,6 @@ Describe "Tests" {
 
         $timer.TotalMilliseconds | Should -BeLessThan 3000
     }
-
     It "Should be able to open, read and close as separate actions".PadRight(90) {
         $timer = Measure-Command {
             $excel = Open-ExcelPackage $PSScriptRoot\Simple.xlsx
@@ -45,28 +43,24 @@ Describe "Tests" {
         $data[0].p1 | Should -Be "a"
         $data[1].p1 | Should -Be "b"
     }
-
     It "Should take Paths from parameter".PadRight(90) {
         $data = Import-Excel -Path (Get-ChildItem -Path $PSScriptRoot -Filter "TestData?.xlsx").FullName
         $data.count | Should -Be 4
         $data[0].cola | Should -Be 1
         $data[2].cola | Should -Be 5
     }
-
     It "Should take Paths from pipeline".PadRight(90) {
         $data = (Get-ChildItem -Path $PSScriptRoot -Filter "TestData?.xlsx").FullName | Import-Excel
         $data.count | Should -Be 4
         $data[0].cola | Should -Be 1
         $data[2].cola | Should -Be 5
     }
-
     It "Should support PipelineVariable".PadRight(90) {
         $data = Import-Excel $PSScriptRoot\Simple.xlsx -PipelineVariable 'Pv' | ForEach-Object { $Pv.p1 }
         $data.count | Should -Be 2
         $data[0] | Should -Be "a"
         $data[1] | Should -Be "b"
     }
-    
     It "Should produce only one error on failure".PadRight(90) {
         $error.clear()
         { Import-Excel -Path "ExcelFileDoesNotExist.xls" } | Should -Throw
