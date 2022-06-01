@@ -25,14 +25,14 @@
     }
 
     It "Should fail for not found".PadRight(90) {
-        { Import-Excel -Path "ExcelFileDoesNotExist.xlsx" } | Should  -Throw "Failed importing the Excel workbook 'ExcelFileDoesNotExist.xlsx' with worksheet '': File not found"
+        { Import-Excel -Path "ExcelFileDoesNotExist.xlsx" } | Should -Throw "Failed importing the Excel workbook 'ExcelFileDoesNotExist.xlsx' with worksheet '': File not found"
     }
 
     It "Should fail for xls extension".PadRight(90) {
-        { Import-Excel -Path "ExcelFileDoesNotExist.xls" } | Should  -Throw "Failed importing the Excel workbook 'ExcelFileDoesNotExist.xls' with worksheet '': Extension type '.xls' not supported"
+        { Import-Excel -Path "ExcelFileDoesNotExist.xls" } | Should -Throw "Failed importing the Excel workbook 'ExcelFileDoesNotExist.xls' with worksheet '': Extension type '.xls' not supported"
     }
 
     It "Should fail for xlsxs extension".PadRight(90) {
-        { Import-Excel -Path "ExcelFileDoesNotExist.xlsxs" } | Should  -Throw "Failed importing the Excel workbook 'ExcelFileDoesNotExist.xlsxs' with worksheet '': Extension type '.xlsxs' not supported"
+        { Import-Excel -Path "ExcelFileDoesNotExist.xlsxs" } | Should -Throw "Failed importing the Excel workbook 'ExcelFileDoesNotExist.xlsxs' with worksheet '': Extension type '.xlsxs' not supported"
     }
 }
