@@ -111,7 +111,7 @@
             try {
                 if ($path) {
                     $extension = [System.IO.Path]::GetExtension($Path)
-                    if ($extension -notmatch '.xlsx$|.xlsm$') {
+                    if ($extension -notMatch '.xlsx$|.xlsm$') {
                         throw "Extension type '$($extension)' not supported"
                     }
     
