@@ -39,7 +39,18 @@
         [Int[]]$ImportColumns,
         [Switch]$Raw
     )
-    begin {
+    
+    end {
+        $sw = [System.Diagnostics.Stopwatch]::StartNew()
+        if ($input) {
+            $Paths = $input
+        }
+        elseif ($Path) {
+            $Paths = $Path
+        }
+        else {
+            $Paths = ''
+        }
         function Get-PropertyNames {
             <#
             .SYNOPSIS
@@ -94,19 +105,6 @@
                 throw "Failed creating property names: $_" ; return
             }
         }
-    }
-    end {
-        $sw = [System.Diagnostics.Stopwatch]::StartNew()
-        if ($input) {
-            $Paths = $input
-        }
-        elseif ($Path) {
-            $Paths = $Path
-        }
-        else {
-            $Paths = ''
-        }
-        
         foreach ($Path in $Paths) {
             try {
                 if ($path) {
