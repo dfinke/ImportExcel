@@ -253,7 +253,7 @@
             }
             catch { 
                 $errorMessage = $_
-                $error.RemoveAt(0)
+                $global:error.RemoveAt(0)
                 throw "Failed importing the Excel workbook '$Path' with worksheet '$WorksheetName': $errorMessage"
             }
             finally {
