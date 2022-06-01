@@ -1,4 +1,4 @@
-﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'False Positives')]
 Param()
 
 Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 -Force
@@ -10,9 +10,9 @@ Describe "Tests" {
             $data = Import-Excel $PSScriptRoot\Simple.xlsx
         }
     }
-    It "Should have a valid manifest".PadRight(90){
-        {try {Test-ModuleManifest -Path $PSScriptRoot\..\..\ImportExcel.psd1 -ErrorAction stop}
-         catch {throw}  } | Should -Not -Throw
+    It "Should have a valid manifest".PadRight(90) {
+        { try { Test-ModuleManifest -Path $PSScriptRoot\..\..\ImportExcel.psd1 -ErrorAction stop }
+            catch { throw } } | Should -Not -Throw
     }
     It "Should have two items in the imported simple data".PadRight(90) {
         $data.count | Should -Be 2
@@ -39,11 +39,11 @@ Describe "Tests" {
         $timer = Measure-Command {
             $excel = Open-ExcelPackage $PSScriptRoot\Simple.xlsx
             $data = Import-Excel -ExcelPackage $excel
-            Close-ExcelPackage -ExcelPackage $excel -NoSave}
-            $timer.TotalMilliseconds | Should -BeLessThan 2100
-            $data.count | Should -Be 2
-            $data[0].p1 | Should -Be "a"
-            $data[1].p1 | Should -Be "b"
+            Close-ExcelPackage -ExcelPackage $excel -NoSave }
+        $timer.TotalMilliseconds | Should -BeLessThan 2100
+        $data.count | Should -Be 2
+        $data[0].p1 | Should -Be "a"
+        $data[1].p1 | Should -Be "b"
     }
 
     It "Should take Paths from parameter".PadRight(90) {
@@ -65,5 +65,10 @@ Describe "Tests" {
         $data.count | Should -Be 2
         $data[0] | Should -Be "a"
         $data[1] | Should -Be "b"
+    }
+    It "Should produce only one error on failure".PadRight(90) {
+        $error.clear()
+        { Import-Excel -Path "ExcelFileDoesNotExist.xls" } | Should -Throw
+        $error | Should -HaveCount 1
     }
 }

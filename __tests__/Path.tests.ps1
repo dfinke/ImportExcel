@@ -35,10 +35,4 @@
     It "Should fail for xlsxs extension".PadRight(90) {
         { Import-Excel -Path "ExcelFileDoesNotExist.xlsxs" } | Should -Throw "Failed importing the Excel workbook 'ExcelFileDoesNotExist.xlsxs' with worksheet '': Extension type '.xlsxs' not supported"
     }
-
-    It "Should produce only one error on failure".PadRight(90) {
-        $error.clear()
-        { Import-Excel -Path "ExcelFileDoesNotExist.xls" } | Should -Throw
-        $error | Should -HaveCount 1
-    }
 }
