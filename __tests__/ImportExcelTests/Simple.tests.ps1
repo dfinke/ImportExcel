@@ -66,6 +66,7 @@ Describe "Tests" {
         $data[0] | Should -Be "a"
         $data[1] | Should -Be "b"
     }
+    
     It "Should produce only one error on failure".PadRight(90) {
         $error.clear()
         { Import-Excel -Path "ExcelFileDoesNotExist.xls" } | Should -Throw
