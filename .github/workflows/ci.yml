@@ -7,20 +7,31 @@ on:
   pull_request:
 
 jobs:
-  validate:
-    runs-on: ${{ matrix.os }}
+  validate:    
     strategy:
       matrix:
-        # os: [windows-latest]
-        # os: [windows-latest, ubuntu-latest]
         # os: [windows-latest, ubuntu-latest, macos-latest]
-        os: [ubuntu-latest]
+        os: [windows-latest, ubuntu-latest]
     steps:
-    - uses: actions/checkout@v1      
-    - name: Run Continuous Integration
+    - uses: actions/checkout@v1
+    - name: Run Tests 
       shell: pwsh
       run : |
         # ./ContinuousIntegration/ContinuousIntegration.ps1
-        sudo apt-get -y update && apt-get install -y --no-install-recommends libgdiplus libc6-dev
-        cd ./__tests__
-        Invoke-Pester -Output Detailed
+        # sudo apt-get -y update && apt-get install -y --no-install-recommends libgdiplus libc6-dev
+        # cd ./__tests__
+        # Invoke-Pester -Output Detailed
+        if($PSVersionTable.Platform -eq 'Win32NT') {
+          "start process"
+        } elseif ($PSVersionTable.Platform -eq 'Unix') {
+          "curl"
+        }
+
+    # runs-on: windows-latest
+    # steps:
+    # - uses: actions/checkout@v1
+    # - name: Run Tests on Windows
+    #   shell: pwsh
+    #   run : |
+    #     cd ./__tests__
+    #     Invoke-Pester -Output Detailed        
