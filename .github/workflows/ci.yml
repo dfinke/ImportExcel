@@ -1,0 +1,27 @@
+on:
+  push:
+    branches:
+      - master
+      - Set-up-GHA-CI/CD
+      
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    steps:
+    - uses: actions/checkout@v1      
+    - name: Run Continuous Integration
+      shell: pwsh
+      run : |
+        if($PSVersionTable.Platform -eq 'Win32NT') {
+          $null = mkdir ./ace
+          Invoke-Restmethod https://download.microsoft.com/download/3/5/C/35C84C36-661A-44E6-9324-8786B8DBE231/accessdatabaseengine_X64.exe -OutFile ./ace/ace.exe
+          Start-Process ./ace/ace.exe -Wait -ArgumentList "/quiet /passive /norestart"
+        }
+
+        cd ./__tests__
+        Invoke-Pester -Output Detailed
