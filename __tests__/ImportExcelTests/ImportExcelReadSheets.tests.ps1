@@ -23,7 +23,7 @@ Describe 'Different ways to import sheets' -Tag ImportExcelReadSheets {
 
             $actual.keys.Count | Should -Be 2
             $actual["March"].Count | Should -Be 100
-            $actual["June"].Count | Should -Be 100
+            $actual["June"].Count | Should -Be 100x`
         }
 
         It 'Should read all the sheets' {

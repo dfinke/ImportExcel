@@ -135,8 +135,13 @@
                 $xlBook = [Ordered]@{}
                 foreach ($sheet in $Worksheet) {
                     if ($Worksheet.Count -gt 1 -or $Paths.Count -gt 1) {
-                        $EndRow = 0
-                        $EndColumn = 0
+                        <#
+                            Needed under these conditions to handle sheets of different number of Row/Col 
+                                - When reading more than one xlsx file
+                                - When reading more than one worksheet in the same file
+                        #>
+                        $EndRow = $null
+                        $EndColumn = $null
                     }
 
                     $targetSheetname = $sheet.Name
