@@ -134,8 +134,11 @@
 
                 $xlBook = [Ordered]@{}
                 foreach ($sheet in $Worksheet) {
-                    $EndRow = 0
-                    $EndColumn = 0
+                    if ($Worksheet.Count -gt 1 -or $Paths.Count -gt 1) {
+                        $EndRow = 0
+                        $EndColumn = 0
+                    }
+
                     $targetSheetname = $sheet.Name
                     $xlBook["$targetSheetname"] = @()
                     #region Get rows and columns

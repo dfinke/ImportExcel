@@ -3,7 +3,7 @@ Param()
 
 Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 -Force
 
-Describe "Test reading multiple XLSX files of differernt row count" -Tag ReadMultipleXLSX {
+Describe "Test reading multiple XLSX files of different row count" -Tag ReadMultipleXLSX {
     It "Should find these xlsx files" {
         Test-Path -Path $PSScriptRoot\rows05.xlsx | Should -BeTrue
         Test-Path -Path $PSScriptRoot\rows10.xlsx | Should -BeTrue
