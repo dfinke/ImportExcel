@@ -1,3 +1,6 @@
+# 7.6.0
+- Fix -StartRow and -StartColumn being ignored.
+
 # v7.5.2
 - Changed the switch `-NotAsDictionary` to `-Raw`. Works with `-Worksheetname *` reads all the sheets in the xlsx file and returns an array.
 
