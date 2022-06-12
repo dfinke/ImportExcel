@@ -26,13 +26,14 @@ jobs:
         #   curl -o ./ace/ace.exe https://download.microsoft.com/download/3/5/C/35C84C36-661A-44E6-9324-8786B8DBE231/accessdatabaseengine_X64.exe
         # }
 
-        mkdir ./ace
-        Invoke-Restmethod https://download.microsoft.com/download/3/5/C/35C84C36-661A-44E6-9324-8786B8DBE231/accessdatabaseengine_X64.exe -OutFile ./ace/ace.exe
-        Start-Process ./ace/ace.exe -Wait -ArgumentList "/quiet /passive /norestart"
-        
-        # cd ./__tests__
-        # Invoke-Pester -Output Detailed
+        if($PSVersionTable.Platform -eq 'Win32NT') {
+          mkdir ./ace
+          Invoke-Restmethod https://download.microsoft.com/download/3/5/C/35C84C36-661A-44E6-9324-8786B8DBE231/accessdatabaseengine_X64.exe -OutFile ./ace/ace.exe
+          Start-Process ./ace/ace.exe -Wait -ArgumentList "/quiet /passive /norestart"
+        }
 
+        cd ./__tests__
+        Invoke-Pester -Output Detailed
 
 # jobs:
 #   validate:    
