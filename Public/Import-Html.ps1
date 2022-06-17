@@ -3,13 +3,13 @@ function Import-Html {
     [CmdletBinding()]
     param(
         $Url,
-        $Index,
+        [int]$Index = 0,
         $Header,
-        [int]$FirstDataRow=0,
+        [int]$FirstDataRow = 0,
         [Switch]$UseDefaultCredentials
     )
 
-    $xlFile = [System.IO.Path]::GetTempFileName() -replace "tmp","xlsx"
+    $xlFile = [System.IO.Path]::GetTempFileName() -replace "tmp", "xlsx"
     Remove-Item $xlFile -ErrorAction Ignore
 
     Write-Verbose "Exporting to Excel file $($xlFile)"
