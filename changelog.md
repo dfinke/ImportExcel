@@ -1,5 +1,12 @@
 # 7.6.0
-- Fix -StartRow and -StartColumn being ignored.
+
+- **_[Under investigation]_** Fix -StartRow and -StartColumn being ignored.
+- James O'Neill: 
+    - Update Get-HtmlTable to support to use PowerHTML (maintained by [Justin Grote](https://twitter.com/**JustinWGrote**)). 
+    - Added example to including a new function Import-ByColumn. Works like Import-Excel but with data in columns instead of the conventional rows.
+- Update Import-HTML with better defaults
+- Fixed example `Get-ModuleStats.ps1` which reads the PowerShell Gallery page and extracts the stats table
+
 
 # v7.5.2
 - Changed the switch `-NotAsDictionary` to `-Raw`. Works with `-Worksheetname *` reads all the sheets in the xlsx file and returns an array.
