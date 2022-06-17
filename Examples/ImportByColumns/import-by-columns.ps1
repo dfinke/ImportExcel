@@ -1,7 +1,7 @@
 function Import-ByColumns    {
 <#
     .synopsis
-        Works like Import-Excel but with data in columnss instead of the conventional rows.
+        Works like Import-Excel but with data in columns instead of the conventional rows.
     .Description.
         Import-excel will read the sample file in this folder like this
         > Import-excel  FruitCity.xlsx | ft *
