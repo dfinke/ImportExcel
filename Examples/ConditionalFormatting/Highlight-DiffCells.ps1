@@ -20,7 +20,6 @@ South,Delaware,712,508
 "@
 
 
-
 $excel = $data | Export-Excel $xlSourcefile -AutoSize -PassThru
 
 Add-ConditionalFormatting -Worksheet $excel.sheet1 -Range "C2:C10" -ConditionValue '=C2=D2' -RuleType Expression -BackgroundColor Cyan
