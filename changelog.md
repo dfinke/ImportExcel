@@ -1,3 +1,9 @@
+# Example added
+
+Thank you [@kkazala](https://github.com/kkazala) 
+- Added an example showing `ConditionalFormatting` using the `RuleType` `Expression` with a formula
+    - [Highlight-DiffCells.ps1](https://github.dev/kkazala/ImportExcel/blob/b53881fd023c052da1acc7812511da223bb2e40c/Examples/ConditionalFormatting/Highlight-DiffCells.ps1)
+
 # 7.6.0
 
 - **_[Under investigation]_** Fix -StartRow and -StartColumn being ignored.
