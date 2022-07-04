@@ -2,11 +2,17 @@
 
 - Fix a bug with `-UnderLineType parameter is ignored in Set-ExcelColumn` [#1204](https://github.com/dfinke/ImportExcel/issues/1204)
 
+# Example added
+
+Thank you [@kkazala](https://github.com/kkazala) 
+- Added an example showing `ConditionalFormatting` using the `RuleType` `Expression` with a formula
+    - [Highlight-DiffCells.ps1](https://github.dev/kkazala/ImportExcel/blob/b53881fd023c052da1acc7812511da223bb2e40c/Examples/ConditionalFormatting/Highlight-DiffCells.ps1)
+
 # 7.6.0
 
 - **_[Under investigation]_** Fix -StartRow and -StartColumn being ignored.
 - James O'Neill: 
-    - Update Get-HtmlTable to support to use PowerHTML (maintained by [Justin Grote](https://twitter.com/**JustinWGrote**)). 
+    - Update Get-HtmlTable to support to use PowerHTML (maintained by [Justin Grote](https://twitter.com/JustinWGrote)). 
     - Added example to including a new function Import-ByColumn. Works like Import-Excel but with data in columns instead of the conventional rows.
 - Update Import-HTML with better defaults
 - Fixed example `Get-ModuleStats.ps1` which reads the PowerShell Gallery page and extracts the stats table
