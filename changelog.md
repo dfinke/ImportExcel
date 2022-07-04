@@ -1,3 +1,7 @@
+# 7.7.0
+
+- Fix a bug with `-UnderLineType parameter is ignored in Set-ExcelColumn` [#1204](https://github.com/dfinke/ImportExcel/issues/1204)
+
 # 7.6.0
 
 - **_[Under investigation]_** Fix -StartRow and -StartColumn being ignored.

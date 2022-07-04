@@ -110,7 +110,7 @@
 
         #region Apply formatting
         $params = @{}
-        foreach ($p in @('Underline','Bold','Italic','StrikeThru', 'FontName', 'FontSize','FontShift','NumberFormat','TextRotation',
+        foreach ($p in @('Underline','UnderLineType','Bold','Italic','StrikeThru', 'FontName', 'FontSize','FontShift','NumberFormat','TextRotation',
                          'WrapText', 'HorizontalAlignment','VerticalAlignment', 'Autosize', 'Width', 'FontColor'
                          'BorderAround', 'BackgroundColor', 'BackgroundPattern', 'PatternColor')) {
             if ($PSBoundParameters.ContainsKey($p)) {$params[$p] = $PSBoundParameters[$p]}
