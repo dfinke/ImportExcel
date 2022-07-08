@@ -50,7 +50,7 @@
             elseif ($SourceObject -is [OfficeOpenXml.ExcelWorkbook])  {$sourceWs = $SourceObject.Worksheets[$SourceWorksheet]}
             elseif ($SourceObject -is [OfficeOpenXml.ExcelPackage] )  {$sourceWs = $SourceObject.Workbook.Worksheets[$SourceWorksheet]}
             else {
-                $SourceObject = (Resolve-Path $SourceObject).ProviderPath
+                $SourceObject = (Resolve-Path -LiteralPath $SourceObject).ProviderPath
                 try {
                     Write-Verbose "Opening worksheet '$WorksheetName' in Excel workbook '$SourceObject'."
                     $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $SourceObject, 'Open', 'Read' , 'ReadWrite'

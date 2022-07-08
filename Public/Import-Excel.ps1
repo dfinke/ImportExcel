@@ -111,7 +111,7 @@
                     throw "Import-Excel does not support reading this extension type $($extension)"
                 }
 
-                $resolvedPath = (Resolve-Path $Path -ErrorAction SilentlyContinue)
+                $resolvedPath = (Resolve-Path -LiteralPath $Path -ErrorAction SilentlyContinue)
                 if ($resolvedPath) {
                     $Path = $resolvedPath.ProviderPath
                 }

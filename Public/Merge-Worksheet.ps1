@@ -75,7 +75,7 @@
     if ($Referencefile  -is [System.IO.FileInfo]) {$Referencefile  = $Referencefile.FullName}
     if ($Referencefile -and $Differencefile) {
          #if the filenames don't resolve, give up now.
-         try     { $oneFile = ((Resolve-Path -Path $Referencefile -ErrorAction Stop).path -eq (Resolve-Path -Path $Differencefile  -ErrorAction Stop).path)}
+         try     { $oneFile = ((Resolve-Path -LiteralPath $Referencefile -ErrorAction Stop).path -eq (Resolve-Path -LiteralPath $Differencefile  -ErrorAction Stop).path)}
          catch   { Write-Warning -Message "Could not Resolve the filenames." ; return }
 
          #If we have one file , we must have two different Worksheet names. If we have two files $WorksheetName can be a single string or two strings.

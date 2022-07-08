@@ -4,7 +4,7 @@ function Get-ExcelTableName {
         $WorksheetName
     )
 
-    $Path = (Resolve-Path $Path).ProviderPath
+    $Path = (Resolve-Path -LiteralPath $Path).ProviderPath
     $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
 
     $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream
@@ -35,7 +35,7 @@ function Get-ExcelTable {
         $WorksheetName
     )
 
-    $Path = (Resolve-Path $Path).ProviderPath
+    $Path = (Resolve-Path -LiteralPath $Path).ProviderPath
     $Stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
 
     $Excel = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Stream

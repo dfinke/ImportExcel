@@ -20,16 +20,16 @@
 
     $Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
     #If -Create was not specified only open the file if it exists already (send a warning if it doesn't exist).
-    if ($Create -and -not (Test-Path -Path $path)) {
+    if ($Create -and -not (Test-Path -LiteralPath $path)) {
         #Create the directory if required.
         $targetPath = Split-Path -Parent -Path $Path
-        if (!(Test-Path -Path $targetPath)) {
+        if (!(Test-Path -LiteralPath $targetPath)) {
             Write-Debug "Base path $($targetPath) does not exist, creating"
             $null = New-item -ItemType Directory -Path $targetPath -ErrorAction Ignore
         }
         New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
     }
-    elseif (Test-Path -Path $path) {
+    elseif (Test-Path -LiteralPath $path) {
         if ($Password) { $pkgobj = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path , $Password }
         else { $pkgobj = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path }
         if ($pkgobj) {

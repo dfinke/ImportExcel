@@ -6,7 +6,7 @@ function Get-ExcelSheetInfo {
         $Path
     )
     process {
-        $Path = (Resolve-Path $Path).ProviderPath
+        $Path = (Resolve-Path -LiteralPath $Path).ProviderPath
 
         $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path,'Open','Read','ReadWrite'
         $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream

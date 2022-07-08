@@ -53,7 +53,7 @@ end {
     $xlparams['PivotTableDefinition']     = New-PivotTableDefinition @pivotParams
 
     $dirsToProcess | ForEach-Object {
-        $dirName = (Resolve-Path -Path $_) -replace "^.*\\(.*?)\\(.*?)$", '$1-$2'
+        $dirName = (Resolve-Path -LiteralPath $_) -replace "^.*\\(.*?)\\(.*?)$", '$1-$2'
         Write-Progress -Activity "Running Script Analyzer" -CurrentOperation $dirName
         Invoke-ScriptAnalyzer -Path $_ -ErrorAction SilentlyContinue |
             Add-Member -MemberType NoteProperty -Name Location -Value $dirName -PassThru
