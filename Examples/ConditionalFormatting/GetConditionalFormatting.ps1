@@ -17,5 +17,5 @@ function Get-ConditionalFormatting {
     }
 }
 
-$xlSourcefile = "$env:TEMP.\GetConditionalFormatting.xlsx"
+$xlSourcefile = "$PSScriptRoot\GetConditionalFormatting.xlsx"
 Get-ConditionalFormatting -xlSourcefile $xlSourcefile
