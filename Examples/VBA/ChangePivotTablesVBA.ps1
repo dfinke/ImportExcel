@@ -59,4 +59,4 @@ $VBAThisWorkbookModule.Code = $Macro
 Add-PivotTable -PivotTableName "SalesPivot" -Address $ExcelPackage.Sales.Cells["E1"] -SourceWorksheet $ExcelPackage.Sales `
     -SourceRange $ExcelPackage.Sales.Tables[0].Address -PivotRows "Region", "Item" -PivotData @{ "TotalSold" = "Sum" }
 
-Close-ExcelPackage -ExcelPackage $ExcelPackage
+Close-ExcelPackage -ExcelPackage $ExcelPackage -Show
