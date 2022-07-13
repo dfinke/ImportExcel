@@ -1,6 +1,5 @@
 try { Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 } catch { throw ; return }
 
-# Get rid of pre-exisiting sheet
 $xlSourcefile = "$env:TEMP\ImportExcelExample.xlsx"
 
 Write-Verbose -Verbose -Message  "Save location: $xlSourcefile"
@@ -21,6 +20,7 @@ South,Delaware,712,508
 
 $excel = $data | Export-Excel $xlSourcefile -AutoSize -PassThru
 
-Add-ConditionalFormatting -Worksheet $excel.sheet1 -Range "C2:C10" -ConditionValue '=C2=D2' -RuleType Expression -BackgroundColor Cyan
+Add-ConditionalFormatting -Worksheet $excel.sheet1 -Range "C2:D10" -ConditionValue '=$C2=$D2' -RuleType Expression -BackgroundColor ([System.Drawing.Color]::Thistle) -Bold
+Add-ConditionalFormatting -Worksheet $excel.sheet1 -Range "A2:D10" -ConditionValue '=$C2=$D2' -RuleType Expression -BackgroundColor ([System.Drawing.Color]::LavenderBlush)
 
 Close-ExcelPackage $excel -Show
