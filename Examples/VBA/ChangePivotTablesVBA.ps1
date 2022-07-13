@@ -49,7 +49,7 @@ South,drill,29
 South,saw,36
 "@
 
-$ExcelPackage = $Data | Export-Excel $ExcelFile -TableName "Sales" -WorksheetName "Sales" -AutoSize -PassThru
+$ExcelPackage = $Data | Export-Excel -Path $ExcelFile -TableName "Sales" -WorksheetName "Sales" -AutoSize -PassThru
 # Add Macro to the ThisWorkbook module
 $ExcelPackage.Workbook.CreateVBAProject()
 $VBAThisWorkbookModule = $ExcelPackage.Workbook.VbaProject.Modules | Where-Object -FilterScript { $_.Name -eq "ThisWorkbook" }
