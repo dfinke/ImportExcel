@@ -45,7 +45,7 @@ PS\> Set-ExcelRange -Range $sheet1.Cells ["E1:S1048576" ], $sheet1.Cells ["V1:V1
 PS\> Close-ExcelPackage $excel -Show
 ```
 
-This will open the password protected file at $xlPath using the password stored in $Password. Sheet1 is selected and formatting applied to two blocks of the sheet; then the file is and saved and loaded into Excel.
+This will open the password protected file at $xlPath using the password stored in $Password. Sheet1 is selected and formatting applied to two blocks of the sheet; then the file is saved and loaded into Excel.
 
 ## PARAMETERS
 
