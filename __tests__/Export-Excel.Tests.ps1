@@ -1,6 +1,6 @@
 ﻿#Requires -Modules Pester
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidAssignmentToAutomaticVariable','',Justification='Only executes on versions without the automatic variable')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'False Positives')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidAssignmentToAutomaticVariable', '', Justification = 'Only executes on versions without the automatic variable')]
 param()
 Describe ExportExcel -Tag "ExportExcel" {
     BeforeAll {
@@ -8,7 +8,7 @@ Describe ExportExcel -Tag "ExportExcel" {
         $WarningAction = "SilentlyContinue"
         . "$PSScriptRoot\Samples\Samples.ps1"
         if (-not (Get-command Get-Service -ErrorAction SilentlyContinue)) {
-            Function Get-Service {Import-Clixml $PSScriptRoot\Mockservices.xml}
+            Function Get-Service { Import-Clixml $PSScriptRoot\Mockservices.xml }
         }
         if (Get-process -Name Excel, xlim -ErrorAction SilentlyContinue) {
             It "Excel is open" {
@@ -389,7 +389,7 @@ Describe ExportExcel -Tag "ExportExcel" {
         }
     }
 
-    Context "#Example 5      # Adding a single conditional format "{
+    Context "#Example 5      # Adding a single conditional format " {
         BeforeEach {
             #Test  New-ConditionalText builds correctly
             $ct = New-ConditionalText -ConditionalType GreaterThan 525 -ConditionalTextColor ([System.Drawing.Color]::DarkRed) -BackgroundColor ([System.Drawing.Color]::LightPink)
@@ -491,7 +491,7 @@ Describe ExportExcel -Tag "ExportExcel" {
         }
     }
 
-    Context "#Examples 8 & 9 # Adding Pivot tables and charts from parameters"  {
+    Context "#Examples 8 & 9 # Adding Pivot tables and charts from parameters" {
         BeforeAll {
             $path = "TestDrive:\test.xlsx"
             #Test -passthru and -worksheetName creating a new, named, sheet in an existing file.
@@ -544,7 +544,7 @@ Describe ExportExcel -Tag "ExportExcel" {
             #Test appending data extends pivot chart (with a warning) .
             $warnVar = $null
             Get-Process |  Select-Object -Last 20 -Property Name, cpu, pm, handles, company |
-               Export-Excel  $path -WorkSheetname Processes -Append -IncludePivotTable -PivotRows Company -PivotData PM -IncludePivotChart -ChartType PieExploded3D -WarningAction SilentlyContinue -WarningVariable warnvar
+            Export-Excel  $path -WorkSheetname Processes -Append -IncludePivotTable -PivotRows Company -PivotData PM -IncludePivotChart -ChartType PieExploded3D -WarningAction SilentlyContinue -WarningVariable warnvar
             $Excel = Open-ExcelPackage   $path
             $pt = $Excel.Workbook.Worksheets["ProcessesPivotTable"].PivotTables[0]
 
@@ -557,12 +557,12 @@ Describe ExportExcel -Tag "ExportExcel" {
         }
     }
 
-    Context "                # Add-Worksheet inserted sheets, moved them correctly, and copied a sheet"  {
+    Context "                # Add-Worksheet inserted sheets, moved them correctly, and copied a sheet" {
         BeforeAll {
             $path = "TestDrive:\test.xlsx"
             #Test the -CopySource and -Movexxxx parameters for Add-Worksheet
             $Excel = Get-Process |  Select-Object -first 20 -Property Name, cpu, pm, handles, company |
-               Export-Excel  $path -WorkSheetname Processes -IncludePivotTable -PivotRows Company -PivotData PM -NoTotalsInPivot -PivotDataToColumn -Activate
+            Export-Excel  $path -WorkSheetname Processes -IncludePivotTable -PivotRows Company -PivotData PM -NoTotalsInPivot -PivotDataToColumn -Activate
 
             $Excel = Open-ExcelPackage  $path
             #At this point Sheets Should be in the order Sheet1, Processes, ProcessesPivotTable
@@ -1080,5 +1080,56 @@ Describe ExportExcel -Tag "ExportExcel" {
                 $Worksheet.Column(5).Width | Should -BeGreaterThan 9.5
             }
         }
+    }
+
+    Context "                # Check UnderLineType"  -Tag CheckUnderLineType {
+        BeforeAll {
+            $Path = Join-Path (Resolve-Path 'TestDrive:').ProviderPath "testUnderLineType.xlsx"
+            Remove-Item -Path $Path -ErrorAction SilentlyContinue
+
+            $data = "
+            Set-ExcelRange,Set-ExcelColumn
+            Should be double underlined,Should be double underlined
+            Should be double underlined,Should be double underlined
+            " | ConvertFrom-Csv
+            
+            $data | Export-Excel  $Path -AutoSize
+
+            $excel = Open-ExcelPackage $Path
+            $ws = $excel.Workbook.Worksheets["sheet1"]
+
+            Set-ExcelRange -Range $ws.Cells["A2:A3"] -Underline -UnderLineType "Double"
+            Set-ExcelColumn -Worksheet $ws -Column 2 -StartRow 2 -Underline -UnderLineType "Double"
+
+            Close-ExcelPackage $excel
+        }
+
+        AfterAll {
+            Remove-Item -Path $Path -ErrorAction SilentlyContinue
+        }
+
+        it "Check Cell Style Font via Set-ExcelColumn".PadRight(87) {
+            $excel = Open-ExcelPackage $Path
+            $cell = $excel.Sheet1.Cells["B2"]
+            
+            $actual = $cell.Style.Font
+
+            $actual.Underline | Should -BeTrue
+            $actual.UnderlineType | Should -Be "Double"
+
+            Close-ExcelPackage $excel -NoSave            
+        }
+        
+        it "Check Cell Style Font via Set-ExcelRange".PadRight(87) {
+            $excel = Open-ExcelPackage $Path
+            $cell = $excel.Sheet1.Cells["A2"]
+            
+            $actual = $cell.Style.Font
+
+            $actual.Underline | Should -BeTrue
+            $actual.UnderlineType | Should -Be "Double"
+
+            Close-ExcelPackage $excel -NoSave            
+        }        
     }
 }

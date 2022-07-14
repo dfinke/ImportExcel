@@ -1,3 +1,13 @@
+# 7.7.0
+
+- Fix a bug with `-UnderLineType parameter is ignored in Set-ExcelColumn` [#1204](https://github.com/dfinke/ImportExcel/issues/1204)
+
+# Example added
+
+Thank you [@kkazala](https://github.com/kkazala) 
+- Added an example showing `ConditionalFormatting` using the `RuleType` `Expression` with a formula
+    - [Highlight-DiffCells.ps1](https://github.dev/kkazala/ImportExcel/blob/b53881fd023c052da1acc7812511da223bb2e40c/Examples/ConditionalFormatting/Highlight-DiffCells.ps1)
+
 # 7.6.0
 
 - **_[Under investigation]_** Fix -StartRow and -StartColumn being ignored.
