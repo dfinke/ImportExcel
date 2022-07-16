@@ -1,12 +1,14 @@
-# 7.7.0
-
-- Fix a bug with `-UnderLineType parameter is ignored in Set-ExcelColumn` [#1204](https://github.com/dfinke/ImportExcel/issues/1204)
-
 # Example added
 
 Thank you [@kkazala](https://github.com/kkazala) 
+
+- Added an example reading a sheet, extracting the `ConditionalFormatting` and generating the PowerShell statements so you can re-create them.
 - Added an example showing `ConditionalFormatting` using the `RuleType` `Expression` with a formula
     - [Highlight-DiffCells.ps1](https://github.dev/kkazala/ImportExcel/blob/b53881fd023c052da1acc7812511da223bb2e40c/Examples/ConditionalFormatting/Highlight-DiffCells.ps1)
+
+# 7.7.0
+
+- Fix a bug with `-UnderLineType parameter is ignored in Set-ExcelColumn` [#1204](https://github.com/dfinke/ImportExcel/issues/1204)
 
 # 7.6.0
 
