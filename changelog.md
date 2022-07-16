@@ -1,3 +1,13 @@
+# 7.8.0
+Thanks [James O'Neill](https://github.com/jhoneill)
+
+- Updated example Get-ModuleStats that extracts module statistics on the PowerShell Gallery.
+- Added GroupNumericColumn and GroupDateColumn to New-PivotTableDefinition and Add-PivotTable.
+
+|GroupNumericColumn|GroupDateColumn|
+|:---:|:---:|
+|![](images/GroupNumericColumn.png)|![](images/GroupDateColumn.png)|
+
 # Example added
 
 Thank you [@kkazala](https://github.com/kkazala) 
