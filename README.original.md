@@ -65,6 +65,11 @@ Plus, wiring the [PowerShell ScriptAnalyzer Excel report](https://github.com/dfi
 
 ![](.gitbook/assets/ScriptAnalyzerReport.png)
 
+
+## What's new for 7.1.4
+
+- Added GroupNumericColumn and GroupDateColumn to New-PivotTableDefinition and Add-PivotTable. 
+
 ## What's new 7.1.3
 
 - Changed to `ProviderPath`. Thanks [Trevor Walker](https://github.com/sporkabob)

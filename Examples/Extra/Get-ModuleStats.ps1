@@ -6,15 +6,16 @@
 #>
 
 param(
-    [Parameter(Mandatory=$true)]
-    $moduleName,
+    $moduleName = "ImportExcel",
     [ValidateSet('Column','Bar','Line','Pie')]
     $chartType="Line"
 )
 
-$galleryUrl = "https://www.powershellgallery.com/packages/$moduleName"
-$nolegend = '-nolegend'
-if($chartType -eq 'pie') {$nolegend = $null}
-$code = "$($chartType)Chart (Get-HtmlTable $galleryUrl -FirstDataRow 1 | sort lastupdated -desc) -title 'Download stats for $moduleName' $nolegend"
+$download = Get-HtmlTable "https://www.powershellgallery.com/packages/$moduleName" -FirstDataRow 1 |
+        Select-Object  @{n="Version";e={$v = $Null ; if    ($_.version -is [valuetype]) {[string][version]($_.version.tostring("0.0")) }
+                                                    elseif ($_.version -is [string] -and [version]::TryParse($_.version.trim(),[ref]$v))  {$v}
+                                                    else   {$_.Version.trim() -replace "\s+"," " } }},
+                        Downloads, @{n="LastUpdated";e={[datetime]$_.last_updated}} |
+            Sort-Object lastupdated -Descending
 
-$code | Invoke-Expression
+& "$($chartType)Chart"  $download "Download stats for $moduleName" -nolegend:($chartype -ne 'pie')

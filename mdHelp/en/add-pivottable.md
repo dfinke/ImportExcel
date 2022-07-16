@@ -331,6 +331,22 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -GroupDateColumn
+
+The name of a Column field which should be grouped by parts of the date/time \(ignored if GroupDateRow is not specified\)
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -GroupDatePart
 
 The Part\(s\) of the date to use in the grouping \(ignored if GroupDateRow is not specified\)
@@ -351,6 +367,22 @@ Accept wildcard characters: False
 ### -GroupNumericRow
 
 The name of a row field which should be grouped by Number \(e.g. 0-99, 100-199, 200-299 \)
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -GroupNumericColumn
+
+The name of a Column field which should be grouped by Number \(e.g. 0-99, 100-199, 200-299 \)
 
 ```yaml
 Type: String

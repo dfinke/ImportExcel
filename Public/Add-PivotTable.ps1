@@ -18,8 +18,10 @@
         [String]$PivotTotals = "Both",
         [Switch]$NoTotalsInPivot,
         [String]$GroupDateRow,
+        [String]$GroupDateColumn,
         [OfficeOpenXml.Table.PivotTable.eDateGroupBy[]]$GroupDatePart,
         [String]$GroupNumericRow,
+        [String]$GroupNumericColumn,
         [double]$GroupNumericMin = 0 ,
         [double]$GroupNumericMax = [Double]::MaxValue  ,
         [double]$GroupNumericInterval = 100  ,
@@ -139,10 +141,20 @@
                 if (-not $r ) {Write-Warning -Message "Could not find a Row field named '$GroupNumericRow'; no numeric grouping will be done."}
                 else {$r.AddNumericGrouping($GroupNumericMin, $GroupNumericMax, $GroupNumericInterval)}
             }
+            elseif ($GroupNumericColumn) {
+                $c = $pivotTable.ColumnFields.Where( {$_.name -eq $GroupNumericColumn })
+                if (-not $c ) {Write-Warning -Message "Could not find a Column field named '$GroupNumericColumn'; no numeric grouping will be done."}
+                else {$c.AddNumericGrouping($GroupNumericMin, $GroupNumericMax, $GroupNumericInterval)}
+            }
             if ($GroupDateRow -and $PSBoundParameters.ContainsKey("GroupDatePart")) {
                 $r = $pivotTable.RowFields.Where( {$_.name -eq $GroupDateRow })
                 if (-not $r ) {Write-Warning -Message "Could not find a Row field named '$GroupDateRow'; no date grouping will be done."}
                 else {$r.AddDateGrouping($GroupDatePart)}
+            }
+            elseif ($GroupDateColumn -and $PSBoundParameters.ContainsKey("GroupDatePart")) {
+                $c = $pivotTable.ColumnFields.Where( {$_.name -eq $GroupDateColumn })
+                if (-not $c ) {Write-Warning -Message "Could not find a Column field named '$GroupDateColumn'; no date grouping will be done."}
+                else {$c.AddDateGrouping($GroupDatePart)}
             }
         }
         catch {Write-Warning -Message "Failed adding PivotTable '$pivotTableName': $_"}
