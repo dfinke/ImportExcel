@@ -140,4 +140,72 @@ Describe "Creating small named ranges with hyperlinks" {
             $pt.RowFields[1].Grouping.Interval                          | Should      -Be 3
         }
     }
+    Context "Adding group date column" -Tag GroupColumnTests {
+        it "Tests adding a group date column" {
+            $xlFile = "TestDrive:\Results.xlsx"
+            Remove-Item $xlFile -ErrorAction Ignore
+
+            $PivotTableDefinition = New-PivotTableDefinition -Activate -PivotTableName Points `
+                -PivotRows Driver -PivotColumns Date -PivotData @{Points = "SUM" } -GroupDateColumn Date -GroupDatePart Years, Months
+
+            $excel = Import-Csv "$PSScriptRoot\First10Races.csv" |
+            Select-Object Race, @{n = "Date"; e = { [datetime]::ParseExact($_.date, "dd/MM/yyyy", (Get-Culture)) } }, FinishPosition, Driver, GridPosition, Team, Points |
+            Export-Excel $xlFile -AutoSize -PivotTableDefinition $PivotTableDefinition -PassThru
+
+            $excel.Workbook.Worksheets.Count                           | Should -Be 2
+            $excel.Workbook.Worksheets[1].Name                         | Should -BeExactly 'Sheet1'
+            $excel.Workbook.Worksheets[2].Name                         | Should -BeExactly 'Points'
+            $excel.Points.PivotTables.Count                            | Should      -Be 1
+            $pt = $excel.Points.PivotTables[0]
+            $pt.RowFields.Count                                        | Should      -Be 1
+            $pt.RowFields[0].name                                      | Should      -Be "Driver"
+            
+            $pt.ColumnFields.Count                                     | Should      -Be 2
+
+            $pt.ColumnFields[0].name                                   | Should      -Be "Years"
+            $pt.ColumnFields[0].Grouping                               | Should -Not -BeNullOrEmpty
+            $pt.ColumnFields[0].Grouping.GroupBy                          | Should      -Be "Years"
+
+            $pt.ColumnFields[1].name                                   | Should      -Be "Date"
+            $pt.ColumnFields[1].Grouping                               | Should -Not -BeNullOrEmpty
+            $pt.ColumnFields[1].Grouping.GroupBy                       | Should      -Be "Months"
+
+            Close-ExcelPackage $excel
+
+            Remove-Item $xlFile -ErrorAction Ignore
+        }
+    }
+    Context "Adding group numeric column" -Tag GroupColumnTests {
+        it "Tests adding numeric group column" {
+            $xlFile = "TestDrive:\Results.xlsx"
+            Remove-Item $xlFile -ErrorAction Ignore
+
+            $PivotTableDefinition = New-PivotTableDefinition -Activate -PivotTableName Places `
+                -PivotRows Driver -PivotColumns FinishPosition -PivotData @{Date = "Count" } -GroupNumericColumn FinishPosition -GroupNumericMin 1 -GroupNumericMax 25 -GroupNumericInterval 3
+
+            $excel = Import-Csv "$PSScriptRoot\First10Races.csv" |
+            Select-Object  Race, @{n = "Date"; e = { [datetime]::ParseExact($_.date, "dd/MM/yyyy", (Get-Culture)) } }, FinishPosition, Driver, GridPosition, Team, Points |
+            Export-Excel $xlFile -AutoSize -PivotTableDefinition $PivotTableDefinition -PassThru
+
+            $excel.Workbook.Worksheets.Count                           | Should -Be 2
+            $excel.Workbook.Worksheets[1].Name                         | Should -BeExactly 'Sheet1'
+            $excel.Workbook.Worksheets[2].Name                         | Should -BeExactly 'Places'
+            $excel.Places.PivotTables.Count                            | Should      -Be 1
+            $pt = $excel.Places.PivotTables[0]
+            $pt.RowFields.Count                                        | Should      -Be 1
+            $pt.RowFields[0].name                                      | Should      -Be "Driver"
+            
+            $pt.ColumnFields.Count                                     | Should      -Be 1
+
+            $pt.ColumnFields[0].name                                   | Should      -Be "FinishPosition"
+            $pt.ColumnFields[0].Grouping                               | Should -Not -BeNullOrEmpty
+            $pt.ColumnFields[0].Grouping.Start                         | Should      -Be 1
+            $pt.ColumnFields[0].Grouping.End                           | Should      -Be 25
+            $pt.ColumnFields[0].Grouping.Interval                      | Should      -Be 3
+                        
+            Close-ExcelPackage $excel
+
+            Remove-Item $xlFile -ErrorAction Ignore
+        }
+    }
 }
