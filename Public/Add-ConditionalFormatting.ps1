@@ -118,7 +118,7 @@
             Write-Warning -Message "The condition will look for the quotes at the start and end."
     }
     if     ($PSBoundParameters.ContainsKey("ConditionValue" ) -and
-            $RuleType -match "Top|Botom"                          ) {$rule.Rank      = $ConditionValue }
+            $RuleType -match "Top|Bottom"                          ) {$rule.Rank      = $ConditionValue }
     if     ($PSBoundParameters.ContainsKey("ConditionValue" ) -and
             $RuleType -match "StdDev"                             ) {$rule.StdDev    = $ConditionValue }
     if     ($PSBoundParameters.ContainsKey("ConditionValue" ) -and
