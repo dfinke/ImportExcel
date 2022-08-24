@@ -1,3 +1,10 @@
+# 7.8.1
+
+Thanks [g-pearl](https://github.com/g-pearl)
+
+- Fixed conditional formatting so it recognizes 'Top and Bottom' as a rule type
+
+
 # 7.8.0
 Thanks [James O'Neill](https://github.com/jhoneill)
 
