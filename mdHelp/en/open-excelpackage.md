@@ -39,8 +39,8 @@ This will create a new file in the temp folder if it doesn't already exist. It t
 ### EXAMPLE 2
 
 ```text
-PS\> $excela= Open-ExcelPackage -path "$xlPath" -Password $password
-PS\> $sheet1 = $excel.Workbook.Worksheetsa"sheet1" ]
+PS\> $excel= Open-ExcelPackage -path "$xlPath" -Password $password
+PS\> $sheet1 = $excel.Workbook.Worksheets["sheet1"]
 PS\> Set-ExcelRange -Range $sheet1.Cells ["E1:S1048576" ], $sheet1.Cells ["V1:V1048576" ] -NFormat ( [cultureinfo ]::CurrentCulture.DateTimeFormat.ShortDatePattern)
 PS\> Close-ExcelPackage $excel -Show
 ```
