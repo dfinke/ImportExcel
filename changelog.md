@@ -1,8 +1,8 @@
 # 7.8.1
 
-Thanks [g-pearl](https://github.com/g-pearl)
-
-- Fixed conditional formatting so it recognizes 'Top and Bottom' as a rule type
+- Fixed conditional formatting so it recognizes 'Top and Bottom' as a rule type. Thanks [g-pearl](https://github.com/g-pearl)
+* Update open-excelpackage.md. Thanks [stahler](https://github.com/stahler)
+- Added Group Column tests 
 
 
 # 7.8.0
