@@ -1,3 +1,16 @@
+# 7.8.2
+
+- Added `HeaderName` parameter to `Export-Excel`. Allows you to output an object with a property name. Otherwise the data is just the array of values.
+
+```powershell
+1..10 | Export-Excel -Path .\test.xlsx -HeaderName MyNum
+```
+
+- Added example `CopyFromOneSheetInSameWorkbook`. Shows how to copy a range of data from WorksheetA to WorksheetB
+- Added example `HeaderName`. Shows how to use the new `-HeaderName` parameter
+- Added example `HeaderName`. Shows how to use the new `-HeaderName` parameter
+- Added example `ConvertDictionaryOfArraysToExcel` example. Takes a dictionary of arrays and converts it Rows and Columns of data in Excel.
+
 # 7.8.1
 
 - Fixed conditional formatting so it recognizes 'Top and Bottom' as a rule type. Thanks [g-pearl](https://github.com/g-pearl)
