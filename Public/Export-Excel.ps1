@@ -13,6 +13,7 @@
         [Switch]$Calculate,
         [Switch]$Show,
         [String]$WorksheetName = 'Sheet1',
+        [String]$HeaderName,
         [Alias("PW")]
         [String]$Password,
         [switch]$ClearSheet,
@@ -258,6 +259,11 @@
             try {
                 if ($null -eq $InputObject) { $row += 1 }
                 foreach ($TargetData in $InputObject) {
+                    
+                    if ($HeaderName -and $TargetData.psobject.TypeNames[0] -match 'System.String|System.Int32|System.Double|System.Char') {
+                        $TargetData = [PSCustomObject]@{ $HeaderName = $TargetData }
+                    }
+
                     if ($firstTimeThru) {
                         $firstTimeThru = $false
                         $isDataTypeValueType = ($null -eq $TargetData) -or ($TargetData.GetType().name -match 'string|timespan|datetime|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ulong|ushort|URI|ExcelHyperLink')
