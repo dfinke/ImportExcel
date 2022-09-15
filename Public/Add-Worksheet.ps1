@@ -49,7 +49,7 @@ function Add-Worksheet  {
             }
             else {$ExcelWorkbook.Worksheets.MoveBefore($WorksheetName, $MoveBefore)}
         }
-        else {Write-Warning "Can't find worksheet '$MoveBefore'; worsheet '$WorksheetName' will not be moved."}
+        else {Write-Warning "Can't find worksheet '$MoveBefore'; worksheet '$WorksheetName' will not be moved."}
     }
     elseif ($MoveAfter  ) {
         if ($MoveAfter -eq "*") {
@@ -68,7 +68,7 @@ function Add-Worksheet  {
                 $ExcelWorkbook.Worksheets.MoveAfter($WorksheetName, $MoveAfter)
             }
         }
-        else {Write-Warning "Can't find worksheet '$MoveAfter'; worsheet '$WorksheetName' will not be moved."}
+        else {Write-Warning "Can't find worksheet '$MoveAfter'; worksheet '$WorksheetName' will not be moved."}
     }
     #endregion
     if ($Activate) {Select-Worksheet -ExcelWorksheet $ws  }
