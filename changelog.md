@@ -1,3 +1,8 @@
+# y.y.x
+
+- Fix docs [#1251](https://github.com/dfinke/ImportExcel/pull/1251)`Add-Worksheet` warning. Thank you [Jeremiah Adams](https://github.com/JeremiahTheFirst)
+- Fix docs [#1253](https://github.com/dfinke/ImportExcel/pull/1253) `convertfrom-exceltosqlinsert`. Thank you [Wes Stahler](https://github.com/stahler)
+
 # 7.8.1
 
 - Fixed conditional formatting so it recognizes 'Top and Bottom' as a rule type. Thanks [g-pearl](https://github.com/g-pearl)
