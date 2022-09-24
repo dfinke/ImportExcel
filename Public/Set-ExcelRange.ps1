@@ -58,7 +58,7 @@
             elseif ($Worksheet -and ($Range -is [string] -or $Range -is [OfficeOpenXml.ExcelAddress])) {
                 $Range = $Worksheet.Cells[$Range]
             }
-            elseif ($Range -is [string]) {Write-Warning -Message "The range pararameter you have specified also needs a worksheet parameter." ;return}
+            elseif ($Range -is [string]) {Write-Warning -Message "The range parameter you have specified also needs a worksheet parameter." ;return}
             #else we assume $Range is a range.
             if ($ClearAll)  {
                 $Range.Clear()
