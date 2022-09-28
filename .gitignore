@@ -2,7 +2,7 @@
 Thumbs.db
 ehthumbs.db
 
-*.gitignore
+# *.gitignore
 
 # Folder config file
 Desktop.ini
@@ -16,7 +16,7 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
-*.dll
+# *.dll
 
 # Windows shortcuts
 *.lnk

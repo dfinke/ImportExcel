@@ -7,6 +7,13 @@ if (-not $Strings) {
 try { [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") }
 catch { Write-Warning -Message $Strings.SystemDrawingAvailable }
 
+if ($PSVersionTable.PSVersion.Major -gt 5) {
+    Add-Type -Path "$PSScriptRoot\Core\EPPlus.dll"
+}
+else {
+    Add-Type -Path "$PSScriptRoot\EPPlus.dll"
+}
+
 foreach ($directory in @('Private', 'Public', 'Charting', 'InferData', 'Pivot')) {
     Get-ChildItem -Path "$PSScriptRoot\$directory\*.ps1" | ForEach-Object { . $_.FullName }
 }
