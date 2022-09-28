@@ -3,7 +3,7 @@
 - Fix docs [#1254](https://github.com/dfinke/ImportExcel/pull/1251)`Add-Worksheet` warning. Thank you [Wilson Stewart](https://github.com/WilsonStewart)
 - Fix docs [#1251](https://github.com/dfinke/ImportExcel/pull/1251)`Add-Worksheet` warning. Thank you [Jeremiah Adams](https://github.com/JeremiahTheFirst)
 - Fix docs [#1253](https://github.com/dfinke/ImportExcel/pull/1253) `convertfrom-exceltosqlinsert`. Thank you [Wes Stahler](https://github.com/stahler)
-- Update EPPlus to 4.5.3.3. PowerShell before 5 continue to use "net40", PowerShell Core use "netstandard2.0", fixes `NET Core, EPPlus and -Password` [#1184](https://github.com/dfinke/ImportExcel/issues/1184)
+- PowerShell before 5 continue to use "net40", PowerShell Core use "netstandard2.0", fixes `NET Core, EPPlus and -Password` [#1184](https://github.com/dfinke/ImportExcel/issues/1184)
 
 # 7.8.1
 
