@@ -27,11 +27,11 @@
             Write-Debug "Base path $($targetPath) does not exist, creating"
             $null = New-item -ItemType Directory -Path $targetPath -ErrorAction Ignore
         }
-        New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
+        Get-ExcelPackage -ArgumentList $Path
     }
     elseif (Test-Path -Path $path) {
-        if ($Password) { $pkgobj = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path , $Password }
-        else { $pkgobj = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path }
+        if ($Password) { $pkgobj = Get-ExcelPackage -ArgumentList $Path , $Password }
+        else { $pkgobj = Get-ExcelPackage -ArgumentList $Path }
         if ($pkgobj) {
             foreach ($w in $pkgobj.Workbook.Worksheets) {
                 $sb = [scriptblock]::Create(('$this.workbook.Worksheets["{0}"]' -f $w.name))

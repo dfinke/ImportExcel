@@ -54,7 +54,7 @@
                 try {
                     Write-Verbose "Opening worksheet '$WorksheetName' in Excel workbook '$SourceObject'."
                     $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $SourceObject, 'Open', 'Read' , 'ReadWrite'
-                    $package1 = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $stream
+                    $package1 = Get-ExcelPackage -ArgumentList $stream
                     $sourceWs = $Package1.Workbook.Worksheets[$SourceWorksheet]
                 }
                 catch {Write-Warning -Message "Could not open $SourceObject - the error was '$($_.exception.message)' " ; return}

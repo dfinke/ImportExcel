@@ -120,7 +120,7 @@
                 }
 
                 $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
-                $ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage
+                $ExcelPackage = Get-ExcelPackage
                 if ($Password) { $ExcelPackage.Load($stream, $Password) }
                 else { $ExcelPackage.Load($stream) }
             }

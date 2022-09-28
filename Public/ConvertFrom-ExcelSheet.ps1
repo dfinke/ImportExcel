@@ -20,7 +20,7 @@ function ConvertFrom-ExcelSheet {
     )
 
     $Path = (Resolve-Path $Path).ProviderPath
-    $xl = New-Object -TypeName OfficeOpenXml.ExcelPackage -ArgumentList $Path
+    $xl = Get-ExcelPackage -ArgumentList $Path
     $workbook = $xl.Workbook
 
     $targetSheets = $workbook.Worksheets | Where-Object {$_.Name -Like $SheetName}
