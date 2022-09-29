@@ -1,14 +1,9 @@
 ﻿
 
 Describe "Password Support" {
-    if ($PSVersionTable.PSVersion.Major -GT 5) {
-        It "Password Supported" {
-            Set-ItResult -Pending -Because "Can't test passwords on V6 and later"
-        }
-        return
-    }
     Context "Password protected sheet" {
         BeforeAll  {
+            Function Get-Service { Import-Clixml $PSScriptRoot\Mockservices.xml }
             $password = "YouMustRememberThis"
             $path = "TestDrive:\Test.xlsx"
             Remove-Item $path -ErrorAction SilentlyContinue
