@@ -56,7 +56,7 @@
         [Alias('Table')]
         $TableName,
         [OfficeOpenXml.Table.TableStyles]$TableStyle = [OfficeOpenXml.Table.TableStyles]::Medium6,
-        [Switch]$Barchart,
+        [Switch]$BarChart,
         [Switch]$PieChart,
         [Switch]$LineChart ,
         [Switch]$ColumnChart ,
