@@ -23,7 +23,7 @@
         [Parameter(ParameterSetName = 'PackageC', Mandatory)]
         [Switch]$NoHeader     ,
         [Alias('HeaderRow', 'TopRow')]
-        [ValidateRange(1, 9999)]
+        [ValidateRange(1, 1048576)]
         [Int]$StartRow = 1,
         [Alias('StopRow', 'BottomRow')]
         [Int]$EndRow ,
