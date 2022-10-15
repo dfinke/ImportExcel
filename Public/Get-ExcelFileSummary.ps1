@@ -16,6 +16,7 @@ function Get-ExcelFileSummary {
             [PSCustomObject][Ordered]@{
                 ExcelFile     = Split-Path -Leaf $Path
                 WorksheetName = $workSheet.Name
+                Visible       = $workSheet.Hidden -eq 'Visible'
                 Rows          = $workSheet.Dimension.Rows
                 Columns       = $workSheet.Dimension.Columns
                 Address       = $workSheet.Dimension.Address
