@@ -32,6 +32,20 @@ Describe 'Test' -Tag ImportExcelEndRowAndCols {
             $colNames[0] | Should -Be 'Units'
             $colNames[1] | Should -Be 'Price'
         }
+
+        It 'Should read any row up to maximum allowed row' {
+            # Max Rows sheet has row number as integer in column 1.
+            $xlMaxRows = "$PSScriptRoot\MaxRows.xlsx"
+            # Construct array of ten numbers. Min (1), 8 random numbers between Min and max, Max (1048576)
+            $countOfTen = @(1)
+            $countOfTen += (Get-Random -Count 8 -InputObject (2..1048575)) | Sort-Object
+            $countOfTen += 1048576
+            # Test these cell values.
+            $countOfTen | ForEach-Object {
+                $actual = Import-Excel $xlMaxRows -StartRow $_ -EndRow $_ -NoHeader
+                $actual.P1 | Should -Be $_
+            }
+        }
     }
 
     Context 'Test reading multiple sheets with data in differnt rows and columns' {
