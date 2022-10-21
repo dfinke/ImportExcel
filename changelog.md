@@ -3,6 +3,7 @@
 - Fix docs [#1254](https://github.com/dfinke/ImportExcel/pull/1251)`Add-Worksheet` warning. Thank you [Wilson Stewart](https://github.com/WilsonStewart)
 - Fix docs [#1251](https://github.com/dfinke/ImportExcel/pull/1251)`Add-Worksheet` warning. Thank you [Jeremiah Adams](https://github.com/JeremiahTheFirst)
 - Fix docs [#1253](https://github.com/dfinke/ImportExcel/pull/1253) `convertfrom-exceltosqlinsert`. Thank you [Wes Stahler](https://github.com/stahler)
+- Set Validate Range for rows to max rows available [#1273](https://github.com/dfinke/ImportExcel/pull/1273). Thank you [Stephen Brown](https://github.com/steve-daedilus)
 - Extended Get-ExcelFileSummary to include more Visible -eq $true|$false
 
 # 7.8.1
