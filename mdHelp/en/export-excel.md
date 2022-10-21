@@ -337,7 +337,7 @@ Accept wildcard characters: False
 
 ### -InputObject
 
-Date is usually piped into Export-Excel, but it also accepts data through the InputObject parameter
+Data is usually piped into Export-Excel, but it also accepts data through the InputObject parameter
 
 ```yaml
 Type: Object
