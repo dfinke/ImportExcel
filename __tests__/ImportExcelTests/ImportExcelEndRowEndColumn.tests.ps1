@@ -32,6 +32,12 @@ Describe 'Test' -Tag ImportExcelEndRowAndCols {
             $colNames[0] | Should -Be 'Units'
             $colNames[1] | Should -Be 'Price'
         }
+
+        It 'Should read any row up to maximum allowed row' {
+            $xlMaxRows = "$PSScriptRoot\MaxRows.xlsx"
+            $actual = Import-Excel $xlMaxRows -StartRow 1048576 -EndRow 1048576 -NoHeader
+            $actual.P1 | Should -Be 1048576
+        }
     }
 
     Context 'Test reading multiple sheets with data in differnt rows and columns' {
