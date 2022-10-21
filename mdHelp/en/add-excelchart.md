@@ -112,7 +112,7 @@ An existing Sheet where the chart will be created.
 
 ```yaml
 Type: ExcelWorksheet
-Parameter Sets: Workshet
+Parameter Sets: Worksheet
 Aliases:
 
 Required: True
