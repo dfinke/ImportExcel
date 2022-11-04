@@ -56,6 +56,7 @@
         [Alias('Table')]
         $TableName,
         [OfficeOpenXml.Table.TableStyles]$TableStyle = [OfficeOpenXml.Table.TableStyles]::Medium6,
+        [HashTable]$TotalSettings,
         [Switch]$BarChart,
         [Switch]$PieChart,
         [Switch]$LineChart ,
@@ -211,7 +212,12 @@
                 $row ++
                 $null = $ws.Cells[$row, $StartColumn].LoadFromDataTable($InputObject, $false )
                 if ($TableName -or $PSBoundParameters.ContainsKey('TableStyle')) {
-                    Add-ExcelTable -Range $ws.Cells[$ws.Dimension] -TableName $TableName -TableStyle $TableStyle
+                    if ($PSBoundParameters.ContainsKey('TotalSettings')) {
+                        Add-ExcelTable -Range $ws.Cells[$ws.Dimension] -TableName $TableName -TableStyle $TableStyle -TotalSettings $TotalSettings
+                    }
+                    Else {
+                        Add-ExcelTable -Range $ws.Cells[$ws.Dimension] -TableName $TableName -TableStyle $TableStyle
+                    }
                 }
             }
             else {
@@ -424,7 +430,12 @@
         if ($null -ne $TableName -or $PSBoundParameters.ContainsKey('TableStyle')) {
             #Already inserted Excel table if input was a DataTable
             if ($InputObject -isnot [System.Data.DataTable]) {
-                Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
+                if ($PSBoundParameters.ContainsKey('TotalSettings')) {
+                    Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle -TotalSettings $TotalSettings
+                }
+                else {
+                    Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
+                }
             }
         }
         elseif ($AutoFilter) {
