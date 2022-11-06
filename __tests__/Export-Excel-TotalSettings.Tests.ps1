@@ -42,14 +42,26 @@ Describe ExportExcel -Tag "ExportExcel" {
         }
 
         it "Totals row was created".PadRight(87) {
-            $ws.Tables[0].Address.Rows                                                                                       | Should -Be $TotalRows
-            $ws.tables[0].ShowTotal                                                                                          | Should -Be $True
+            $ws.Tables[0].Address.Rows                                          | Should -Be $TotalRows
+            $ws.tables[0].ShowTotal                                             | Should -Be $True
         }
         
         it "Added three calculations in the totals row".PadRight(87) {
-            $ws.Tables[0].Columns | Where-Object { $_.Name -eq "id" } | Select-Object -ExpandProperty TotalsRowFunction      | Should -Be "Count"
-            $ws.Tables[0].Columns | Where-Object { $_.Name -eq "WS" } | Select-Object -ExpandProperty TotalsRowFunction      | Should -Be "Sum"
-            $ws.Tables[0].Columns | Where-Object { $_.Name -eq "Handles" } | Select-Object -ExpandProperty TotalsRowFunction | Should -Be "Average"
+            $IDcolumn = $ws.Tables[0].Columns | Where-Object { $_.Name -eq "id" }
+            $WScolumn = $ws.Tables[0].Columns | Where-Object { $_.Name -eq "WS" }
+            $HandlesColumn = $ws.Tables[0].Columns | Where-Object { $_.Name -eq "Handles" }
+
+            $IDcolumn      | Select-Object -ExpandProperty TotalsRowFunction    | Should -Be "Count"
+            $WScolumn      | Select-Object -ExpandProperty TotalsRowFunction    | Should -Be "Sum"
+            $HandlesColumn | Select-Object -ExpandProperty TotalsRowFunction    | Should -Be "Average"
+
+            $CountAddress = "{0}{1}" -f (Get-ExcelColumnName -ColumnNumber $IDcolumn.Id).ColumnName, $TotalRows
+            $SumAddress = "{0}{1}" -f (Get-ExcelColumnName -ColumnNumber $WScolumn.Id).ColumnName, $TotalRows
+            $AverageAddress = "{0}{1}" -f (Get-ExcelColumnName -ColumnNumber $HandlesColumn.Id).ColumnName, $TotalRows
+
+            $ws.Cells[$CountAddress].Formula                                    | Should -Be "SUBTOTAL(103,processes[Id])"
+            $ws.Cells[$SumAddress].Formula                                      | Should -Be "SUBTOTAL(109,processes[Ws])"
+            $ws.Cells[$AverageAddress].Formula                                  | Should -Be "SUBTOTAL(101,processes[Handles])"
         }
 
         AfterEach {
