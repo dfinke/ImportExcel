@@ -235,7 +235,13 @@
                                     #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
                                 }
                             }
-                            $xlBook["$targetSheetname"] += [PSCustomObject]$NewRow
+
+                            if ($WorksheetName -eq '*') {
+                                $xlBook["$targetSheetname"] += [PSCustomObject]$NewRow
+                            }
+                            else {
+                                [PSCustomObject]$NewRow
+                            }
                         }
                         #endregion
                     }
@@ -247,16 +253,19 @@
                 # $EndColumn = 0
                 if ($Path) { $stream.close(); $ExcelPackage.Dispose() }
 
-                if ($Raw) {
-                    foreach ($entry in $xlbook.GetEnumerator()) {
-                        $entry.Value
+                if ($WorksheetName -eq '*') {
+
+                    if ($Raw) {
+                        foreach ($entry in $xlbook.GetEnumerator()) {
+                            $entry.Value
+                        }
                     }
-                }
-                elseif ($Worksheet.Count -eq 1) {
-                    $xlBook["$targetSheetname"]
-                }
-                else {
-                    $xlBook
+                    elseif ($Worksheet.Count -eq 1) {
+                        $xlBook["$targetSheetname"]
+                    }
+                    else {
+                        $xlBook
+                    }
                 }
             }
         }
