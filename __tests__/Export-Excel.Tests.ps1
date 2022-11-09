@@ -696,6 +696,9 @@ Describe ExportExcel -Tag "ExportExcel" {
                 Id         = "COUNT"
                 WS         = "SUM"
                 Handles    = "AVERAGE"
+                CPU        = @{
+                    Custom = '=COUNTIF([CPU];"<1")'
+                }
             }
             $Processes | Export-Excel $path -TableName "processes" -TotalSettings $TotalSettings
             $TotalRows = $Processes.count + 2 # Column header + Data (50 processes) + Totals row
@@ -708,22 +711,27 @@ Describe ExportExcel -Tag "ExportExcel" {
             $ws.tables[0].ShowTotal                                             | Should -Be $True
         }
         
-        it "Added three calculations in the totals row".PadRight(87) {
+        it "Added four calculations in the totals row".PadRight(87) {
             $IDcolumn = $ws.Tables[0].Columns | Where-Object { $_.Name -eq "id" }
             $WScolumn = $ws.Tables[0].Columns | Where-Object { $_.Name -eq "WS" }
             $HandlesColumn = $ws.Tables[0].Columns | Where-Object { $_.Name -eq "Handles" }
+            $CPUColumn = $ws.Tables[0].Columns | Where-Object { $_.Name -eq "CPU" }
 
             $IDcolumn      | Select-Object -ExpandProperty TotalsRowFunction    | Should -Be "Count"
             $WScolumn      | Select-Object -ExpandProperty TotalsRowFunction    | Should -Be "Sum"
             $HandlesColumn | Select-Object -ExpandProperty TotalsRowFunction    | Should -Be "Average"
+            $CPUColumn     | Select-Object -ExpandProperty TotalsRowFunction    | Should -Be "Custom"
+            $CPUColumn     | Select-Object -ExpandProperty TotalsRowFormula     | Should -Be 'COUNTIF([CPU],"<1")'
 
             $CountAddress = "{0}{1}" -f (Get-ExcelColumnName -ColumnNumber $IDcolumn.Id).ColumnName, $TotalRows
             $SumAddress = "{0}{1}" -f (Get-ExcelColumnName -ColumnNumber $WScolumn.Id).ColumnName, $TotalRows
             $AverageAddress = "{0}{1}" -f (Get-ExcelColumnName -ColumnNumber $HandlesColumn.Id).ColumnName, $TotalRows
+            $CustomAddress = "{0}{1}" -f (Get-ExcelColumnName -ColumnNumber $CPUColumn.Id).ColumnName, $TotalRows
 
             $ws.Cells[$CountAddress].Formula                                    | Should -Be "SUBTOTAL(103,processes[Id])"
             $ws.Cells[$SumAddress].Formula                                      | Should -Be "SUBTOTAL(109,processes[Ws])"
             $ws.Cells[$AverageAddress].Formula                                  | Should -Be "SUBTOTAL(101,processes[Handles])"
+            $ws.Cells[$CustomAddress].Formula                                   | Should -Be 'COUNTIF([CPU],"<1")'
         }
 
         AfterEach {
