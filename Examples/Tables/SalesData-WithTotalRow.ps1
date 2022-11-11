@@ -26,4 +26,4 @@ $TableTotalSettings = @{
     }
 }
 
-$data | Export-Excel -Path $xlfile -TableName Sales -TableStyle Medium10 -TableTotalSettings $TotalSettings -AutoSize -Show
+$data | Export-Excel -Path $xlfile -TableName Sales -TableStyle Medium10 -TableTotalSettings $TableTotalSettings -AutoSize -Show
