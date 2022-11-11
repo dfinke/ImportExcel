@@ -14,7 +14,7 @@ Adds Tables to Excel workbooks.
 ## SYNTAX
 
 ```text
-Add-ExcelTable [-Range] <ExcelRange> [[-TableName] <String>] [[-TableStyle] <TableStyles>] [-ShowHeader] [-ShowFilter] [-ShowTotal] [[-TotalSettings] <Hashtable>] [-ShowFirstColumn] [-ShowLastColumn]  [-ShowRowStripes] [-ShowColumnStripes] [-PassThru] [<CommonParameters>]
+Add-ExcelTable [-Range] <ExcelRange> [[-TableName] <String>] [[-TableStyle] <TableStyles>] [-ShowHeader] [-ShowFilter] [-ShowTotal] [[-TableTotalSettings] <Hashtable>] [-ShowFirstColumn] [-ShowLastColumn]  [-ShowRowStripes] [-ShowColumnStripes] [-PassThru] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -142,9 +142,19 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TotalSettings
+### -TableTotalSettings
 
-A HashTable in the form ColumnName = "Average"\|"Count"\|"CountNums"\|"Max"\|"Min"\|"None"\|"StdDev"\|"Sum"\|"Var" - if specified, -ShowTotal is not needed.
+A HashTable in the form of either
+
+- ColumnName = "Average"\|"Count"\|"CountNums"\|"Max"\|"Min"\|"None"\|"StdDev"\|"Sum"\|"Var"|\<Custom Excel function starting with "="\>
+- ```powershell
+  ColumnName = @{
+      Function = "Average"\|"Count"\|"CountNums"\|"Max"\|"Min"\|"None"\|"StdDev"\|"Sum"\|"Var"|<Custom Excel function starting with "=">
+      Comment = $HoverComment
+  }
+  ```
+
+if specified, -ShowTotal is not needed.
 
 ```yaml
 Type: Hashtable
