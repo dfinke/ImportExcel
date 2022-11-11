@@ -1,6 +1,6 @@
 # 7.8.3
 
-- Extended Export-Excel with parameter TotalSettings. [Thomas Hofkens](https://github.com/thkn-hofa/ImportExcel)
+- Extended Export-Excel with parameter TableTotalSettings. Thank you [Thomas Hofkens](https://github.com/thkn-hofa)
 
 # 7.8.2
 
