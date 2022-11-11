@@ -17,12 +17,13 @@ OrderId,Category,Sales,Quantity,Discount
 $xlfile = "$PSScriptRoot\TotalsRow.xlsx"
 Remove-Item $xlfile -ErrorAction SilentlyContinue
 
-$TotalSettings = @{     
+$TableTotalSettings = @{     
     Quantity = 'Sum'
-    Category = @{
-        # Count the number of categories not equal to Electronics
-        Custom = '=COUNTIF([Category],"<>Electronics")'
+    Category = '=COUNTIF([Category],"<>Electronics")' # Count the number of categories not equal to Electronics
+    Sales    = @{
+        Function = '=SUMIF([Category],"<>Electronics",[Sales])'
+        Comment  = "Sum of sales for everything that is NOT Electronics"
     }
 }
 
-$data | Export-Excel -Path $xlfile -TableName Sales -TableStyle Medium10 -TotalSettings $TotalSettings -AutoSize -Show
+$data | Export-Excel -Path $xlfile -TableName Sales -TableStyle Medium10 -TableTotalSettings $TotalSettings -AutoSize -Show
