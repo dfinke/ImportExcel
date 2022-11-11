@@ -55,6 +55,31 @@ function Add-ExcelTable {
             $tbl.ShowTotal = $true
             foreach ($k in $TotalSettings.keys) {
                 if (-not $tbl.Columns[$k]) {Write-Warning -Message "Table does not have a Column '$k'."}
+                elseif ($TotalSettings[$k] -is [HashTable] -and $TotalSettings[$k].Keys.Count -eq 1 -and $TotalSettings[$k].Keys[0] -eq "Custom") {
+                    $formula = $TotalSettings[$k][($TotalSettings[$k].Keys[0])] | Select -First 1
+                    ### A function in Excel uses ";" between parameters but the OpenXML parameter separator is ","
+                    ### Only replace semicolon when it's NOT somewhere between quotes quotes. 
+                    # Get all text between quotes
+                    $QuoteMatches = [Regex]::Matches($formula,"`"[^`"]*`"|'[^']*'") 
+                    # Create array with all indexes of characters between quotes (and the quotes themselves)
+                    $QuoteCharIndexes = $(
+                        Foreach ($QuoteMatch in $QuoteMatches) {
+                            (($QuoteMatch.Index)..($QuoteMatch.Index + $QuoteMatch.Length - 1))
+                        }
+                    )
+
+                    # Get all semicolons
+                    $SemiColonMatches = [Regex]::Matches($formula, ";")
+                    # Replace the semicolons of which the index is not in the list of quote-text indexes
+                    Foreach ($SemiColonMatch in $SemiColonMatches.Index) {
+                        If ($QuoteCharIndexes -notcontains $SemiColonMatch) {
+                            $formula = $formula.remove($SemiColonMatch,1).Insert($SemiColonMatch,",")
+                        }
+                    }
+
+                    # Configure the formula. The TotalsRowFunction is automatically set to "Custom" when the TotalsRowFormula is set.
+                    $tbl.Columns[$k].TotalsRowFormula = $formula
+                }
                 elseif ($TotalSettings[$k] -notin @("Average", "Count", "CountNums", "Max", "Min", "None", "StdDev", "Sum", "Var") ) {
                     Write-Warning -Message "'$($TotalSettings[$k])' is not a valid total function."
                 }

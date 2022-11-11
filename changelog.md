@@ -1,3 +1,7 @@
+# 7.8.3
+
+- Extended Export-Excel with parameter TotalSettings. [Thomas Hofkens](https://github.com/thkn-hofa/ImportExcel)
+
 # 7.8.2
 
 - Fix docs [#1254](https://github.com/dfinke/ImportExcel/pull/1251)`Add-Worksheet` warning. Thank you [Wilson Stewart](https://github.com/WilsonStewart)
