@@ -9,7 +9,7 @@ function Add-ExcelTable {
         [Switch]$ShowHeader ,
         [Switch]$ShowFilter,
         [Switch]$ShowTotal,
-        [hashtable]$TotalSettings,
+        [hashtable]$TableTotalSettings,
         [Switch]$ShowFirstColumn,
         [Switch]$ShowLastColumn,
         [Switch]$ShowRowStripes,
@@ -51,16 +51,28 @@ function Add-ExcelTable {
         }
         #it seems that show total changes some of the others, so the sequence matters.
         if     ($PSBoundParameters.ContainsKey('ShowHeader'))        {$tbl.ShowHeader        = [bool]$ShowHeader}
-        if     ($PSBoundParameters.ContainsKey('TotalSettings'))     {
+        if     ($PSBoundParameters.ContainsKey('TableTotalSettings'))     {
             $tbl.ShowTotal = $true
-            foreach ($k in $TotalSettings.keys) {
+            foreach ($k in $TableTotalSettings.keys) {
+                
+                # Get the Function to be added in the totals row
+                if ($TableTotalSettings[$k] -is [HashTable]) { 
+                    If ($TableTotalSettings[$k].Keys -contains "Function") {
+                        $TotalFunction = $TableTotalSettings[$k]["Function"]
+                    }
+                    Else { Write-Warning -Message "TableTotalSettings parameter for column '$k' needs a key 'Function'" }
+                }
+                else { 
+                    $TotalFunction = [String]($TableTotalSettings[$k]) 
+                }
+                
+                # Add the totals row
                 if (-not $tbl.Columns[$k]) {Write-Warning -Message "Table does not have a Column '$k'."}
-                elseif ($TotalSettings[$k] -is [HashTable] -and $TotalSettings[$k].Keys.Count -eq 1 -and $TotalSettings[$k].Keys[0] -eq "Custom") {
-                    $formula = $TotalSettings[$k][($TotalSettings[$k].Keys[0])] | Select -First 1
+                elseif ($TotalFunction -match "^=") {
                     ### A function in Excel uses ";" between parameters but the OpenXML parameter separator is ","
                     ### Only replace semicolon when it's NOT somewhere between quotes quotes. 
                     # Get all text between quotes
-                    $QuoteMatches = [Regex]::Matches($formula,"`"[^`"]*`"|'[^']*'") 
+                    $QuoteMatches = [Regex]::Matches($TotalFunction,"`"[^`"]*`"|'[^']*'") 
                     # Create array with all indexes of characters between quotes (and the quotes themselves)
                     $QuoteCharIndexes = $(
                         Foreach ($QuoteMatch in $QuoteMatches) {
@@ -69,21 +81,33 @@ function Add-ExcelTable {
                     )
 
                     # Get all semicolons
-                    $SemiColonMatches = [Regex]::Matches($formula, ";")
+                    $SemiColonMatches = [Regex]::Matches($TotalFunction, ";")
                     # Replace the semicolons of which the index is not in the list of quote-text indexes
                     Foreach ($SemiColonMatch in $SemiColonMatches.Index) {
                         If ($QuoteCharIndexes -notcontains $SemiColonMatch) {
-                            $formula = $formula.remove($SemiColonMatch,1).Insert($SemiColonMatch,",")
+                            $TotalFunction = $TotalFunction.remove($SemiColonMatch,1).Insert($SemiColonMatch,",")
                         }
                     }
 
                     # Configure the formula. The TotalsRowFunction is automatically set to "Custom" when the TotalsRowFormula is set.
-                    $tbl.Columns[$k].TotalsRowFormula = $formula
+                    $tbl.Columns[$k].TotalsRowFormula = $TotalFunction
                 }
-                elseif ($TotalSettings[$k] -notin @("Average", "Count", "CountNums", "Max", "Min", "None", "StdDev", "Sum", "Var") ) {
-                    Write-Warning -Message "'$($TotalSettings[$k])' is not a valid total function."
+                elseif ($TotalFunction -notin @("Average", "Count", "CountNums", "Max", "Min", "None", "StdDev", "Sum", "Var") ) {
+                    Write-Warning -Message "'$($TotalFunction)' is not a valid total function."
                 }
-                else {$tbl.Columns[$k].TotalsRowFunction = $TotalSettings[$k]}
+                else {$tbl.Columns[$k].TotalsRowFunction = $TotalFunction}
+
+                # Set comment on totals row
+                If ($TableTotalSettings[$k] -is [HashTable] -and $TableTotalSettings[$k].Keys -contains "Comment" -and ![String]::IsNullOrEmpty($TableTotalSettings[$k]["Comment"])) {
+                    $CellCommentParams = @{
+                        Worksheet    = $tbl.WorkSheet
+                        Row          = $tbl.Address.End.Row
+                        ColumnNumber = ($tbl.columns | ? { $_.name -eq $k }).Id
+                        Text         = $TableTotalSettings[$k]["Comment"]
+                    }
+
+                    Set-CellComment  @CellCommentParams
+                }
             }
         }
         elseif ($PSBoundParameters.ContainsKey('ShowTotal'))         {$tbl.ShowTotal         = [bool]$ShowTotal}
