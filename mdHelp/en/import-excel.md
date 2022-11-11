@@ -64,6 +64,7 @@ If the default behavior is not desired and you want to import the complete works
 ### EXAMPLE 1
 
 ```text
+
 ----------------------------------------------
 | File: Movies.xlsx     -      Sheet: Actors |
 ----------------------------------------------
@@ -89,6 +90,7 @@ Notice that column 'B' is not imported because there's no value in cell 'B1' tha
 ### EXAMPLE 2
 
 ```text
+
 ----------------------------------------------
 | File: Movies.xlsx     -      Sheet: Actors |
 ----------------------------------------------
@@ -120,6 +122,7 @@ Notice that the column header \(row 1\) is imported as an object too.
 ### EXAMPLE 3
 
 ```text
+
 ----------------------------------------------------------
 | File: Movies.xlsx            -           Sheet: Movies |
 ----------------------------------------------------------
@@ -160,6 +163,7 @@ Notice that empty rows are imported and that data for the property 'Genre' is no
 ### EXAMPLE 4
 
 ```text
+
 ----------------------------------------------------------
 | File: Movies.xlsx            -           Sheet: Movies |
 ----------------------------------------------------------
@@ -192,6 +196,7 @@ Notice that empty rows and empty columns are not imported.
 ### EXAMPLE 5
 
 ```text
+
 ----------------------------------------------------------
 | File: Movies.xlsx            -           Sheet: Actors |
 ----------------------------------------------------------
