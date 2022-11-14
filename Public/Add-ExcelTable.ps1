@@ -51,7 +51,7 @@ function Add-ExcelTable {
         }
         #it seems that show total changes some of the others, so the sequence matters.
         if     ($PSBoundParameters.ContainsKey('ShowHeader'))        {$tbl.ShowHeader        = [bool]$ShowHeader}
-        if     ($PSBoundParameters.ContainsKey('TableTotalSettings'))     {
+        if     ($PSBoundParameters.ContainsKey('TableTotalSettings') -And $Null -ne $TableTotalSettings)     {
             $tbl.ShowTotal = $true
             foreach ($k in $TableTotalSettings.keys) {
                 
@@ -99,10 +99,12 @@ function Add-ExcelTable {
 
                 # Set comment on totals row
                 If ($TableTotalSettings[$k] -is [HashTable] -and $TableTotalSettings[$k].Keys -contains "Comment" -and ![String]::IsNullOrEmpty($TableTotalSettings[$k]["Comment"])) {
+                    $ColumnLetter = [officeOpenXml.ExcelAddress]::GetAddressCol(($tbl.columns | ? { $_.name -eq $k }).Id, $False)
+                    $CommentRange = "{0}{1}" -f $ColumnLetter, $tbl.Address.End.Row
+
                     $CellCommentParams = @{
                         Worksheet    = $tbl.WorkSheet
-                        Row          = $tbl.Address.End.Row
-                        ColumnNumber = ($tbl.columns | ? { $_.name -eq $k }).Id
+                        Range        = $CommentRange
                         Text         = $TableTotalSettings[$k]["Comment"]
                     }
 

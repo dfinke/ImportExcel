@@ -212,12 +212,7 @@
                 $row ++
                 $null = $ws.Cells[$row, $StartColumn].LoadFromDataTable($InputObject, $false )
                 if ($TableName -or $PSBoundParameters.ContainsKey('TableStyle')) {
-                    if ($PSBoundParameters.ContainsKey('TableTotalSettings')) {
-                        Add-ExcelTable -Range $ws.Cells[$ws.Dimension] -TableName $TableName -TableStyle $TableStyle -TableTotalSettings $TableTotalSettings
-                    }
-                    Else {
-                        Add-ExcelTable -Range $ws.Cells[$ws.Dimension] -TableName $TableName -TableStyle $TableStyle
-                    }
+                    Add-ExcelTable -Range $ws.Cells[$ws.Dimension] -TableName $TableName -TableStyle $TableStyle -TableTotalSettings $TableTotalSettings
                 }
             }
             else {
@@ -430,12 +425,7 @@
         if ($null -ne $TableName -or $PSBoundParameters.ContainsKey('TableStyle')) {
             #Already inserted Excel table if input was a DataTable
             if ($InputObject -isnot [System.Data.DataTable]) {
-                if ($PSBoundParameters.ContainsKey('TableTotalSettings')) {
-                    Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle -TableTotalSettings $TableTotalSettings
-                }
-                else {
-                    Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle
-                }
+                Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle -TableTotalSettings $TableTotalSettings
             }
         }
         elseif ($AutoFilter) {
