@@ -1,4 +1,12 @@
-﻿#region import everything we need
+﻿#region script variables
+$script:IsCoreCLR = $PSVersionTable.ContainsKey('PSEdition') -and $PSVersionTable.PSEdition -eq 'Core'
+
+#endregion script variables
+
+#region import everything we need
+if ($script:IsCoreCLR) {
+	[System.Text.Encoding]::RegisterProvider([System.Text.CodePagesEncodingProvider]::Instance)
+}
 $culture = $host.CurrentCulture.Name -replace '-\w*$', ''
 Import-LocalizedData  -UICulture $culture -BindingVariable Strings -FileName Strings -ErrorAction Ignore
 if (-not $Strings) {
