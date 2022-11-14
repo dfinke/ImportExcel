@@ -1,6 +1,11 @@
 # 7.8.3
 
-- Extended Export-Excel with parameter TableTotalSettings. Thank you [Thomas Hofkens](https://github.com/thkn-hofa)
+Thanks [Thomas Hofkens](https://github.com/thkn-hofa)
+
+- Extended Export-Excel with parameter TableTotalSettings
+- New Feature: Set-CellComment
+- Fix Pester error for countries with ',' as decimal separator
+- Fix Pester error for Windows PowerShell 5.1
 
 # 7.8.2
 
