@@ -132,6 +132,11 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange"  {
         12011,Crowbar,7,23.48
 "@
 
+        # Pester errors for countries with ',' as decimal separator
+        Foreach ($datarow in $data) {
+            $datarow.Price = [decimal]($datarow.Price)
+        }
+
         $DriverData = convertFrom-CSv @"
         Name,Wikipage,DateOfBirth
         Fernando Alonso,/wiki/Fernando_Alonso,1981-07-29
