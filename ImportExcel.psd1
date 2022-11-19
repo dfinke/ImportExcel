@@ -88,6 +88,7 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Remove-Worksheet',
         'Select-Worksheet',
         'Send-SQLDataToExcel',
+        'Set-CellComment',
         'Set-CellStyle',
         'Set-ExcelColumn',
         'Set-ExcelRange',

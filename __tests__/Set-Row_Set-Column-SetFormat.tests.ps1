@@ -132,6 +132,11 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange"  {
         12011,Crowbar,7,23.48
 "@
 
+        # Pester errors for countries with ',' as decimal separator
+        Foreach ($datarow in $data) {
+            $datarow.Price = [decimal]($datarow.Price)
+        }
+
         $DriverData = convertFrom-CSv @"
         Name,Wikipage,DateOfBirth
         Fernando Alonso,/wiki/Fernando_Alonso,1981-07-29
@@ -392,7 +397,7 @@ Describe "Table Formatting"  {
         $excel = $data2 | Export-excel -path $path -WorksheetName Hardware -AutoNameRange -AutoSize -BoldTopRow -FreezeTopRow -PassThru
         $ws = $excel.Workbook.Worksheets[1]
         #test showfilter & TotalSettings
-        $Table = Add-ExcelTable -PassThru -Range $ws.Cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -TotalSettings @{"Total" = "Sum"} -ShowFirstColumn -ShowFilter:$false
+        $Table = Add-ExcelTable -PassThru -Range $ws.Cells[$($ws.Dimension.address)] -TableStyle Light1 -TableName HardwareTable  -TableTotalSettings @{"Total" = "Sum"} -ShowFirstColumn -ShowFilter:$false
         #test expnading named number formats
         Set-ExcelColumn -Worksheet $ws -Column 4 -NumberFormat 'Currency'
         Set-ExcelColumn -Worksheet $ws -Column 5 -NumberFormat 'Currency'

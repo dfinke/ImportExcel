@@ -16,13 +16,13 @@ Exports data to an Excel worksheet.
 ### Default \(Default\)
 
 ```text
-Export-Excel [[-Path] <String>] [-InputObject <Object>] [-Calculate] [-Show] [-WorksheetName <String>] [-Password <String>] [-ClearSheet] [-Append] [-Title <String>] [-TitleFillPattern <ExcelFillStyle>] [-TitleBold] [-TitleSize <Int32>] [-TitleBackgroundColor <Object>][-IncludePivotTable] [-PivotTableName <String>] [-PivotRows <String[]> [-PivotColumns <String[]>] [-PivotData <Object>] [-PivotFilter <String[]>] [-PivotDataToColumn] [-PivotTableDefinition <Hashtable>] [-IncludePivotChart] [-ChartType <eChartType>] [-NoLegend] [-ShowCategory] [-ShowPercent] [-AutoSize] [-MaxAutoSizeRows <Object>] [-NoClobber] [-FreezeTopRow] [-FreezeFirstColumn] [-FreezeTopRowFirstColumn] [-FreezePane <Int32[]>] [-AutoFilter] [-BoldTopRow] [-NoHeader] [-RangeName <String>] [-TableName <Object>] [-TableStyle <TableStyles>] [-Barchart] [-PieChart] [-LineChart] [-ColumnChart] [-ExcelChartDefinition <Object[]>] [-HideSheet <String[]>] [-UnHideSheet <String[]>] [-MoveToStart] [-MoveToEnd] [-MoveBefore <Object>] [-MoveAfter <Object>] [-KillExcel] [-AutoNameRange] [-StartRow <Int32>] [-StartColumn <Int32>] [-PassThru] [-Numberformat <String>] [-ExcludeProperty <String[]>] [-NoAliasOrScriptPropeties] [-DisplayPropertySet] [-NoNumberConversion <String[]>] [-ConditionalFormat <Object[]>] [-ConditionalText <Object[]>] [-Style <Object[]>] [-CellStyleSB <ScriptBlock>] [-Activate] [-Now] [-ReturnRange] [-PivotTotals <String>] [-NoTotalsInPivot] [-ReZip] [<CommonParameters>]
+Export-Excel [[-Path] <String>] [-InputObject <Object>] [-Calculate] [-Show] [-WorksheetName <String>] [-Password <String>] [-ClearSheet] [-Append] [-Title <String>] [-TitleFillPattern <ExcelFillStyle>] [-TitleBold] [-TitleSize <Int32>] [-TitleBackgroundColor <Object>][-IncludePivotTable] [-PivotTableName <String>] [-PivotRows <String[]> [-PivotColumns <String[]>] [-PivotData <Object>] [-PivotFilter <String[]>] [-PivotDataToColumn] [-PivotTableDefinition <Hashtable>] [-IncludePivotChart] [-ChartType <eChartType>] [-NoLegend] [-ShowCategory] [-ShowPercent] [-AutoSize] [-MaxAutoSizeRows <Object>] [-NoClobber] [-FreezeTopRow] [-FreezeFirstColumn] [-FreezeTopRowFirstColumn] [-FreezePane <Int32[]>] [-AutoFilter] [-BoldTopRow] [-NoHeader] [-RangeName <String>] [-TableName <Object>] [-TableStyle <TableStyles>] [-TableTotalSettings <HashTable>] [-Barchart] [-PieChart] [-LineChart] [-ColumnChart] [-ExcelChartDefinition <Object[]>] [-HideSheet <String[]>] [-UnHideSheet <String[]>] [-MoveToStart] [-MoveToEnd] [-MoveBefore <Object>] [-MoveAfter <Object>] [-KillExcel] [-AutoNameRange] [-StartRow <Int32>] [-StartColumn <Int32>] [-PassThru] [-Numberformat <String>] [-ExcludeProperty <String[]>] [-NoAliasOrScriptPropeties] [-DisplayPropertySet] [-NoNumberConversion <String[]>] [-ConditionalFormat <Object[]>] [-ConditionalText <Object[]>] [-Style <Object[]>] [-CellStyleSB <ScriptBlock>] [-Activate] [-Now] [-ReturnRange] [-PivotTotals <String>] [-NoTotalsInPivot] [-ReZip] [<CommonParameters>]
 ```
 
 ### Package
 
 ```text
-Export-Excel -ExcelPackage <ExcelPackage> [-InputObject <Object>] [-Calculate] [-Show] [-WorksheetName <String>] [-Password <String>] [-ClearSheet] [-Append] [-Title <String>] [-TitleFillPattern <ExcelFillStyle>] [-TitleBold] [-TitleSize <Int32>] [-TitleBackgroundColor <Object>] [-IncludePivotTable] [-PivotTableName <String>] [-PivotRows <String[]>] [-PivotColumns <String[]>] [-PivotData <Object>] [-PivotFilter <String[]>] [-PivotDataToColumn] [-PivotTableDefinition <Hashtable>] [-IncludePivotChart] [-ChartType <eChartType>] [-NoLegend] [-ShowCategory] [-ShowPercent] [-AutoSize] [-MaxAutoSizeRows <Object>] [-NoClobber] [-FreezeTopRow] [-FreezeFirstColumn] [-FreezeTopRowFirstColumn] [-FreezePane <Int32[]>] [-AutoFilter] [-BoldTopRow] [-NoHeader] [-RangeName <String>] [-TableName <Object>] [-TableStyle <TableStyles>] [-Barchart] [-PieChart] [-LineChart] [-ColumnChart] [-ExcelChartDefinition <Object[]>] [-HideSheet <String[]>] [-UnHideSheet <String[]>] [-MoveToStart] [-MoveToEnd] [-MoveBefore <Object>] [-MoveAfter <Object>] [-KillExcel] [-AutoNameRange] [-StartRow <Int32>] [-StartColumn <Int32>] [-PassThru] [-Numberformat <String>] [-ExcludeProperty <String[]>]
+Export-Excel -ExcelPackage <ExcelPackage> [-InputObject <Object>] [-Calculate] [-Show] [-WorksheetName <String>] [-Password <String>] [-ClearSheet] [-Append] [-Title <String>] [-TitleFillPattern <ExcelFillStyle>] [-TitleBold] [-TitleSize <Int32>] [-TitleBackgroundColor <Object>] [-IncludePivotTable] [-PivotTableName <String>] [-PivotRows <String[]>] [-PivotColumns <String[]>] [-PivotData <Object>] [-PivotFilter <String[]>] [-PivotDataToColumn] [-PivotTableDefinition <Hashtable>] [-IncludePivotChart] [-ChartType <eChartType>] [-NoLegend] [-ShowCategory] [-ShowPercent] [-AutoSize] [-MaxAutoSizeRows <Object>] [-NoClobber] [-FreezeTopRow] [-FreezeFirstColumn] [-FreezeTopRowFirstColumn] [-FreezePane <Int32[]>] [-AutoFilter] [-BoldTopRow] [-NoHeader] [-RangeName <String>] [-TableName <Object>] [-TableStyle <TableStyles>] [-TableTotalSettings <HashTable>] [-Barchart] [-PieChart] [-LineChart] [-ColumnChart] [-ExcelChartDefinition <Object[]>] [-HideSheet <String[]>] [-UnHideSheet <String[]>] [-MoveToStart] [-MoveToEnd] [-MoveBefore <Object>] [-MoveAfter <Object>] [-KillExcel] [-AutoNameRange] [-StartRow <Int32>] [-StartColumn <Int32>] [-PassThru] [-Numberformat <String>] [-ExcludeProperty <String[]>]
  [-NoAliasOrScriptPropeties] [-DisplayPropertySet] [-NoNumberConversion <String[]>] [-ConditionalFormat <Object[]>] [-ConditionalText <Object[]>] [-Style <Object[]>] [-CellStyleSB <ScriptBlock>] [-Activate] [-ReturnRange] [-PivotTotals <String>] [-NoTotalsInPivot] [-ReZip] [<CommonParameters>]
 ```
 
@@ -157,6 +157,29 @@ If neither condition is met, the color will be the default, black text on a whit
 ### EXAMPLE 7
 
 ```text
+PS\> $r = Get-ChildItem C:\WINDOWS\system32 -File
+
+PS\> $TotalSettings = @{ 
+         Name = "Count"
+         Extension = "=COUNTIF([Extension];`".exe`")"
+         Length = @{
+             Function = "=SUMIF([Extension];`".exe`";[Length])"
+             Comment = "Sum of all exe sizes"
+         }
+     }
+
+PS\> $r | Export-Excel -TableName system32files -TableStyle Medium10 -TableTotalSettings $TotalSettings -Show
+```
+
+Exports a list of files with a totals row with three calculated totals:
+
+- Total count of names
+- Count of files with the extension ".exe"
+- Total size of all file with extension ".exe" and add a comment as to not be mistaken that is is the total size of all files
+
+### EXAMPLE 8
+
+```text
 PS\> $ExcelParams = @{
         Path      = $env:TEMP + '\Excel.xlsx'
         Show      = $true
@@ -189,25 +212,25 @@ PS\> $Array | Update-FirstObjectProperties | Export-Excel @ExcelParams -Workshee
 
 Updates the first object of the array by adding property 'Member3' and 'Member4'. Afterwards, all objects are exported to an Excel file and all column headers are visible.
 
-### EXAMPLE 8
+### EXAMPLE 9
 
 ```text
 PS\> Get-Process | Export-Excel .\test.xlsx -WorksheetName Processes -IncludePivotTable -Show -PivotRows Company -PivotData PM
 ```
 
-### EXAMPLE 9
+### EXAMPLE 10
 
 ```text
 PS\> Get-Process | Export-Excel .\test.xlsx -WorksheetName Processes -ChartType PieExploded3D -IncludePivotChart -IncludePivotTable -Show -PivotRows Company -PivotData PM
 ```
 
-### EXAMPLE 10
+### EXAMPLE 11
 
 ```text
 PS\> Get-Service | Export-Excel 'c:\temp\test.xlsx'  -Show -IncludePivotTable -PivotRows status -PivotData @{status='count'}
 ```
 
-### EXAMPLE 11
+### EXAMPLE 12
 
 ```text
 PS\> $pt = [ordered]@{}
@@ -237,7 +260,7 @@ Then it puts Service data on Sheet1 with one call to Export-Excel and Process Da
 
 The third and final call adds the two PivotTables and opens the spreadsheet in Excel.
 
-### EXAMPLE 12
+### EXAMPLE 13
 
 ```text
 PS\> Remove-Item  -Path .\test.xlsx
@@ -258,7 +281,7 @@ It then uses the package object to apply formatting, and then saves the workbook
 
 Note: Other commands in the module remove the need to work directly with the package object in this way.
 
-### EXAMPLE 13
+### EXAMPLE 14
 
 ```text
 PS\> Remove-Item -Path .\test.xlsx -ErrorAction Ignore
@@ -281,7 +304,7 @@ This a more sophisticated version of the previous example showing different ways
 
 In the final command a PivotChart is added and the workbook is opened in Excel.
 
-### EXAMPLE 14
+### EXAMPLE 15
 
 ```text
 PS\> 0..360 | ForEach-Object {[pscustomobject][ordered]@{X=$_; Sinx="=Sin(Radians(x)) "} } |
@@ -290,7 +313,7 @@ PS\> 0..360 | ForEach-Object {[pscustomobject][ordered]@{X=$_; Sinx="=Sin(Radian
 
 Creates a line chart showing the value of Sine\(x\) for values of X between 0 and 360 degrees.
 
-### EXAMPLE 15
+### EXAMPLE 16
 
 ```text
 PS\> Invoke-Sqlcmd -ServerInstance localhost\DEFAULT -Database AdventureWorks2014 -Query "select *  from sys.tables" -OutputAs DataRows |
@@ -948,6 +971,32 @@ Accepted values: None, Custom, Light1, Light2, Light3, Light4, Light5, Light6, L
 Required: False
 Position: Named
 Default value: Medium6
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -TableTotalSettings
+
+A HashTable in the form of either
+
+- ColumnName = "Average"\|"Count"\|"CountNums"\|"Max"\|"Min"\|"None"\|"StdDev"\|"Sum"\|"Var"|\<Custom Excel function starting with "="\>
+- ```powershell
+  ColumnName = @{
+      Function = "Average"\|"Count"\|"CountNums"\|"Max"\|"Min"\|"None"\|"StdDev"\|"Sum"\|"Var"|<Custom Excel function starting with "=">
+      Comment = $HoverComment
+  }
+  ```
+
+if specified, -ShowTotal is not needed.
+
+```yaml
+Type: Hashtable
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 4
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

@@ -1,11 +1,12 @@
 ﻿Describe "Test reading relative paths" {
     BeforeAll {
         $script:xlfileName = "TestR.xlsx"
-        @{data = 1 } | Export-Excel (Join-Path $PWD  "TestR.xlsx")
+        If ([String]::IsNullOrEmpty($PWD)) { $PWD = $PSScriptRoot }
+        @{data = 1 } | Export-Excel (Join-Path $PWD "TestR.xlsx")
     }
 
     AfterAll {
-        Remove-Item (Join-Path $PWD  "$($script:xlfileName)")
+        Remove-Item (Join-Path $PWD "$($script:xlfileName)")
     }
 
     It "Should read local file".PadRight(90) {
