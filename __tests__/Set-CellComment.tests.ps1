@@ -2,7 +2,7 @@
     Import-Module $PSScriptRoot\..\ImportExcel.psd1
 }
 
-Describe "Test setting comment on cells in different ways" {
+Describe "Test setting comment on cells in different ways" -Tag SetCellComment {
     BeforeAll {
         $data = ConvertFrom-Csv @"
 OrderId,Category,Sales,Quantity,Discount
@@ -19,7 +19,7 @@ OrderId,Category,Sales,Quantity,Discount
 "@
 
         $Excel = $data | Export-Excel -PassThru
-        $ws = $Excel.Workbook.Worksheets | Select -First 1
+        $ws = $Excel.Workbook.Worksheets | Select-Object -First 1
     }
 
     AfterAll {
@@ -34,13 +34,11 @@ OrderId,Category,Sales,Quantity,Discount
 
         Set-CellComment -Range "B2" -Worksheet $ws -Text "This demonstrates an overwrite of a previously set comment"
 
-        $ws.Cells["A1"].Comment.Text | Should -Be "This was added with a single cell range"
-        $ws.Cells["A2"].Comment.Text | Should -Be "This was added with a multiple cell range" 
-        $ws.Cells["B2"].Comment.Text | Should -Be "This demonstrates an overwrite of a previously set comment" 
-        $ws.Cells["C2"].Comment.Text | Should -Be "This was added with a multiple cell range"
-        $ws.Cells["A3"].Comment.Text | Should -Be "This was added using a column letter and rownumber"
-        $ws.Cells["A4"].Comment.Text | Should -Be "This was added using a column number and row number"
-
-        # ($ws.cells | ? { $Null -ne $_.comment }) | %{"{0} --- {1}" -f $_.address, $_.comment.text}
+        $ws.Cells["A1"].Comment.Text | Should -BeExactly "This was added with a single cell range"
+        $ws.Cells["A2"].Comment.Text | Should -BeExactly "This was added with a multiple cell range" 
+        $ws.Cells["B2"].Comment.Text | Should -BeExactly "This demonstrates an overwrite of a previously set comment" 
+        $ws.Cells["C2"].Comment.Text | Should -BeExactly "This was added with a multiple cell range"
+        $ws.Cells["A3"].Comment.Text | Should -BeExactly "This was added using a column letter and rownumber"
+        $ws.Cells["A4"].Comment.Text | Should -BeExactly "This was added using a column number and row number"
     }
 }
