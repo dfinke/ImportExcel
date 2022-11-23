@@ -223,8 +223,31 @@
                                     if ($MatchTest.groups.name -eq "astext") {
                                         $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Text
                                     }
-                                    elseif ($MatchTest.groups.name -eq "asdate" -and $sheet.Cells[$R, $P.Column].Value -is [System.ValueType]) {
-                                        $NewRow[$P.Value] = [datetime]::FromOADate(($sheet.Cells[$R, $P.Column].Value))
+                                    elseif ($MatchTest.groups.name -eq "asdate" -and $sheet.Cells[$R, $P.Column].Value -is [System.ValueType]) 
+                                    {
+                                        # Depending on how the source Excel document represents dates this may not work everytime
+                                        Try
+                                        {
+                                            # If the value here does not match a very specific DateTime pattern conversions will not take place and an error will be thrown
+                                            $NewRow[$P.Value] = [datetime]::FromOADate(($sheet.Cells[$R, $P.Column].Value))
+                                        }
+                                        Catch
+                                        {
+                                            # To rectify failures to parse we can try (2) methods
+                                            #   - 1: Attempt to Cast the string to DateTime and subtract the Excel Epoch
+                                            #   - 2: Convert the value to a vaild DateTime string and then cast / subtract from Epoch
+                                            Try
+                                            {
+                                                $Delta = [DateTime]($Sheet.Cells[$R, $P.Column].Value) - [DateTime]"12/30/1899"
+                                                $NewRow[$P.Value] = [DateTime]::FromOADate([Double]($Delta.Days) + ([Double]($Delta.Seconds) / 86400))
+                                            }
+                                            Catch
+                                            {
+                                                $DeltaString = ([DateTime]($Sheet.Cells[$R, $P.Column].Value)).ToString("dd-MM-yyyy")
+                                                $Delta = [DateTime]($DeltaString) - [DateTime]"12/30/1899"
+                                                $NewRow[$P.Value] = [DateTime]::FromOADate([Double]($Delta.Days) + ([Double]($Delta.Seconds) / 86400))
+                                            }
+                                        }
                                     }
                                     else { $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Value }
                                 }
