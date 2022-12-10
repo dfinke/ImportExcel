@@ -23,6 +23,7 @@
         [Parameter(ParameterSetName = "FourIconSet")]
         [Parameter(ParameterSetName = "FiveIconSet")]
         [switch]$Reverse,
+        [switch]$ShowIconOnly,
         [Parameter(ParameterSetName = "NamedRule",Position = 2)]
         $ConditionValue,
         [Parameter(ParameterSetName = "NamedRule",Position = 3)]
@@ -84,6 +85,9 @@
     elseif ($PSBoundParameters.ContainsKey("FourIconsSet"  )      ) {$rule =  $Worksheet.ConditionalFormatting.AddFourIconSet( $Address , $FourIconsSet )}
     elseif ($PSBoundParameters.ContainsKey("FiveIconsSet"  )      ) {$rule =  $Worksheet.ConditionalFormatting.AddFiveIconSet( $Address , $FiveIconsSet )}
     else                                                            {$rule = ($Worksheet.ConditionalFormatting)."Add$RuleType"($Address )                }
+    If($ShowIconOnly) {
+        $rule.ShowValue = $false
+    }
     if     ($Reverse)  {
             if     ($rule.type -match 'IconSet$'   )                {$rule.reverse = $true}
             elseif ($rule.type -match 'ColorScale$')                {$temp =$rule.LowValue.Color ; $rule.LowValue.Color = $rule.HighValue.Color; $rule.HighValue.Color = $temp}

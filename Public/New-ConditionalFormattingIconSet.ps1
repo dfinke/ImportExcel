@@ -1,11 +1,12 @@
 function New-ConditionalFormattingIconSet {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',Justification='Does not change system State')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'Does not change system State')]
     param(
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         $Range,
-        [ValidateSet("ThreeIconSet","FourIconSet","FiveIconSet")]
+        [ValidateSet("ThreeIconSet", "FourIconSet", "FiveIconSet")]
         $ConditionalFormat,
-        [Switch]$Reverse
+        [Switch]$Reverse,
+        [Switch]$ShowIconOnly
     )
 
     DynamicParam {
@@ -40,13 +41,14 @@ function New-ConditionalFormattingIconSet {
 
     End {
 
-        $bp = @{}+$PSBoundParameters
+        $bp = @{} + $PSBoundParameters
 
         $obj = [PSCustomObject]@{
-            Range     = $Range
-            Formatter = $ConditionalFormat
-            IconType  = $bp.IconType
-            Reverse   = $Reverse
+            Range        = $Range
+            Formatter    = $ConditionalFormat
+            IconType     = $bp.IconType
+            Reverse      = $Reverse
+            ShowIconOnly = $ShowIconOnly
         }
 
         $obj.pstypenames.Clear()
