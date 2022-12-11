@@ -637,9 +637,9 @@
                 }
                 elseif ($c.formatter) {
                     switch ($c.formatter) {
-                        "ThreeIconSet" { Add-ConditionalFormatting -Worksheet $ws -ThreeIconsSet $c.IconType -range $c.range -reverse:$c.reverse }
-                        "FourIconSet" { Add-ConditionalFormatting -Worksheet $ws  -FourIconsSet $c.IconType -range $c.range -reverse:$c.reverse }
-                        "FiveIconSet" { Add-ConditionalFormatting -Worksheet $ws  -FiveIconsSet $c.IconType -range $c.range -reverse:$c.reverse }
+                        "ThreeIconSet" { Add-ConditionalFormatting -Worksheet $ws -ThreeIconsSet $c.IconType -range $c.range -reverse:$c.reverse -ShowIconOnly:$c.ShowIconOnly}
+                        "FourIconSet" { Add-ConditionalFormatting -Worksheet $ws  -FourIconsSet $c.IconType -range $c.range -reverse:$c.reverse -ShowIconOnly:$c.ShowIconOnly}
+                        "FiveIconSet" { Add-ConditionalFormatting -Worksheet $ws  -FiveIconsSet $c.IconType -range $c.range -reverse:$c.reverse -ShowIconOnly:$c.ShowIconOnly}
                     }
                     Write-Verbose -Message "Added conditional formatting to range $($c.range)"
                 }
