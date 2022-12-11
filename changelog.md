@@ -1,6 +1,7 @@
-# 7.8.3
+# 7.8.4
 
 - Add -ShowOnlyIcon to `New-ConditionalFormattingIconSet` does not show data in the cell, just the icon. Based on this discussion https://github.com/dfinke/ImportExcel/discussions/1340
+
 # 7.8.3
 
 Thanks [Thomas Hofkens](https://github.com/thkn-hofa)
