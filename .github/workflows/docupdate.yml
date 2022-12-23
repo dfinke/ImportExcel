@@ -1,0 +1,26 @@
+name: DocUpdate
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: 
+      - master
+    paths:
+      - mdHelp/**
+    types:
+      [closed]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generate Documentation XML
+        shell: pwsh
+        run: mdHelp/buildHelp.ps1
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Documentation XML Update
