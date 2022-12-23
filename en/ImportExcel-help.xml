@@ -7668,7 +7668,7 @@ INSERT INTO Movies ('Movie Name', 'Year', 'Rating') Values('The Avengers', '2012
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="TargetData">
           <maml:name>InputObject</maml:name>
           <maml:description>
-            <maml:para>Date is usually piped into Export-Excel, but it also accepts data through the InputObject parameter</maml:para>
+            <maml:para>Data is usually piped into Export-Excel, but it also accepts data through the InputObject parameter</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
           <dev:type>
@@ -8673,7 +8673,7 @@ INSERT INTO Movies ('Movie Name', 'Year', 'Rating') Values('The Avengers', '2012
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="TargetData">
           <maml:name>InputObject</maml:name>
           <maml:description>
-            <maml:para>Date is usually piped into Export-Excel, but it also accepts data through the InputObject parameter</maml:para>
+            <maml:para>Data is usually piped into Export-Excel, but it also accepts data through the InputObject parameter</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
           <dev:type>
@@ -9659,7 +9659,7 @@ INSERT INTO Movies ('Movie Name', 'Year', 'Rating') Values('The Avengers', '2012
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="TargetData">
         <maml:name>InputObject</maml:name>
         <maml:description>
-          <maml:para>Date is usually piped into Export-Excel, but it also accepts data through the InputObject parameter</maml:para>
+          <maml:para>Data is usually piped into Export-Excel, but it also accepts data through the InputObject parameter</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
