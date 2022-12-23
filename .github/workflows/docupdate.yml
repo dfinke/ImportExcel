@@ -6,8 +6,6 @@ on:
       - master
     paths:
       - mdHelp/**
-    types:
-      [closed]
   workflow_dispatch:
 
 jobs:
