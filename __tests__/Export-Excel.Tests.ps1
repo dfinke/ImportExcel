@@ -767,6 +767,11 @@ Describe ExportExcel -Tag "ExportExcel" {
             else { $sheet.Column(1) | Set-ExcelRange -Bold }
             $sheet.Column(2) | Set-ExcelRange -Width 29 -WrapText
             $sheet.Column(3) | Set-ExcelRange -HorizontalAlignment Right -NFormat "#,###"
+
+            # Issue 1350: Set-ExcelRow -height bleeds into next row when using
+            # Set-ExcelRow uses a Range object to call Set-ExcelRange instead of just the row
+            Set-ExcelRange -Range (New-Object -TypeName OfficeOpenXml.ExcelAddress @(1, $sheet.Dimension.Start.Column, 1, $sheet.Dimension.End.Column)) -Height 25 -Worksheet $sheet
+
             Set-ExcelRange -Address $sheet.Cells["E1:H1048576"]  -HorizontalAlignment Right -NFormat "#,###"
             Set-ExcelRange -Address $sheet.Column(4)  -HorizontalAlignment Right -NFormat "#,##0.0" -Bold
             Set-ExcelRange -Address $sheet.Row(1) -Bold -HorizontalAlignment Center
@@ -798,6 +803,8 @@ Describe ExportExcel -Tag "ExportExcel" {
             $sheet.Column(2).width                                      | Should      -Be  29
             $sheet.Column(3).style.horizontalalignment                  | Should      -Be  'right'
             $sheet.Column(4).style.horizontalalignment                  | Should      -Be  'right'
+            $sheet.Row(1).height                                        | Should      -Be 25
+            $sheet.Row(2).height                                        | Should -Not -Be 25
             $sheet.Cells["A1"].Style.HorizontalAlignment                | Should      -Be  'Center'
             $sheet.Cells['E2'].Style.HorizontalAlignment                | Should      -Be  'right'
             $sheet.Cells['A1'].Style.Font.Bold                          | Should      -Be  $true

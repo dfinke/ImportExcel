@@ -159,7 +159,7 @@
             if ($PSBoundParameters.ContainsKey('Height')) {
                 if ($Range -is [OfficeOpenXml.ExcelRow]   ) {$Range.Height = $Height }
                 elseif ($Range -is [OfficeOpenXml.ExcelRange] ) {
-                    ($Range.Start.Row)..($Range.Start.Row + $Range.Rows) |
+                    ($Range.Start.Row)..($Range.Start.Row + $Range.Rows - 1) |
                         ForEach-Object {$Range.Worksheet.Row($_).Height = $Height }
                 }
                 else {Write-Warning -Message ("Can set the height of a row or a range but not a {0} object" -f ($Range.GetType().name)) }
