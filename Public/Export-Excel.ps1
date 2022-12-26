@@ -79,6 +79,7 @@
         [Switch]$NoAliasOrScriptPropeties,
         [Switch]$DisplayPropertySet,
         [String[]]$NoNumberConversion,
+        [String[]]$NoHyperLinkConversion,
         [Object[]]$ConditionalFormat,
         [Object[]]$ConditionalText,
         [Object[]]$Style,
@@ -318,7 +319,9 @@
                                 $ws.Cells[$row, $ColumnIndex].Value = $v
                                 if ($setNumformat) { $ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = $Numberformat }
                             }
-                            elseif ($v -is [uri] ) {
+                            elseif ($v -is [uri] -and
+                                    $NoHyperLinkConversion -ne '*' -and
+                                    $NoHyperLinkConversion -notcontains $Name ) {
                                 $ws.Cells[$row, $ColumnIndex].HyperLink = $v
                                 $ws.Cells[$row, $ColumnIndex].Style.Font.Color.SetColor([System.Drawing.Color]::Blue)
                                 $ws.Cells[$row, $ColumnIndex].Style.Font.UnderLine = $true
@@ -331,7 +334,10 @@
                                 $ws.Cells[$row, $ColumnIndex].Formula = ($v -replace '^=', '')
                                 if ($setNumformat) { $ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = $Numberformat }
                             }
-                            elseif ( [System.Uri]::IsWellFormedUriString($v , [System.UriKind]::Absolute) ) {
+                            elseif ( $NoHyperLinkConversion -ne '*' -and # Put the check for 'NoHyperLinkConversion is null' first to skip checking for wellformedstring
+                                    $NoHyperLinkConversion -notcontains $Name -and
+                                    [System.Uri]::IsWellFormedUriString($v , [System.UriKind]::Absolute)
+                                ) { 
                                 if ($v -match "^xl://internal/") {
                                     $referenceAddress = $v -replace "^xl://internal/" , ""
                                     $display = $referenceAddress -replace "!A1$"   , ""
@@ -344,8 +350,8 @@
                             }
                             else {
                                 $number = $null
-                                if ( $numberRegex.IsMatch($v) -and # if it contains digit(s) - this syntax is quicker than -match for many items and cuts out slow checks for non numbers
-                                    $NoNumberConversion -ne '*' -and # and NoNumberConversion isn't specified
+                                if ( $NoNumberConversion -ne '*' -and # Check if NoNumberConversion isn't specified. Put this first as it's going to stop the if clause. Quicker than putting regex check first
+                                    $numberRegex.IsMatch($v) -and # and if it contains digit(s) - this syntax is quicker than -match for many items and cuts out slow checks for non numbers
                                     $NoNumberConversion -notcontains $Name -and
                                     [Double]::TryParse($v, [System.Globalization.NumberStyles]::Any, [System.Globalization.NumberFormatInfo]::CurrentInfo, [Ref]$number)
                                 ) {
