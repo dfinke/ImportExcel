@@ -761,7 +761,13 @@ Describe ExportExcel -Tag "ExportExcel" {
             $path = "TestDrive:\test.xlsx"
             Remove-Item $path -ErrorAction SilentlyContinue
             #Test freezing top row/first column, adding formats and a pivot table - from Add-Pivot table not a specification variable - after the export
-            $excel = Get-Process | Select-Object -Property Name, Company, Handles, CPU, PM, NPM, WS | Export-Excel -Path $path -ClearSheet -WorkSheetname "Processes" -FreezeTopRowFirstColumn -PassThru
+            $Ex13Data = Get-Process | Select-Object -Property Name, Company, Handles, CPU, PM, NPM, WS
+            $excel = $Ex13Data | Export-Excel -Path $path -ClearSheet -WorkSheetname "Processes" -FreezeTopRowFirstColumn -PassThru
+            # Add extra worksheets for testing 'Freeze Top Row' and 'Freeze First Column' with or without title
+            $excel = Export-Excel -InputObject $Ex13Data -ExcelPackage $excel -WorksheetName "FreezeTopRow" -FreezeTopRow -Passthru
+            $excel = Export-Excel -InputObject $Ex13Data -ExcelPackage $excel -WorksheetName "FreezeFirstColumn" -FreezeFirstColumn -Passthru
+            $excel = Export-Excel -InputObject $Ex13Data -Title "Freeze Top Row" -ExcelPackage $excel -WorksheetName "FreezeTopRowTitle" -FreezeTopRow -Passthru
+            $excel = Export-Excel -InputObject $Ex13Data -Title "Freeze Top Row First Column" -ExcelPackage $excel -WorksheetName "FreezeTRFCTitle" -FreezeTopRowFirstColumn -Passthru
             $sheet = $excel.Workbook.Worksheets["Processes"]
             if ($isWindows) { $sheet.Column(1) | Set-ExcelRange -Bold -AutoFit }
             else { $sheet.Column(1) | Set-ExcelRange -Bold }
@@ -781,6 +787,10 @@ Describe ExportExcel -Tag "ExportExcel" {
 
             $excel = Open-ExcelPackage $path
             $sheet = $excel.Workbook.Worksheets["Processes"]
+            $sheetftr = $excel.Workbook.Worksheets["FreezeTopRow"]
+            $sheetffc = $excel.Workbook.Worksheets["FreezeFirstColumn"]
+            $sheetftrt = $excel.Workbook.Worksheets["FreezeTopRowTitle"]
+            $sheetftrfct = $excel.Workbook.Worksheets["FreezeTRFCTitle"]
         }
         it "Returned the rule when calling Add-ConditionalFormatting -passthru                     " {
             $rule                                                       | Should -Not -BeNullOrEmpty
@@ -827,7 +837,27 @@ Describe ExportExcel -Tag "ExportExcel" {
             $sheet.Names[6].Name                                        | Should      -Be $sheet.Cells['G1'].Value
         }
         it "Froze the panes                                                                        " {
-            $sheet.view.Panes.Count                                     | Should      -Be 3
+            $sheetPaneInfo = $sheet.worksheetxml.worksheet.sheetViews.sheetView.pane
+            $sheetftrPaneInfo = $sheetftr.worksheetxml.worksheet.sheetViews.sheetView.pane
+            $sheetffcPaneInfo = $sheetffc.worksheetxml.worksheet.sheetViews.sheetView.pane
+            $sheetftrtPaneInfo = $sheetftrt.worksheetxml.worksheet.sheetViews.sheetView.pane
+            $sheetftrfctPaneInfo = $sheetftrfct.worksheetxml.worksheet.sheetViews.sheetView.pane
+            $sheet.view.Panes.Count                                     | Should      -Be 3 # Don't know if this actually checks anything
+            $sheetPaneInfo.xSplit                                       | Should      -Be 1
+            $sheetPaneInfo.ySplit                                       | Should      -Be 1
+            $sheetPaneInfo.topLeftCell                                  | Should      -Be "B2"
+            $sheetftrPaneInfo.xSplit                                    | Should      -BeNullOrEmpty
+            $sheetftrPaneInfo.ySplit                                    | Should      -Be 1
+            $sheetftrPaneInfo.topLeftCell                               | Should      -Be "A2"
+            $sheetffcPaneInfo.xSplit                                    | Should      -Be 1
+            $sheetffcPaneInfo.ySplit                                    | Should      -BeNullOrEmpty
+            $sheetffcPaneInfo.topLeftCell                               | Should      -Be "B1"
+            $sheetftrtPaneInfo.xSplit                                   | Should      -BeNullOrEmpty
+            $sheetftrtPaneInfo.ySplit                                   | Should      -Be 2
+            $sheetftrtPaneInfo.topLeftCell                              | Should      -Be "A3"
+            $sheetftrfctPaneInfo.xSplit                                 | Should      -Be 1
+            $sheetftrfctPaneInfo.ySplit                                 | Should      -Be 2
+            $sheetftrfctPaneInfo.topLeftCell                            | Should      -Be "B3"
         }
 
         it "Created the pivot table                                                                " {
