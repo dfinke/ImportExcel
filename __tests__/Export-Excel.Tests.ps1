@@ -205,7 +205,7 @@ Describe ExportExcel -Tag "ExportExcel" {
             else { $OtherCurrencySymbol = "£" }
             $path = "TestDrive:\test.xlsx"
             $warnVar = $null
-            #Test correct export of different data types and number formats; test hyperlinks, test -NoNumberConversion test object is converted to a string with no warnings, test calcuation of formula
+            #Test correct export of different data types and number formats; test hyperlinks, test -NoNumberConversion and -NoHyperLinkConversion test object is converted to a string with no warnings, test calcuation of formula
             Remove-item -Path $path -ErrorAction SilentlyContinue
             [PSCustOmobject][Ordered]@{
                 Date             = Get-Date
@@ -233,9 +233,10 @@ Describe ExportExcel -Tag "ExportExcel" {
                 Link3            = "xl://internal/sheet1!A1"
                 Link4            = "xl://internal/sheet1!C5"
                 Link5            = (New-Object -TypeName OfficeOpenXml.ExcelHyperLink -ArgumentList "Sheet1!E2" , "Display Text")
+                Link6            = "xl://internal/sheet1!C5"
                 Process          = (Get-Process -Id $PID)
                 TimeSpan         = [datetime]::Now.Subtract([datetime]::Today)
-            } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2  -Path $path -Calculate -WarningVariable $warnVar
+            } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2 -NoHyperLinkConversion Link6 -Path $path -Calculate -WarningVariable $warnVar
         }
 
         BeforeEach {
@@ -253,7 +254,7 @@ Describe ExportExcel -Tag "ExportExcel" {
         }
         it "Created the worksheet with the expected name, number of rows and number of columns     " {
             $ws.Name                                                    | Should      -Be "sheet1"
-            $ws.Dimension.Columns                                       | Should      -Be  27
+            $ws.Dimension.Columns                                       | Should      -Be  28
             $ws.Dimension.Rows                                          | Should      -Be  2
         }
         it "Set a date     in Cell A2                                                              " {
@@ -292,6 +293,9 @@ Describe ExportExcel -Tag "ExportExcel" {
             $ws.Cells[2, 25].Hyperlink.ReferenceAddress                | Should      -Be  "sheet1!E2"
             $ws.Cells[2, 25].Hyperlink.Display                         | Should      -Be  "Display Text"
         }
+        it "Create no link in cell Z2 (no hyperlink conversion)                                    " {
+            $ws.Cells[2, 26].Hyperlink                                 | Should      -BeNullOrEmpty
+        }
         it "Processed thousands according to local settings   (Cells H2 and I2)                    " {
             if ((Get-Culture).NumberFormat.NumberGroupSeparator -EQ ",") {
                 ($ws.Cells[2, 8].Value -is [valuetype] )               | Should      -Be  $true
@@ -314,13 +318,13 @@ Describe ExportExcel -Tag "ExportExcel" {
             ($ws.Cells[2, 19].Value -is [valuetype] )                   | Should      -Be  $true
             ($ws.Cells[2, 20].Value -is [valuetype] )                   | Should      -Be  $true
         }
-        it "Converted a nested object to a string (Y2)                                             " {
-            $ws.Cells[2, 26].Value                                     | Should      -Match '^System\.Diagnostics\.Process\s+\(.*\)$'
+        it "Converted a nested object to a string (AA2)                                            " {
+            $ws.Cells[2, 27].Value                                     | Should      -Match '^System\.Diagnostics\.Process\s+\(.*\)$'
         }
-        it "Processed a timespan object (Z2)                                                       " {
-            $ws.cells[2, 27].Value.ToOADate()                          | Should      -BeGreaterThan 0
-            $ws.cells[2, 27].Value.ToOADate()                          | Should      -BeLessThan    1
-            $ws.cells[2, 27].Style.Numberformat.Format                 | Should      -Be  '[h]:mm:ss'
+        it "Processed a timespan object (AB2)                                                      " {
+            $ws.cells[2, 28].Value.ToOADate()                          | Should      -BeGreaterThan 0
+            $ws.cells[2, 28].Value.ToOADate()                          | Should      -BeLessThan    1
+            $ws.cells[2, 28].Style.Numberformat.Format                 | Should      -Be  '[h]:mm:ss'
         }
     }
 
@@ -344,8 +348,9 @@ Describe ExportExcel -Tag "ExportExcel" {
                 PhoneNr1  = '+32 44'
                 PhoneNr2  = '+32 4 4444 444'
                 PhoneNr3  = '+3244444444'
-                Link      = [uri]"https://github.com/dfinke/ImportExcel"
-            } | Export-Excel  -NoNumberConversion IPAddress, Number1  -Path $path -NoHeader
+                Link1     = [uri]"https://github.com/dfinke/ImportExcel"
+                Link2     = [uri]"https://github.com/dfinke/ImportExcel"
+            } | Export-Excel -NoHyperLinkConversion Link2 -NoNumberConversion IPAddress, Number1  -Path $path -NoHeader
         }
 
         BeforeEach {
@@ -363,7 +368,7 @@ Describe ExportExcel -Tag "ExportExcel" {
 
         it "Created the worksheet with the expected name, number of rows and number of columns     " {
             $ws.Name                                                    | Should      -Be "sheet1"
-            $ws.Dimension.Columns                                       | Should      -Be  14
+            $ws.Dimension.Columns                                       | Should      -Be  15
             $ws.Dimension.Rows                                          | Should      -Be  1
         }
 
@@ -386,6 +391,10 @@ Describe ExportExcel -Tag "ExportExcel" {
 
         it "Set a hyperlink in Cell N1                                                             " {
             $ws.Cells[1, 14].Hyperlink                                   | Should      -Be  "https://github.com/dfinke/ImportExcel"
+        }
+
+        it "Does not set a hyperlink in Cell O1                                                    " {
+            $ws.Cells[1, 15].Hyperlink                                   | Should      -BeNullOrEmpty
         }
     }
 
@@ -693,11 +702,11 @@ Describe ExportExcel -Tag "ExportExcel" {
 
             # Export as table with a totals row with a set of possibilities
             $TableTotalSettings = @{ 
-                Id         = "COUNT"
-                WS         = "SUM"
-                Handles    = "AVERAGE"
-                CPU        = '=COUNTIF([CPU];"<1")'
-                NPM        = @{
+                Id      = "COUNT"
+                WS      = "SUM"
+                Handles = "AVERAGE"
+                CPU     = '=COUNTIF([CPU];"<1")'
+                NPM     = @{
                     Function = '=SUMIF([Name];"=Chrome";[NPM])'
                     Comment  = "Sum of Non-Paged Memory (NPM) for all chrome processes"
                 }
@@ -1197,5 +1206,83 @@ Describe ExportExcel -Tag "ExportExcel" {
 
             Close-ExcelPackage $excel -NoSave            
         }        
+    }
+
+    It "Should have hyperlink created" -Tag hyperlink {
+        $path = "TestDrive:\testHyperLink.xlsx"
+        
+        $license = "cognc:MCOMEETADV_GOV,cognc:M365_G3_GOV,cognc:ENTERPRISEPACK_GOV,cognc:RIGHTSMANAGEMENT_ADHOC"
+        $ms365 = [PSCustomObject]@{
+            DisplayName       = "Test Subject"
+            UserPrincipalName = "test@contoso.com"
+            licenses          = $license
+        }
+
+        $ms365 | Export-Excel $path
+
+        $excel = Open-ExcelPackage $Path
+        
+        $ws = $excel.Sheet1
+        
+        $ws.Dimension.Rows    | Should -Be 2
+        $ws.Dimension.Columns | Should -Be 3
+
+        $ws.Cells["C2"].Hyperlink | Should -BeExactly $license
+
+        Close-ExcelPackage $excel
+
+        Remove-Item $path
+    }
+
+    It "Should have no hyperlink created" -Tag hyperlink {
+        $path = "TestDrive:\testHyperLink.xlsx"
+
+        $license = "cognc:MCOMEETADV_GOV,cognc:M365_G3_GOV,cognc:ENTERPRISEPACK_GOV,cognc:RIGHTSMANAGEMENT_ADHOC"
+        $ms365 = [PSCustomObject]@{
+            DisplayName       = "Test Subject"
+            UserPrincipalName = "test@contoso.com"
+            licenses          = $license
+        }
+
+        $ms365 | Export-Excel $path -NoHyperLinkConversion licenses
+
+        $excel = Open-ExcelPackage $Path
+
+        $ws = $excel.Sheet1
+        
+        $ws.Dimension.Rows    | Should -Be 2
+        $ws.Dimension.Columns | Should -Be 3
+
+        $ws.Cells["C2"].Hyperlink | Should -BeNullOrEmpty
+
+        Close-ExcelPackage $excel
+        Remove-Item $path
+    }
+
+    It "Should have no hyperlink created using wild card" -Tag hyperlink {
+        $path = "TestDrive:\testHyperLink.xlsx"
+
+        $license = "cognc:MCOMEETADV_GOV,cognc:M365_G3_GOV,cognc:ENTERPRISEPACK_GOV,cognc:RIGHTSMANAGEMENT_ADHOC"
+        $ms365 = [PSCustomObject]@{
+            DisplayName       = "Test Subject"
+            UserPrincipalName = "test@contoso.com"
+            licenses          = $license
+        }
+
+        $ms365 | Export-Excel $path -NoHyperLinkConversion *
+
+        $excel = Open-ExcelPackage $Path
+
+        $ws = $excel.Sheet1
+        
+        $ws.Dimension.Rows    | Should -Be 2
+        $ws.Dimension.Columns | Should -Be 3
+
+        $ws.Cells["A2"].Value | Should -BeExactly "Test Subject"
+        $ws.Cells["B2"].Value | Should -BeExactly "test@contoso.com" 
+        $ws.Cells["C2"].Hyperlink | Should -BeNullOrEmpty
+
+        Close-ExcelPackage $excel
+        Remove-Item $path
     }
 }

@@ -16,19 +16,19 @@ Exports data to an Excel worksheet.
 ### Default \(Default\)
 
 ```text
-Export-Excel [[-Path] <String>] [-InputObject <Object>] [-Calculate] [-Show] [-WorksheetName <String>] [-Password <String>] [-ClearSheet] [-Append] [-Title <String>] [-TitleFillPattern <ExcelFillStyle>] [-TitleBold] [-TitleSize <Int32>] [-TitleBackgroundColor <Object>][-IncludePivotTable] [-PivotTableName <String>] [-PivotRows <String[]> [-PivotColumns <String[]>] [-PivotData <Object>] [-PivotFilter <String[]>] [-PivotDataToColumn] [-PivotTableDefinition <Hashtable>] [-IncludePivotChart] [-ChartType <eChartType>] [-NoLegend] [-ShowCategory] [-ShowPercent] [-AutoSize] [-MaxAutoSizeRows <Object>] [-NoClobber] [-FreezeTopRow] [-FreezeFirstColumn] [-FreezeTopRowFirstColumn] [-FreezePane <Int32[]>] [-AutoFilter] [-BoldTopRow] [-NoHeader] [-RangeName <String>] [-TableName <Object>] [-TableStyle <TableStyles>] [-TableTotalSettings <HashTable>] [-Barchart] [-PieChart] [-LineChart] [-ColumnChart] [-ExcelChartDefinition <Object[]>] [-HideSheet <String[]>] [-UnHideSheet <String[]>] [-MoveToStart] [-MoveToEnd] [-MoveBefore <Object>] [-MoveAfter <Object>] [-KillExcel] [-AutoNameRange] [-StartRow <Int32>] [-StartColumn <Int32>] [-PassThru] [-Numberformat <String>] [-ExcludeProperty <String[]>] [-NoAliasOrScriptPropeties] [-DisplayPropertySet] [-NoNumberConversion <String[]>] [-ConditionalFormat <Object[]>] [-ConditionalText <Object[]>] [-Style <Object[]>] [-CellStyleSB <ScriptBlock>] [-Activate] [-Now] [-ReturnRange] [-PivotTotals <String>] [-NoTotalsInPivot] [-ReZip] [<CommonParameters>]
+Export-Excel [[-Path] <String>] [-InputObject <Object>] [-Calculate] [-Show] [-WorksheetName <String>] [-Password <String>] [-ClearSheet] [-Append] [-Title <String>] [-TitleFillPattern <ExcelFillStyle>] [-TitleBold] [-TitleSize <Int32>] [-TitleBackgroundColor <Object>][-IncludePivotTable] [-PivotTableName <String>] [-PivotRows <String[]> [-PivotColumns <String[]>] [-PivotData <Object>] [-PivotFilter <String[]>] [-PivotDataToColumn] [-PivotTableDefinition <Hashtable>] [-IncludePivotChart] [-ChartType <eChartType>] [-NoLegend] [-ShowCategory] [-ShowPercent] [-AutoSize] [-MaxAutoSizeRows <Object>] [-NoClobber] [-FreezeTopRow] [-FreezeFirstColumn] [-FreezeTopRowFirstColumn] [-FreezePane <Int32[]>] [-AutoFilter] [-BoldTopRow] [-NoHeader] [-RangeName <String>] [-TableName <Object>] [-TableStyle <TableStyles>] [-TableTotalSettings <HashTable>] [-Barchart] [-PieChart] [-LineChart] [-ColumnChart] [-ExcelChartDefinition <Object[]>] [-HideSheet <String[]>] [-UnHideSheet <String[]>] [-MoveToStart] [-MoveToEnd] [-MoveBefore <Object>] [-MoveAfter <Object>] [-KillExcel] [-AutoNameRange] [-StartRow <Int32>] [-StartColumn <Int32>] [-PassThru] [-Numberformat <String>] [-ExcludeProperty <String[]>] [-NoAliasOrScriptPropeties] [-DisplayPropertySet] [-NoNumberConversion <String[]>] [-NoHyperLinkConversion <String[]>] [-ConditionalFormat <Object[]>] [-ConditionalText <Object[]>] [-Style <Object[]>] [-CellStyleSB <ScriptBlock>] [-Activate] [-Now] [-ReturnRange] [-PivotTotals <String>] [-NoTotalsInPivot] [-ReZip] [<CommonParameters>]
 ```
 
 ### Package
 
 ```text
 Export-Excel -ExcelPackage <ExcelPackage> [-InputObject <Object>] [-Calculate] [-Show] [-WorksheetName <String>] [-Password <String>] [-ClearSheet] [-Append] [-Title <String>] [-TitleFillPattern <ExcelFillStyle>] [-TitleBold] [-TitleSize <Int32>] [-TitleBackgroundColor <Object>] [-IncludePivotTable] [-PivotTableName <String>] [-PivotRows <String[]>] [-PivotColumns <String[]>] [-PivotData <Object>] [-PivotFilter <String[]>] [-PivotDataToColumn] [-PivotTableDefinition <Hashtable>] [-IncludePivotChart] [-ChartType <eChartType>] [-NoLegend] [-ShowCategory] [-ShowPercent] [-AutoSize] [-MaxAutoSizeRows <Object>] [-NoClobber] [-FreezeTopRow] [-FreezeFirstColumn] [-FreezeTopRowFirstColumn] [-FreezePane <Int32[]>] [-AutoFilter] [-BoldTopRow] [-NoHeader] [-RangeName <String>] [-TableName <Object>] [-TableStyle <TableStyles>] [-TableTotalSettings <HashTable>] [-Barchart] [-PieChart] [-LineChart] [-ColumnChart] [-ExcelChartDefinition <Object[]>] [-HideSheet <String[]>] [-UnHideSheet <String[]>] [-MoveToStart] [-MoveToEnd] [-MoveBefore <Object>] [-MoveAfter <Object>] [-KillExcel] [-AutoNameRange] [-StartRow <Int32>] [-StartColumn <Int32>] [-PassThru] [-Numberformat <String>] [-ExcludeProperty <String[]>]
- [-NoAliasOrScriptPropeties] [-DisplayPropertySet] [-NoNumberConversion <String[]>] [-ConditionalFormat <Object[]>] [-ConditionalText <Object[]>] [-Style <Object[]>] [-CellStyleSB <ScriptBlock>] [-Activate] [-ReturnRange] [-PivotTotals <String>] [-NoTotalsInPivot] [-ReZip] [<CommonParameters>]
+ [-NoAliasOrScriptPropeties] [-DisplayPropertySet] [-NoNumberConversion <String[]>] [-NoHyperLinkConversion <String[]>] [-ConditionalFormat <Object[]>] [-ConditionalText <Object[]>] [-Style <Object[]>] [-CellStyleSB <ScriptBlock>] [-Activate] [-ReturnRange] [-PivotTotals <String>] [-NoTotalsInPivot] [-ReZip] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 
-Exports data to an Excel file and where possible tries to convert numbers in text fields so Excel recognizes them as numbers instead of text. After all: Excel is a spreadsheet program used for number manipulation and calculations. The parameter -NoNumberConversion \* can be used if number conversion is not desired.
+Exports data to an Excel file and where possible tries to convert numbers in text fields so Excel recognizes them as numbers instead of text. After all: Excel is a spreadsheet program used for number manipulation and calculations. The parameter -NoNumberConversion \* can be used if number conversion is not desired. In the same way the parameter NoHyperLinkConversion \* can be used if hyperlink conversion is not desired
 
 ## EXAMPLES
 
@@ -108,10 +108,10 @@ PS\> [PSCustOmobject][Ordered]@{
     PhoneNr1  = '+32 44'
     PhoneNr2  = '+32 4 4444 444'
     PhoneNr3  =  '+3244444444'
-} | Export-Excel @ExcelParams -NoNumberConversion *
+} | Export-Excel @ExcelParams -NoNumberConversion * -NoHyperLinkConversion *
 ```
 
-Exports all data to the Excel file 'Excel.xslx' as is, no number conversion will take place. This means that Excel will show the exact same data that you handed over to the 'Export-Excel' function.
+Exports all data to the Excel file 'Excel.xslx' as is, no number or hyperlink conversion will take place. This means that Excel will show the exact same data that you handed over to the 'Export-Excel' function.
 
 ### EXAMPLE 5
 
@@ -1342,6 +1342,24 @@ Accept wildcard characters: False
 ### -NoNumberConversion
 
 By default the command will convert all values to numbers if possible, but this isn't always desirable. -NoNumberConversion allows you to add exceptions for the conversion.
+
+The only Wildcard allowed is \* for all properties
+
+```yaml
+Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -NoHyperLinkConversion
+
+By default the command will convert all URIs to hyperlinks if possible, but this isn't always desirable. -NoHyperLinkConversion allows you to add exceptions for the conversion.
 
 The only Wildcard allowed is \* for all properties
 
