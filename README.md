@@ -4,6 +4,21 @@
 
 <br/>
 
+Has the ImportExcel module helped you?
+- Made you look good to the boss?
+- Saved you time?
+- Made you more productive?
+
+Consider donating. Thank you!
+<br>
+<br>
+<a href="https://www.paypal.com/paypalme/DougCharlesFinke"><img src="https://img.shields.io/badge/Donate-PayPal-green.svg" alt="Donate" height="28"></a>
+<br>
+<br>
+![](https://media.giphy.com/media/hpXxJ78YtpT0s/giphy.gif)
+<br>
+<br>
+
 [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master)](https://dougfinke.visualstudio.com/ImportExcel/_build)
 [![](https://img.shields.io/powershellgallery/v/ImportExcel.svg)](https://www.powershellgallery.com/packages/ImportExcel)
 [![](https://img.shields.io/powershellgallery/dt/ImportExcel.svg)](https://www.powershellgallery.com/packages/ImportExcel)
@@ -12,7 +27,7 @@
 
 # Overview
 
-Automate Excel with PowerShell without having Excel installed. Works on Windows, Linux and MAC. Creating Tables, Pivot Tables, Charts and much more just got a lot easier.
+Automate Excel with PowerShell without having Excel installed. Works on Windows, Linux and Mac. Creating Tables, Pivot Tables, Charts and much more just got a lot easier.
 
 ## Examples ✨
 Check out the [more than 100 examples](Examples/) on ways to create amazing reports as well as make you more productive with PowerShell and Excel.
