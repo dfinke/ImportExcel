@@ -1,3 +1,8 @@
+# 7.8.x
+
+Thanks to [Thomas Hofkens](https://github.com/thkn-hofa)
+- Added `-NoHyperLinkConversion` to `Export-Excel` to no convert data to hyperlinks. [#1316](https://github.com/dfinke/ImportExcel/issues/1316)
+
 # 7.8.4
 
 - Add -ShowOnlyIcon to `New-ConditionalFormattingIconSet` does not show data in the cell, just the icon. Based on this discussion https://github.com/dfinke/ImportExcel/discussions/1340

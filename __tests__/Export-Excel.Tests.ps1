@@ -702,11 +702,11 @@ Describe ExportExcel -Tag "ExportExcel" {
 
             # Export as table with a totals row with a set of possibilities
             $TableTotalSettings = @{ 
-                Id         = "COUNT"
-                WS         = "SUM"
-                Handles    = "AVERAGE"
-                CPU        = '=COUNTIF([CPU];"<1")'
-                NPM        = @{
+                Id      = "COUNT"
+                WS      = "SUM"
+                Handles = "AVERAGE"
+                CPU     = '=COUNTIF([CPU];"<1")'
+                NPM     = @{
                     Function = '=SUMIF([Name];"=Chrome";[NPM])'
                     Comment  = "Sum of Non-Paged Memory (NPM) for all chrome processes"
                 }
@@ -1206,5 +1206,83 @@ Describe ExportExcel -Tag "ExportExcel" {
 
             Close-ExcelPackage $excel -NoSave            
         }        
+    }
+
+    It "Should have hyperlink created" -Tag hyperlink {
+        $path = "TestDrive:\testHyperLink.xlsx"
+        
+        $license = "cognc:MCOMEETADV_GOV,cognc:M365_G3_GOV,cognc:ENTERPRISEPACK_GOV,cognc:RIGHTSMANAGEMENT_ADHOC"
+        $ms365 = [PSCustomObject]@{
+            DisplayName       = "Test Subject"
+            UserPrincipalName = "test@contoso.com"
+            licenses          = $license
+        }
+
+        $ms365 | Export-Excel $path
+
+        $excel = Open-ExcelPackage $Path
+        
+        $ws = $excel.Sheet1
+        
+        $ws.Dimension.Rows    | Should -Be 2
+        $ws.Dimension.Columns | Should -Be 3
+
+        $ws.Cells["C2"].Hyperlink | Should -BeExactly $license
+
+        Close-ExcelPackage $excel
+
+        Remove-Item $path
+    }
+
+    It "Should have no hyperlink created" -Tag hyperlink {
+        $path = "TestDrive:\testHyperLink.xlsx"
+
+        $license = "cognc:MCOMEETADV_GOV,cognc:M365_G3_GOV,cognc:ENTERPRISEPACK_GOV,cognc:RIGHTSMANAGEMENT_ADHOC"
+        $ms365 = [PSCustomObject]@{
+            DisplayName       = "Test Subject"
+            UserPrincipalName = "test@contoso.com"
+            licenses          = $license
+        }
+
+        $ms365 | Export-Excel $path -NoHyperLinkConversion licenses
+
+        $excel = Open-ExcelPackage $Path
+
+        $ws = $excel.Sheet1
+        
+        $ws.Dimension.Rows    | Should -Be 2
+        $ws.Dimension.Columns | Should -Be 3
+
+        $ws.Cells["C2"].Hyperlink | Should -BeNullOrEmpty
+
+        Close-ExcelPackage $excel
+        Remove-Item $path
+    }
+
+    It "Should have no hyperlink created using wild card" -Tag hyperlink {
+        $path = "TestDrive:\testHyperLink.xlsx"
+
+        $license = "cognc:MCOMEETADV_GOV,cognc:M365_G3_GOV,cognc:ENTERPRISEPACK_GOV,cognc:RIGHTSMANAGEMENT_ADHOC"
+        $ms365 = [PSCustomObject]@{
+            DisplayName       = "Test Subject"
+            UserPrincipalName = "test@contoso.com"
+            licenses          = $license
+        }
+
+        $ms365 | Export-Excel $path -NoHyperLinkConversion *
+
+        $excel = Open-ExcelPackage $Path
+
+        $ws = $excel.Sheet1
+        
+        $ws.Dimension.Rows    | Should -Be 2
+        $ws.Dimension.Columns | Should -Be 3
+
+        $ws.Cells["A2"].Value | Should -BeExactly "Test Subject"
+        $ws.Cells["B2"].Value | Should -BeExactly "test@contoso.com" 
+        $ws.Cells["C2"].Hyperlink | Should -BeNullOrEmpty
+
+        Close-ExcelPackage $excel
+        Remove-Item $path
     }
 }
