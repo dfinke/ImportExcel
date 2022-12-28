@@ -770,7 +770,13 @@ Describe ExportExcel -Tag "ExportExcel" {
             $path = "TestDrive:\test.xlsx"
             Remove-Item $path -ErrorAction SilentlyContinue
             #Test freezing top row/first column, adding formats and a pivot table - from Add-Pivot table not a specification variable - after the export
-            $excel = Get-Process | Select-Object -Property Name, Company, Handles, CPU, PM, NPM, WS | Export-Excel -Path $path -ClearSheet -WorkSheetname "Processes" -FreezeTopRowFirstColumn -PassThru
+            $Ex13Data = Get-Process | Select-Object -Property Name, Company, Handles, CPU, PM, NPM, WS
+            $excel = $Ex13Data | Export-Excel -Path $path -ClearSheet -WorkSheetname "Processes" -FreezeTopRowFirstColumn -PassThru
+            # Add extra worksheets for testing 'Freeze Top Row' and 'Freeze First Column' with or without title
+            $excel = Export-Excel -InputObject $Ex13Data -ExcelPackage $excel -WorksheetName "FreezeTopRow" -FreezeTopRow -Passthru
+            $excel = Export-Excel -InputObject $Ex13Data -ExcelPackage $excel -WorksheetName "FreezeFirstColumn" -FreezeFirstColumn -Passthru
+            $excel = Export-Excel -InputObject $Ex13Data -Title "Freeze Top Row" -ExcelPackage $excel -WorksheetName "FreezeTopRowTitle" -FreezeTopRow -Passthru
+            $excel = Export-Excel -InputObject $Ex13Data -Title "Freeze Top Row First Column" -ExcelPackage $excel -WorksheetName "FreezeTRFCTitle" -FreezeTopRowFirstColumn -Passthru
             $sheet = $excel.Workbook.Worksheets["Processes"]
             if ($isWindows) { $sheet.Column(1) | Set-ExcelRange -Bold -AutoFit }
             else { $sheet.Column(1) | Set-ExcelRange -Bold }
@@ -790,6 +796,10 @@ Describe ExportExcel -Tag "ExportExcel" {
 
             $excel = Open-ExcelPackage $path
             $sheet = $excel.Workbook.Worksheets["Processes"]
+            $sheetftr = $excel.Workbook.Worksheets["FreezeTopRow"]
+            $sheetffc = $excel.Workbook.Worksheets["FreezeFirstColumn"]
+            $sheetftrt = $excel.Workbook.Worksheets["FreezeTopRowTitle"]
+            $sheetftrfct = $excel.Workbook.Worksheets["FreezeTRFCTitle"]
         }
         it "Returned the rule when calling Add-ConditionalFormatting -passthru                     " {
             $rule                                                       | Should -Not -BeNullOrEmpty
@@ -836,7 +846,27 @@ Describe ExportExcel -Tag "ExportExcel" {
             $sheet.Names[6].Name                                        | Should      -Be $sheet.Cells['G1'].Value
         }
         it "Froze the panes                                                                        " {
-            $sheet.view.Panes.Count                                     | Should      -Be 3
+            $sheetPaneInfo = $sheet.worksheetxml.worksheet.sheetViews.sheetView.pane
+            $sheetftrPaneInfo = $sheetftr.worksheetxml.worksheet.sheetViews.sheetView.pane
+            $sheetffcPaneInfo = $sheetffc.worksheetxml.worksheet.sheetViews.sheetView.pane
+            $sheetftrtPaneInfo = $sheetftrt.worksheetxml.worksheet.sheetViews.sheetView.pane
+            $sheetftrfctPaneInfo = $sheetftrfct.worksheetxml.worksheet.sheetViews.sheetView.pane
+            $sheet.view.Panes.Count                                     | Should      -Be 3 # Don't know if this actually checks anything
+            $sheetPaneInfo.xSplit                                       | Should      -Be 1
+            $sheetPaneInfo.ySplit                                       | Should      -Be 1
+            $sheetPaneInfo.topLeftCell                                  | Should      -Be "B2"
+            $sheetftrPaneInfo.xSplit                                    | Should      -BeNullOrEmpty
+            $sheetftrPaneInfo.ySplit                                    | Should      -Be 1
+            $sheetftrPaneInfo.topLeftCell                               | Should      -Be "A2"
+            $sheetffcPaneInfo.xSplit                                    | Should      -Be 1
+            $sheetffcPaneInfo.ySplit                                    | Should      -BeNullOrEmpty
+            $sheetffcPaneInfo.topLeftCell                               | Should      -Be "B1"
+            $sheetftrtPaneInfo.xSplit                                   | Should      -BeNullOrEmpty
+            $sheetftrtPaneInfo.ySplit                                   | Should      -Be 2
+            $sheetftrtPaneInfo.topLeftCell                              | Should      -Be "A3"
+            $sheetftrfctPaneInfo.xSplit                                 | Should      -Be 1
+            $sheetftrfctPaneInfo.ySplit                                 | Should      -Be 2
+            $sheetftrfctPaneInfo.topLeftCell                            | Should      -Be "B3"
         }
 
         it "Created the pivot table                                                                " {
@@ -1284,5 +1314,43 @@ Describe ExportExcel -Tag "ExportExcel" {
 
         Close-ExcelPackage $excel
         Remove-Item $path
+    }
+
+    It "Should freeze the correct rows" -tag Freeze {
+        <#
+            Export-Excel -InputObject $Data -Path $OutputFile -TableName $SheetName.Replace(' ', '_') -WorksheetName $SheetName -AutoSize -FreezeTopRow -TableStyle $TableStyle -Title $SheetName -TitleBold -TitleSize 18
+        #>
+
+        $path = "TestDrive:\testFreeze.xlsx"
+        
+        $data = ConvertFrom-Csv @"
+        Region,State,Units,Price
+        West,Texas,927,923.71
+        North,Tennessee,466,770.67
+        East,Florida,520,458.68
+        East,Maine,828,661.24
+        West,Virginia,465,053.58
+        North,Missouri,436,235.67
+        South,Kansas,214,992.47
+        North,North Dakota,789,640.72
+        South,Delaware,712,508.55
+"@
+
+        Export-Excel -InputObject $data -Path $path -TableName 'TestTable' -WorksheetName 'TestSheet' -AutoSize -TableStyle Medium2 -Title 'Test Title' -TitleBold -TitleSize 18 -FreezeTopRow 
+
+        $excel = Open-ExcelPackage -Path $path
+        $ws = $excel.TestSheet
+
+        $r = $ws.worksheetxml.worksheet.sheetViews.sheetView.pane
+
+        $r | Should -Not -BeNullOrEmpty
+        $r.ySplit | Should -Be 2
+        $r.topLeftCell | Should -BeExactly 'A3'
+        $r.state | Should -BeExactly 'frozen'
+        $r.activePane | Should -BeExactly 'bottomLeft'
+
+        Close-ExcelPackage $excel
+
+        Remove-Item $path 
     }
 }
