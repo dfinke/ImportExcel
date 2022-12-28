@@ -500,7 +500,7 @@
             }
             elseif ($FreezeTopRow) {
                 if ($Title) {
-                    $ws.View.FreezePanes(2, 1)
+                    $ws.View.FreezePanes(3, 1)
                     Write-Verbose -Message "Froze title and header rows"
                 }
                 else {
