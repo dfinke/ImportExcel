@@ -693,11 +693,11 @@ Describe ExportExcel -Tag "ExportExcel" {
 
             # Export as table with a totals row with a set of possibilities
             $TableTotalSettings = @{ 
-                Id         = "COUNT"
-                WS         = "SUM"
-                Handles    = "AVERAGE"
-                CPU        = '=COUNTIF([CPU];"<1")'
-                NPM        = @{
+                Id      = "COUNT"
+                WS      = "SUM"
+                Handles = "AVERAGE"
+                CPU     = '=COUNTIF([CPU];"<1")'
+                NPM     = @{
                     Function = '=SUMIF([Name];"=Chrome";[NPM])'
                     Comment  = "Sum of Non-Paged Memory (NPM) for all chrome processes"
                 }
@@ -1227,5 +1227,43 @@ Describe ExportExcel -Tag "ExportExcel" {
 
             Close-ExcelPackage $excel -NoSave            
         }        
+    }
+
+    It "Should freeze the correct rows" -tag Freeze {
+        <#
+            Export-Excel -InputObject $Data -Path $OutputFile -TableName $SheetName.Replace(' ', '_') -WorksheetName $SheetName -AutoSize -FreezeTopRow -TableStyle $TableStyle -Title $SheetName -TitleBold -TitleSize 18
+        #>
+
+        $path = "TestDrive:\testFreeze.xlsx"
+        
+        $data = ConvertFrom-Csv @"
+        Region,State,Units,Price
+        West,Texas,927,923.71
+        North,Tennessee,466,770.67
+        East,Florida,520,458.68
+        East,Maine,828,661.24
+        West,Virginia,465,053.58
+        North,Missouri,436,235.67
+        South,Kansas,214,992.47
+        North,North Dakota,789,640.72
+        South,Delaware,712,508.55
+"@
+
+        Export-Excel -InputObject $data -Path $path -TableName 'TestTable' -WorksheetName 'TestSheet' -AutoSize -TableStyle Medium2 -Title 'Test Title' -TitleBold -TitleSize 18 -FreezeTopRow 
+
+        $excel = Open-ExcelPackage -Path $path
+        $ws = $excel.TestSheet
+
+        $r = $ws.worksheetxml.worksheet.sheetViews.sheetView.pane
+
+        $r | Should -Not -BeNullOrEmpty
+        $r.ySplit | Should -Be 2
+        $r.topLeftCell | Should -BeExactly 'A3'
+        $r.state | Should -BeExactly 'frozen'
+        $r.activePane | Should -BeExactly 'bottomLeft'
+
+        Close-ExcelPackage $excel
+
+        Remove-Item $path 
     }
 }
