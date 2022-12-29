@@ -1,4 +1,153 @@
 ﻿function Add-ConditionalFormatting {
+<#
+.SYNOPSIS
+Add conditional formatting into excel sheet
+
+.DESCRIPTION
+Format cell or range of cells based on condition passed by parameter
+
+.PARAMETER Address
+Address of cells where conditional formatting is used
+
+.PARAMETER Worksheet
+Handler to worksheet object where conditional formatting is used
+
+.PARAMETER RuleType
+Type of rule which is used in conditional formatting. For more info just open excel and check rule how it works :)
+
+.PARAMETER ForegroundColor
+Color of formated cell in output
+
+.PARAMETER DataBarColor
+Parameter description
+
+.PARAMETER ThreeIconsSet
+Type of icon set rule which is used in conditional formatting. For more info just open excel and check rule how it works :)
+
+.PARAMETER FourIconsSet
+Type of icon set rule which is used in conditional formatting. For more info just open excel and check rule how it works :)
+
+.PARAMETER FiveIconsSet
+Type of icon set rule which is used in conditional formatting. For more info just open excel and check rule how it works :)
+
+.PARAMETER Reverse
+When true then it reverse formatting in cells.
+
+.PARAMETER ShowIconOnly
+When true then function hide values in cells and show only icons. Better use only with icons
+
+.PARAMETER ConditionValue
+First conditional value used when needed in condition
+
+.PARAMETER ConditionValue2
+Second conditional value used when needed in condition
+
+.PARAMETER BackgroundColor
+Change color of cell background for specific color.
+
+.PARAMETER BackgroundPattern
+Pattern predefined by excel for cell style
+
+.PARAMETER PatternColor
+Parameter description
+
+.PARAMETER NumberFormat
+Pattern predefined by excel for text and background in cell. For more info just open excel and check rule how it works :)
+
+.PARAMETER Bold
+Change format of text in cell on bold
+
+.PARAMETER Italic
+Change format of text in cell on italic
+
+.PARAMETER Underline
+Change format of text in cell on underline
+
+.PARAMETER StrikeThru
+Change format of text in cell on strikethru
+
+.PARAMETER StopIfTrue
+When true then function format cells until it gets value which satisfies the condition
+
+.PARAMETER Priority
+Defines priority for formatting
+
+.PARAMETER PassThru
+Parameter description
+
+.EXAMPLE
+
+#Open Excel File
+$excelHandler=Open-ExcelPackage -Path C:\path\to\excel\file\created\before.xlsx
+
+#Fill range "A1:O20" by excel function RAND() (it returns value from 0 to 1. It is volatile function)
+Set-ExcelRange -Range $excelHandler.Workbook.Worksheets["Arkusz1"].Cells["A1:O20"] -Formula "=RAND()"
+
+#Create conditional formatting to format cells "A1:O20". Format cells from 0.2 to 0.5 to background color RED
+Add-ConditionalFormatting -Address $excelHandler.Workbook.Worksheets["Arkusz1"].Cells["A1:O20"] -RuleType Between -ConditionValue 0.2 -ConditionValue2 0.5 -BackgroundColor "RED"
+
+#Close excel file and show on desktop
+Close-ExcelPackage -ExcelPackage $excelHandler -Show
+
+.EXAMPLE
+
+#Open Excel File
+$excelHandler=Open-ExcelPackage -Path C:\path\to\excel\file\created\before.xlsx
+
+#Fill range "A1:O20" by excel function RAND() (it returns value from 0 to 1. It is volatile function)
+Set-ExcelRange -Range $excelHandler.Workbook.Worksheets["Arkusz1"].Cells["A1:O20"] -Formula "=RAND()"
+
+#Create conditional formatting to format cells "A1:O20". It format cells by using icon set. With 3 icon set it divides range of values provided in cells into 3 scopes. Every scope have other icon. As i use reverse parameter then every icon is opposite for its baseline usage.
+Add-ConditionalFormatting -Address $excelHandler.Workbook.Worksheets["Arkusz1"].Cells["A1:O20"] -ThreeIconsSet Arrows -Reverse
+
+#Close excel file and show on desktop
+Close-ExcelPackage -ExcelPackage $excelHandler -Show
+
+.EXAMPLE
+
+#Open Excel File
+$excelHandler=Open-ExcelPackage -Path C:\path\to\excel\file\created\before.xlsx
+
+#Fill range "A1:O20" by excel function RAND() (it returns value from 0 to 1. It is volatile function)
+Set-ExcelRange -Range $excelHandler.Workbook.Worksheets["Arkusz1"].Cells["A1:O20"] -Formula "=RAND()"
+
+#Create conditional formatting to format cells "A1:O20". It format cells that is above average of range cells. The format of cell is Dark Up(Pattern provided by excel SDK). As I use -ShowIconOnly the
+Add-ConditionalFormatting -Address $excelHandler.Workbook.Worksheets["Arkusz1"].Cells["A1:O20"] -RuleType AboveAverage -BackgroundPattern DarkUp 
+
+#Close excel file and show on desktop
+Close-ExcelPackage -ExcelPackage $excelHandler -Show
+
+.EXAMPLE
+
+#Open Excel File
+$excelHandler=Open-ExcelPackage -Path C:\path\to\excel\file\created\before.xlsx
+
+#Fill range "A1:O20" by excel function RAND() (it returns value from 0 to 1. It is volatile function)
+Set-ExcelRange -Range $excelHandler.Workbook.Worksheets["Arkusz1"].Cells["A1:O20"] -Formula "=RAND()"
+
+#Create conditional formatting to format cells "A1:O20". It format cells that is above average of range cells. The format of cell is Dark Up(Pattern provided by excel SDK). As I use -ShowIconOnly the
+Add-ConditionalFormatting -Address $excelHandler.Workbook.Worksheets["Arkusz1"].Cells["A1:O20"] -RuleType AboveAverage -BackgroundPattern DarkUp 
+
+#Close excel file and show on desktop
+Close-ExcelPackage -ExcelPackage $excelHandler -Show
+
+.EXAMPLE
+
+#Open Excel File
+$excelHandler=Open-ExcelPackage -Path C:\path\to\excel\file\created\before.xlsx
+
+#Fill range "A1:O20" by excel function RAND() (it returns value from 0 to 1. It is volatile function)
+Set-ExcelRange -Range $excelHandler.Workbook.Worksheets["Arkusz1"].Cells["A1:O20"] -Formula "=RAND()"
+
+#Create conditional formatting to format cells "A1:O20". It format Top 10 % of highest values in a range. Value of 10 is passed by -ConditionValue parameter. The cells that meets criteria of conditional format is format as background color green, foreground color blue, text is bold,italic,underline and strikethru. Also cell format is changed into percentage.
+Add-ConditionalFormatting -Address $excelHandler.Workbook.Worksheets["Arkusz1"].Cells["A1:O20"] -RuleType TopPercent -ConditionValue 10  -ForegroundColor "BLUE" -BackgroundColor "GREEN" -Bold -Italic -Underline -NumberFormat 'Percentage' -StrikeThru
+
+#Close excel file and show on desktop
+Close-ExcelPackage -ExcelPackage $excelHandler -Show
+
+.NOTES
+General notes
+#>
     param (
         [Parameter(Mandatory = $true, Position = 0)]
         [Alias("Range")]

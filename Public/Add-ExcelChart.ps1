@@ -1,5 +1,142 @@
 
 function Add-ExcelChart {
+    <#
+    .SYNOPSIS
+    Add Excel Chart into excel sheet
+    
+    .DESCRIPTION
+    Function is creating chart by data passed in parameter
+    
+    .PARAMETER Worksheet
+    Handler to worksheet object
+    
+    .PARAMETER PivotTable
+    Handler to pivot table (created before)
+    
+    .PARAMETER Title
+    Title of excel chart
+    
+    .PARAMETER ChartType
+    Type of chart
+    #TODO: Need enum with ChartType here
+
+    .PARAMETER ChartTrendLine
+    Parameter description
+    
+    .PARAMETER XRange
+    Range of values passed into X-Axis. On Chart visible horizontally.
+    
+    .PARAMETER YRange
+    Range of values passed into Y-Axis. On Chart visible perpendicuraly.
+    
+    .PARAMETER Width
+    Width of Chart
+    
+    .PARAMETER Height
+    Height of Chart
+    
+    .PARAMETER Row
+    Parameter description
+    
+    .PARAMETER RowOffSetPixels
+    Parameter description
+    
+    .PARAMETER Column
+    Parameter description
+    
+    .PARAMETER ColumnOffSetPixels
+    Parameter description
+    
+    .PARAMETER LegendPosition
+    Parameter description
+    
+    .PARAMETER LegendSize
+    Parameter description
+    
+    .PARAMETER LegendBold
+    Parameter description
+    
+    .PARAMETER NoLegend
+    Parameter description
+    
+    .PARAMETER ShowCategory
+    Parameter description
+    
+    .PARAMETER ShowPercent
+    Parameter description
+    
+    .PARAMETER SeriesHeader
+    Parameter description
+    
+    .PARAMETER TitleBold
+    Parameter description
+    
+    .PARAMETER TitleSize
+    Parameter description
+    
+    .PARAMETER XAxisTitleText
+    Parameter description
+    
+    .PARAMETER XAxisTitleBold
+    Parameter description
+    
+    .PARAMETER XAxisTitleSize
+    Parameter description
+    
+    .PARAMETER XAxisNumberformat
+    Parameter description
+    
+    .PARAMETER XMajorUnit
+    Parameter description
+    
+    .PARAMETER XMinorUnit
+    Parameter description
+    
+    .PARAMETER XMaxValue
+    Parameter description
+    
+    .PARAMETER XMinValue
+    Parameter description
+    
+    .PARAMETER XAxisPosition
+    Parameter description
+    
+    .PARAMETER YAxisTitleText
+    Parameter description
+    
+    .PARAMETER YAxisTitleBold
+    Parameter description
+    
+    .PARAMETER YAxisTitleSize
+    Parameter description
+    
+    .PARAMETER YAxisNumberformat
+    Parameter description
+    
+    .PARAMETER YMajorUnit
+    Parameter description
+    
+    .PARAMETER YMinorUnit
+    Parameter description
+    
+    .PARAMETER YMaxValue
+    Parameter description
+    
+    .PARAMETER YMinValue
+    Parameter description
+    
+    .PARAMETER YAxisPosition
+    Parameter description
+    
+    .PARAMETER PassThru
+    Parameter description
+    
+    .EXAMPLE
+    An example
+    
+    .NOTES
+    General notes
+    #>
     [CmdletBinding(DefaultParameterSetName = 'Worksheet')]
     [OutputType([OfficeOpenXml.Drawing.Chart.ExcelChart])]
     param(
