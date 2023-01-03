@@ -68,7 +68,7 @@ function Add-ExcelChart {
     Parameter description
     
     .PARAMETER TitleBold
-    Bold the title of the chart
+    When true then chart title is bold
     
     .PARAMETER TitleSize
     Size of text title of chart
@@ -77,7 +77,7 @@ function Add-ExcelChart {
     Title of XAxis
     
     .PARAMETER XAxisTitleBold
-    Bold XAxis title
+    When true then XAxis title is bold
     
     .PARAMETER XAxisTitleSize
     Size of text title of XAxis
@@ -104,7 +104,7 @@ function Add-ExcelChart {
     Title of YAxis
     
     .PARAMETER YAxisTitleBold
-    Bold YAxis title
+    When true then YAxis title is bold
     
     .PARAMETER YAxisTitleSize
     Size of text title of YAxis

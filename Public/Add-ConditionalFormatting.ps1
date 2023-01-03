@@ -43,7 +43,7 @@ First conditional value used when needed in condition
 Second conditional value used when needed in condition
 
 .PARAMETER BackgroundColor
-Change color of cell background for specific color.
+Color of cell background in output
 
 .PARAMETER BackgroundPattern
 Pattern predefined by excel for cell style
@@ -55,16 +55,16 @@ Parameter description
 Pattern predefined by excel for text and background in cell. For more info just open excel and check rule how it works :)
 
 .PARAMETER Bold
-Change format of text in cell on bold
+When true then Text in cell is bold in output
 
 .PARAMETER Italic
-Change format of text in cell on italic
+When true then Text in cell is itelic in output
 
 .PARAMETER Underline
-Change format of text in cell on underline
+When true then Text in cell is underline in output
 
 .PARAMETER StrikeThru
-Change format of text in cell on strikethru
+When true then Text in cell is strikethru in output
 
 .PARAMETER StopIfTrue
 When true then function format cells until it gets value which satisfies the condition
