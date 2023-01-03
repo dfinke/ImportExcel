@@ -17,11 +17,10 @@ function Add-ExcelChart {
     Title of excel chart
     
     .PARAMETER ChartType
-    Type of chart
-    #TODO: Need enum with ChartType here
+    Type of chart. For more info just open excel and check rule how it works :)
 
     .PARAMETER ChartTrendLine
-    Parameter description
+    Trend line used in Excel to indicate trend in chart. Like trend in getting raised salary by month
     
     .PARAMETER XRange
     Range of values passed into X-Axis. On Chart visible horizontally.
@@ -36,28 +35,28 @@ function Add-ExcelChart {
     Height of Chart
     
     .PARAMETER Row
-    Parameter description
+    Number of row where left upper corner of chart is started
     
     .PARAMETER RowOffSetPixels
     Parameter description
     
     .PARAMETER Column
-    Parameter description
+    Number of column where left upper corner of chart is started
     
     .PARAMETER ColumnOffSetPixels
     Parameter description
     
     .PARAMETER LegendPosition
-    Parameter description
+    Position of legend 
     
     .PARAMETER LegendSize
-    Parameter description
+    Size of text used in legend
     
     .PARAMETER LegendBold
-    Parameter description
+    Bold text in a legend
     
     .PARAMETER NoLegend
-    Parameter description
+    Do not show legend on chart
     
     .PARAMETER ShowCategory
     Parameter description
@@ -69,64 +68,64 @@ function Add-ExcelChart {
     Parameter description
     
     .PARAMETER TitleBold
-    Parameter description
+    Bold the title of the chart
     
     .PARAMETER TitleSize
-    Parameter description
+    Size of text title of chart
     
     .PARAMETER XAxisTitleText
-    Parameter description
+    Title of XAxis
     
     .PARAMETER XAxisTitleBold
-    Parameter description
+    Bold XAxis title
     
     .PARAMETER XAxisTitleSize
-    Parameter description
+    Size of text title of XAxis
     
     .PARAMETER XAxisNumberformat
-    Parameter description
+    Number format used on XAxis. For more info just open excel and check rule how it works :)
     
     .PARAMETER XMajorUnit
-    Parameter description
+    Main unit used on XAxis
     
     .PARAMETER XMinorUnit
-    Parameter description
+    Second unit used on XAxis
     
     .PARAMETER XMaxValue
-    Parameter description
+    Max value used on XAxis
     
     .PARAMETER XMinValue
-    Parameter description
+    Min value used on XAxis
     
     .PARAMETER XAxisPosition
-    Parameter description
+    Position of XAxis. For more info just open excel and check rule how it works :)
     
     .PARAMETER YAxisTitleText
-    Parameter description
+    Title of YAxis
     
     .PARAMETER YAxisTitleBold
-    Parameter description
+    Bold YAxis title
     
     .PARAMETER YAxisTitleSize
-    Parameter description
+    Size of text title of YAxis
     
     .PARAMETER YAxisNumberformat
-    Parameter description
+    Number format used on YAxis. For more info just open excel and check rule how it works :)
     
     .PARAMETER YMajorUnit
-    Parameter description
+    Main unit used on YAxis
     
     .PARAMETER YMinorUnit
-    Parameter description
+    Second unit used on YAxis
     
     .PARAMETER YMaxValue
-    Parameter description
+    Maximum value of YAxis.
     
     .PARAMETER YMinValue
-    Parameter description
+    Minimum value of YAxis.
     
     .PARAMETER YAxisPosition
-    Parameter description
+    Position of YAxis. For more info just open excel and check rule how it works :)
     
     .PARAMETER PassThru
     Parameter description
