@@ -19,7 +19,7 @@ Type of rule which is used in conditional formatting. For more info just open ex
 Color of formated cell in output
 
 .PARAMETER DataBarColor
-Parameter description
+Color of databar. For more info just open excel and check rule how it works :)
 
 .PARAMETER ThreeIconsSet
 Type of icon set rule which is used in conditional formatting. For more info just open excel and check rule how it works :)
@@ -141,6 +141,21 @@ Set-ExcelRange -Range $excelHandler.Workbook.Worksheets["Arkusz1"].Cells["A1:O20
 
 #Create conditional formatting to format cells "A1:O20". It format Top 10 % of highest values in a range. Value of 10 is passed by -ConditionValue parameter. The cells that meets criteria of conditional format is format as background color green, foreground color blue, text is bold,italic,underline and strikethru. Also cell format is changed into percentage.
 Add-ConditionalFormatting -Address $excelHandler.Workbook.Worksheets["Arkusz1"].Cells["A1:O20"] -RuleType TopPercent -ConditionValue 10  -ForegroundColor "BLUE" -BackgroundColor "GREEN" -Bold -Italic -Underline -NumberFormat 'Percentage' -StrikeThru
+
+#Close excel file and show on desktop
+Close-ExcelPackage -ExcelPackage $excelHandler -Show
+
+.EXAMPLE
+
+
+#Open Excel File
+$excelHandler=Open-ExcelPackage -Path C:\path\to\excel\file\created\before.xlsx
+
+#Fill range "A1:O20" by excel function RAND() (it returns value from 0 to 1. It is volatile function)
+Set-ExcelRange -Range $excelHandler.Workbook.Worksheets["Arkusz1"].Cells["A1:O20"] -Formula "=RAND()"
+
+#Create conditional formatting to format cells "A1:O20". It creates databar on each and every cell provided in address range. Color of databar is red.
+Add-ConditionalFormatting -Address $excelHandler.Workbook.Worksheets["Arkusz1"].Cells["A1:O20"] -DataBarColor "RED"
 
 #Close excel file and show on desktop
 Close-ExcelPackage -ExcelPackage $excelHandler -Show

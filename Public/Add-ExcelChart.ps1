@@ -38,13 +38,13 @@ function Add-ExcelChart {
     Number of row where left upper corner of chart is started
     
     .PARAMETER RowOffSetPixels
-    Parameter description
+    Offset to position the chart by a fraction of a row.
     
     .PARAMETER Column
     Number of column where left upper corner of chart is started
     
     .PARAMETER ColumnOffSetPixels
-    Parameter description
+    Offset to position the chart by a fraction of a column.
     
     .PARAMETER LegendPosition
     Position of legend 
@@ -59,13 +59,13 @@ function Add-ExcelChart {
     Do not show legend on chart
     
     .PARAMETER ShowCategory
-    Parameter description
+    Attaches a category label, in charts which support this.
     
     .PARAMETER ShowPercent
-    Parameter description
+    Attaches a percentage label, in charts which support this.
     
     .PARAMETER SeriesHeader
-    Parameter description
+    Specify explicit name(s) for the data series, which will appear in the legend/key. The contents of a cell can be specified in the from =Sheet9!Z10
     
     .PARAMETER TitleBold
     When true then chart title is bold
@@ -131,7 +131,18 @@ function Add-ExcelChart {
     Parameter description
     
     .EXAMPLE
-    An example
+    
+    $Excel = ConvertFrom-Csv    @"
+    Product, City,    Sales
+    Apple,   London,    300
+    Orange,  London,    400
+    Banana,  London,    300
+    Orange,  Paris,     600
+    Banana,  Paris,     300
+    Apple,   New York, 1200
+"@  | Export-Excel  -Path test.xlsx -PassThru
+    Add-ExcelChart -Worksheet $Excel.Workbook.Worksheets[1] -ChartType "Doughnut" -XRange "A2:B7"  -YRange "C2:C7" -width 500
+    Close-ExcelPackage -Show $Excel
     
     .NOTES
     General notes
