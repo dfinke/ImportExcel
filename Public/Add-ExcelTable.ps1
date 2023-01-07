@@ -65,6 +65,12 @@ function Add-ExcelTable {
                 else { 
                     $TotalFunction = [String]($TableTotalSettings[$k]) 
                 }
+
+                # Add table name to column name if not manually entered
+                # (\[[^\]]+\]) is regex for a column reference like [Name]
+                # (?<!$TableName) is regex for a negative lookbehind: look for column references that are not preceded by the tablename
+                # Then replace them with $TableName[column]
+                $TotalFunction = $TotalFunction -replace "(?<!$TableName)(\[[^\]]+\])", "$TableName`$1"
                 
                 # Add the totals row
                 if (-not $tbl.Columns[$k]) {Write-Warning -Message "Table does not have a Column '$k'."}

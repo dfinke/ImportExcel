@@ -734,9 +734,9 @@ Describe ExportExcel -Tag "ExportExcel" {
             $WScolumn      | Select-Object -ExpandProperty TotalsRowFunction    | Should -Be "Sum"
             $HandlesColumn | Select-Object -ExpandProperty TotalsRowFunction    | Should -Be "Average"
             $CPUColumn     | Select-Object -ExpandProperty TotalsRowFunction    | Should -Be "Custom"
-            $CPUColumn     | Select-Object -ExpandProperty TotalsRowFormula     | Should -Be 'COUNTIF([CPU],"<1")'
+            $CPUColumn     | Select-Object -ExpandProperty TotalsRowFormula     | Should -Be 'COUNTIF(processes[CPU],"<1")'
             $NPMColumn     | Select-Object -ExpandProperty TotalsRowFunction    | Should -Be "Custom"
-            $NPMColumn     | Select-Object -ExpandProperty TotalsRowFormula     | Should -Be 'SUMIF([Name],"=Chrome",[NPM])'
+            $NPMColumn     | Select-Object -ExpandProperty TotalsRowFormula     | Should -Be 'SUMIF(processes[Name],"=Chrome",processes[NPM])'
 
             # Testing actual cell properties
             $CountAddress = "{0}{1}" -f (Get-ExcelColumnName -ColumnNumber $IDcolumn.Id).ColumnName, $TotalRows
@@ -748,8 +748,8 @@ Describe ExportExcel -Tag "ExportExcel" {
             $ws.Cells[$CountAddress].Formula                                    | Should      -Be "SUBTOTAL(103,processes[Id])"
             $ws.Cells[$SumAddress].Formula                                      | Should      -Be "SUBTOTAL(109,processes[Ws])"
             $ws.Cells[$AverageAddress].Formula                                  | Should      -Be "SUBTOTAL(101,processes[Handles])"
-            $ws.Cells[$CustomAddress].Formula                                   | Should      -Be 'COUNTIF([CPU],"<1")'
-            $ws.Cells[$CustomCommentAddress].Formula                            | Should      -Be 'SUMIF([Name],"=Chrome",[NPM])'
+            $ws.Cells[$CustomAddress].Formula                                   | Should      -Be 'COUNTIF(processes[CPU],"<1")'
+            $ws.Cells[$CustomCommentAddress].Formula                            | Should      -Be 'SUMIF(processes[Name],"=Chrome",processes[NPM])'
             $ws.Cells[$CustomCommentAddress].Comment.Text                       | Should -Not -BeNullOrEmpty
         }
 

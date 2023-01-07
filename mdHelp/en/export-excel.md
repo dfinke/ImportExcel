@@ -979,10 +979,10 @@ Accept wildcard characters: False
 
 A HashTable in the form of either
 
-- ColumnName = "Average"\|"Count"\|"CountNums"\|"Max"\|"Min"\|"None"\|"StdDev"\|"Sum"\|"Var"|\<Custom Excel function starting with "="\>
+- ColumnName = "Average"|"Count"|"CountNums"|"Max"|"Min"|"None"|"StdDev"|"Sum"|"Var"|<Custom Excel function starting with "=">
 - ```powershell
   ColumnName = @{
-      Function = "Average"\|"Count"\|"CountNums"\|"Max"\|"Min"\|"None"\|"StdDev"\|"Sum"\|"Var"|<Custom Excel function starting with "=">
+      Function = "Average"|"Count"|"CountNums"|"Max"|"Min"|"None"|"StdDev"|"Sum"|"Var"|<Custom Excel function starting with "=">
       Comment = $HoverComment
   }
   ```
