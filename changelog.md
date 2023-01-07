@@ -2,6 +2,7 @@
 
 Thanks to [Thomas Hofkens](https://github.com/thkn-hofa)
 - Added `-NoHyperLinkConversion` to `Export-Excel` to no convert data to hyperlinks. [#1316](https://github.com/dfinke/ImportExcel/issues/1316)
+- Fix `-TableTotalSettings` bug with table reference in formula. [#1366](https://github.com/dfinke/ImportExcel/issues/1366)
 
 # 7.8.4
 
