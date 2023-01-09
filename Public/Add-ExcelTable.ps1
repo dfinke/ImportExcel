@@ -68,10 +68,19 @@ function Add-ExcelTable {
 
                 # Add table name to column name if not manually entered
                 # (\[[^\]]+\]) is regex for a column reference like [Name]
-                # (?<!$TableName) is regex for a negative lookbehind: look for column references that are not preceded by the tablename
+                # (?<!\b[\\_a-z][_a-z0-9\._]*\b) is regex for a negative lookbehind: look for column references that are not preceded by a tablename (using only valid characters for table name)
                 # Then replace them with $TableName[column]
-                $TotalFunction = $TotalFunction -replace "(?<!$TableName)(\[[^\]]+\])", "$TableName`$1"
-                
+                $AllTableNamesRegex = $ws.workbook.Worksheets.Tables.Name -join "|"
+                $ValidTableNameRegex = "\b[\\_a-z][_a-z0-9\._]*\b"
+                $TotalFunction = $TotalFunction -replace "(?<!$ValidTableNameRegex)(\[[^\]]+\])", "$TableName`$1"
+                $MyMatches = [Regex]::Matches($TotalFunction, "(?<tableName>$ValidTableNameRegex)\[[^\]]+\]")
+                Foreach ($m in $MyMatches) {
+                    $tableRefName = ($m.Groups | ? { $_.Name -eq "tableName" }).value
+                    If ($tableRefName -notmatch $AllTableNamesRegex) {
+                        Write-Warning -Message ("The referenced table '{0}' in the totals formula for column '{1}' in table '{2}' does not exist in this workbook (yet)" -f $tableRefName, $k, $TableName)
+                    }
+                }
+
                 # Add the totals row
                 if (-not $tbl.Columns[$k]) {Write-Warning -Message "Table does not have a Column '$k'."}
                 elseif ($TotalFunction -match "^=") {

@@ -711,10 +711,19 @@ Describe ExportExcel -Tag "ExportExcel" {
                     Comment  = "Sum of Non-Paged Memory (NPM) for all chrome processes"
                 }
             }
-            $Processes | Export-Excel $path -TableName "processes" -TableTotalSettings $TableTotalSettings
+            $Package = $Processes | Export-Excel -Path $path -TableName "processes" -TableTotalSettings $TableTotalSettings -PassThru
+            
+            # Add another worksheet with a table to test references to other tables in tableTotalSettings
+            $TableTotalSettings["CPU"] = @{
+                Function = '=COUNTIF(processes[CPU];"<1")'
+                Comment = "Count of CPU processes in the table in the first worksheet"
+            }
+            $Processes | Select -First 10 | Export-Excel -WorksheetName "Subset" -TableName "subsetprocesses" -TableTotalSettings $TableTotalSettings -ExcelPackage $Package
+
             $TotalRows = $Processes.count + 2 # Column header + Data (50 processes) + Totals row
             $Excel = Open-ExcelPackage -Path $path
             $ws = $Excel.Workbook.Worksheets[1]
+            $ws2 = $Excel.Workbook.Worksheets[2]
         }
 
         it "Totals row was created".PadRight(87) {
@@ -751,6 +760,19 @@ Describe ExportExcel -Tag "ExportExcel" {
             $ws.Cells[$CustomAddress].Formula                                   | Should      -Be 'COUNTIF(processes[CPU],"<1")'
             $ws.Cells[$CustomCommentAddress].Formula                            | Should      -Be 'SUMIF(processes[Name],"=Chrome",processes[NPM])'
             $ws.Cells[$CustomCommentAddress].Comment.Text                       | Should -Not -BeNullOrEmpty
+        }
+
+        it "Added a calculation in the totals row referencing another table".PadRight(87) {
+            $CPUColumn2 = $ws2.Tables[0].Columns | Where-Object { $_.Name -eq "CPU" }
+
+            # Testing column properties
+            $CPUColumn2    | Select-Object -ExpandProperty TotalsRowFunction    | Should -Be "Custom"
+            $CPUColumn2    | Select-Object -ExpandProperty TotalsRowFormula     | Should -Be 'COUNTIF(processes[CPU],"<1")'
+            
+            # Testing actual cell properties
+            $CustomAddress2 = "{0}{1}" -f (Get-ExcelColumnName -ColumnNumber $CPUColumn2.Id).ColumnName, 12
+
+            $ws2.Cells[$CustomAddress2].Formula                                 | Should      -Be 'COUNTIF(processes[CPU],"<1")'
         }
 
         AfterEach {
