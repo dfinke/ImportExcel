@@ -81,7 +81,7 @@ PS\> $Excel = Invoke-Sum (Get-Process) Company Handles, PM, VirtualMemorySize | 
 
 The first line exports information to a table in new file; and captures the excel Package object in $Excel
 
-The second line creates a chart on the first page of the work sheet, using the notation "TableName\[ColumnnName\]" to refer to the data, the labels come Name column in the table, and the data series from its PM and VirtualMemorySize columns. The display names for these in the header are set to 'PM' and 'VMSize'.
+The second line creates a chart on the first page of the work sheet, using the notation "TableName\[ColumnName\]" to refer to the data, the labels come Name column in the table, and the data series from its PM and VirtualMemorySize columns. The display names for these in the header are set to 'PM' and 'VMSize'.
 
 ### EXAMPLE 4
 
