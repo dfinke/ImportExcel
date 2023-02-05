@@ -66,7 +66,7 @@ PS\> $excel = $avdata | Export-Excel -Path (Join-path $FilePath "\Machines.XLSX"
      $excel.Save() ; $excel.Dispose()
 ```
 
-Here Export-Excel is called with the -PassThru parameter, so the ExcelPackage object representing Machines.XLSX is stored in $Excel.The desired worksheet is selected, and then columns" B" and "I" are conditionally formatted \(excluding the top row\) to show red text if they contain "2003" or "Disabled" respectively.
+Here Export-Excel is called with the -PassThru parameter, so the ExcelPackage object representing Machines.XLSX is stored in $Excel. The desired worksheet is selected, and then columns" B" and "I" are conditionally formatted \(excluding the top row\) to show red text if they contain "2003" or "Disabled" respectively.
 
 A fixed date format is then applied to columns D to G, and the top row is formatted.
 
@@ -83,7 +83,7 @@ Again Export-Excel has been called with -PassThru leaving a package object in $E
 
 This time B1:B100 has been conditionally formatted with 3 icons, using the "Flags" Icon-Set.
 
-Add-ConditionalFormatting does not provide accessto every option in the formatting rule, so -PassThru has been used and the rule is modified to apply the flags in reverse order, and transitions between flags are set to 100 and 1000.
+Add-ConditionalFormatting does not provide access to every option in the formatting rule, so -PassThru has been used and the rule is modified to apply the flags in reverse order, and transitions between flags are set to 100 and 1000.
 
 ### EXAMPLE 3
 
