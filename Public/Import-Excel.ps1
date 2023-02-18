@@ -213,36 +213,32 @@
                             $TextColRegEx = New-Object -TypeName regex -ArgumentList $TextColExpression , 9
                         }
                         else { $TextColRegEx = $null }
-                        foreach ($R in $rows) {
-                            #Disabled write-verbose for speed
-                            #  Write-Verbose "Import row '$R'"
-                            $NewRow = [Ordered]@{ }
-                            if ($TextColRegEx) {
-                                foreach ($P in $PropertyNames) {
-                                    $MatchTest = $TextColRegEx.Match($P.value)
-                                    if ($MatchTest.groups.name -eq "astext") {
-                                        $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Text
+                        $xlBook["$targetSheetname"] = $(
+                            foreach ($R in $rows) {
+                                #Disabled write-verbose for speed
+                                #  Write-Verbose "Import row '$R'"
+                                $NewRow = [Ordered]@{ }
+                                if ($TextColRegEx) {
+                                    foreach ($P in $PropertyNames) {
+                                        $MatchTest = $TextColRegEx.Match($P.value)
+                                        if ($MatchTest.groups.name -eq "astext") {
+                                            $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Text
+                                        }
+                                        elseif ($MatchTest.groups.name -eq "asdate" -and $sheet.Cells[$R, $P.Column].Value -is [System.ValueType]) {
+                                            $NewRow[$P.Value] = [datetime]::FromOADate(($sheet.Cells[$R, $P.Column].Value))
+                                        }
+                                        else { $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Value }
                                     }
-                                    elseif ($MatchTest.groups.name -eq "asdate" -and $sheet.Cells[$R, $P.Column].Value -is [System.ValueType]) {
-                                        $NewRow[$P.Value] = [datetime]::FromOADate(($sheet.Cells[$R, $P.Column].Value))
+                                }
+                                else {
+                                    foreach ($P in $PropertyNames) {
+                                        $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Value
+                                        #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
                                     }
-                                    else { $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Value }
                                 }
-                            }
-                            else {
-                                foreach ($P in $PropertyNames) {
-                                    $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Value
-                                    #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
-                                }
-                            }
 
-                            if ($WorksheetName -eq '*') {
-                                $xlBook["$targetSheetname"] += [PSCustomObject]$NewRow
-                            }
-                            else {
                                 [PSCustomObject]$NewRow
-                            }
-                        }
+                            })
                         #endregion
                     }
                 }
@@ -266,6 +262,9 @@
                     else {
                         $xlBook
                     }
+                }
+                else {
+                    $xlBook[0];
                 }
             }
         }
