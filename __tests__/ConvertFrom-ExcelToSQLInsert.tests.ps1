@@ -3,35 +3,52 @@ if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
 }
 
 Describe "ConvertFrom-ExcelToSQLInsert" {
+
     BeforeAll {
-        $script:xlFile = "TestDrive:\testSQL.xlsx"    
+        $script:xlFile = "C:\.temp\testSQL.xlsx"        # <<---------- REMOVE
+        # $script:xlFile = "TestDrive:\testSQL.xlsx" 
     }
 
-    BeforeEach {
-
-        $([PSCustomObject]@{
-                Name = "John"
-                Age  = $null
-            }) | Export-Excel $xlFile
-    }
-
-    AfterAll {
+    AfterEach {
         Remove-Item $xlFile -Recurse -Force -ErrorAction Ignore
     }
 
-    It "Should be empty double single quotes".PadRight(90) {
-        $expected = "INSERT INTO Sheet1 ('Name', 'Age') Values('John', '');"
+    Context "When handling empty values" {
 
-        $actual = ConvertFrom-ExcelToSQLInsert -Path $xlFile Sheet1
+        BeforeEach {
+            $([PSCustomObject]@{
+                Name = "John"
+                Age  = $null
+            }) | Export-Excel $xlFile   
+        }
 
-        $actual | Should -Be $expected
+        It "Should be empty double single quotes".PadRight(90) {  
+            $expected = "INSERT INTO Sheet1 ('Name', 'Age') Values('John', '');"
+            $actual = ConvertFrom-ExcelToSQLInsert -Path $xlFile Sheet1
+            $actual | Should -Be $expected
+        }
+    
+        It "Should have NULL".PadRight(90) {
+            $expected = "INSERT INTO Sheet1 ('Name', 'Age') Values('John', NULL);"
+            $actual = ConvertFrom-ExcelToSQLInsert -Path $xlFile Sheet1 -ConvertEmptyStringsToNull
+            $actual | Should -Be $expected
+        }
     }
 
-    It "Should have NULL".PadRight(90) {
-        $expected = "INSERT INTO Sheet1 ('Name', 'Age') Values('John', NULL);"
+    Context "When escaping single quotes" {
 
-        $actual = ConvertFrom-ExcelToSQLInsert -Path $xlFile Sheet1 -ConvertEmptyStringsToNull
-
-        $actual | Should -Be $expected
+        BeforeEach {
+            $([PSCustomObject]@{
+                FirstName = "John"
+                LastName = "D'Angelo"
+                Age  = $null
+            }) | Export-Excel $xlFile
+        }
+    
+        It "Should handle single quotes and NULLs".PadRight(90) {
+            $expected = "INSERT INTO Sheet1 ('FirstName', 'LastName', 'Age') Values('John', 'D''Angelo', NULL);"
+            $actual = ConvertFrom-ExcelToSQLInsert -Path $xlFile Sheet1 -SingleQuoteStyle "''" -ConvertEmptyStringsToNull
+            $actual | Should -Be $expected
+        }
     }
 }
