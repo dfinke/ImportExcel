@@ -5,8 +5,7 @@ if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
 Describe "ConvertFrom-ExcelToSQLInsert" {
 
     BeforeAll {
-        $script:xlFile = "C:\.temp\testSQL.xlsx"        # <<---------- REMOVE
-        # $script:xlFile = "TestDrive:\testSQL.xlsx" 
+        $script:xlFile = "TestDrive:\testSQL.xlsx" 
     }
 
     AfterEach {
