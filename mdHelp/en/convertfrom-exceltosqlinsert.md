@@ -14,7 +14,7 @@ Generate SQL insert statements from Excel spreadsheet.
 ## SYNTAX
 
 ```text
-ConvertFrom-ExcelToSQLInsert [-TableName] <Object> [-Path] <Object> [[-WorkSheetname] <Object>] [[-StartRow] <Int32>] [[-Header] <String[]>] [-NoHeader] [-DataOnly] [-ConvertEmptyStringsToNull] [-UseMSSQLSyntax] [<CommonParameters>]
+ConvertFrom-ExcelToSQLInsert [-TableName] <Object> [-Path] <Object> [[-WorkSheetname] <Object>] [[-StartRow] <Int32>] [[-Header] <String[]>] [-NoHeader] [-DataOnly] [-ConvertEmptyStringsToNull] [-UseMSSQLSyntax] [-SingleQuoteStyle] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
