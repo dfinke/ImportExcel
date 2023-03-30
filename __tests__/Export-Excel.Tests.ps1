@@ -1,4 +1,4 @@
-﻿#Requires -Modules @{ ModuleName="Pester"; ModuleVersion="4.0.0" }
+#Requires -Modules @{ ModuleName="Pester"; ModuleVersion="4.0.0" }
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'False Positives')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidAssignmentToAutomaticVariable', '', Justification = 'Only executes on versions without the automatic variable')]
 param()
@@ -1352,5 +1352,82 @@ Describe ExportExcel -Tag "ExportExcel" {
         Close-ExcelPackage $excel
 
         Remove-Item $path 
+    }
+
+    Context "                # Custom formats" -tag customformats {
+        BeforeEach {
+            $Path = Join-Path (Resolve-Path 'TestDrive:').ProviderPath "test.xlsx"
+            Remove-Item -Path $Path -ErrorAction SilentlyContinue
+            $data = @(
+                [PSCustomObject] @{
+                    Name = 'Doug'
+                    Date = Get-Date -Date '2023-03-30 17:18:19'
+                    Timespan = New-TimeSpan -Hours 2 -Minutes 3 -Seconds 4
+                }
+            )
+        }
+        It "Should use default formats" {
+            $data | Export-Excel -Path $Path -WorksheetName 'Sheet1'
+            $excel = Open-ExcelPackage -Path $Path
+            $ws = $excel.Sheet1
+            $ws.Cells['A2'].Text | Should -BeExactly 'Doug'
+            $ws.Cells['A2'].Style.Numberformat.Format | Should -BeExactly 'General'
+
+            $ws.Cells['B2'].Text | Should -Match '3.30.23 17.18'    # using match because of different systems local settings
+            $ws.Cells['B2'].Style.Numberformat.Format | Should -BeExactly 'm/d/yy h:mm'
+
+            # ExcelPackage seems to treat the original timespan and format '[h]:mm:ss' as DateTime starting at 1899-12-30 00:00:00
+            # as a consequence, the text returns 'mm' als month; so checking for the text does not make sence
+            # In Excel itself it shows up correctly as '02:03:04
+            $ws.Cells['C2'].Value.ToString('hh:mm:ss') | Should -BeExactly '02:03:04'
+            $ws.Cells['C2'].Style.Numberformat.Format | Should -BeExactly '[h]:mm:ss'
+
+            Close-ExcelPackage $excel
+        }
+        It "Should use custom formats" {
+            $customFormats = @{
+                DateTimeFormat = 'yyyy-mm-dd'
+                TimespanFormat = 'hh:mm:ss.0'
+            }
+            $data | Export-Excel -Path $Path -WorksheetName 'Sheet1' -CustomFormats $customFormats -WarningVariable warn -WarningAction SilentlyContinue
+            $excel = Open-ExcelPackage -Path $Path
+            $ws = $excel.Sheet1
+
+            $ws.Cells['A2'].Text | Should -BeExactly 'Doug'
+            $ws.Cells['A2'].Style.Numberformat.Format | Should -BeExactly 'General'
+
+            $ws.Cells['B2'].Text | Should -BeExactly '2023-03-30'
+            $ws.Cells['B2'].Style.Numberformat.Format | Should -BeExactly $customFormats.DateTimeFormat
+
+            $ws.Cells['C2'].Text | Should -BeExactly '02:03:04.0'
+            $ws.Cells['C2'].Style.Numberformat.Format | Should -BeExactly $customFormats.TimespanFormat
+
+            Close-ExcelPackage $excel
+
+            $warn | Should -BeNullOrEmpty
+        }
+        It "Should issue a warning if the custom format is not known" {
+            $customFormats = @{
+                DateTimeFormat = 'dd-mm-yyyy'
+                TimespanFormat = 'hh:mm'
+                UnknownFormat = 'unknown'
+            }
+            $data | Export-Excel -Path $Path -WorksheetName 'Sheet1' -CustomFormats $customFormats -WarningVariable warn -WarningAction SilentlyContinue
+            $excel = Open-ExcelPackage -Path $Path
+            $ws = $excel.Sheet1
+
+            $ws.Cells['A2'].Text | Should -BeExactly 'Doug'
+            $ws.Cells['A2'].Style.Numberformat.Format | Should -BeExactly 'General'
+
+            $ws.Cells['B2'].Text | Should -BeExactly '30-03-2023'
+            $ws.Cells['B2'].Style.Numberformat.Format | Should -BeExactly $customFormats.DateTimeFormat
+
+            $ws.Cells['C2'].Text | Should -BeExactly '02:03'
+            $ws.Cells['C2'].Style.Numberformat.Format | Should -BeExactly $customFormats.TimespanFormat
+
+            $warn | Should -BeLike "Custom format 'UnknownFormat' is not known*"
+
+            Close-ExcelPackage $excel
+        }
     }
 }
