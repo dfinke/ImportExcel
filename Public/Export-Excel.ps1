@@ -75,6 +75,7 @@
         [alias('PT')]
         [Switch]$PassThru,
         [String]$Numberformat = 'General',
+        [hashtable]$CustomFormats,
         [string[]]$ExcludeProperty,
         [Switch]$NoAliasOrScriptPropeties,
         [Switch]$DisplayPropertySet,
@@ -202,6 +203,20 @@
                 $setNumformat = $false
             }
             else { $setNumformat = ($Numberformat -ne $ws.Cells.Style.Numberformat.Format) }
+            # set up default formats and add any custom formats
+            $UseCustomFormat = @{
+                DateTimeFormat = (Expand-NumberFormat 'Date-Time')
+                TimestampFormat = '[h]:mm:ss'
+            }
+            if ($CustomFormats) {
+                foreach ($cf in $CustomFormats.Keys) {
+                    if ($UseCustomFormat.Keys -notcontains $cf) {
+                        Write-Warning "Custom format '$cf' is not known, it will be ignored."
+                        continue
+                    }
+                    $UseCustomFormat[$cf] = Expand-NumberFormat $CustomFormats[$cf]
+                }
+            }
         }
         catch { throw "Failed preparing to export to worksheet '$WorksheetName' to '$Path': $_" }
         #region Special case -inputobject passed a dataTable object
@@ -240,10 +255,10 @@
                 $InputObject.TableName = $orginalTableName
             }
             foreach ($c in $InputObject.Columns.where({ $_.datatype -eq [datetime] })) {
-                Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat 'Date-Time'
+                Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat $UseCustomFormat.DateTimeFormat
             }
             foreach ($c in $InputObject.Columns.where({ $_.datatype -eq [timespan] })) {
-                Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat '[h]:mm:ss'
+                Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat $UseCustomFormat.TimestampFormat
             }
             $ColumnIndex += $InputObject.Columns.Count - 1
             if ($noHeader) { $row += $InputObject.Rows.Count - 1 }
@@ -309,11 +324,11 @@
                         try {
                             if ($v -is [DateTime]) {
                                 $ws.Cells[$row, $ColumnIndex].Value = $v
-                                $ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = 'm/d/yy h:mm' # This is not a custom format, but a preset recognized as date and localized.
+                                $ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = $UseCustomFormat.DateTimeFormat
                             }
                             elseif ($v -is [TimeSpan]) {
                                 $ws.Cells[$row, $ColumnIndex].Value = $v
-                                $ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = '[h]:mm:ss'
+                                $ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = $UseCustomFormat.TimestampFormat
                             }
                             elseif ($v -is [System.ValueType]) {
                                 $ws.Cells[$row, $ColumnIndex].Value = $v
@@ -337,7 +352,7 @@
                             elseif ( $NoHyperLinkConversion -ne '*' -and # Put the check for 'NoHyperLinkConversion is null' first to skip checking for wellformedstring
                                     $NoHyperLinkConversion -notcontains $Name -and
                                     [System.Uri]::IsWellFormedUriString($v , [System.UriKind]::Absolute)
-                                ) { 
+                                ) {
                                 if ($v -match "^xl://internal/") {
                                     $referenceAddress = $v -replace "^xl://internal/" , ""
                                     $display = $referenceAddress -replace "!A1$"   , ""
