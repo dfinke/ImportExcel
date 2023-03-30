@@ -206,7 +206,7 @@
             # set up default formats and add any custom formats
             $UseCustomFormat = @{
                 DateTimeFormat = (Expand-NumberFormat 'Date-Time')
-                TimestampFormat = '[h]:mm:ss'
+                TimespanFormat = '[h]:mm:ss'
             }
             if ($CustomFormats) {
                 foreach ($cf in $CustomFormats.Keys) {
@@ -258,7 +258,7 @@
                 Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat $UseCustomFormat.DateTimeFormat
             }
             foreach ($c in $InputObject.Columns.where({ $_.datatype -eq [timespan] })) {
-                Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat $UseCustomFormat.TimestampFormat
+                Set-ExcelColumn -Worksheet $ws -Column ($c.Ordinal + $StartColumn) -NumberFormat $UseCustomFormat.TimespanFormat
             }
             $ColumnIndex += $InputObject.Columns.Count - 1
             if ($noHeader) { $row += $InputObject.Rows.Count - 1 }
@@ -328,7 +328,7 @@
                             }
                             elseif ($v -is [TimeSpan]) {
                                 $ws.Cells[$row, $ColumnIndex].Value = $v
-                                $ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = $UseCustomFormat.TimestampFormat
+                                $ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = $UseCustomFormat.TimespanFormat
                             }
                             elseif ($v -is [System.ValueType]) {
                                 $ws.Cells[$row, $ColumnIndex].Value = $v
