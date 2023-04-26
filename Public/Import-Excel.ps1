@@ -249,22 +249,16 @@
                 # $EndColumn = 0
                 if ($Path) { $stream.close(); $ExcelPackage.Dispose() }
 
-                if ($WorksheetName -eq '*') {
-
-                    if ($Raw) {
-                        foreach ($entry in $xlbook.GetEnumerator()) {
-                            $entry.Value
-                        }
-                    }
-                    elseif ($Worksheet.Count -eq 1) {
-                        $xlBook["$targetSheetname"]
-                    }
-                    else {
-                        $xlBook
+                if ($Raw) {
+                    foreach ($entry in $xlbook.GetEnumerator()) {
+                        $entry.Value
                     }
                 }
+                elseif ($Worksheet.Count -eq 1) {
+                    $xlBook["$targetSheetname"]
+                }
                 else {
-                    $xlBook[0];
+                    $xlBook
                 }
             }
         }
