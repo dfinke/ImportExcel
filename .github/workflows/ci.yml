@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - master
+      - Fix-ImportExcel-Performance
       - Set-up-GHA-CI/CD
       
   pull_request:
