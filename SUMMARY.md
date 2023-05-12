@@ -68,7 +68,7 @@
 * [Examples](Examples/README.md)
   * [Untitled](Examples/untitled.md)
   * [Charts](Examples/Charts/README.md)
-    * [Multiplecharts](Examples/Charts/multiplecharts.md)
+    * [Multiplecharts](Examples/Charts/MultipleCharts.md)
 * [Pivot](Pivot/README.md)
   * [Pivot](Pivot/pivot.md)
 
