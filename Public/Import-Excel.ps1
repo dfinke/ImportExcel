@@ -37,7 +37,8 @@
         [ValidateNotNullOrEmpty()]
         [String]$Password,
         [Int[]]$ImportColumns,
-        [Switch]$Raw
+        [Switch]$Raw,
+        [Switch]$UseSpectre
     )
     end {
         $sw = [System.Diagnostics.Stopwatch]::StartNew()
@@ -251,6 +252,9 @@
                     foreach ($entry in $xlbook.GetEnumerator()) {
                         $entry.Value
                     }
+                }
+                elseif ($UseSpectre) {
+                    $xlBook | Format-SpectreTable
                 }
                 elseif ($Worksheet.Count -eq 1) {
                     $xlBook["$targetSheetname"]
