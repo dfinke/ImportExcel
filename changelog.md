@@ -1,3 +1,8 @@
+# 7.8.5
+
+- Added `Get-ExcelFileSchema` to get the schema of an Excel file.
+    - `Get-ExcelFileSchema -Path $xlfile`
+
 # 7.8.x
 
 Thanks to [Thomas Hofkens](https://github.com/thkn-hofa)
