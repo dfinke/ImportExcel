@@ -34,20 +34,20 @@ South,Delaware,712,508.55
 
     It "Test Get-ExcelFileSchema correct json" {
         $actual = Get-ExcelFileSchema -Path $excelFile
-        
         $actual = $actual | ConvertFrom-Json 
-        $actual.ExcelFile | Should -Be "test.xlsx"
-        $actual.WorksheetName | Should -Be "Sheet1"
+
+        $actual.ExcelFile | Should -BeExactly "test.xlsx"
+        $actual.WorksheetName | Should -BeExactly "Sheet1"
         $actual.Visible | Should -Be $true
         $actual.Rows | Should -Be 10
         $actual.Columns | Should -Be 4
-        $actual.Address | Should -Be "A1:D10"
-        $actual.Path | Should -Be "TestDrive:\"
+        $actual.Address | Should -BeExactly "A1:D10"
+        $actual.Path | Should -BeExactly "TestDrive:\"
         
         $actual.PropertyNames.Count | Should -Be 4
-        $actual.PropertyNames[0] | Should -Be "Region"
-        $actual.PropertyNames[1] | Should -Be "State"
-        $actual.PropertyNames[2] | Should -Be "Units"
-        $actual.PropertyNames[3] | Should -Be "Price"
+        $actual.PropertyNames[0] | Should -BeExactly "Region"
+        $actual.PropertyNames[1] | Should -BeExactly "State"
+        $actual.PropertyNames[2] | Should -BeExactly "Units"
+        $actual.PropertyNames[3] | Should -BeExactly "Price"
     }
 }
