@@ -42,7 +42,8 @@ South,Delaware,712,508.55
         $actual.Rows | Should -Be 10
         $actual.Columns | Should -Be 4
         $actual.Address | Should -BeExactly "A1:D10"
-        $actual.Path | Should -BeExactly "TestDrive:\"
+        
+        $actual.Path | Should -BeExactly ("TestDrive:" + [System.IO.Path]::DirectorySeparatorChar)
         
         $actual.PropertyNames.Count | Should -Be 4
         $actual.PropertyNames[0] | Should -BeExactly "Region"
