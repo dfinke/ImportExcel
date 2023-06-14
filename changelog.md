@@ -1,3 +1,30 @@
+# 7.8.5
+
+- Added `Get-ExcelFileSchema` to get the schema of an Excel file.
+- This was added to support interacting with `ChatGPT`. Passing the schema to the `ChatGPT` via `PowerShellAI` let's you ask questions about the data including generating code based on the schema.
+
+```powershell
+Get-ExcelFileSchema .\salesData.xlsx
+```
+
+```json
+{
+  "ExcelFile": "salesData.xlsx",
+  "WorksheetName": "Sheet1",
+  "Visible": true,
+  "Rows": 10,
+  "Columns": 4,
+  "Address": "A1:D10",
+  "Path": ".",
+  "PropertyNames": [
+    "Region",
+    "State",
+    "Units",
+    "Price"
+  ]
+}
+```
+
 # 7.8.x
 
 Thanks to [Thomas Hofkens](https://github.com/thkn-hofa)
