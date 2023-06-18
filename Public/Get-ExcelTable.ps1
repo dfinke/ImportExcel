@@ -5,12 +5,12 @@ function Get-ExcelTable {
 		[Alias('FullName')][string]$Path,
 		[OfficeOpenXml.ExcelPackage]$ExcelPackage,
 		[Parameter(ValueFromPipeline)]
-		$TableName, # input filter by name or index
+		[Alias('TableIndex')]$TableName, # input filter by name or index
 		[string[]]$WorksheetName, # input filter
 		[Alias('data')][switch]$Content, # forces to retrieve table data; by default output is table names
 		[Alias('ie')][switch]$IncludeEmptySheet, # input filter
 		[Alias('eh')][switch]$ExcludeHiddenSheet, # input filter
-		[string]$Password,
+		[Alias('pw')][string]$Password,
 		[Alias('RawTable')][switch]$GridTable # experimental; TODO
 	)
 
@@ -45,12 +45,15 @@ function Get-ExcelTable {
 			$pkg
 		} else {return}
 
+		$WorksheetName = $WorksheetName.where{-not [string]::IsNullOrEmpty($_)}
 		$Worksheets = if ($WorksheetName -and $WorksheetName -ne '*') {
 			$Excel.Workbook.Worksheets[$WorksheetName]
 		} else {
 			$Excel.Workbook.Worksheets
 		}
 
+		if (-not $Content) {$tabid = $null} # get all tables for tablename mode
+		else {$tabid = $tabid.where{$_ -ne $null}} # filter null arguments
 		foreach ($ws in $Worksheets) {
 			if ($ExcludeHiddenSheet -and $ws.Hidden -ne 'visible') {continue}
 			$Tables = if ($tabid.count) {
@@ -67,7 +70,7 @@ function Get-ExcelTable {
 			if ($Content) {
 				foreach ($Table in $Tables) {
 					if ([string]::IsNullOrEmpty($Table.name)) {continue}
-					##if (-not $Table.Address.Address) {continue}
+					#if (-not $Table.Address.Address) {continue} # alternative validation way
 					$rowCount      = $Table.Address.Rows
 					$colCount      = $Table.Address.Columns
 					$start,$end    = $Table.Address.Address.Split(':')
@@ -82,7 +85,7 @@ function Get-ExcelTable {
 					}
 
 					$tabheight = $startRow + $rowCount + 1 # relative table height - vertical border
-					$tabcollection['Tables'][$Table.name] = for ($row=($startRow+1); $row -lt $tabheight; $row++) {
+					$tabcollection['Tables'][$Table.name] = for ($row=$startRow+1; $row -lt $tabheight; $row++) {
 						$nextrow = [ordered]@{}
 						for (($col=$startCol),($i=0); $col -lt $tabwidth; $col++,$i++) {
 							$nextrow.($propertyNames[$i]) = $ws.Cells[$row, $col].value
@@ -106,8 +109,8 @@ function Get-ExcelTable {
 		if (-not $ExcelPackage) {
 			$Stream.Close()
 			$Stream.Dispose()
+			$Excel.Dispose()
+			$Excel = $null
 		}
-		$Excel.Dispose()
-		$Excel = $null
 	} # end
 } # END Get-ExcelTable
