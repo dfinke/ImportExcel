@@ -1,3 +1,8 @@
+# 7.8.6
+
+- Thank you [John Boyne](https://github.com/kyllath)
+    - Add missing parameter aliases to align with caller/callee
+
 # 7.8.5
 
 - Added `Get-ExcelFileSchema` to get the schema of an Excel file.
