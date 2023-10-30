@@ -1,9 +1,6 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Scope='Function', Target='Update*', Justification='Does not change system state')]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Scope='Function', Target='Update*', Justification='Property would be incorrect')]
-
-param()
-
 function Update-FirstObjectProperties {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification='Does not change system state')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Property would be incorrect')]
     [CmdletBinding()]
     param   (
         [Parameter(ValueFromPipeline=$true)]

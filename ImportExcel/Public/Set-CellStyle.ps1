@@ -1,7 +1,5 @@
-﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Scope='Function', Target='Set*', Justification='Does not change system state')]
-param()
-
-function Set-CellStyle {
+﻿function Set-CellStyle {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification='Does not change system state')]
     [CmdletBinding()]
     param(
         $Worksheet,

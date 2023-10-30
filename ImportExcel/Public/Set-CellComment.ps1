@@ -1,7 +1,5 @@
-﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Scope='Function', Target='Set*', Justification='Does not change system state')]
-param()
-
-function Set-CellComment {
+﻿function Set-CellComment {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification='Does not change system state')]
     [CmdletBinding(DefaultParameterSetName = "Range")]
     param(
         [Parameter(Mandatory = $True, ParameterSetName = "ColumnLetter")]

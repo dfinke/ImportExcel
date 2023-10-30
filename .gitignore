@@ -1,3 +1,7 @@
+# Build artifacts
+[O|o]utput/
+.cache/
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

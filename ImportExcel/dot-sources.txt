@@ -1,0 +1,11 @@
+# This file contains relative paths of folders to be dot-sourced during
+# development, but embedded in the tested and published .PSM1 file.
+#
+# Entries will be processed in order, leading and trailing whitespace will be
+# ignored, and lines beginning with "#" will be treated as a comment.
+
+Private
+Public
+Charting
+InferData
+Pivot

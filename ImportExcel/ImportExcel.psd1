@@ -52,11 +52,11 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
         'Enable-ExcelAutofit',
         'Expand-NumberFormat',
         'Export-Excel',
-        'Export-ExcelSheet',        
+        'Export-ExcelSheet',
         'Get-ExcelColumnName',
         'Get-ExcelFileSchema',
-        'Get-ExcelFileSummary', 
-        'Get-ExcelSheetDimensionAddress',       
+        'Get-ExcelFileSummary',
+        'Get-ExcelSheetDimensionAddress',
         'Get-ExcelSheetInfo',
         'Get-ExcelWorkbookInfo',
         'Get-HtmlTable',
@@ -118,22 +118,9 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
     CmdletsToExport    = @()
 
     FileList           = @(
-        '.\EPPlus.dll',
-        '.\Export-charts.ps1',
-        '.\GetExcelTable.ps1',
-        '.\ImportExcel.psd1',
-        '.\ImportExcel.psm1',
-        '.\LICENSE.txt',        
-        '.\Plot.ps1',
-        '.\Private',
-        '.\Public',
-        '.\en\ImportExcel-help.xml',
-        '.\en\Strings.psd1',
-        '.\Charting\Charting.ps1',
-        '.\InferData\InferData.ps1',
-        '.\Pivot\Pivot.ps1',
-        '.\Examples', 
-        '.\Testimonials'
+        'Localized/strings.psd1'
+        'EPPlus.dll',
+        'Plot.ps1'
     )
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess
