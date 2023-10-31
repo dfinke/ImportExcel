@@ -1,9 +1,13 @@
 using namespace System.Collections.Generic
+using namespace System.IO
+using namespace System.Text.RegularExpressions
+
 [CmdletBinding()]
 [OutputType([hashtable])]
 param()
 
 $ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
 $manifest = Import-PowerShellDataFile -Path $PSScriptRoot/ImportExcel/ImportExcel.psd1 
 $outputFolder = Join-Path -Path $PSScriptRoot -ChildPath "Output/ImportExcel/$($manifest.ModuleVersion)"
 
@@ -14,6 +18,10 @@ $Build = @{
         Directory      = $outputFolder
         ManifestPath   = Join-Path -Path $outputFolder -ChildPath 'ImportExcel.psd1'
         RootModulePath = Join-Path -Path $outputFolder -ChildPath 'ImportExcel.psm1'
+    }
+    Docs        = @{
+        Locale    = 'en-US'
+        Directory = Join-Path -Path $PSScriptRoot -ChildPath './docs/commands'
     }
 }
 
@@ -82,5 +90,47 @@ try {
 } finally {
     Pop-Location
 }
+
+# Update docs
+Import-Module $Build.Output.ManifestPath -Force
+$null = New-Item -Path $Build.Docs.Directory -ItemType Directory -Force
+$existingHelp = (Get-ChildItem -Path "$($Build.Docs.Directory)/*.md").BaseName
+$newCommands = Get-Command -Module ImportExcel -CommandType Function, Cmdlet | Where-Object Name -NotIn $existingHelp
+if ($existingHelp) {
+    $null = Update-MarkdownHelp -Path $Build.Docs.Directory -AlphabeticParamsOrder -ExcludeDontShow
+}
+if ($true) {
+    $newHelpArgs = @{
+        Module                = 'ImportExcel'
+        OutputFolder          = $Build.Docs.Directory
+        Locale                = $Build.Docs.Locale
+        AlphabeticParamsOrder = $true
+        ExcludeDontShow       = $true
+        WithModulePage        = $true
+        ErrorAction           = 'SilentlyContinue'
+    }
+    $null = New-MarkdownHelp @newHelpArgs
+}
+
+# Add online help URL for all commands
+$onlineversionpattern = [regex]::new('^online version:.*$', ([RegexOptions]::IgnoreCase, [RegexOptions]::Multiline))
+foreach ($path in [io.directory]::EnumerateFiles($Build.Docs.Directory, '*.md')) {
+    $baseName = ([fileinfo]$path).BaseName
+    $content = [file]::ReadAllText($path)
+    $content = $onlineVersionPattern.Replace($content, "online version: https://dfinke.github.io/ImportExcel/commands/$baseName")
+    [file]::WriteAllText($path, $content)
+}
+$null = New-ExternalHelp -Path $Build.Docs.Directory -OutputPath (Join-Path -Path $Build.Output.Directory -ChildPath $Build.Docs.Locale)
+
+# TODO: Consider whether or not to support "updatable help"
+# The New-ExternalHelpCab generates both a ZIP (PS 6+) and a CAB (all versions)
+# [reference](https://learn.microsoft.com/en-us/powershell/utility-modules/platyps/create-help-using-platyps?view=ps-modules)
+# 
+# $newCabArgs = @{
+#     CabFilesFolder  = Join-Path -Path $Build.Output.Directory -ChildPath $Build.Docs.Locale
+#     LandingPagePath = "$PSScriptRoot/docs/ImportExcel.md"
+#     OutputFolder    = "$PSScriptRoot/docs/"
+# }
+# New-ExternalHelpCab @newCabArgs
 
 $Build

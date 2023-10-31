@@ -1,0 +1,98 @@
+site_name: ImportExcel
+#site_url: https://dfinke.github.io/ImportExcel/
+site_dir: Output/site
+site_description: "PowerShell module to import/export Excel spreadsheets, without Excel."
+docs_dir: docs
+remote_branch: gh-pages
+repo_name: dfinke/ImportExcel
+repo_url: https://github.com/dfinke/ImportExcel
+copyright: Copyright &copy; 2020-2023 Doug Finke. All rights reserved.
+
+theme:
+  name: material
+  font:
+    text: Open Sans
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - announce.dismiss
+    - content.code.annotate
+    - content.code.copy
+    - content.tabs.link
+    - header.autohide
+    - navigation.footer
+    - navigation.instant
+    - navigation.path
+    - navigation.prune
+    - navigation.tabs
+    - navigation.top
+    - navigation.tracking
+    - toc.follow
+
+plugins:
+  - search:
+  - awesome-pages:
+      strict: true
+      collapse_single_pages: true
+
+markdown_extensions:
+  - attr_list
+  - admonition
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      linenums_style: pymdownx-inline
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.snippets:
+      base_path:
+        - docs
+      check_paths: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/dfinke
+      name: Twitter
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/douglasfinke/
+      name: LinkedIn
+    - icon: fontawesome/brands/github
+      link: https://github.com/dfinke
+      name: GitHub
+
+nav:
+  - Home: README.md
+  - Commands:
+    - ... | flat | commands/*.md
+  - FAQ:
+    - ... | flat | FAQ/*.md
+  - Changelog: changelog.md

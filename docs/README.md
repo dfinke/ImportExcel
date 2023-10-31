@@ -1,6 +1,12 @@
+---
+title: Home
+hide:
+  - navigation
+---
+
 # PowerShell and Excel 
 
-![](images/logoWithInstall.png)
+![ImportExcel logo with command "Install-Module ImportExcel"](images/logoWithInstall.png)
 
 <br/>
 
@@ -12,25 +18,25 @@ Has the ImportExcel module helped you?
 Consider donating. Thank you!
 <br>
 <br>
-<a href="https://www.paypal.com/paypalme/DougCharlesFinke"><img src="https://img.shields.io/badge/Donate-PayPal-green.svg" alt="Donate" height="28"></a>
+[![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/paypalme/DougCharlesFinke)
 <br>
 <br>
-![](https://media.giphy.com/media/hpXxJ78YtpT0s/giphy.gif)
+![Western Clint Eastwood GIF](https://media.giphy.com/media/hpXxJ78YtpT0s/giphy.gif)
 <br>
 <br>
 
 [![Build Status](https://dougfinke.visualstudio.com/ImportExcel/_apis/build/status/dfinke.ImportExcel?branchName=master)](https://dougfinke.visualstudio.com/ImportExcel/_build)
-[![](https://img.shields.io/powershellgallery/v/ImportExcel.svg)](https://www.powershellgallery.com/packages/ImportExcel)
-[![](https://img.shields.io/powershellgallery/dt/ImportExcel.svg)](https://www.powershellgallery.com/packages/ImportExcel)
-[![](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/dfinke/ImportExcel/tree/70ab9e46c776e96fb287682d5b9b4b51a0ec3bac/LICENSE.txt)
-<a href="https://www.paypal.com/paypalme/DougCharlesFinke"><img src="https://img.shields.io/badge/Donate-PayPal-green.svg" alt="Donate"></a>
+[![PowerShell Gallery Latest Version](https://img.shields.io/powershellgallery/v/ImportExcel.svg)](https://www.powershellgallery.com/packages/ImportExcel)
+[![PowerShell Gallery Download Count](https://img.shields.io/powershellgallery/dt/ImportExcel.svg)](https://www.powershellgallery.com/packages/ImportExcel)
+[![Apache 2.0 License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/dfinke/ImportExcel/tree/70ab9e46c776e96fb287682d5b9b4b51a0ec3bac/LICENSE.txt)
+[![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/paypalme/DougCharlesFinke)
 
 # Overview
 
 Automate Excel with PowerShell without having Excel installed. Works on Windows, Linux and Mac. Creating Tables, Pivot Tables, Charts and much more just got a lot easier.
 
 ## Examples ✨
-Check out the [more than 100 examples](Examples/) on ways to create amazing reports as well as make you more productive with PowerShell and Excel.
+Check out the [more than 100 examples](https://github.com/dfinke/ImportExcel/tree/master/Examples) on ways to create amazing reports as well as make you more productive with PowerShell and Excel.
 
 # Basic Usage
 ## Installation
@@ -59,7 +65,7 @@ South,Delaware,712,508.55
 $data | Export-Excel .\salesData.xlsx
 ```
 
-![](images/salesdata.png)
+![Screenshot of example sales data in Excel](images/SalesData.png)
 
 ## Read a spreadsheet
 
@@ -110,7 +116,7 @@ $chart = New-ExcelChartDefinition -XRange State -YRange Units -Title "Units by S
 $data | Export-Excel .\salesData.xlsx -AutoNameRange -ExcelChartDefinition $chart -Show
 ```
 
-![](images/SalesDataChart.png)
+![Screenshot of example sales data chart in Excel](images/SalesDataChart.png)
 
 ## Add a pivot table to spreadsheet
 
@@ -133,7 +139,7 @@ South,Delaware,712,508.55
 $data | Export-Excel .\salesData.xlsx -AutoNameRange -Show -PivotRows Region -PivotData @{'Units'='sum'} -PivotChartType PieExploded3D
 ```
 
-![](images/SalesDataChartPivotTable.png)
+![Screenshot of Excel pivot table generated from the above example](images/SalesDataChartPivotTable.png)
 
 # Convert Excel data to other formats
 
@@ -143,7 +149,7 @@ Do you have an Excel file with multiple sheets and you need to convert each shee
 
 ### Problem Solved
 
-The [yearlyRetailSales.xlsx](Examples/Import-Excel) has 12 sheets of retail data for the year.
+The [yearlyRetailSales.xlsx](https://github.com/dfinke/ImportExcel/tree/master/Examples/Import-Excel) has 12 sheets of retail data for the year.
 
 This single line of PowerShell converts any number of sheets in an Excel workbook to separate CSV files.
 
@@ -187,5 +193,3 @@ ForEach-Object { $_.Value | Export-Csv ($_.key + '.csv') }
 
 ## Contributing
 Contributions are welcome! Open a pull request to fix a bug, or open an issue to discuss a new feature or change.
-
-Original [README.md](./README.original.md)

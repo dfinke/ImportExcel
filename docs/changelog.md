@@ -1,9 +1,15 @@
-# 7.8.6
+---
+hide:
+  - navigation
+---
+# Changelog
+
+## 7.8.6
 
 - Thank you [John Boyne](https://github.com/kyllath)
     - Add missing parameter aliases to align with caller/callee
 
-# 7.8.5
+## 7.8.5
 
 - Added `Get-ExcelFileSchema` to get the schema of an Excel file.
 - This was added to support interacting with `ChatGPT`. Passing the schema to the `ChatGPT` via `PowerShellAI` let's you ask questions about the data including generating code based on the schema.
@@ -30,16 +36,16 @@ Get-ExcelFileSchema .\salesData.xlsx
 }
 ```
 
-# 7.8.x
+## 7.8.x
 
 Thanks to [Thomas Hofkens](https://github.com/thkn-hofa)
 - Added `-NoHyperLinkConversion` to `Export-Excel` to no convert data to hyperlinks. [#1316](https://github.com/dfinke/ImportExcel/issues/1316)
 
-# 7.8.4
+## 7.8.4
 
 - Add -ShowOnlyIcon to `New-ConditionalFormattingIconSet` does not show data in the cell, just the icon. Based on this discussion https://github.com/dfinke/ImportExcel/discussions/1340
 
-# 7.8.3
+## 7.8.3
 
 Thanks [Thomas Hofkens](https://github.com/thkn-hofa)
 
@@ -48,22 +54,22 @@ Thanks [Thomas Hofkens](https://github.com/thkn-hofa)
 - Fix Pester error for countries with ',' as decimal separator
 - Fix Pester error for Windows PowerShell 5.1
 
-# 7.8.2
+## 7.8.2
 
 - Fix docs [#1254](https://github.com/dfinke/ImportExcel/pull/1251)`Add-Worksheet` warning. Thank you [Wilson Stewart](https://github.com/WilsonStewart)
 - Fix docs [#1251](https://github.com/dfinke/ImportExcel/pull/1251)`Add-Worksheet` warning. Thank you [Jeremiah Adams](https://github.com/JeremiahTheFirst)
-- Fix docs [#1253](https://github.com/dfinke/ImportExcel/pull/1253) `convertfrom-exceltosqlinsert`. Thank you [Wes Stahler](https://github.com/stahler)
+- Fix docs [#1253](https://github.com/dfinke/ImportExcel/pull/1253) `ConvertFrom-ExcelToSQLInsert`. Thank you [Wes Stahler](https://github.com/stahler)
 - Set Validate Range for rows to max rows available [#1273](https://github.com/dfinke/ImportExcel/pull/1273). Thank you [Stephen Brown](https://github.com/steve-daedilus)
 - Extended Get-ExcelFileSummary to include more Visible -eq $true|$false
 
-# 7.8.1
+## 7.8.1
 
 - Fixed conditional formatting so it recognizes 'Top and Bottom' as a rule type. Thanks [g-pearl](https://github.com/g-pearl)
-* Update open-excelpackage.md. Thanks [stahler](https://github.com/stahler)
+* Update Open-ExcelPackage.md. Thanks [stahler](https://github.com/stahler)
 - Added Group Column tests 
 
 
-# 7.8.0
+## 7.8.0
 Thanks [James O'Neill](https://github.com/jhoneill)
 
 - Updated example Get-ModuleStats that extracts module statistics on the PowerShell Gallery.
@@ -81,11 +87,11 @@ Thank you [@kkazala](https://github.com/kkazala)
 - Added an example showing `ConditionalFormatting` using the `RuleType` `Expression` with a formula
     - [Highlight-DiffCells.ps1](https://github.dev/kkazala/ImportExcel/blob/b53881fd023c052da1acc7812511da223bb2e40c/Examples/ConditionalFormatting/Highlight-DiffCells.ps1)
 
-# 7.7.0
+## 7.7.0
 
 - Fix a bug with `-UnderLineType parameter is ignored in Set-ExcelColumn` [#1204](https://github.com/dfinke/ImportExcel/issues/1204)
 
-# 7.6.0
+## 7.6.0
 
 - **_[Under investigation]_** Fix -StartRow and -StartColumn being ignored.
 - James O'Neill: 

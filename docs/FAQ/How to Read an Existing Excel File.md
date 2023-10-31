@@ -7,10 +7,10 @@ $ExcelFile = Import-Excel "C:\Test\file.xlsx" -WorksheetName "Sheet1"
 
 ## Visual of Data Structure
 The File C:\Test\file.xlsx contains  
-![ExcelFileContents](/images/FAQ_Images/ExcelFileContents.png)
+![ExcelFileContents](../images/FAQ_Images/ExcelFileContents.png)
 
 After loading this data into ```$ExcelFile``` the data is stored like:  
-![ExcelFileDebugImg](/images/FAQ_Images/ExcelFileDebugImg.jpg)
+![ExcelFileDebugImg](../images/FAQ_Images/ExcelFileDebugImg.jpg)
 
 ## Other Common Operations
 
