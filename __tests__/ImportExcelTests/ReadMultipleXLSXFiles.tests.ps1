@@ -1,8 +1,6 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'False Positives')]
 Param()
 
-Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 -Force
-
 Describe "Test reading multiple XLSX files of different row count" -Tag ReadMultipleXLSX {
     It "Should find these xlsx files" {
         Test-Path -Path $PSScriptRoot\rows05.xlsx | Should -BeTrue

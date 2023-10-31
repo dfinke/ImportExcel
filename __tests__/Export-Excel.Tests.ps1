@@ -1053,17 +1053,11 @@ Describe ExportExcel -Tag "ExportExcel" {
     }
 
     Context "                # Awkward multiple tables" {
-        BeforeEach {
+        BeforeAll {
             $path = "TestDrive:\test.xlsx"
             #Test creating 3 on overlapping tables on the same page. Create rightmost the left most then middle.
             remove-item -Path $path -ErrorAction SilentlyContinue
-            if ($IsLinux -or $IsMacOS) {
-                $SystemFolder = '/etc'
-            }
-            else {
-                $SystemFolder = 'C:\WINDOWS\system32'
-            }
-            $r = Get-ChildItem -path $SystemFolder -File
+            $r = Import-Excel -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Export-Excel.SampleData.xlsx')
 
             "Biggest files" | Export-Excel -Path $path -StartRow 1 -StartColumn 7
             $r | Sort-Object length -Descending | Select-Object -First 14 Name, @{n = "Size"; e = { $_.Length } }  |
@@ -1087,7 +1081,7 @@ Describe ExportExcel -Tag "ExportExcel" {
             $ws.Tables["FileSize"].Address.Address                      | Should      -Be "G2:H16" #Insert at row 2, Column 7, 14 rows x 2 columns of data
             $ws.Tables["FileSize"].StyleName                            | Should      -Be "TableStyleMedium2"
         }
-        it "Created the ExtSize  table in the right place with the right size and style            " {
+        it "Created the ExtSize table in the right place with the right size and style            " {
             $ws.Tables["ExtSize"].Address.Address                      | should      -be "A2:B14" #tile, then 12 rows x 2 columns of data
             $ws.Tables["ExtSize"].StyleName                            | should      -be "TableStyleMedium6"
         }

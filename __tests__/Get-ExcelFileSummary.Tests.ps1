@@ -3,8 +3,6 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidAssignmentToAutomaticVariable', '', Justification = 'Only executes on versions without the automatic variable')]
 param()
 
-Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-
 Describe 'All tests for Get-ExcelFileSummary' -Tag "Get-ExcelFileSummary" {
     Context "Test Get-ExcelFileSummary" {
         It "Tests summary on TestData2.xlsx" {

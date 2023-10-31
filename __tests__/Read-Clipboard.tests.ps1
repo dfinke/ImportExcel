@@ -1,7 +1,5 @@
 #Requires -Modules Pester
-# if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
-Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
-# }
+
 Describe "Read Clipboard" -Tag  "Read-Clipboard" {
 
     It 'Should return $null if it cannot detect data format on the clipboard' {

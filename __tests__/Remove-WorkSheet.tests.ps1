@@ -1,8 +1,4 @@
-﻿#Requires -Modules Pester
-if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
-    Import-Module $PSScriptRoot\..\ImportExcel.psd1
-}
-Describe "Remove Worksheet" {
+﻿Describe "Remove Worksheet" {
     Context "Remove a worksheet output" {
         BeforeEach {
             # Create three sheets

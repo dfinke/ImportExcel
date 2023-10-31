@@ -1,7 +1,9 @@
 ﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
-Param()
-
-Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 -Force
+param(
+    [Parameter(Mandatory)]
+    [string]
+    $ModulePath
+)
 
 Describe "Tests" {
     BeforeAll {
@@ -11,7 +13,7 @@ Describe "Tests" {
         }
     }
     It "Should have a valid manifest".PadRight(90){
-        {try {Test-ModuleManifest -Path $PSScriptRoot\..\..\ImportExcel.psd1 -ErrorAction stop}
+        {try {Test-ModuleManifest -Path $ModulePath -ErrorAction stop}
          catch {throw}  } | Should -Not -Throw
     }
     It "Should have two items in the imported simple data".PadRight(90) {

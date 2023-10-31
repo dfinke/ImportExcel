@@ -1,4 +1,3 @@
-Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 -Force
 
 Describe 'Test' -Tag ImportExcelEndRowAndCols {
     BeforeAll {

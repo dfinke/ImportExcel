@@ -1,7 +1,3 @@
-if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
-    Import-Module $PSScriptRoot\..\ImportExcel.psd1
-}
-
 Describe "Test getting the schema of an Excel file" -Tag GetExcelFileSchema {
 
     BeforeAll {

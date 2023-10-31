@@ -2,8 +2,6 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'False Positives')]
 param()
 
-Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 -Force
-
 Describe 'Different ways to import sheets' -Tag ImportExcelReadSheets {
     BeforeAll {
         $xlFilename = "$PSScriptRoot\yearlySales.xlsx"

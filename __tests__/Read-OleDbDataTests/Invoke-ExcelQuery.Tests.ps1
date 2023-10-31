@@ -1,8 +1,3 @@
-#Requires -Modules Pester
-if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
-    Import-Module $PSScriptRoot\..\ImportExcel.psd1
-}
-
 $skip = $false
 if ($IsLinux -or $IsMacOS) {
     $skip = $true

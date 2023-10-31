@@ -1,9 +1,11 @@
 ﻿#Requires -Modules Pester
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments','',Justification='False Positives')]
-param()
-if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
-    Import-Module $PSScriptRoot\..\ImportExcel.psd1
-}
+param(
+    [Parameter(Mandatory)]
+    [string]
+    $ModulePath
+)
+
 Describe "Compare Worksheet" {
     BeforeAll {
       <#  if ($PSVersionTable.PSVersion.Major -gt 5) {
@@ -67,7 +69,7 @@ Describe "Compare Worksheet" {
             }
             else {
                 $cmdline = 'Import-Module {0}; $null = Compare-WorkSheet "{1}" "{2}" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView; Start-Sleep -sec 5; exit'
-                $cmdline = $cmdline -f  (Resolve-Path "$PSScriptRoot\..\importExcel.psd1" ) ,
+                $cmdline = $cmdline -f  $ModulePath ,
                                         (Join-Path (Get-PSDrive TestDrive).root "server1.xlsx"),
                                         (Join-Path (Get-PSDrive TestDrive).root "server2.xlsx")
                 powershell.exe -Command  $cmdline

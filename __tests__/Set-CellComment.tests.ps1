@@ -1,8 +1,4 @@
-﻿if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
-    Import-Module $PSScriptRoot\..\ImportExcel.psd1
-}
-
-Describe "Test setting comment on cells in different ways" -Tag SetCellComment {
+﻿Describe "Test setting comment on cells in different ways" -Tag SetCellComment {
     BeforeAll {
         $data = ConvertFrom-Csv @"
 OrderId,Category,Sales,Quantity,Discount

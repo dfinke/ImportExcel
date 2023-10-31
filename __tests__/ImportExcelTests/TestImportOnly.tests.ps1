@@ -1,6 +1,11 @@
-Param()
+param(
+    [Parameter(Mandatory)]
+    [string]
+    $ModulePath
+)
+
 Describe "Module" -Tag "TestImportOnly" {
     It "Should import without error" {
-        { Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 -Force -ErrorAction Stop } | Should -Not -Throw
+        { Import-Module $ModulePath -Force -ErrorAction Stop } | Should -Not -Throw
     }
 }

@@ -1,9 +1,3 @@
-#Requires -Modules Pester
-
-if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
-    Import-Module $PSScriptRoot\..\ImportExcel.psd1
-}
-
 Describe "Import-Excel on a sheet with no headings" {
     BeforeAll {
 

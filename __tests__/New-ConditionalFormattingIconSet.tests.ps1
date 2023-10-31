@@ -1,7 +1,3 @@
-if (-not (Get-command Import-Excel -ErrorAction SilentlyContinue)) {
-    Import-Module $PSScriptRoot\..\ImportExcel.psd1
-}
-
 Describe "Test New Conditional Formatting IconSet" -Tag ConditionalFormattingIconSet { 
     BeforeEach {
         $xlFilename = "TestDrive:\ConditionalFormattingIconSet.xlsx"        
