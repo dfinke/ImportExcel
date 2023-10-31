@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "PowerShell: Debug Module",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "Import-Module -Force ${workspaceFolder}/ImportExcel/ImportExcel.psd1",
+        },
+        {
+            "name": "PowerShell: Launch Current File",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "if ($null -eq (Get-Module ImportExcel)) { Import-Module ${workspaceFolder}/ImportExcel/ImportExcel.psd1 }; ${file}",
+            "cwd": "${cwd}"
+        }        
+    ]
+}
