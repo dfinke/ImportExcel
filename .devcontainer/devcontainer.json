@@ -1,0 +1,27 @@
+{
+    "name": "PowerShell",
+    "dockerFile": "Dockerfile",
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": "true",
+            "username": "vscode",
+            "upgradePackages": "false",
+            "nonFreePackages": "true"
+        }
+    },
+    "postCreateCommand": "sudo chsh vscode -s \"$(which pwsh)\"",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "powershell.powerShellDefaultVersion": "PowerShell",
+                "terminal.integrated.defaultProfile.linux": "pwsh"
+            },
+            "extensions": [
+                "ms-vscode.powershell",
+                "redhat.vscode-yaml",
+                "eamodio.gitlens"
+            ]
+        }
+    },
+    "forwardPorts": [8000]
+}

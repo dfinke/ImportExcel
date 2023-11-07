@@ -8,6 +8,12 @@ param()
 
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
+
+if ($null -eq (Get-Module -ListAvailable -Name platyPS | Where-Object Version -eq '0.14.2')) {
+    Write-Host "Installing platyPS" -ForegroundColor Green
+    Install-Module -Name platyPS -RequiredVersion '0.14.2' -Force -Scope CurrentUser -ErrorAction Stop
+}
+
 $manifest = Import-PowerShellDataFile -Path $PSScriptRoot/ImportExcel/ImportExcel.psd1 
 $outputFolder = Join-Path -Path $PSScriptRoot -ChildPath "Output/ImportExcel/$($manifest.ModuleVersion)"
 
@@ -26,11 +32,13 @@ $Build = @{
 }
 
 # Stage module in output directory
+Write-Host "Copying ./ImportExcel/* to $($Build.Output.Directory)" -ForegroundColor Green
 $null = New-Item -Path $Build.Output.Directory -ItemType Directory -Force
 Get-ChildItem -Path $Build.Output.Directory | Remove-Item -Recurse
 Get-ChildItem -Path ./ImportExcel/ | Copy-Item -Destination $Build.Output.Directory -Recurse
 
 # Embed dot-sourced functions in the PSM1 file
+Write-Host "Merging .PS1 files into ImportExcel.psm1" -ForegroundColor Green
 try {
     Push-Location -Path $Build.Output.Directory
     $usings = @{}
@@ -59,14 +67,14 @@ try {
         
         if ($usings.Count) {
             $usings.Keys | Sort-Object | ForEach-Object {
-                $null = $newPSM1.AppendLine($_)
+                $null = $newPSM1.Append("$_`r`n")
             }
             $usings.Clear()
         }
     
         if ($_ -eq '#region Dot-Sourced Functions') {
             $insideDotSourcedRegion = $true
-            $null = $newPSM1.AppendLine($content)
+            $null = $newPSM1.Append("$content`r`n")
             return
         }
     
@@ -78,7 +86,7 @@ try {
             return
         }
     
-        $null = $newPSM1.AppendLine($_)
+        $null = $newPSM1.Append("$_`r`n")
     }
     if ($content.Length) {
         throw "An error occurred while embedding files from directories referenced in dot-sources.txt.
@@ -92,6 +100,7 @@ try {
 }
 
 # Update docs
+Write-Host "Generating / updating markdown help" -ForegroundColor Green
 Import-Module $Build.Output.ManifestPath -Force
 $null = New-Item -Path $Build.Docs.Directory -ItemType Directory -Force
 $existingHelp = (Get-ChildItem -Path "$($Build.Docs.Directory)/*.md").BaseName
@@ -99,21 +108,21 @@ $newCommands = Get-Command -Module ImportExcel -CommandType Function, Cmdlet | W
 if ($existingHelp) {
     $null = Update-MarkdownHelp -Path $Build.Docs.Directory -AlphabeticParamsOrder -ExcludeDontShow
 }
-if ($true) {
+if ($newCommands) {
     $newHelpArgs = @{
         Module                = 'ImportExcel'
         OutputFolder          = $Build.Docs.Directory
         Locale                = $Build.Docs.Locale
         AlphabeticParamsOrder = $true
         ExcludeDontShow       = $true
-        WithModulePage        = $true
         ErrorAction           = 'SilentlyContinue'
     }
     $null = New-MarkdownHelp @newHelpArgs
 }
 
 # Add online help URL for all commands
-$onlineversionpattern = [regex]::new('^online version:.*$', ([RegexOptions]::IgnoreCase, [RegexOptions]::Multiline))
+Write-Host "Updating online help URLs" -ForegroundColor Green
+$onlineversionpattern = [regex]::new('(?<=\n)online version:.*?(?=[\r\n])', ([RegexOptions]::IgnoreCase, [RegexOptions]::Multiline))
 foreach ($path in [io.directory]::EnumerateFiles($Build.Docs.Directory, '*.md')) {
     $baseName = ([fileinfo]$path).BaseName
     $content = [file]::ReadAllText($path)
