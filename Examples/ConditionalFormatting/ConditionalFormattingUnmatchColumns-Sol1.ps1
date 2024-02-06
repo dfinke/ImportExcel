@@ -19,8 +19,8 @@ Remove-Item $xlfile -ErrorAction SilentlyContinue
 
 $file = $data | Export-Excel $xlfile -AutoSize -PassThru
 
-$cfi1 = Add-ConditionalFormatting -Worksheet $file.sheet1 -Range '$D$2:$D$1048576' -ConditionValue '=NOT(EXACT($A2,$D2))' -RuleType Expression -ForegroundColor Red
-$cfi2 = Add-ConditionalFormatting -Worksheet $file.sheet1 -Range '$E$2:$E$1048576' -ConditionValue '=NOT(EXACT($B2,$E2))' -RuleType Expression -ForegroundColor Red
-$cfi3 = Add-ConditionalFormatting -Worksheet $file.sheet1 -Range '$F$2:$F$1048576' -ConditionValue '=NOT(EXACT($C2,$F2))' -RuleType Expression -ForegroundColor Red
+Add-ConditionalFormatting -Worksheet $file.sheet1 -Range '$D$2:$D$1048576' -ConditionValue '=NOT(EXACT($A2,$D2))' -RuleType Expression -ForegroundColor Red
+Add-ConditionalFormatting -Worksheet $file.sheet1 -Range '$E$2:$E$1048576' -ConditionValue '=NOT(EXACT($B2,$E2))' -RuleType Expression -ForegroundColor Red
+Add-ConditionalFormatting -Worksheet $file.sheet1 -Range '$F$2:$F$1048576' -ConditionValue '=NOT(EXACT($C2,$F2))' -RuleType Expression -ForegroundColor Red
 
 Close-ExcelPackage $file -Show
