@@ -1,3 +1,8 @@
+# Infrastructure change
+
+- Thank you to [RipFence](https://github.com/RipFence) who asked how to place a chart on a different sheet from the data and then did a PR adding the example.
+- added `ignore` so files checked into examples do not trigger a CI run
+
 # 7.8.6
 
 - Thank you [John Boyne](https://github.com/kyllath)
