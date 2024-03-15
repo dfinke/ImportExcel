@@ -3,8 +3,11 @@ on:
     branches:
       - master
       - Set-up-GHA-CI/CD
+    paths-ignore:
+      - 'Examples/**'
       
   pull_request:
+  
 
 jobs:
   validate:
