@@ -1,3 +1,7 @@
+# 7.8.7
+
+-
+
 # Infrastructure change
 
 - Thank you to [RipFence](https://github.com/RipFence) who asked how to place a chart on a different sheet from the data and then did a PR adding the example.
