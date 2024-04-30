@@ -67,9 +67,8 @@ function WorksheetArgumentCompleter {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
     $xlPath = $fakeBoundParameter['Path']
     if (Test-Path -Path $xlPath) {
-        $xlpkg = Open-ExcelPackage -ReadOnly -Path $xlPath
-        $WorksheetNames = $xlPkg.Workbook.Worksheets.Name
-        Close-ExcelPackage -nosave -ExcelPackage $xlpkg
+        $xlSheet = Get-ExcelSheetInfo -Path $xlPath
+        $WorksheetNames = $xlSheet.Name
         $WorksheetNames.where( { $_ -like "*$wordToComplete*" }) | foreach-object {
             New-Object -TypeName System.Management.Automation.CompletionResult -ArgumentList "'$_'",
             $_ , ([System.Management.Automation.CompletionResultType]::ParameterValue) , $_
