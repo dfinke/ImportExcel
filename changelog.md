@@ -1,3 +1,11 @@
+# 7.8.7
+
+- Thanks to [Phil Bossman](https://github.com/pbossman) for the PR and fixing this.
+    
+    Now, back again, you can type `Import-Excel .\yearlySales.xlsx`, press <ctrl+space> and get a list of the worksheets in the Excel file
+
+    ![alt text](images/AutoCompleteSheetNames.png)    
+
 # Infrastructure change
 
 - Thank you to [RipFence](https://github.com/RipFence) who asked how to place a chart on a different sheet from the data and then did a PR adding the example.
