@@ -119,7 +119,7 @@
                     throw "'$($Path)' file not found"
                 }
 
-                $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
+                $stream = New-Object -TypeName System.IO.FileStream -ArgumentList $Path, 'Open', 'Read'
                 $ExcelPackage = New-Object -TypeName OfficeOpenXml.ExcelPackage
                 if ($Password) { $ExcelPackage.Load($stream, $Password) }
                 else { $ExcelPackage.Load($stream) }
