@@ -45,11 +45,15 @@ function ConvertTo-ExcelXlsx {
             throw "Could not create Excel.Application ComObject. Please verify that Excel is installed."
         }
 
-        $Excel.Visible = $false
-        $null = $Excel.Workbooks.Open($xlsFile.FullName, $null, $true)
-        $Excel.ActiveWorkbook.SaveAs($xlsxPath, $xlFixedFormat)
-        $Excel.ActiveWorkbook.Close()
-        $Excel.Quit()
+        try {  
+            $Excel.Visible = $false
+            $null = $Excel.Workbooks.Open($xlsFile.FullName, $null, $true)
+            $Excel.ActiveWorkbook.SaveAs($xlsxPath, $xlFixedFormat)
+        }
+        finally {
+            $Excel.ActiveWorkbook.Close()
+            $Excel.Quit()
+        }
     }
 }
 
