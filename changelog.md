@@ -1,3 +1,7 @@
+# 7.8.9
+
+- Thanks to (Edward Miller)[https://github.com/edwardmiller-mesirow] for improving `ConvertTo-ExcelXlsx`and making it more robust
+
 # 7.8.8
 
 - Fix the release
