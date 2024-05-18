@@ -46,7 +46,7 @@ function ConvertTo-ExcelXlsx {
         }
 
         $Excel.Visible = $false
-        $null = $Excel.Workbooks.Open($xlsFile.FullName)
+        $null = $Excel.Workbooks.Open($xlsFile.FullName, $null, $true)
         $Excel.ActiveWorkbook.SaveAs($xlsxPath, $xlFixedFormat)
         $Excel.ActiveWorkbook.Close()
         $Excel.Quit()
