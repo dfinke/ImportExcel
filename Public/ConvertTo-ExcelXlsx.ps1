@@ -51,7 +51,10 @@ function ConvertTo-ExcelXlsx {
             $Excel.ActiveWorkbook.SaveAs($xlsxPath, $xlFixedFormat)
         }
         finally {
-            $Excel.ActiveWorkbook.Close()
+            if ($null -ne $Excel.ActiveWorkbook) {
+                $Excel.ActiveWorkbook.Close()
+            }
+            
             $Excel.Quit()
         }
     }
