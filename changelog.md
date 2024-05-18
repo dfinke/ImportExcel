@@ -1,3 +1,7 @@
+# 7.8.8
+
+- Fix the release
+
 # 7.8.7
 
 - Thanks to [Phil Bossman](https://github.com/pbossman) for the PR and fixing this.
