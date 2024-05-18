@@ -219,14 +219,15 @@
                             $NewRow = [Ordered]@{ }
                             if ($TextColRegEx) {
                                 foreach ($P in $PropertyNames) {
+                                    $cell = $sheet.Cells[$R, $P.Column]
                                     $MatchTest = $TextColRegEx.Match($P.value)
                                     if ($MatchTest.groups.name -eq "astext") {
-                                        $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Text
+                                        $NewRow[$P.Value] = $cell.Text
                                     }
-                                    elseif ($MatchTest.groups.name -eq "asdate" -and $sheet.Cells[$R, $P.Column].Value -is [System.ValueType]) {
-                                        $NewRow[$P.Value] = [datetime]::FromOADate(($sheet.Cells[$R, $P.Column].Value))
+                                    elseif ($MatchTest.groups.name -eq "asdate" -and $cell.Value -is [System.ValueType]) {
+                                        $NewRow[$P.Value] = [datetime]::FromOADate($cell.Value)
                                     }
-                                    else { $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Value }
+                                    else { $NewRow[$P.Value] = $cell.Value }
                                 }
                             }
                             else {
