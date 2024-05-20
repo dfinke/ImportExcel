@@ -217,9 +217,13 @@
                             #Disabled write-verbose for speed
                             #  Write-Verbose "Import row '$R'"
                             $NewRow = [Ordered]@{ }
+
+                            # Get the entire row first
+                            $row = $sheet.Cells[$R, 1, $R, $sheet.Dimension.End.Column]
+
                             if ($TextColRegEx) {
                                 foreach ($P in $PropertyNames) {
-                                    $cell = $sheet.Cells[$R, $P.Column]
+                                    $cell = $row[$R, $P.Column]
                                     $MatchTest = $TextColRegEx.Match($P.value)
                                     if ($MatchTest.groups.name -eq "astext") {
                                         $NewRow[$P.Value] = $cell.Text
@@ -232,7 +236,7 @@
                             }
                             else {
                                 foreach ($P in $PropertyNames) {
-                                    $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Value
+                                    $NewRow[$P.Value] = $row[$R, $P.Column].Value
                                     #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
                                 }
                             }
