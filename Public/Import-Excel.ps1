@@ -1,4 +1,4 @@
-﻿function Import-Excel {
+function Import-Excel {
     [CmdLetBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSPossibleIncorrectUsageOfAssignmentOperator', '', Justification = 'Intentional')]
@@ -161,7 +161,10 @@
                         #using Hash tables: "we've seen it" is all we need, no need to worry about "seen it before" / "Seen it many times".
                         $colHash = @{ }
                         $rowHash = @{ }
-                        foreach ($cell in $sheet.Cells[$range]) {
+
+                        $cells = $sheet.Cells[$range]
+
+                        foreach ($cell in $cells) {
                             if ($null -ne $cell.Value ) { $colHash[$cell.Start.Column] = 1; $rowHash[$cell.Start.row] = 1 }
                         }
                         $rows = (   $StartRow..$EndRow   ).Where( { $rowHash[$_] })
