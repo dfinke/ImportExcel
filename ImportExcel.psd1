@@ -119,6 +119,14 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
 
     FileList           = @(
         '.\EPPlus.dll',
+        '.\Microsoft.Extensions.Configuration.Abstractions.dll',
+        '.\Microsoft.Extensions.Configuration.dll',
+        '.\Microsoft.Extensions.Configuration.FileExtensions.dll',
+        '.\Microsoft.Extensions.Configuration.Json.dll',
+        '.\Microsoft.Extensions.FileProviders.Abstractions.dll',
+        '.\Microsoft.Extensions.FileProviders.Physical.dll',
+        '.\Microsoft.Extensions.Primitives.dll',
+        '.\System.Text.Encoding.CodePages.dll',
         '.\Export-charts.ps1',
         '.\GetExcelTable.ps1',
         '.\ImportExcel.psd1',

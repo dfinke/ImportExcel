@@ -23,6 +23,14 @@ param(
 # Set Files and Folders patterns to Include/Exclude.
 $IncludeFiles = @(
     'EPPlus.dll',
+    'Microsoft.Extensions.Configuration.Abstractions.dll',
+    'Microsoft.Extensions.Configuration.dll',
+    'Microsoft.Extensions.Configuration.FileExtensions.dll',
+    'Microsoft.Extensions.Configuration.Json.dll',
+    'Microsoft.Extensions.FileProviders.Abstractions.dll',
+    'Microsoft.Extensions.FileProviders.Physical.dll',
+    'Microsoft.Extensions.Primitives.dll',
+    'System.Text.Encoding.CodePages.dll',
     '*.psd1',
     '*.psm1',
     '*.ps1'
