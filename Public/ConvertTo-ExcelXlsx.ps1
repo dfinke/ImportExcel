@@ -47,12 +47,16 @@ function ConvertTo-ExcelXlsx {
 
         try {  
             $Excel.Visible = $false
-            $null = $Excel.Workbooks.Open($xlsFile.FullName, $null, $true)
-            $Excel.ActiveWorkbook.SaveAs($xlsxPath, $xlFixedFormat)
+            $workbook = $Excel.Workbooks.Open($xlsFile.FullName, $null, $true)
+            if ($null -eq $workbook) {
+                Write-Host "Failed to open workbook"
+            } else {
+                $workbook.SaveAs($xlsxPath, $xlFixedFormat)
+            }
         }
         finally {
-            if ($null -ne $Excel.ActiveWorkbook) {
-                $Excel.ActiveWorkbook.Close()
+            if ($null -ne $workbook) {
+                $workbook.Close()
             }
             
             $Excel.Quit()
