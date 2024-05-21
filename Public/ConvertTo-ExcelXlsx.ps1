@@ -19,7 +19,7 @@ function ConvertTo-ExcelXlsx {
 
                 $xlFixedFormat = 51 #Constant for XLSX Workbook
                 $xlsFile = Get-Item -Path $singlePath
-                $xlsxPath = "{0}x" -f $xlsFile.FullName
+                $xlsxPath = [System.IO.Path]::ChangeExtension($xlsFile.FullName, ".xlsx")
 
                 if ($xlsFile.Extension -ne ".xls") {
                     throw "Expected .xls extension"
