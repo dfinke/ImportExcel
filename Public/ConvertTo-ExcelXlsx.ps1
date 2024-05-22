@@ -5,7 +5,9 @@ function ConvertTo-ExcelXlsx {
         [parameter(Mandatory = $true, ValueFromPipeline)]
         [string[]]$Path,
         [parameter(Mandatory = $false)]
-        [switch]$Force
+        [switch]$Force,
+        [parameter(Mandatory = $false)]
+        [switch]$CacheToTemp
     )
     process {
         try {
@@ -19,24 +21,24 @@ function ConvertTo-ExcelXlsx {
 
                 $xlFixedFormat = 51 #Constant for XLSX Workbook
                 $xlsFile = Get-Item -Path $singlePath
-                $xlsxPath = [System.IO.Path]::ChangeExtension($xlsFile.FullName, ".xlsx")
+                $destinationXlsxPath = [System.IO.Path]::ChangeExtension($xlsFile.FullName, ".xlsx")
 
                 if ($xlsFile.Extension -ne ".xls") {
                     throw "Expected .xls extension"
                 }
 
-                if (Test-Path -Path $xlsxPath) {
+                if (Test-Path -Path $destinationXlsxPath) {
                     if ($Force) {
                         try {
-                            Remove-Item $xlsxPath -Force
+                            Remove-Item $destinationXlsxPath -Force
                         }
                         catch {
-                            throw "{0} already exists and cannot be removed. The file may be locked by another application." -f $xlsxPath
+                            throw "{0} already exists and cannot be removed. The file may be locked by another application." -f $destinationXlsxPath
                         }
-                        Write-Verbose $("Removed {0}" -f $xlsxPath)
+                        Write-Verbose $("Removed {0}" -f $destinationXlsxPath)
                     }
                     else {
-                        throw "{0} already exists!" -f $xlsxPath
+                        throw "{0} already exists!" -f $destinationXlsxPath
                     }
                 }
 
@@ -50,13 +52,28 @@ function ConvertTo-ExcelXlsx {
                     }
                 }
 
+                if ($CacheToTemp) {
+                    $tempPath = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), [System.IO.Path]::GetFileName($xlsFile.FullName))
+                    Copy-Item -Path $xlsFile.FullName -Destination $tempPath -Force
+                    $fileToProcess = $tempPath
+                }
+                else {
+                    $fileToProcess = $xlsFile.FullName
+                }
+
+                $xlsxPath = [System.IO.Path]::ChangeExtension($fileToProcess, ".xlsx")
+
                 try {  
                     $Excel.Visible = $false
-                    $workbook = $Excel.Workbooks.Open($xlsFile.FullName, $null, $true)
+                    $workbook = $Excel.Workbooks.Open($fileToProcess, $null, $true)
                     if ($null -eq $workbook) {
                         Write-Host "Failed to open workbook"
                     } else {
                         $workbook.SaveAs($xlsxPath, $xlFixedFormat)
+                        
+                        if ($CacheToTemp) {
+                            Copy-Item -Path $xlsxPath -Destination $destinationXlsxPath -Force
+                        }
                     }
                 }
                 catch {
@@ -68,6 +85,11 @@ function ConvertTo-ExcelXlsx {
                         $workbook.Close()
                         [System.Runtime.InteropServices.Marshal]::ReleaseComObject($workbook) | Out-Null
                         $workbook = $null
+                    }
+
+                    if ($CacheToTemp) {
+                        Remove-Item -Path $tempPath -Force
+                        Remove-Item -Path $xlsxPath -Force
                     }
                 }
             }
