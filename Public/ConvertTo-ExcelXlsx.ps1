@@ -7,7 +7,9 @@ function ConvertTo-ExcelXlsx {
         [parameter(Mandatory = $false)]
         [switch]$Force,
         [parameter(Mandatory = $false)]
-        [switch]$CacheToTemp
+        [switch]$CacheToTemp,
+        [parameter(Mandatory = $false)]
+        [string]$CacheDirectory
     )
     process {
         try {
@@ -53,7 +55,11 @@ function ConvertTo-ExcelXlsx {
                 }
 
                 if ($CacheToTemp) {
-                    $tempPath = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), [System.IO.Path]::GetFileName($xlsFile.FullName))
+                    if (-not $CacheDirectory) {
+                        $CacheDirectory = [System.IO.Path]::GetTempPath()
+                    }
+                    $tempPath = [System.IO.Path]::Combine($CacheDirectory, [System.IO.Path]::GetFileName($xlsFile.FullName))
+                    Write-Host ("Using Temp path: {0}" -f $tempPath)
                     Copy-Item -Path $xlsFile.FullName -Destination $tempPath -Force
                     $fileToProcess = $tempPath
                 }
