@@ -9,10 +9,25 @@ function ConvertTo-ExcelXlsx {
         [parameter(Mandatory = $false)]
         [switch]$CacheToTemp,
         [parameter(Mandatory = $false)]
-        [string]$CacheDirectory
+        [string]$CacheToDirectory
     )
     process {
         try {
+
+            if ($CacheToTemp -and $CacheToDirectory) {
+                throw "Cannot specify both -CacheToTemp and -CacheToDirectory. Please choose one or the other."
+            }
+
+            if ($CacheToTemp) {
+                $CacheToDirectory = [System.IO.Path]::GetTempPath()
+            }
+
+            if ($CacheToDirectory) {
+                if (-not (Test-Path -Path $CacheToDirectory -PathType Container)) {
+                    throw "CacheToDirectory path does not exist or is not writeable"
+                }
+            }
+
             foreach ($singlePath in $Path) {
                 if (-Not ($singlePath | Test-Path) ) {
                     throw "File not found"
@@ -54,11 +69,8 @@ function ConvertTo-ExcelXlsx {
                     }
                 }
 
-                if ($CacheToTemp) {
-                    if (-not $CacheDirectory) {
-                        $CacheDirectory = [System.IO.Path]::GetTempPath()
-                    }
-                    $tempPath = [System.IO.Path]::Combine($CacheDirectory, [System.IO.Path]::GetFileName($xlsFile.FullName))
+                if ($CacheToDirectory) {
+                    $tempPath = [System.IO.Path]::Combine($CacheToDirectory, [System.IO.Path]::GetFileName($xlsFile.FullName))
                     Write-Host ("Using Temp path: {0}" -f $tempPath)
                     Copy-Item -Path $xlsFile.FullName -Destination $tempPath -Force
                     $fileToProcess = $tempPath
@@ -77,13 +89,13 @@ function ConvertTo-ExcelXlsx {
                     } else {
                         $workbook.SaveAs($xlsxPath, $xlFixedFormat)
                         
-                        if ($CacheToTemp) {
+                        if ($CacheToDirectory) {
                             Copy-Item -Path $xlsxPath -Destination $destinationXlsxPath -Force
                         }
                     }
                 }
                 catch {
-                    Write-Error ("Failed to convert {0} to XLSX. To avoid network issues or locking issues, you could try the -CacheToTemp parameter." -f $xlsFile.FullName)
+                    Write-Error ("Failed to convert {0} to XLSX. To avoid network issues or locking issues, you could try the -CacheToTemp or -CacheToDirectory parameter." -f $xlsFile.FullName)
                     throw
                 }
                 finally {
@@ -93,7 +105,7 @@ function ConvertTo-ExcelXlsx {
                         $workbook = $null
                     }
 
-                    if ($CacheToTemp) {
+                    if ($CacheToDirectory) {
                         Remove-Item -Path $tempPath -Force
                         Remove-Item -Path $xlsxPath -Force
                     }
