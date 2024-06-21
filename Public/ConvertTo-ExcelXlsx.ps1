@@ -83,7 +83,7 @@ function ConvertTo-ExcelXlsx {
                     }
                 }
                 catch {
-                    Write-Error ("Failed to convert {0} to XLSX." -f $xlsFile.FullName)
+                    Write-Error ("Failed to convert {0} to XLSX. To avoid network issues or locking issues, you could try the -CacheToTemp parameter." -f $xlsFile.FullName)
                     throw
                 }
                 finally {
