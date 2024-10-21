@@ -150,7 +150,6 @@ Check out the How To Videos https://www.youtube.com/watch?v=U3Ne_yX4tYo&list=PL5
             Tags         = @("Excel", "EPPlus", "Export", "Import")
 
             # The web address of an icon which can be used in galleries to represent this module
-            #IconUri = "http://pesterbdd.com/images/Pester.png"
 
             # The web address of this module's project or support homepage.
             ProjectUri   = "https://github.com/dfinke/ImportExcel"
