@@ -1,4 +1,4 @@
-﻿function Import-Excel {
+function Import-Excel {
     [CmdLetBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSPossibleIncorrectUsageOfAssignmentOperator', '', Justification = 'Intentional')]
@@ -161,7 +161,10 @@
                         #using Hash tables: "we've seen it" is all we need, no need to worry about "seen it before" / "Seen it many times".
                         $colHash = @{ }
                         $rowHash = @{ }
-                        foreach ($cell in $sheet.Cells[$range]) {
+
+                        $cells = $sheet.Cells[$range]
+
+                        foreach ($cell in $cells) {
                             if ($null -ne $cell.Value ) { $colHash[$cell.Start.Column] = 1; $rowHash[$cell.Start.row] = 1 }
                         }
                         $rows = (   $StartRow..$EndRow   ).Where( { $rowHash[$_] })
@@ -217,21 +220,26 @@
                             #Disabled write-verbose for speed
                             #  Write-Verbose "Import row '$R'"
                             $NewRow = [Ordered]@{ }
+
+                            # Get the entire row first
+                            $row = $sheet.Cells[$R, 1, $R, $sheet.Dimension.End.Column]
+
                             if ($TextColRegEx) {
                                 foreach ($P in $PropertyNames) {
+                                    $cell = $row[$R, $P.Column]
                                     $MatchTest = $TextColRegEx.Match($P.value)
                                     if ($MatchTest.groups.name -eq "astext") {
-                                        $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Text
+                                        $NewRow[$P.Value] = $cell.Text
                                     }
-                                    elseif ($MatchTest.groups.name -eq "asdate" -and $sheet.Cells[$R, $P.Column].Value -is [System.ValueType]) {
-                                        $NewRow[$P.Value] = [datetime]::FromOADate(($sheet.Cells[$R, $P.Column].Value))
+                                    elseif ($MatchTest.groups.name -eq "asdate" -and $cell.Value -is [System.ValueType]) {
+                                        $NewRow[$P.Value] = [datetime]::FromOADate($cell.Value)
                                     }
-                                    else { $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Value }
+                                    else { $NewRow[$P.Value] = $cell.Value }
                                 }
                             }
                             else {
                                 foreach ($P in $PropertyNames) {
-                                    $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Value
+                                    $NewRow[$P.Value] = $row[$R, $P.Column].Value
                                     #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
                                 }
                             }
