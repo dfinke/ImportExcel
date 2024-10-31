@@ -205,7 +205,7 @@ Describe ExportExcel -Tag "ExportExcel" {
             else { $OtherCurrencySymbol = "£" }
             $path = "TestDrive:\test.xlsx"
             $warnVar = $null
-            #Test correct export of different data types and number formats; test hyperlinks, test -NoNumberConversion and -NoHyperLinkConversion test object is converted to a string with no warnings, test calcuation of formula
+            #Test correct export of different data types and number formats; test hyperlinks, test -NoNumberConversion, -NoHyperLinkConversion and -NoFormulaConversion test object is converted to a string with no warnings, test calcuation of formula
             Remove-item -Path $path -ErrorAction SilentlyContinue
             [PSCustOmobject][Ordered]@{
                 Date             = Get-Date
@@ -236,7 +236,8 @@ Describe ExportExcel -Tag "ExportExcel" {
                 Link6            = "xl://internal/sheet1!C5"
                 Process          = (Get-Process -Id $PID)
                 TimeSpan         = [datetime]::Now.Subtract([datetime]::Today)
-            } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2 -NoHyperLinkConversion Link6 -Path $path -Calculate -WarningVariable $warnVar
+                NotAFormula      = "=SUM(2,3)"
+            } | Export-Excel  -NoNumberConversion IPAddress, StrLeadZero, StrAltPhone2 -NoHyperLinkConversion Link6 -NoFormulaConversion NotAFormula -Path $path -Calculate -WarningVariable $warnVar
         }
 
         BeforeEach {
@@ -325,6 +326,11 @@ Describe ExportExcel -Tag "ExportExcel" {
             $ws.cells[2, 28].Value.ToOADate()                          | Should      -BeGreaterThan 0
             $ws.cells[2, 28].Value.ToOADate()                          | Should      -BeLessThan    1
             $ws.cells[2, 28].Style.Numberformat.Format                 | Should      -Be  '[h]:mm:ss'
+        }
+        it "Creates no formula in cell AC2 NotAFormula (NoFormulaConversion)                        " {
+            $ws.Cells[2, 29].Value                                     | Should      -Be  '=SUM(2,3)'
+            $ws.Cells[2, 29].Value.GetType().name                      | Should      -Be  'String'
+            $ws.Cells[2, 29].Formula                                   | Should      -Be  [string]::Empty
         }
     }
 
@@ -1352,5 +1358,28 @@ Describe ExportExcel -Tag "ExportExcel" {
         Close-ExcelPackage $excel
 
         Remove-Item $path 
+    }
+
+    It "Should have no formula created using wild card" -Tag Formula {
+        $path = "TestDrive:\testFormula.xlsx"        
+
+        [PSCustOmobject][Ordered]@{
+            Formula1 = "=COUNT(1,1,1)"
+            Formula2 = "=SUM(2,3)"
+            Formula3 = "=1=1"
+        } | Export-Excel -NoFormulaConversion * -Path $path -Calculate
+
+        $excel = Open-ExcelPackage $Path
+        $ws = $excel.Sheet1
+        
+        $ws.Dimension.Rows    | Should -Be 2
+        $ws.Dimension.Columns | Should -Be 3
+
+        $ws.Cells["A2"].Value | Should -BeExactly "=COUNT(1,1,1)"
+        $ws.Cells["B2"].Value | Should -BeExactly "=SUM(2,3)"
+        $ws.Cells["C2"].Value | Should -BeExactly "=1=1"
+        
+        Close-ExcelPackage $excel
+        Remove-Item $path
     }
 }
