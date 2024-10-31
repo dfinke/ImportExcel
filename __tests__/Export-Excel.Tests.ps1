@@ -255,7 +255,7 @@ Describe ExportExcel -Tag "ExportExcel" {
         }
         it "Created the worksheet with the expected name, number of rows and number of columns     " {
             $ws.Name                                                    | Should      -Be "sheet1"
-            $ws.Dimension.Columns                                       | Should      -Be  28
+            $ws.Dimension.Columns                                       | Should      -Be  29
             $ws.Dimension.Rows                                          | Should      -Be  2
         }
         it "Set a date     in Cell A2                                                              " {
@@ -330,7 +330,7 @@ Describe ExportExcel -Tag "ExportExcel" {
         it "Creates no formula in cell AC2 NotAFormula (NoFormulaConversion)                        " {
             $ws.Cells[2, 29].Value                                     | Should      -Be  '=SUM(2,3)'
             $ws.Cells[2, 29].Value.GetType().name                      | Should      -Be  'String'
-            $ws.Cells[2, 29].Formula                                   | Should      -Be  [string]::Empty
+            $ws.Cells[2, 29].Formula                                   | Should      -Be  ''
         }
     }
 
