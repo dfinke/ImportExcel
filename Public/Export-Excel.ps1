@@ -80,6 +80,7 @@
         [Switch]$DisplayPropertySet,
         [String[]]$NoNumberConversion,
         [String[]]$NoHyperLinkConversion,
+        [String[]]$NoFormulaConversion,
         [Object[]]$ConditionalFormat,
         [Object[]]$ConditionalText,
         [Object[]]$Style,
@@ -330,7 +331,10 @@
                                 #Other objects or null.
                                 if ($null -ne $v) { $ws.Cells[$row, $ColumnIndex].Value = $v.toString() }
                             }
-                            elseif ($v[0] -eq '=') {
+                            elseif ( $v[0] -eq '=' -and
+                                $NoFormulaConversion -ne '*' -and
+                                $NoFormulaConversion -notcontains $Name
+                            ) {
                                 $ws.Cells[$row, $ColumnIndex].Formula = ($v -replace '^=', '')
                                 if ($setNumformat) { $ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = $Numberformat }
                             }
