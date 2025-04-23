@@ -50,7 +50,9 @@ function Get-HtmlTable {
     else {
         $h    = ConvertFrom-Html -Content $r.Content
         if ($TableIndex -is [valuetype]) { $TableIndex += 1}
-        $rows =    $h.SelectNodes("//table[$TableIndex]//tr")
+        $rows = try {
+               $h.SelectSingleNode("//table[$TableIndex]").SelectNodes(".//tr")
+        } catch {}
         if (-not $rows) {Write-Warning "Could not find rows for `"//table[$TableIndex]`" in $Url ."}
         if ( -not  $propertyNames) {
             if (   $tableHeaders  = $rows[$FirstDataRow].SelectNodes("th")) {
