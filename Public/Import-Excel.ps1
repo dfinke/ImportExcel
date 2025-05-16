@@ -193,6 +193,8 @@
                         Write-Warning "Worksheet '$WorksheetName' in workbook '$Path' contains no data in the rows after top row '$StartRow'"
                     }
                     else {
+						# Create a generic list to collect rows before adding them in bulk.
+						$TempList_GenericList = New-Object System.Collections.Generic.List[System.Object]
                         #region Create one object per row
                         if ($AsText -or $AsDate) {
                             <#join items in AsText together with ~~~ . Escape any regex special characters...
@@ -213,10 +215,11 @@
                             $TextColRegEx = New-Object -TypeName regex -ArgumentList $TextColExpression , 9
                         }
                         else { $TextColRegEx = $null }
+						
                         foreach ($R in $rows) {
+							$NewRow = [Ordered]@{ }
                             #Disabled write-verbose for speed
                             #  Write-Verbose "Import row '$R'"
-                            $NewRow = [Ordered]@{ }
                             if ($TextColRegEx) {
                                 foreach ($P in $PropertyNames) {
                                     $MatchTest = $TextColRegEx.Match($P.value)
@@ -231,14 +234,22 @@
                             }
                             else {
                                 foreach ($P in $PropertyNames) {
-                                    $NewRow[$P.Value] = $sheet.Cells[$R, $P.Column].Value
+									
+                                    $newRow.Add(($P.Value),($sheet.Cells[$R, $P.Column].Value))
+									
                                     #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
                                 }
                             }
-                            $xlBook["$targetSheetname"] += [PSCustomObject]$NewRow
-                        }
+							# Add to a generic list first to minimize the number of additions to $xlbook,
+							# as frequent direct additions do not scale well and can degrade performance.
+
+							$TempList_GenericList.Add([PSCustomObject]$NewRow)
+							
+							
+							}
+						$xlBook["$targetSheetname"] += $TempList_GenericList.ToArray()
                         #endregion
-                    }
+						}
                 }
             }
             catch { throw "Failed importing the Excel workbook '$Path' with worksheet '$WorksheetName': $_"; return }
