@@ -217,7 +217,7 @@
                         else { $TextColRegEx = $null }
 						
                         foreach ($R in $rows) {
-							$NewRow = [Ordered]@{ }
+			$NewRow = [Ordered]@{ }
                             #Disabled write-verbose for speed
                             #  Write-Verbose "Import row '$R'"
                             if ($TextColRegEx) {
@@ -234,22 +234,20 @@
                             }
                             else {
                                 foreach ($P in $PropertyNames) {
-									
+			
                                     $newRow.Add(($P.Value),($sheet.Cells[$R, $P.Column].Value))
 									
-                                    #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
+                                    #Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' 
+				    #and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
                                 }
                             }
-							# Add to a generic list first to minimize the number of additions to $xlbook,
-							# as frequent direct additions do not scale well and can degrade performance.
-
-							$TempList_GenericList.Add([PSCustomObject]$NewRow)
-							
-							
-							}
-						$xlBook["$targetSheetname"] += $TempList_GenericList.ToArray()
+				# Add to a generic list first to minimize the number of additions to $xlbook,
+				# as frequent direct additions do not scale well and can degrade performance.
+				$TempList_GenericList.Add([PSCustomObject]$NewRow)		
+			}
+				$xlBook["$targetSheetname"] += $TempList_GenericList.ToArray()
                         #endregion
-						}
+			}
                 }
             }
             catch { throw "Failed importing the Excel workbook '$Path' with worksheet '$WorksheetName': $_"; return }
