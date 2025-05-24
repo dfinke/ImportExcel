@@ -145,7 +145,7 @@
                     }
 
                     $targetSheetname = $sheet.Name
-                    $xlBook["$targetSheetname"] = @()
+                    $xlBook["$targetSheetname"] = [System.Collections.Generic.List[object]]::new()
                     #region Get rows and columns
                     #If we are doing dataonly it is quicker to work out which rows to ignore before processing the cells.
                     if (-not $EndRow   ) { $EndRow = $sheet.Dimension.End.Row }
@@ -235,7 +235,7 @@
                                     #    Write-Verbose "Import cell '$($Worksheet.Cells[$R, $P.Column].Address)' with property name '$($p.Value)' and value '$($Worksheet.Cells[$R, $P.Column].Value)'."
                                 }
                             }
-                            $xlBook["$targetSheetname"] += [PSCustomObject]$NewRow
+                            $xlBook["$targetSheetname"].Add([PSCustomObject]$NewRow)
                         }
                         #endregion
                     }
