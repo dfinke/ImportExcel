@@ -1,17 +1,17 @@
 try { Import-Module $PSScriptRoot\..\..\ImportExcel.psd1 } catch { throw ; return }
 
 $data = ConvertFrom-Csv @"
-OrderId,Category,Sales,Quantity,Discount
-1,Cosmetics,744.01,07,0.7
-2,Grocery,349.13,25,0.3
-3,Apparels,535.11,88,0.2
-4,Electronics,524.69,60,0.1
-5,Electronics,439.10,41,0.0
-6,Apparels,56.84,54,0.8
-7,Electronics,326.66,97,0.7
-8,Cosmetics,17.25,74,0.6
-9,Grocery,199.96,39,0.4
-10,Grocery,731.77,20,0.3
+OrderId,Category,Sales,Quantity,Discount,Total
+1,Cosmetics,744.01,07,0.7,"=[[#This Row],[Sales]] * [[#This Row],[Quantity]]"
+2,Grocery,349.13,25,0.3,"=[[#This Row],[Sales]] * [[#This Row],[Quantity]]"
+3,Apparels,535.11,88,0.2,"=[[#This Row],[Sales]] * [[#This Row],[Quantity]]"
+4,Electronics,524.69,60,0.1,"=[[#This Row],[Sales]] * [[#This Row],[Quantity]]"
+5,Electronics,439.10,41,0.0,"=[[#This Row],[Sales]] * [[#This Row],[Quantity]]"
+6,Apparels,56.84,54,0.8,"=[[#This Row],[Sales]] * [[#This Row],[Quantity]]"
+7,Electronics,326.66,97,0.7,"=[[#This Row],[Sales]] * [[#This Row],[Quantity]]"
+8,Cosmetics,17.25,74,0.6,"=[[#This Row],[Sales]] * [[#This Row],[Quantity]]"
+9,Grocery,199.96,39,0.4,"=[[#This Row],[Sales]] * [[#This Row],[Quantity]]"
+10,Grocery,731.77,20,0.3,"=[[#This Row],[Sales]] * [[#This Row],[Quantity]]"
 "@
 
 $xlfile = "$PSScriptRoot\TotalsRow.xlsx"
