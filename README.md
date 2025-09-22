@@ -191,4 +191,14 @@ ForEach-Object { $_.Value | Export-Csv ($_.key + '.csv') }
 ## Contributing
 Contributions are welcome! Open a pull request to fix a bug, or open an issue to discuss a new feature or change.
 
+## New Features
+
+### Gradient Fill Support
+ImportExcel now includes enhanced gradient fill support with three new functions:
+- `Set-ExcelGradientFill` - Apply gradient fills to Excel ranges
+- `Get-ExcelGradientFill` - Read gradient properties from ranges  
+- `Copy-ExcelGradientFill` - Copy gradients between ranges
+
+These functions work around EPPlus 4.x limitations with gradient color reading. See [GRADIENT_GUIDE.md](GRADIENT_GUIDE.md) for detailed usage examples.
+
 Original [README.md](./README.original.md)
