@@ -113,6 +113,57 @@ function Add-ExcelChart {
         if ($null -ne $XMinValue) { $chart.XAxis.MinValue = $XMinValue }
         if ($null -ne $XMaxValue) { $chart.XAxis.MaxValue = $XMaxValue }
         if ($XAxisNumberformat) { $chart.XAxis.Format = (Expand-NumberFormat $XAxisNumberformat) }
+        
+        # Fix for category axis (used in line charts, etc.): EPPlus doesn't serialize MajorUnit/MinorUnit to XML for category axes
+        # We need to manually add these elements to the XML if they were specified
+        if ($XMajorUnit -or $XMinorUnit) {
+            $chartXml = $chart.ChartXml
+            $nsManager = New-Object System.Xml.XmlNamespaceManager($chartXml.NameTable)
+            $null = $nsManager.AddNamespace("c", "http://schemas.openxmlformats.org/drawingml/2006/chart")
+            $catAx = $chartXml.SelectSingleNode("//c:catAx", $nsManager)
+            
+            if ($catAx) {
+                # Category axis exists - need to add majorUnit/minorUnit elements
+                if ($XMajorUnit) {
+                    $existingMajorUnit = $catAx.SelectSingleNode("c:majorUnit", $nsManager)
+                    if (-not $existingMajorUnit) {
+                        $majorUnitElement = $chartXml.CreateElement("c", "majorUnit", "http://schemas.openxmlformats.org/drawingml/2006/chart")
+                        $null = $majorUnitElement.SetAttribute("val", $XMajorUnit)
+                        # Insert after scaling element or at the beginning
+                        $scalingNode = $catAx.SelectSingleNode("c:scaling", $nsManager)
+                        if ($scalingNode) {
+                            $null = $catAx.InsertAfter($majorUnitElement, $scalingNode)
+                        } else {
+                            $null = $catAx.PrependChild($majorUnitElement)
+                        }
+                    } else {
+                        $null = $existingMajorUnit.SetAttribute("val", $XMajorUnit)
+                    }
+                }
+                
+                if ($XMinorUnit) {
+                    $existingMinorUnit = $catAx.SelectSingleNode("c:minorUnit", $nsManager)
+                    if (-not $existingMinorUnit) {
+                        $minorUnitElement = $chartXml.CreateElement("c", "minorUnit", "http://schemas.openxmlformats.org/drawingml/2006/chart")
+                        $null = $minorUnitElement.SetAttribute("val", $XMinorUnit)
+                        # Insert after majorUnit if it exists, otherwise after scaling
+                        $majorUnitNode = $catAx.SelectSingleNode("c:majorUnit", $nsManager)
+                        if ($majorUnitNode) {
+                            $null = $catAx.InsertAfter($minorUnitElement, $majorUnitNode)
+                        } else {
+                            $scalingNode = $catAx.SelectSingleNode("c:scaling", $nsManager)
+                            if ($scalingNode) {
+                                $null = $catAx.InsertAfter($minorUnitElement, $scalingNode)
+                            } else {
+                                $null = $catAx.PrependChild($minorUnitElement)
+                            }
+                        }
+                    } else {
+                        $null = $existingMinorUnit.SetAttribute("val", $XMinorUnit)
+                    }
+                }
+            }
+        }
 
         if ($YAxisTitleText) {
             $chart.YAxis.Title.Text = $YAxisTitleText
