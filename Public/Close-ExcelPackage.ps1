@@ -19,6 +19,9 @@ function Close-ExcelPackage {
             try { [OfficeOpenXml.CalculationExtension]::Calculate($ExcelPackage.Workbook) }
             catch { Write-Warning "One or more errors occured while calculating, save will continue, but there may be errors in the workbook." }
         }
+        # Set FullCalcOnLoad to false to prevent Excel from corrupting formulas during recalculation
+        # This fixes issues with table-structured references like [[#This Row],[ColumnName]]
+        $ExcelPackage.Workbook.FullCalcOnLoad = $false
         if ($SaveAs) {
             $SaveAs = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($SaveAs)
             if ($Password) { $ExcelPackage.SaveAs( $SaveAs, $Password ) }
