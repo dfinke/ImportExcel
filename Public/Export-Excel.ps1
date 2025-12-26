@@ -682,6 +682,9 @@
         else {
             if ($ReturnRange) { $dataRange }
 
+            # Set FullCalcOnLoad to false to prevent Excel from corrupting formulas during recalculation
+            # This fixes issues with table-structured references like [[#This Row],[ColumnName]]
+            $pkg.Workbook.FullCalcOnLoad = $false
             if ($Password) { $pkg.Save($Password) }
             else { $pkg.Save() }
             Write-Verbose -Message "Saved workbook $($pkg.File)"
