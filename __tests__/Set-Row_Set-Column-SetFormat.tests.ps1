@@ -1,4 +1,4 @@
-﻿
+﻿Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
 
 Describe "Number format expansion and setting" {
     BeforeAll {
@@ -231,6 +231,43 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange"  {
             $ws.Cells["e7"].Style.Fill.BackgroundColor.Rgb              | Should      -Be "FFF0F8FF"
             $ws.Cells["e7"].Style.Fill.PatternColor.Rgb                 | Should      -Be "FFFF0000"
             $ws.Cells["e7"].Style.Fill.PatternType                      | Should      -Be "DarkTrellis"
+        }
+    }
+
+    Context "Row height setting - Issue #1738" {
+        BeforeAll {
+            $heightPath = "TestDrive:\testHeight.xlsx"
+            Remove-Item -Path $heightPath -ErrorAction SilentlyContinue
+            $heightData = ConvertFrom-Csv -InputObject @"
+            A,B,C
+            1,2,3
+            4,5,6
+            7,8,9
+            10,11,12
+            13,14,15
+            16,17,18
+"@
+            $heightExcel = $heightData | Export-Excel -Path $heightPath -WorksheetName TestHeight -PassThru
+            $heightWs = $heightExcel.Workbook.Worksheets["TestHeight"]
+            $defaultHeight = $heightWs.DefaultRowHeight
+            Set-ExcelRow   -Worksheet $heightWs -Row 1     -Height 42
+            Set-ExcelRange -Worksheet $heightWs -Range '4:5' -Height 32
+        }
+        AfterAll {
+            Close-ExcelPackage -ExcelPackage $heightExcel -NoSave
+        }
+        it "Set the height of the single row given to Set-ExcelRow                                 " {
+            $heightWs.Row(1).Height                                     | Should      -Be 42
+        }
+        it "Set the height of each row in the range given to Set-ExcelRange                        " {
+            $heightWs.Row(4).Height                                     | Should      -Be 32
+            $heightWs.Row(5).Height                                     | Should      -Be 32
+        }
+        it "Did not change the height of the rows after those specified                            " {
+            $heightWs.Row(2).Height                                     | Should      -Be $defaultHeight
+            $heightWs.Row(3).Height                                     | Should      -Be $defaultHeight
+            $heightWs.Row(6).Height                                     | Should      -Be $defaultHeight
+            $heightWs.Row(7).Height                                     | Should      -Be $defaultHeight
         }
     }
 
