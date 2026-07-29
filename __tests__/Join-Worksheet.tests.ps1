@@ -54,7 +54,7 @@ Describe "Join Worksheet part 1" {
             $excel.Workbook.Worksheets["SummaryPivot"].Hidden           | Should      -Be 'Visible'
         }
         it "Activated the correct worksheet                                                        " {
-            Set-ItResult -Pending -Because "Bug in EPPLus 4.5"
+            Set-ItResult -Skipped -Because "Bug in EPPLus 4.5"
             $excel.Workbook.worksheets["SummaryPivot"].View.TabSelected | Should      -Be $true
             $excel.Workbook.worksheets["Total"].View.TabSelected        | Should      -Be $false
         }
