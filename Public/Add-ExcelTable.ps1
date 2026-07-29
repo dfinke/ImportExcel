@@ -17,8 +17,59 @@ function Add-ExcelTable {
         [Switch]$PassThru
     )
     try {
+        #Moving an existing table onto new cells: update its range and matching filter range in place.
+        #When columns were added or removed, the stored column definitions must be rebuilt to match the
+        #new width - Excel treats a mismatch as a corrupt file. Their names come from the header row and
+        #must equal the header cell text exactly, so generated names are written back to empty cells.
+        $updateTable = {
+            param ($tbl, $Range)
+            $tableXml = $tbl.TableXml.table
+            $sameColumns = ($tbl.Address.Start.Column -eq $Range.Start.Column -and $tbl.Address.End.Column -eq $Range.End.Column)
+            #A table showing a totals row occupies one row more than its data; keep that shape when moving it.
+            $totalsRows = 0
+            if ($tableXml.GetAttribute('totalsRowCount')) { $totalsRows = [int]$tableXml.GetAttribute('totalsRowCount') }
+            $newAddress = New-Object -TypeName OfficeOpenXml.ExcelAddressBase -ArgumentList $Range.Start.Row, $Range.Start.Column, ($Range.End.Row + $totalsRows), $Range.End.Column
+            #EPPlus caches the address on the table object and computes later changes (such as turning the
+            #totals row on) from that cache, so go through its Address property - internal, hence reflection -
+            #which updates the cache and the XML ref together.
+            [OfficeOpenXml.Table.ExcelTable].GetProperty('Address').SetValue($tbl, $newAddress)
+            #the filter range covers the header and data rows but never the totals row
+            if ($tableXml['autoFilter']) { $tableXml['autoFilter'].SetAttribute('ref', $Range.Address) }
+            if (-not $sameColumns) {
+                $hasHeader    = $tableXml.GetAttribute('headerRowCount') -ne '0'
+                $tableColumns = $tableXml['tableColumns']
+                $tableColumns.RemoveAll()
+                $width = $Range.End.Column - $Range.Start.Column + 1
+                $tableColumns.SetAttribute('count', $width)
+                $usedNames = @{}
+                for ($i = 0; $i -lt $width; $i++) {
+                    $headerCell = $Range.Worksheet.Cells[$Range.Start.Row, ($Range.Start.Column + $i)]
+                    $columnName = "$($headerCell.Value)"
+                    if (-not $columnName -or $usedNames[$columnName]) {
+                        $suffix = $i + 1
+                        do { $columnName = "Column$suffix"; $suffix ++ } while ($usedNames[$columnName])
+                        if ($hasHeader) { $headerCell.Value = $columnName }
+                    }
+                    $usedNames[$columnName] = $true
+                    $tableColumn = $tableXml.OwnerDocument.CreateElement('tableColumn', $tableXml.NamespaceURI)
+                    $tableColumn.SetAttribute('id', ($i + 1))
+                    $tableColumn.SetAttribute('name', $columnName)
+                    [void]$tableColumns.AppendChild($tableColumn)
+                }
+            }
+            Write-Verbose -Message "Re-used existing table '$($tbl.Name)', now at $($Range.Address)."
+            return $tbl
+        }
         if ($TableName -eq "" -or $null -eq $TableName) {
-            $tbl = $Range.Worksheet.Tables.Add($Range, "")
+            #Adding a table over cells an existing table occupies corrupts the file (issue #1725), which
+            #can happen when a sheet is exported to repeatedly; update the existing table instead.
+            $tbl = $Range.Worksheet.Tables.Where({Test-ExcelRangeOverlap -Address1 $_.Address -Address2 $Range}, 'First', 1)[0]
+            if ($tbl) {
+                $tbl = & $updateTable $tbl $Range
+            }
+            else {
+                $tbl = $Range.Worksheet.Tables.Add($Range, "")
+            }
         }
         else {
             if ([OfficeOpenXml.FormulaParsing.ExcelUtilities.ExcelAddressUtil]::IsValidAddress($TableName)) {
@@ -36,17 +87,25 @@ function Add-ExcelTable {
             $ws = $Range.Worksheet
             #if the table exists in this worksheet, update it.
             if ($ws.Tables[$TableName]) {
-                $tbl =$ws.Tables[$TableName]
-                $tbl.TableXml.table.ref = $Range.Address
-                Write-Verbose -Message "Re-defined table '$TableName', now at $($Range.Address)."
+                $tbl = & $updateTable $ws.Tables[$TableName] $Range
             }
             elseif ($ws.Workbook.Worksheets.Tables.Name -contains $TableName) {
                 Write-Warning -Message "The Table name '$TableName' is already used on a different worksheet."
                 return
             }
             else {
-                $tbl = $ws.Tables.Add($Range, $TableName)
-                Write-Verbose -Message "Defined table '$($tbl.Name)' at $($Range.Address)"
+                #A second table on the same cells corrupts the file (issue #1725): take over the table already there, renaming it, rather than doubling up.
+                $overlapping = $ws.Tables.Where({Test-ExcelRangeOverlap -Address1 $_.Address -Address2 $Range}, 'First', 1)[0]
+                if ($overlapping) {
+                    Write-Verbose -Message "Table '$($overlapping.Name)' occupied $($overlapping.Address.Address); it becomes '$TableName'."
+                    #the Name property setter also keeps EPPlus's table name lookup in step, raw XML edits would not
+                    $overlapping.Name = $TableName
+                    $tbl = & $updateTable $overlapping $Range
+                }
+                else {
+                    $tbl = $ws.Tables.Add($Range, $TableName)
+                    Write-Verbose -Message "Defined table '$($tbl.Name)' at $($Range.Address)"
+                }
             }
         }
         #it seems that show total changes some of the others, so the sequence matters.
