@@ -16,7 +16,10 @@ function Close-ExcelPackage {
     if ( $NoSave) { $ExcelPackage.Dispose() }
     else {
         if ($Calculate) {
-            try { [OfficeOpenXml.CalculationExtension]::Calculate($ExcelPackage.Workbook) }
+            try {
+                Register-XlFnFunction -Workbook $ExcelPackage.Workbook
+                [OfficeOpenXml.CalculationExtension]::Calculate($ExcelPackage.Workbook)
+            }
             catch { Write-Warning "One or more errors occured while calculating, save will continue, but there may be errors in the workbook." }
         }
         if ($SaveAs) {

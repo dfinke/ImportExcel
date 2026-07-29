@@ -87,7 +87,7 @@
                 else                     {Write-Verbose -Message "Script block evaluates to '$cellData'"}
             }
             else{$cellData = $Value}
-            if  ($cellData -match "^=")      { $Worksheet.Cells[$Row, $column].Formula                    = ($cellData -replace '^=','') } #EPPlus likes formulas with no = sign; Excel doesn't care
+            if  ($cellData -match "^=")      { $Worksheet.Cells[$Row, $column].Formula                    = (Expand-XlFnFormula ($cellData -replace '^=','')) } #EPPlus likes formulas with no = sign; Excel doesn't care
             elseif ( [System.Uri]::IsWellFormedUriString($cellData , [System.UriKind]::Absolute)) {
                 # Save a hyperlink : internal links can be in the form xl://sheet!E419 (use A1 as goto sheet), or xl://RangeName
                 if ($cellData -match "^xl://internal/") {
