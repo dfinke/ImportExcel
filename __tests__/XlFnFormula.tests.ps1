@@ -96,6 +96,8 @@ Describe "Prefixing post-2007 function names with _xlfn - Issue #1728" {
         BeforeAll {
             $env:NoXlFn = 1
             Set-ExcelRange -Worksheet $ws -Range "A15" -Formula '=IFS(TRUE,"raw")'
+        }
+        AfterAll {
             $env:NoXlFn = $null
         }
         it "Did not rewrite the formula when NoXlFn was set                                          " {
