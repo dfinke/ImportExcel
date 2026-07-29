@@ -66,11 +66,12 @@ Describe "Compare Worksheet" {
                 $null = Compare-Worksheet "TestDrive:\server1.xlsx" "TestDrive:\server2.xlsx" -BackgroundColor ([System.Drawing.Color]::LightGreen)
             }
             else {
-                $cmdline = 'Import-Module {0}; $null = Compare-WorkSheet "{1}" "{2}" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView; Start-Sleep -sec 5; exit'
+                $cmdline = 'Import-Module "{0}"; $null = Compare-WorkSheet "{1}" "{2}" -BackgroundColor ([System.Drawing.Color]::LightGreen) -GridView; Start-Sleep -sec 5; exit'
                 $cmdline = $cmdline -f  (Resolve-Path "$PSScriptRoot\..\importExcel.psd1" ) ,
                                         (Join-Path (Get-PSDrive TestDrive).root "server1.xlsx"),
                                         (Join-Path (Get-PSDrive TestDrive).root "server2.xlsx")
-                powershell.exe -Command  $cmdline
+                #-EncodedCommand, because -Command mangles the embedded quotes, breaking the import when the module path contains spaces
+                powershell.exe -EncodedCommand ([Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($cmdline)))
             }
             $xl1  = Open-ExcelPackage -Path "TestDrive:\server1.xlsx"
             $xl2  = Open-ExcelPackage -Path "TestDrive:\server2.xlsx"

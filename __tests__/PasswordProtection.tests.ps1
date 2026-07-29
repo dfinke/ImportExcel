@@ -3,7 +3,7 @@
 Describe "Password Support" {
     if ($PSVersionTable.PSVersion.Major -GT 5) {
         It "Password Supported" {
-            Set-ItResult -Pending -Because "Can't test passwords on V6 and later"
+            Set-ItResult -Skipped -Because "Can't test passwords on V6 and later"
         }
         return
     }

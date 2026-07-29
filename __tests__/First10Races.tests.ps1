@@ -93,7 +93,7 @@ Describe "Creating small named ranges with hyperlinks" {
             $sheet.ConditionalFormatting[1].StopIfTrue                  | Should      -Be $true
         }
         It "Applied ConditionalFormatting, including Reverse                                       " {
-            Set-ItResult -Pending -Because "Bug in EPPLus 4.5"
+            Set-ItResult -Skipped -Because "Bug in EPPLus 4.5"
             $sheet.ConditionalFormatting[3].LowValue.Color.R            | Should      -BegreaterThan 180
             $sheet.ConditionalFormatting[3].LowValue.Color.G            | Should      -BeLessThan 128
             $sheet.ConditionalFormatting[3].HighValue.Color.R           | Should      -BeLessThan 128

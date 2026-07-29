@@ -100,22 +100,47 @@ if (-not $VersionFilePath) {
     '[Progress] Installing Module.'
     . .\CI\Install.ps1
     '[Progress] Invoking Pester.'
-    $pesterParams = @{
-        OutputFile = ('TestResultsPS{0}.xml' -f $PSVersionTable.PSVersion)
-        PassThru = $true
-    }
-    if ($TestImportOnly) {
-        $pesterParams['Tag'] = 'TestImportOnly'
+    $resultsFileName = 'TestResultsPS{0}.xml' -f $PSVersionTable.PSVersion
+    if (Get-Command -Name New-PesterConfiguration -ErrorAction SilentlyContinue) {
+        # Pester 5 and later. -OutputFile/-Tag/-ExcludeTag were replaced by the configuration object;
+        # the default TestResult format is NUnit 2.5, which is what PublishTestResults expects.
+        $pesterConfig = New-PesterConfiguration
+        $pesterConfig.Run.PassThru          = $true
+        $pesterConfig.TestResult.Enabled    = $true
+        $pesterConfig.TestResult.OutputPath = $resultsFileName
+        if ($TestImportOnly) {
+            $pesterConfig.Filter.Tag        = 'TestImportOnly'
+        }
+        else {
+            $pesterConfig.Filter.ExcludeTag = 'TestImportOnly'
+        }
+        $testResults = Invoke-Pester -Configuration $pesterConfig
+        'Pester invocation complete!'
+        if ($testResults.FailedCount -gt 0) {
+            "Test failures:"
+            $testResults.Failed | Format-List -Property ExpandedPath, ErrorRecord
+            Write-Error "$($testResults.FailedCount) Pester tests failed. Build cannot continue!"
+        }
     }
     else {
-        $pesterParams['ExcludeTag'] = 'TestImportOnly'
-    }
-    $testResults = Invoke-Pester @pesterParams
-    'Pester invocation complete!'
-    if ($testResults.FailedCount -gt 0) {
-        "Test failures:"
-        $testResults.TestResult | Where-Object {-not $_.Passed} | Format-List
-        Write-Error "$($testResults.FailedCount) Pester tests failed. Build cannot continue!"
+        # Pester 4 and earlier.
+        $pesterParams = @{
+            OutputFile = $resultsFileName
+            PassThru = $true
+        }
+        if ($TestImportOnly) {
+            $pesterParams['Tag'] = 'TestImportOnly'
+        }
+        else {
+            $pesterParams['ExcludeTag'] = 'TestImportOnly'
+        }
+        $testResults = Invoke-Pester @pesterParams
+        'Pester invocation complete!'
+        if ($testResults.FailedCount -gt 0) {
+            "Test failures:"
+            $testResults.TestResult | Where-Object {-not $_.Passed} | Format-List
+            Write-Error "$($testResults.FailedCount) Pester tests failed. Build cannot continue!"
+        }
     }
 }
 if ($Finalize) {
