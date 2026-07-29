@@ -429,6 +429,11 @@
 
         #Allow table to be inserted by specifying Name, or Style or both; only process autoFilter if there is no table (they clash).
         if ($null -ne $TableName -or $PSBoundParameters.ContainsKey('TableStyle')) {
+            #A worksheet autofilter left by a previous export corrupts the file when a table covers the same cells (issue #1725): the table provides its own filter, remove the old one.
+            if ($ws.AutoFilterAddress -and (Test-ExcelRangeOverlap -Address1 $ws.AutoFilterAddress -Address2 $ws.Cells[$dataRange])) {
+                $ws.Cells[$ws.AutoFilterAddress.Address].AutoFilter = $false
+                Write-Verbose -Message "Removed existing autofilter which overlapped the table range."
+            }
             #Already inserted Excel table if input was a DataTable
             if ($InputObject -isnot [System.Data.DataTable]) {
                 Add-ExcelTable -Range $ws.Cells[$dataRange] -TableName $TableName -TableStyle $TableStyle -TableTotalSettings $TableTotalSettings
@@ -436,8 +441,14 @@
         }
         elseif ($AutoFilter) {
             try {
-                $ws.Cells[$dataRange].AutoFilter = $true
-                Write-Verbose -Message "Enabled autofilter. "
+                #An autofilter over cells covered by a table left by a previous export corrupts the file (issue #1725): leave the filtering to the table.
+                if ($ws.Tables.Where({Test-ExcelRangeOverlap -Address1 $_.Address -Address2 $ws.Cells[$dataRange]}, 'First', 1)[0]) {
+                    Write-Warning -Message "Did not enable autofilter on worksheet '$WorksheetName' because a table covering the same cells already provides one."
+                }
+                else {
+                    $ws.Cells[$dataRange].AutoFilter = $true
+                    Write-Verbose -Message "Enabled autofilter. "
+                }
             }
             catch { Write-Warning -Message "Failed adding autofilter to worksheet '$WorksheetName': $_" }
         }
