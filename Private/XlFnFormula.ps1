@@ -123,6 +123,11 @@ function Register-XlFnFunction {
     foreach ($implemented in @($parserManager.GetImplementedFunctions())) {
         if ($implemented.Key -notlike '_xlfn.*') {
             $parserManager.AddOrReplaceFunction("_xlfn.$($implemented.Key)", $implemented.Value)
+            #FILTER and SORT are stored as _xlfn._xlws.: register that alias too, in case a future
+            #EPPlus implements them (the version bundled today implements neither).
+            if ($script:XlFnFunctionPrefix[$implemented.Key] -eq '_xlfn._xlws.') {
+                $parserManager.AddOrReplaceFunction("_xlfn._xlws.$($implemented.Key)", $implemented.Value)
+            }
         }
     }
 }
