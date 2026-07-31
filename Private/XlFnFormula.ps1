@@ -8,7 +8,9 @@
 # functions into Excel (Microsoft 365) via COM, reading back what Excel stored in the worksheet XML,
 # and cross-checking against the future-function lists other xlsx writers (XlsxWriter, PhpSpreadsheet)
 # use. NETWORKDAYS.INTL, WORKDAY.INTL and ISO.CEILING are absent deliberately - Excel stores them
-# unprefixed, although PhpSpreadsheet believes otherwise.
+# unprefixed, although PhpSpreadsheet believes otherwise. The script which regenerates this table from
+# the installed Excel - and verifies the table against it - is __tests__\Get-XlFnFunctionList.ps1,
+# with its latest output in __tests__\XlFnFunctionList.txt.
 $script:XlFnFunctionPrefix = @{}
 foreach ($functionName in @(
         #Added in Excel 2010
