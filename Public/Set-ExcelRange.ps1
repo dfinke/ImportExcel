@@ -113,7 +113,7 @@
                 $Range.Merge   = [boolean]$Merge
             }
             if ($PSBoundParameters.ContainsKey('Value')) {
-                if ($Value -match '^=')      {$PSBoundParameters["Formula"] = $Value -replace '^=','' }
+                if ($Value -match '^=')      {if (-not $PSBoundParameters.ContainsKey('Formula')) {$Formula = $Value ; $PSBoundParameters["Formula"] = $Value} }
                 else {
                     $Range.Value = $Value
                     if ($Value -is [datetime])  { $Range.Style.Numberformat.Format = 'm/d/yy h:mm' }# This is not a custom format, but a preset recognized as date and localized. It might be overwritten in a moment
@@ -121,8 +121,9 @@
                 }
             }
             if ($PSBoundParameters.ContainsKey('Formula')) {
-                if ($ArrayFormula) {$Range.CreateArrayFormula(($Formula -replace '^=','')) }
-                else               {$Range.Formula         =  ($Formula -replace '^=','')  }
+                $expandedFormula = Expand-XlFnFormula ($Formula -replace '^=','')
+                if ($ArrayFormula) {$Range.CreateArrayFormula($expandedFormula) }
+                else               {$Range.Formula         =  $expandedFormula  }
             }
             if ($PSBoundParameters.ContainsKey('NumberFormat')) {
                 $Range.Style.Numberformat.Format = (Expand-NumberFormat $NumberFormat)

@@ -331,7 +331,10 @@
                                 if ($null -ne $v) { $ws.Cells[$row, $ColumnIndex].Value = $v.toString() }
                             }
                             elseif ($v[0] -eq '=') {
-                                $ws.Cells[$row, $ColumnIndex].Formula = ($v -replace '^=', '')
+                                $formulaText = $v -replace '^=', ''
+                                #The IsMatch test repeats the one inside Expand-XlFnFormula: this loop runs once per cell, so formulas which need no rewrite (most) should not pay for a function call.
+                                if ($script:XlFnNameTestRegex.IsMatch($formulaText)) { $formulaText = Expand-XlFnFormula $formulaText }
+                                $ws.Cells[$row, $ColumnIndex].Formula = $formulaText
                                 if ($setNumformat) { $ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = $Numberformat }
                             }
                             elseif ( $NoHyperLinkConversion -ne '*' -and # Put the check for 'NoHyperLinkConversion is null' first to skip checking for wellformedstring
@@ -590,7 +593,10 @@
         }
 
         if ($Calculate) {
-            try { [OfficeOpenXml.CalculationExtension]::Calculate($ws) }
+            try {
+                Register-XlFnFunction -Workbook $ws.Workbook
+                [OfficeOpenXml.CalculationExtension]::Calculate($ws)
+            }
             catch { Write-Warning "One or more errors occured while calculating, save will continue, but there may be errors in the workbook. $_" }
         }
 
