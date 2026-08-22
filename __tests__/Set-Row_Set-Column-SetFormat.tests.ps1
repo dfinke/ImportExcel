@@ -1,5 +1,7 @@
 ﻿
 
+Import-Module $PSScriptRoot\..\ImportExcel.psd1 -Force
+
 Describe "Number format expansion and setting" {
     BeforeAll {
         $path = "TestDrive:\test.xlsx"
@@ -158,6 +160,7 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange"  {
         Set-ExcelRange -Worksheet $ws -Range "E3"  -Bold:$false -FontShift Superscript -HorizontalAlignment Left
         Set-ExcelRange -Worksheet $ws -Range "E1"  -ResetFont -HorizontalAlignment General -FontName "Courier New" -fontSize 9
         Set-ExcelRange -Address   $ws.Cells["E7"]  -ResetFont -WrapText -BackgroundColor  ([System.Drawing.Color]::AliceBlue) -BackgroundPattern DarkTrellis -PatternColor  ([System.Drawing.Color]::Red)  -NumberFormat "£#,###.00"
+        Set-ExcelRange -Address   $ws.Cells["H7"]  -FontColor '#FFFFFF' -BackgroundColor '#4F81BD' -BorderAround Thin -BorderColor '#FFC000'
         Set-ExcelRange -Address   $ws.Column(1)    -Width  0
         if (-not $env:NoAutoSize) {
             Set-ExcelRange -Address   $ws.Column(2)    -AutoFit
@@ -231,6 +234,9 @@ Describe "Set-ExcelColumn, Set-ExcelRow and Set-ExcelRange"  {
             $ws.Cells["e7"].Style.Fill.BackgroundColor.Rgb              | Should      -Be "FFF0F8FF"
             $ws.Cells["e7"].Style.Fill.PatternColor.Rgb                 | Should      -Be "FFFF0000"
             $ws.Cells["e7"].Style.Fill.PatternType                      | Should      -Be "DarkTrellis"
+            $ws.Cells["h7"].Style.Font.Color.Rgb                        | Should      -Be "FFFFFFFF"
+            $ws.Cells["h7"].Style.Fill.BackgroundColor.Rgb              | Should      -Be "FF4F81BD"
+            $ws.Cells["h7"].Style.Border.Top.Color.Rgb                  | Should      -Be "FFFFC000"
         }
     }
 

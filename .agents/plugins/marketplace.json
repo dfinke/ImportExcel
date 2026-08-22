@@ -1,0 +1,20 @@
+{
+    "name": "local-importexcel",
+    "interface": {
+        "displayName": "Local ImportExcel Plugins"
+    },
+    "plugins": [
+        {
+            "name": "importexcel-codex-plugin",
+            "source": {
+                "source": "local",
+                "path": "./plugins/importexcel-codex-plugin"
+            },
+            "policy": {
+                "installation": "AVAILABLE",
+                "authentication": "ON_INSTALL"
+            },
+            "category": "Productivity"
+        }
+    ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "importexcel-codex-plugin",
+  "version": "0.1.0+codex.20260609205808",
+  "description": "AI-assisted Excel reporting with the ImportExcel PowerShell module.",
+  "author": {
+    "name": "ImportExcel",
+    "url": "https://github.com/dfinke/ImportExcel"
+  },
+  "homepage": "https://github.com/dfinke/ImportExcel",
+  "repository": "https://github.com/dfinke/ImportExcel",
+  "license": "MIT",
+  "keywords": [
+    "excel",
+    "powershell",
+    "importexcel",
+    "reporting"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "ImportExcel Assistant",
+    "shortDescription": "Summarize workbooks, generate reports, and create reusable PowerShell automation.",
+    "longDescription": "A Codex plugin for ImportExcel that helps users inspect workbook structure, create reports from CSV or Excel data, and generate reusable PowerShell scripts.",
+    "developerName": "ImportExcel",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/dfinke/ImportExcel",
+    "privacyPolicyURL": "https://github.com/dfinke/ImportExcel",
+    "termsOfServiceURL": "https://github.com/dfinke/ImportExcel",
+    "defaultPrompt": [
+      "Use ImportExcel to summarize this workbook and suggest a report.",
+      "Use ImportExcel to generate a repeatable Excel report from this CSV."
+    ],
+    "brandColor": "#217346",
+    "screenshots": []
+  }
+}

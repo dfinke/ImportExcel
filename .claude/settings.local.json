@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(awk '{print $2}')",
+      "Bash(xargs -I{} sh -c 'jq -r \"select\\(.type==\\\\\"assistant\\\\\"\\) | .message.content[]? | select\\(.type==\\\\\"tool_use\\\\\"\\) | if .name == \\\\\"Bash\\\\\" then \\\\\"Bash|\\\\\" + \\(.input.command // \\\\\"\\\\\"\\) else .name end\" \"{}\" 2>/dev/null')",
+      "Bash(grep -v \"^$\")"
+    ]
+  }
+}

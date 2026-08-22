@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ImportExcel · Workflow Visualizer</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f9;--surface:#ffffff;--surface2:#f5f8fc;--border:#d0dae8;
+  --text:#3d4f63;--text-hi:#0e1e30;--text-dim:#7a90a8;--mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* HEADER */
+header{background:var(--surface);border-bottom:2px solid var(--border);padding:0 20px;height:52px;display:flex;align-items:center;gap:14px;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+header h1{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text-hi);letter-spacing:-.5px}
+.hbadge{font-family:var(--mono);font-size:10px;color:#1a6abf;background:rgba(26,106,191,.1);border:1px solid rgba(26,106,191,.25);padding:2px 9px;border-radius:4px;font-weight:500}
+.hjson-btn{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text);background:var(--surface2);border:1.5px solid var(--border);padding:5px 14px;border-radius:6px;cursor:pointer;transition:all .15s;font-weight:500}
+.hjson-btn:hover{color:var(--text-hi);border-color:#9ab0cc;background:#edf2f8}
+
+/* LAYOUT */
+.main{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:278px;background:var(--surface);border-right:2px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.sidebar-hdr{padding:12px 15px 10px;font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);border-bottom:1px solid var(--border);flex-shrink:0;font-weight:600}
+.flow-list{overflow-y:auto;flex:1;padding:7px}
+.flow-list::-webkit-scrollbar{width:4px}
+.flow-list::-webkit-scrollbar-thumb{background:#c8d6e8;border-radius:2px}
+.flow-btn{width:100%;text-align:left;background:none;border:1.5px solid transparent;border-radius:8px;padding:9px 11px;cursor:pointer;margin-bottom:3px;display:flex;align-items:center;gap:9px;transition:all .15s}
+.flow-btn:hover{background:#f0f5fc;border-color:var(--border)}
+.flow-btn.active{background:#eaf2ff;border-color:var(--fc,#1a6abf);border-left-width:3px}
+.flow-icon{font-size:16px;width:24px;text-align:center;flex-shrink:0}
+.flow-name{font-size:12.5px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.flow-btn.active .flow-name{color:var(--text-hi);font-weight:600}
+.flow-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;border:1.5px solid rgba(0,0,0,.12)}
+
+/* CANVAS AREA */
+.canvas-area{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.graph-wrap{flex:1;overflow:auto;position:relative;background:var(--bg)}
+.graph-wrap::-webkit-scrollbar{width:7px;height:7px}
+.graph-wrap::-webkit-scrollbar-thumb{background:#c0cfe0;border-radius:4px}
+#graph{display:block}
+
+/* DETAIL PANEL */
+.detail{height:200px;background:var(--surface);border-top:2px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;box-shadow:0 -2px 8px rgba(0,0,0,.05)}
+.detail-hdr{padding:10px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.detail-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text-hi)}
+.detail-desc{font-size:12px;color:var(--text);margin-top:1px}
+.step-count{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--text-dim);white-space:nowrap;background:var(--surface2);border:1px solid var(--border);padding:2px 8px;border-radius:4px}
+.steps-row{display:flex;gap:0;overflow-x:auto;padding:10px 15px;flex:1;align-items:stretch}
+.steps-row::-webkit-scrollbar{height:4px}
+.steps-row::-webkit-scrollbar-thumb{background:#c0cfe0;border-radius:2px}
+.step-card{flex-shrink:0;width:240px;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;margin-right:8px;cursor:pointer;transition:all .15s}
+.step-card:hover{border-color:#9ab0cc;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.step-card.active{border-color:var(--fc);background:#fff;box-shadow:0 0 0 2px var(--fc) inset,0 3px 12px rgba(0,0,0,.08)}
+.step-badge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-family:var(--mono);font-size:9.5px;font-weight:700;color:#fff;margin-bottom:6px}
+.step-route{font-family:var(--mono);font-size:8.5px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-dim)}
+.step-label{font-family:var(--mono);font-size:8px;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.step-note{font-size:10.5px;color:var(--text);line-height:1.55}
+
+/* EMPTY STATE */
+.empty{display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:7px;pointer-events:none}
+.empty svg{opacity:.3}
+.empty p{font-family:var(--mono);font-size:11px;color:var(--text-dim)}
+
+/* JSON EDITOR MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(14,30,48,.55);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border:1.5px solid var(--border);border-radius:14px;width:min(860px,90vw);max-height:82vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+.modal-head{padding:16px 20px;border-bottom:1.5px solid var(--border);display:flex;align-items:flex-start;gap:10px;background:var(--surface2)}
+.modal-head h2{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text-hi)}
+.modal-head p{font-size:11.5px;color:var(--text);margin-top:2px}
+.modal-close{margin-left:auto;background:none;border:1.5px solid var(--border);color:var(--text);cursor:pointer;font-size:16px;line-height:1;padding:4px 8px;border-radius:6px}
+.modal-close:hover{background:var(--bg);color:var(--text-hi)}
+.modal textarea{flex:1;background:#f8fbff;border:none;color:#1a3050;font-family:var(--mono);font-size:11.5px;padding:18px;resize:none;outline:none;line-height:1.65;overflow-y:auto}
+.modal-foot{padding:12px 20px;border-top:1.5px solid var(--border);display:flex;gap:9px;justify-content:flex-end;background:var(--surface2)}
+.btn-apply{background:#1a6abf;border:none;color:#fff;font-family:var(--mono);font-size:11.5px;padding:7px 18px;border-radius:6px;cursor:pointer;font-weight:600}
+.btn-apply:hover{background:#1558a0}
+.btn-cancel{background:none;border:1.5px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11.5px;padding:7px 18px;border-radius:6px;cursor:pointer}
+.btn-cancel:hover{border-color:#9ab0cc;color:var(--text-hi)}
+
+/* SVG ANIMATIONS */
+@keyframes drawLine{0%{stroke-dashoffset:1;opacity:0}2%{opacity:1}100%{stroke-dashoffset:0;opacity:1}}
+@keyframes popIn{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:scale(1)}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ImportExcel</h1>
+  <span class="hbadge">v7.8.10</span>
+  <span class="hbadge" style="color:#55d4a0;background:rgba(85,212,160,.1);border-color:rgba(85,212,160,.2)">Workflow Visualizer</span>
+  <button class="hjson-btn" id="editJsonBtn">⚙ Edit JSON</button>
+</header>
+
+<div class="main">
+  <aside class="sidebar">
+    <div class="sidebar-hdr">// select a workflow</div>
+    <div class="flow-list" id="flowList"></div>
+  </aside>
+  <div class="canvas-area">
+    <div class="graph-wrap" id="graphWrap">
+      <svg id="graph" viewBox="0 0 1210 645" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="detail" id="detail">
+      <div class="detail-hdr" id="detailHdr">
+        <div>
+          <div class="detail-title" style="color:#7a90a8">Select a workflow from the sidebar</div>
+          <div class="detail-desc">Click any flow to highlight component interactions and see step-by-step annotations</div>
+        </div>
+      </div>
+      <div class="steps-row" id="stepsRow">
+        <div class="empty">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#b0c4d8" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <p>// no flow selected</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JSON EDITOR MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h2>Edit Workflow JSON</h2>
+        <p>Modify flows, add new steps, or define entirely new workflows. Changes apply live.</p>
+      </div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <textarea id="jsonEditor" spellcheck="false"></textarea>
+    <div class="modal-foot">
+      <button class="btn-cancel" id="cancelBtn">Cancel</button>
+      <button class="btn-apply" id="applyBtn">Apply Changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// WORKFLOW DATA  —  edit this JSON (or use the ⚙ Edit JSON button)
+// ═══════════════════════════════════════════════════════════════
+const DEFAULT_JSON = {
+  nodes: {
+    user:        { label:"User / PowerShell", desc:"PowerShell session",           x:28,  y:288, w:148, h:44, group:"external", icon:"👤" },
+    claude:      { label:"Claude Desktop",    desc:"MCP client app",               x:28,  y:442, w:148, h:44, group:"external", icon:"🤖" },
+    psaisuite:   { label:"PSAISuite",         desc:"LLM orchestration layer",      x:228, y:42,  w:132, h:44, group:"ai",       icon:"✨" },
+    agentic:     { label:"Agentic AI Layer",  desc:"Invoke-ExcelPrompt / Agent",   x:228, y:155, w:132, h:44, group:"ai",       icon:"🧠" },
+    mcp_server:  { label:"MCP Server",        desc:"ImportExcel-MCP.ps1 / stdio",  x:228, y:400, w:132, h:44, group:"infra",    icon:"🔌" },
+    ci_pipeline: { label:"CI Pipeline",       desc:"CI/PS-CI.ps1 + pipeline.yml",  x:228, y:525, w:132, h:44, group:"infra",    icon:"⚙️" },
+    core:        { label:"ImportExcel Module",desc:"ImportExcel.psm1 — module hub",x:435, y:278, w:158, h:52, group:"core",     icon:"📦" },
+    import_cmd:  { label:"Import-Excel",      desc:"Read cmdlet (Public/)",        x:655, y:96,  w:130, h:44, group:"cmd",      icon:"📂" },
+    export_cmd:  { label:"Export-Excel",      desc:"Write cmdlet (Public/)",       x:655, y:382, w:130, h:44, group:"cmd",      icon:"📤" },
+    cond_fmt:    { label:"Cond. Formatting",  desc:"Add-ConditionalFormatting",    x:655, y:525, w:130, h:44, group:"sub",      icon:"🎨" },
+    infer_data:  { label:"InferData",         desc:"Test-Boolean/Int/Date/Number", x:852, y:42,  w:124, h:44, group:"sub",      icon:"🔍" },
+    epplus:      { label:"EPPlus (.NET)",     desc:"Office Open XML engine",       x:852, y:195, w:124, h:44, group:"sub",      icon:"⚡" },
+    charting:    { label:"Charting",          desc:"BarChart/LineChart/PieChart",  x:852, y:365, w:124, h:44, group:"sub",      icon:"📈" },
+    pivot:       { label:"Pivot Tables",      desc:"Add-PivotTable",              x:852, y:492, w:124, h:44, group:"sub",      icon:"🔄" },
+    ps_objects:  { label:"PS Objects [ ]",   desc:"Typed PowerShell array output",x:1044,y:68,  w:124, h:44, group:"output",   icon:"📋" },
+    xlsx_output: { label:".xlsx Output",      desc:"Saved workbook file",         x:1044,y:365, w:124, h:44, group:"output",   icon:"📊" },
+    ps_gallery:  { label:"PS Gallery",        desc:"PowerShell Gallery (NuGet)",  x:1044,y:525, w:124, h:44, group:"output",   icon:"🚀" }
+  },
+
+  groups: {
+    external:{ color:"#1a6abf", label:"External" },
+    ai:      { color:"#5e35b1", label:"AI Layer" },
+    infra:   { color:"#1a7a50", label:"Infrastructure" },
+    core:    { color:"#8a5000", label:"Core Module" },
+    cmd:     { color:"#00708a", label:"Cmdlets" },
+    sub:     { color:"#a02060", label:"Sub-modules" },
+    output:  { color:"#1a6e30", label:"Outputs" }
+  },
+
+  baseConnectors:[
+    ["user","import_cmd"],["user","export_cmd"],["user","agentic"],["user","ci_pipeline"],
+    ["claude","mcp_server"],
+    ["psaisuite","agentic"],
+    ["agentic","core"],["agentic","export_cmd"],
+    ["mcp_server","import_cmd"],["mcp_server","export_cmd"],
+    ["core","import_cmd"],["core","export_cmd"],["core","epplus"],
+    ["import_cmd","epplus"],["export_cmd","epplus"],
+    ["epplus","infer_data"],["epplus","charting"],["epplus","pivot"],["epplus","xlsx_output"],
+    ["infer_data","ps_objects"],
+    ["charting","xlsx_output"],["pivot","xlsx_output"],["cond_fmt","xlsx_output"],
+    ["export_cmd","cond_fmt"],
+    ["ci_pipeline","ps_gallery"]
+  ],
+
+  flows:[
+    {
+      id:"read_excel", name:"Read an Excel File", icon:"📂", color:"#0068b8",
+      description:"Import-Excel reads .xlsx data into typed PowerShell objects via EPPlus and InferData.",
+      steps:[
+        {from:"user",       to:"import_cmd", label:"Import-Excel -Path file.xlsx",       note:"User invokes Import-Excel with a file path and optional params: WorksheetName, StartRow, EndRow, HeaderRow, NoHeader, AsText, etc."},
+        {from:"import_cmd", to:"core",       label:"Open-ExcelPackage",                  note:"Import-Excel calls Open-ExcelPackage, which wraps the EPPlus ExcelPackage constructor and handles the file stream"},
+        {from:"core",       to:"epplus",     label:"ExcelPackage.Load(fileStream)",       note:"EPPlus loads the .xlsx file (an Office Open XML ZIP archive) into memory, parsing worksheets, cells, styles, and shared strings"},
+        {from:"epplus",     to:"infer_data", label:"Raw cell values (.NET types)",        note:"Each cell value passes through InferData: Test-Boolean → Test-Integer → Test-Date → Test-Number → Test-String (first match wins)"},
+        {from:"infer_data", to:"ps_objects", label:"PSCustomObject[] (typed props)",      note:"Returns a typed PowerShell array — one PSCustomObject per row — with properties matching header column names and correctly-typed values"}
+      ]
+    },
+    {
+      id:"create_spreadsheet", name:"Create a Spreadsheet", icon:"📊", color:"#1a7a3a",
+      description:"Export-Excel writes PowerShell pipeline data to a formatted .xlsx workbook.",
+      steps:[
+        {from:"user",      to:"export_cmd",  label:"$data | Export-Excel -Path out.xlsx", note:"Pipeline data passed to Export-Excel; params include AutoSize, AutoFilter, BoldTopRow, FreezeTopRow, WorksheetName, TableName, TableStyle, -Show"},
+        {from:"export_cmd",to:"core",        label:"Open-ExcelPackage / Add-Worksheet",   note:"Export-Excel opens or creates the ExcelPackage, adds a worksheet, and routes each pipeline object to consecutive rows"},
+        {from:"core",      to:"epplus",      label:"ExcelRange.Value = cell values",       note:"EPPlus ExcelWorksheet and ExcelRange APIs write property values to cells, set number formats, bold the header row, and auto-size columns"},
+        {from:"epplus",    to:"xlsx_output", label:"Close-ExcelPackage -SaveAs path",      note:"ExcelPackage.SaveAs() serializes the workbook to a ZIP-based Office Open XML file; -Show opens it immediately in the default application"}
+      ]
+    },
+    {
+      id:"add_chart", name:"Add a Chart", icon:"📈", color:"#b55000",
+      description:"New-ExcelChartDefinition defines a chart spec; Export-Excel + Charting render it into the workbook.",
+      steps:[
+        {from:"user",       to:"charting",    label:"New-ExcelChartDefinition",             note:"User creates a chart definition object: XRange, YRange, ChartType (Bar/Line/Pie/Column/Area), Title, NoLegend, SeriesHeader, LegendPosition"},
+        {from:"user",       to:"export_cmd",  label:"$data | Export-Excel -ExcelChartDefinition $c", note:"Data and the chart definition are passed together to Export-Excel; -AutoNameRange creates named ranges that chart series reference"},
+        {from:"export_cmd", to:"core",        label:"Write data → delegate to Add-ExcelChart", note:"After writing all data rows, Export-Excel calls Add-ExcelChart passing the definition object and the current worksheet reference"},
+        {from:"core",       to:"charting",    label:"ChartType, ranges, title, style",      note:"Charting module (BarChart, LineChart, PieChart, ColumnChart, DoChart helpers) builds the EPPlus chart object with correct series bindings"},
+        {from:"charting",   to:"epplus",      label:"ExcelChart DrawingChart API",           note:"EPPlus ExcelChart added to the worksheet's Drawings collection with series data ranges, axis labels, title, and legend configuration"},
+        {from:"epplus",     to:"xlsx_output", label:"Close-ExcelPackage",                    note:"Workbook saved with the embedded chart stored in the xl/drawings/ subdirectory of the Office Open XML ZIP"}
+      ]
+    },
+    {
+      id:"add_pivot", name:"Add a Pivot Table", icon:"🔄", color:"#5035a8",
+      description:"Export-Excel pivot parameters generate pivot tables and optional pivot charts on a dedicated sheet.",
+      steps:[
+        {from:"user",       to:"export_cmd",  label:"Export-Excel -PivotRows Region -PivotData @{Units='sum'}", note:"Pivot params: PivotRows, PivotColumns, PivotData (hashtable of field→aggregation), PivotFilter, PivotChartType, PivotTableName"},
+        {from:"export_cmd", to:"core",        label:"New-PivotTableDefinition",              note:"Export-Excel calls New-PivotTableDefinition to build the pivot config object mapping source range to row/column/data fields"},
+        {from:"core",       to:"pivot",       label:"PivotTableDefinition object",           note:"Pivot module receives the full definition: source worksheet, data range, row fields, column fields, and aggregation functions per data field"},
+        {from:"pivot",      to:"epplus",      label:"Add-PivotTable → ExcelPivotTable API",  note:"EPPlus ExcelPivotTable created on a new worksheet; cache source, field bindings, and sort/subtotal settings configured via the EPPlus object model"},
+        {from:"epplus",     to:"xlsx_output", label:"Close-ExcelPackage",                    note:"Workbook saved; pivot table on its own sheet with pivot cache in xl/pivotCache/ and optional pivot chart in xl/drawings/"}
+      ]
+    },
+    {
+      id:"ai_report_noai", name:"AI Report (Local / NoAI)", icon:"🤖", color:"#b02060",
+      description:"Invoke-ExcelPrompt -NoAI uses a keyword-driven local planner — no LLM required.",
+      steps:[
+        {from:"user",    to:"agentic",    label:"Invoke-ExcelPrompt -NoAI -Prompt '...'",  note:"-NoAI flag bypasses PSAISuite entirely; the local deterministic planner reads the prompt for formatting intent keywords"},
+        {from:"agentic", to:"core",      label:"Get-ExcelDatasetSummary",                  note:"Dataset profiler analyzes the CSV/XLSX source: column names, inferred types, row count, numeric min/max/mean, and sample rows"},
+        {from:"core",    to:"agentic",   label:"DatasetSummary { columns, types, stats }",  note:"Summary returned to the Agentic layer; column names and types used to build correct range references in the report plan"},
+        {from:"agentic", to:"agentic",   label:"New-ExcelReportPlan (keyword detection)",   note:"Prompt scanned for: 'chart', 'pie'/'line'/'bar', 'data bar', 'color scale', 'top N', 'bottom N', 'pivot', 'executive dashboard', 'statistical analysis'"},
+        {from:"agentic", to:"export_cmd",label:"Invoke-ExcelReportPlan executes plan",      note:"JSON plan executed in sequence: Export-Excel for data table, Add-ExcelChart for charts, Add-PivotTable for pivots, Add-ConditionalFormatting for rules"},
+        {from:"export_cmd",to:"epplus",  label:"Workbook construction (all features)",      note:"All mutations routed through EPPlus: cell values, table styles, chart drawings, pivot caches, conditional formatting XML"},
+        {from:"epplus",  to:"xlsx_output",label:"Close-ExcelPackage (deliberate sheet order)", note:"Sheet ordering enforced: source data first → pivot/analysis sheets → profile/summary last; prevents Excel repair prompts from bad pivot refs"}
+      ]
+    },
+    {
+      id:"ai_report_ai", name:"AI Report (with PSAISuite)", icon:"✨", color:"#8a6000",
+      description:"Invoke-ExcelPrompt calls an LLM via PSAISuite to design the report plan, then renders it deterministically.",
+      steps:[
+        {from:"user",      to:"agentic",    label:"Invoke-ExcelPrompt -Model openai:gpt-4o-mini", note:"User provides a natural-language prompt and model selector (e.g. openai:gpt-4o-mini, anthropic:claude-3-5-sonnet); PSAISuite is invoked for AI planning"},
+        {from:"agentic",   to:"core",       label:"Get-ExcelDatasetSummary",                  note:"Compact dataset profile built: column names, types, numeric stats, sample rows — designed to fit within a small LLM context window"},
+        {from:"core",      to:"psaisuite",  label:"DatasetSummary + Prompt → LLM API call",   note:"PSAISuite sends the summary and user prompt to the selected model; system prompt instructs the LLM to return a valid ImportExcel JSON plan"},
+        {from:"psaisuite", to:"agentic",    label:"JSON report plan (AI-generated)",           note:"LLM returns a structured JSON plan specifying sheets, chart types, pivot configs, formatting rules, narrative content, and column references"},
+        {from:"agentic",   to:"agentic",    label:"Validate → guardrails → fallback",          note:"Guardrails filter: invented cmdlets, unsupported parameters, missing required args, direct EPPlus .SetColor() calls; FallbackToDefault produces a safe local plan on failure"},
+        {from:"agentic",   to:"export_cmd", label:"Invoke-ExcelReportPlan (AI plan)",          note:"Validated plan rendered deterministically by calling Export-Excel, Add-ExcelChart, Add-PivotTable, Add-ConditionalFormatting in sequence"},
+        {from:"export_cmd",to:"epplus",     label:"Workbook construction",                     note:"All workbook mutations go through EPPlus; the AI layer never touches EPPlus directly — only ImportExcel cmdlets are called"},
+        {from:"epplus",    to:"xlsx_output",label:"Close-ExcelPackage",                        note:"AI-designed workbook saved to -OutputPath; sheet ordering and structure exactly as specified in the AI-generated plan"}
+      ]
+    },
+    {
+      id:"gen_script", name:"Generate Reusable Script", icon:"📝", color:"#b03010",
+      description:"Invoke-ExcelAgent / New-ExcelReportScript generates, validates, and executes a reusable PowerShell script.",
+      steps:[
+        {from:"user",      to:"agentic",    label:"Invoke-ExcelAgent -ScriptPath build.ps1 -FallbackToDefault", note:"Orchestrates the full pipeline: dataset profiling → AI script generation → guardrail validation → script execution → file persistence"},
+        {from:"agentic",   to:"core",       label:"Get-ExcelDatasetSummary",                  note:"Source data profiled; compact summary provides LLM with column names and types needed to write valid ImportExcel cmdlet calls"},
+        {from:"core",      to:"psaisuite",  label:"Summary + prompt → script generation",     note:"New-ExcelReportScript calls PSAISuite; LLM instructed to write a complete, runnable PowerShell script using only supported ImportExcel cmdlets and parameters"},
+        {from:"psaisuite", to:"agentic",    label:"Generated .ps1 script text",               note:"LLM returns a PowerShell script body; not yet executed — passes through guardrails before any invocation"},
+        {from:"agentic",   to:"agentic",    label:"Script validation & sanitization",          note:"Catches: invented cmdlets, unsupported parameters, missing non-switch required args, unsafe direct EPPlus .SetColor() calls; -FallbackToDefault kicks in if script fails validation"},
+        {from:"agentic",   to:"export_cmd", label:"Invoke-Expression (validated script)",     note:"Validated script executed via Invoke-Expression; script body calls Export-Excel, Add-ExcelChart, Add-ConditionalFormatting, Add-PivotTable as LLM designed"},
+        {from:"export_cmd",to:"epplus",     label:"Workbook operations",                       note:"All workbook mutations handled by EPPlus through the standard ImportExcel cmdlet layer — the generated script cannot bypass the module"},
+        {from:"epplus",    to:"xlsx_output",label:"Close-ExcelPackage + persist .ps1",         note:"Workbook saved to -OutputPath; validated script also written to -ScriptPath for future runs without AI or model API calls"}
+      ]
+    },
+    {
+      id:"mcp_read", name:"MCP: Read Excel (Claude Desktop)", icon:"🔌", color:"#0050a0",
+      description:"Claude Desktop uses the ImportExcel MCP server (stdio JSON-RPC) to read spreadsheet data as JSON.",
+      steps:[
+        {from:"claude",    to:"mcp_server", label:"tools/call Read-ExcelFile { Path, WorksheetName? }", note:"Claude Desktop sends a JSON-RPC 2.0 tools/call message over stdio with params: Path (required), WorksheetName, StartRow, EndRow (optional)"},
+        {from:"mcp_server",to:"import_cmd", label:"Read-ExcelFile wrapper → Import-Excel",   note:"PSMCPServer framework (Start-PSMCPServer) dispatches the call to the Read-ExcelFile wrapper function, which calls Import-Excel @params"},
+        {from:"import_cmd",to:"epplus",     label:"Open-ExcelPackage → read worksheet",      note:"Import-Excel opens the .xlsx via EPPlus ExcelPackage and iterates all rows in the target worksheet range"},
+        {from:"epplus",    to:"infer_data", label:"Raw cell values",                          note:"Cell values type-coerced via InferData (Test-Boolean, Test-Integer, Test-Date, Test-Number, Test-String) for accurate JSON serialization"},
+        {from:"infer_data",to:"mcp_server", label:"PS objects → ConvertTo-Json",              note:"PowerShell objects serialized to JSON by PSMCPServer; included in the MCP tool result content array as a text block"},
+        {from:"mcp_server",to:"claude",     label:"MCP tool result { content:[{text:JSON}] }",note:"JSON data returned to Claude Desktop over stdout stdio; Claude uses it in its response for analysis, charts suggestions, or further tool calls"}
+      ]
+    },
+    {
+      id:"mcp_write", name:"MCP: Write Excel (Claude Desktop)", icon:"💾", color:"#007060",
+      description:"Claude Desktop writes data to a new or existing Excel file via the MCP Export-DataToExcel tool.",
+      steps:[
+        {from:"claude",    to:"mcp_server",  label:"tools/call Export-DataToExcel { Path, JsonData }",  note:"Claude sends: Path (required), JsonData (JSON array string, required), WorksheetName, AutoSize, AutoFilter, BoldTopRow, Append (all optional)"},
+        {from:"mcp_server",to:"export_cmd",  label:"ConvertFrom-Json $JsonData | Export-Excel",         note:"JsonData string deserialized to PS objects via ConvertFrom-Json; piped directly to Export-Excel with the specified formatting switches"},
+        {from:"export_cmd",to:"core",        label:"Open / create workbook + write rows",              note:"Export-Excel opens or creates the target workbook, adds the worksheet, and writes each deserialized object as a row"},
+        {from:"core",      to:"epplus",      label:"Set cells + AutoSize / AutoFilter / Bold",          note:"EPPlus writes cell values and applies optional formatting: AutoFitColumns(), AutoFilter on row 1, bold font on header row"},
+        {from:"epplus",    to:"xlsx_output", label:"Close-ExcelPackage -SaveAs Path",                   note:"File saved to the specified -Path as a valid .xlsx; if -Append was set, data is added below the last existing row"},
+        {from:"mcp_server",to:"claude",      label:"{ Status:'OK', Path, Rows:N }",                    note:"PSCustomObject result serialized as JSON MCP tool result: confirms success with the output path and row count written"}
+      ]
+    },
+    {
+      id:"cond_fmt", name:"Conditional Formatting", icon:"🎨", color:"#4a5568",
+      description:"Add-ConditionalFormatting applies data bars, color scales, icon sets, and text rules to worksheet ranges.",
+      steps:[
+        {from:"user",      to:"cond_fmt",    label:"New-ConditionalText / New-ConditionalFormattingIconSet", note:"User creates formatting rule objects; New-ConditionalText specifies match condition + highlight color; IconSet specifies three-level icon thresholds"},
+        {from:"user",      to:"export_cmd",  label:"Export-Excel -ConditionalText $rules",  note:"Formatting rule objects passed via -ConditionalText; alternatively Add-ConditionalFormatting called directly on an open ExcelPackage"},
+        {from:"export_cmd",to:"cond_fmt",    label:"Add-ConditionalFormatting dispatch",    note:"Export-Excel delegates to Add-ConditionalFormatting, which handles: DataBar, TwoColorScale, ThreeColorScale, IconSet, Top N, Bottom N, AboveAverage, ContainsBlanks, DateOccurring, text comparisons"},
+        {from:"cond_fmt",  to:"epplus",      label:"ExcelConditionalFormattingCollection", note:"EPPlus ConditionalFormattingCollection receives each rule: address range (e.g. B2:B100), rule type, thresholds, and visual style properties (colors, icon set type)"},
+        {from:"epplus",    to:"xlsx_output", label:"Close-ExcelPackage",                    note:"Workbook saved with conditional formatting rules in the <conditionalFormatting> XML section of the worksheet; Excel renders them natively"}
+      ]
+    },
+    {
+      id:"publish_gallery", name:"Publish to PS Gallery", icon:"🚀", color:"#a01020",
+      description:"The CI pipeline builds, runs Pester tests, and publishes the module to the PowerShell Gallery.",
+      steps:[
+        {from:"user",        to:"ci_pipeline", label:"git push / pipeline.yml trigger",     note:"Code change triggers CI; CI/CI.ps1 and CI/PS-CI.ps1 orchestrate the build sequence; InstallPowerShell.ps1 sets up the PS version if needed"},
+        {from:"ci_pipeline", to:"core",        label:"Install deps + Invoke-Pester (tests)", note:"CI/Install.ps1 installs EPPlus and module deps; Pester runs ImportExcelAI.tests.ps1 (11 tests) and Set-Row_Set-Column-SetFormat.tests.ps1 (19 tests)"},
+        {from:"core",        to:"ci_pipeline", label:"Test results: 30 tests pass",          note:"All Pester tests must pass; pipeline halts and reports failure if any test fails — AI layer tests, formatting tests, and core cmdlet tests all included"},
+        {from:"ci_pipeline", to:"ps_gallery",  label:"CI/Publish.ps1 → Publish-Module",     note:"CI/Publish.ps1 (or PublishToGallery.ps1) calls Publish-Module with the PSGallery NuGet API key to push the new module version as a NuGet package"},
+        {from:"ps_gallery",  to:"user",        label:"Install-Module -Name ImportExcel",     note:"Module available globally; users install via Install-Module -Name ImportExcel or Update-Module; download count tracked on PowerShell Gallery badge"}
+      ]
+    },
+    {
+      id:"type_inference", name:"Data Type Inference", icon:"🔍", color:"#3d28a0",
+      description:"InferData coerces raw Excel cell values into correctly-typed PowerShell properties during Import-Excel.",
+      steps:[
+        {from:"import_cmd", to:"epplus",     label:"Read all worksheet rows",               note:"Import-Excel iterates every row in the target range; EPPlus returns each cell value as its .NET type: string, double, DateTime, or bool from the Open XML data"},
+        {from:"epplus",     to:"infer_data", label:"Raw .NET value per column property",    note:"Each cell value sent to InferData; runs for every non-null cell in every row during the import loop — the InferData pipeline is called thousands of times on large files"},
+        {from:"infer_data", to:"infer_data", label:"Test-Boolean → Test-Integer → Test-Date → Test-Number → Test-String", note:"Priority-ordered type tests: boolean (True/False/Yes/No/1/0) checked first, then integer, then date (multiple locale formats), then decimal, finally falls back to string"},
+        {from:"infer_data", to:"ps_objects", label:"Typed value → PSCustomObject property",  note:"First successful type test wins; correctly-typed value set as the PSCustomObject property; the result is a cleanly-typed PowerShell array ready for pipelines, sorting, and calculations"}
+      ]
+    }
+  ]
+};
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+let DATA = JSON.parse(JSON.stringify(DEFAULT_JSON));
+let activeFlowId = null;
+let activeStepIdx = -1;
+
+// ═══════════════════════════════════════════════════════════════
+// SVG HELPERS
+// ═══════════════════════════════════════════════════════════════
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs={}, text=''){
+  const e = document.createElementNS(NS, tag);
+  for(const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
+  if(text) e.textContent = text;
+  return e;
+}
+
+function nodeCenter(n){ return { x: n.x + n.w/2, y: n.y + n.h/2 }; }
+
+function edgePoint(fromN, toN){
+  const fc = nodeCenter(fromN), tc = nodeCenter(toN);
+  const dx = tc.x - fc.x, dy = tc.y - fc.y;
+  if(!dx && !dy) return fc;
+  const hw = fromN.w/2, hh = fromN.h/2;
+  const t = Math.min(hw/Math.abs(dx)||1e9, hh/Math.abs(dy)||1e9);
+  return { x: Math.round(fc.x + dx*t), y: Math.round(fc.y + dy*t) };
+}
+
+function bezierPath(p1, p2){
+  const dx = p2.x - p1.x, dy = p2.y - p1.y;
+  const mx = (p1.x+p2.x)/2, my = (p1.y+p2.y)/2;
+  let cp1x,cp1y,cp2x,cp2y;
+  const back = p2.x < p1.x - 30;
+  if(back){
+    const off = Math.max(60, Math.abs(dy)*0.5);
+    const dir = dy >= 0 ? -1 : 1;
+    cp1x = p1.x - 40; cp1y = p1.y + dir*off;
+    cp2x = p2.x + 40; cp2y = p2.y + dir*off;
+  } else if(Math.abs(dy) > Math.abs(dx)*1.4){
+    cp1x = p1.x; cp1y = my; cp2x = p2.x; cp2y = my;
+  } else {
+    cp1x = mx; cp1y = p1.y; cp2x = mx; cp2y = p2.y;
+  }
+  return `M ${p1.x} ${p1.y} C ${cp1x} ${cp1y} ${cp2x} ${cp2y} ${p2.x} ${p2.y}`;
+}
+
+function selfLoopPath(n){
+  const cx = n.x + n.w/2;
+  const top = n.y;
+  return `M ${cx-20} ${top} C ${cx-22} ${top-58} ${cx+22} ${top-58} ${cx+20} ${top}`;
+}
+
+function bezierMidpoint(d){
+  // quick cubic bezier at t=0.5 from "M x y C cx1 cy1 cx2 cy2 x2 y2"
+  try {
+    const m = d.match(/[\d.-]+/g).map(Number);
+    if(m.length >= 8){
+      const t=.5,mt=.5;
+      return {
+        x: mt**3*m[0]+3*mt**2*t*m[2]+3*mt*t**2*m[4]+t**3*m[6],
+        y: mt**3*m[1]+3*mt**2*t*m[3]+3*mt*t**2*m[5]+t**3*m[7]
+      };
+    }
+  }catch(e){}
+  return {x:600,y:300};
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GRAPH RENDERING
+// ═══════════════════════════════════════════════════════════════
+const svg = document.getElementById('graph');
+let defsEl, gridLayer, baseLayer, flowLayer, nodeLayer;
+
+function buildGraph(){
+  svg.innerHTML = '';
+  // Defs
+  defsEl = el('defs');
+  defsEl.innerHTML = `
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M36 0L0 0 0 36" fill="none" stroke="#dde4ef" stroke-width="1"/>
+    </pattern>
+    <marker id="arr-base" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0 1.5L8.5 5L0 8.5Z" fill="#b8c8da"/>
+    </marker>
+    <filter id="glow4" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow2" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  `;
+  svg.appendChild(defsEl);
+
+  // Background
+  svg.appendChild(el('rect',{width:'1210',height:'645',fill:'#f5f8fd'}));
+  svg.appendChild(el('rect',{width:'1210',height:'645',fill:'url(#grid)'}));
+
+  gridLayer = el('g',{id:'grid-layer'}); svg.appendChild(gridLayer);
+  baseLayer = el('g',{id:'base-layer'}); svg.appendChild(baseLayer);
+  flowLayer = el('g',{id:'flow-layer'}); svg.appendChild(flowLayer);
+  nodeLayer = el('g',{id:'node-layer'}); svg.appendChild(nodeLayer);
+
+  drawBaseConnectors();
+  drawAllNodes();
+  drawLegend();
+}
+
+function drawBaseConnectors(){
+  baseLayer.innerHTML = '';
+  const {nodes, baseConnectors} = DATA;
+  for(const [a,b] of baseConnectors){
+    if(!nodes[a]||!nodes[b]) continue;
+    const p1 = edgePoint(nodes[a], nodes[b]);
+    const p2 = edgePoint(nodes[b], nodes[a]);
+    const path = el('path',{
+      d: bezierPath(p1,p2),
+      stroke:'#c0d0e4', 'stroke-width':'1.5', fill:'none',
+      'marker-end':'url(#arr-base)'
+    });
+    baseLayer.appendChild(path);
+  }
+}
+
+function drawAllNodes(){
+  nodeLayer.innerHTML = '';
+  for(const [id, node] of Object.entries(DATA.nodes)){
+    drawNode(id, node);
+  }
+}
+
+function drawNode(id, node){
+  const gc = DATA.groups[node.group]?.color || '#4a90d9';
+  const isCore = node.group === 'core';
+  const g = el('g', {id:`node-${id}`});
+
+  // Shadow
+  g.appendChild(el('rect',{x:node.x+2,y:node.y+2,width:node.w,height:node.h,rx:'8',fill:'rgba(0,0,0,0.07)'}));
+  // Body
+  const body = el('rect',{
+    id:`body-${id}`, x:node.x, y:node.y, width:node.w, height:node.h, rx:'8',
+    fill: isCore ? '#fffbf2' : '#ffffff',
+    stroke: isCore ? gc : '#c8d8ea', 'stroke-width': isCore ? '2' : '1.5'
+  });
+  g.appendChild(body);
+  // Left accent bar
+  const bar = el('rect',{
+    id:`bar-${id}`, x:node.x, y:node.y+7, width:'3.5', height:node.h-14, rx:'1.5',
+    fill:gc, opacity: isCore ? '1' : '0.6'
+  });
+  g.appendChild(bar);
+  // Icon
+  const iconEl = el('text',{x:node.x+16, y:node.y+node.h/2+5, 'font-size':isCore?'15':'13', 'text-anchor':'middle'});
+  iconEl.textContent = node.icon;
+  g.appendChild(iconEl);
+  // Label
+  const labelEl = el('text',{
+    id:`label-${id}`, x:node.x+28, y:node.y+node.h/2-(node.desc?4:0),
+    'font-family':"'DM Sans',sans-serif", 'font-size': isCore?'12':'11',
+    'font-weight': isCore?'700':'600', fill: isCore ? '#3a2800' : '#1e3048'
+  });
+  labelEl.textContent = node.label;
+  g.appendChild(labelEl);
+  // Desc
+  if(node.desc){
+    const descEl = el('text',{
+      id:`desc-${id}`, x:node.x+28, y:node.y+node.h/2+10,
+      'font-family':"'JetBrains Mono',monospace", 'font-size':'8', fill:'#8090a8'
+    });
+    descEl.textContent = node.desc;
+    g.appendChild(descEl);
+  }
+  nodeLayer.appendChild(g);
+}
+
+function drawLegend(){
+  const g = el('g',{transform:'translate(16, 620)'});
+  let x = 0;
+  for(const [key, {color, label}] of Object.entries(DATA.groups)){
+    const dot = el('rect',{x,y:'-6',width:'8',height:'8',rx:'2',fill:color});
+    g.appendChild(dot);
+    const txt = el('text',{x:x+12,y:'1','font-family':"'JetBrains Mono',monospace",'font-size':'8.5',fill:'#6070a8'});
+    txt.textContent = label;
+    g.appendChild(txt);
+    x += label.length * 6.2 + 28;
+  }
+  svg.appendChild(g);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FLOW RENDERING
+// ═══════════════════════════════════════════════════════════════
+function renderFlow(flowId){
+  activeFlowId = flowId;
+  activeStepIdx = -1;
+  const flow = DATA.flows.find(f=>f.id===flowId);
+  if(!flow) return;
+
+  // Dim all nodes
+  const allIds = Object.keys(DATA.nodes);
+  allIds.forEach(id=>{
+    const body=document.getElementById(`body-${id}`);
+    const label=document.getElementById(`label-${id}`);
+    const desc=document.getElementById(`desc-${id}`);
+    const bar=document.getElementById(`bar-${id}`);
+    if(body) body.setAttribute('opacity','0.3');
+    if(label) label.setAttribute('fill','#b0c0d0');
+    if(desc) desc.setAttribute('fill','#c8d8e8');
+    if(bar) bar.setAttribute('opacity','0.15');
+  });
+
+  // Highlight involved nodes
+  const involved = new Set(flow.steps.flatMap(s=>[s.from,s.to]));
+  involved.forEach(id=>{
+    const node = DATA.nodes[id];
+    if(!node) return;
+    const body=document.getElementById(`body-${id}`);
+    const label=document.getElementById(`label-${id}`);
+    const desc=document.getElementById(`desc-${id}`);
+    const bar=document.getElementById(`bar-${id}`);
+    if(body){
+      body.setAttribute('opacity','1');
+      body.setAttribute('fill', hexA(flow.color, 0.08));
+      body.setAttribute('stroke', flow.color);
+      body.setAttribute('stroke-width','2.5');
+    }
+    if(label) label.setAttribute('fill','#0a1828');
+    if(desc)  desc.setAttribute('fill','#506070');
+    if(bar){  bar.setAttribute('fill', flow.color); bar.setAttribute('opacity','1'); }
+  });
+
+  // Draw flow arrows
+  flowLayer.innerHTML = '';
+  // Add per-flow arrowhead marker
+  const markerId = `arr-flow-${flowId}`;
+  const oldMark = document.getElementById(markerId);
+  if(oldMark) oldMark.remove();
+  const marker = el('marker',{
+    id: markerId, viewBox:'0 0 10 10', refX:'8', refY:'5',
+    markerWidth:'6', markerHeight:'6', 'orient':'auto-start-reverse'
+  });
+  marker.innerHTML = `<path d="M0 1.5L8.5 5L0 8.5Z" fill="${flow.color}" opacity="0.95"/>`;
+  defsEl.appendChild(marker);
+
+  flow.steps.forEach((step, i) => {
+    drawFlowStep(step, i, flow.color, markerId, flow.steps.length);
+  });
+}
+
+function drawFlowStep(step, idx, color, markerId, total){
+  const na = DATA.nodes[step.from], nb = DATA.nodes[step.to];
+  if(!na || !nb) return;
+
+  const delay = idx * 0.15;
+  const isSelf = step.from === step.to;
+  const pathD = isSelf ? selfLoopPath(na) : bezierPath(edgePoint(na,nb), edgePoint(nb,na));
+  const mid = isSelf ? {x: na.x+na.w/2, y: na.y-38} : bezierMidpoint(pathD);
+
+  // Shadow path (light-theme: subtle drop shadow for the arrow)
+  const shadow = el('path',{
+    d: pathD, stroke:'rgba(0,0,0,0.12)', 'stroke-width':'5', fill:'none', opacity:'0',
+    pathLength:'1', 'stroke-linecap':'round'
+  });
+  shadow.style.cssText = `stroke-dasharray:1;stroke-dashoffset:1;animation:drawLine 0.55s ease ${delay}s forwards`;
+  flowLayer.appendChild(shadow);
+
+  // Main arrow path
+  const path = el('path',{
+    d: pathD, stroke: color, 'stroke-width':'3', fill:'none', opacity:'0',
+    pathLength:'1', 'stroke-linecap':'round',
+    'marker-end': `url(#${markerId})`
+  });
+  path.style.cssText = `stroke-dasharray:1;stroke-dashoffset:1;animation:drawLine 0.55s ease ${delay}s forwards`;
+  flowLayer.appendChild(path);
+
+  // Step number badge
+  const badge = el('g',{opacity:'0', style:`animation:popIn 0.25s ease ${delay+0.45}s forwards`});
+  badge.appendChild(el('circle',{cx:mid.x,cy:mid.y,r:'12',fill:'rgba(255,255,255,0.85)'}));
+  badge.appendChild(el('circle',{cx:mid.x,cy:mid.y,r:'11',fill:color}));
+  const num = el('text',{
+    x:mid.x, y:mid.y+4, 'text-anchor':'middle',
+    'font-family':"'JetBrains Mono',monospace", 'font-size':'10', 'font-weight':'700', fill:'#ffffff'
+  });
+  num.textContent = idx+1;
+  badge.appendChild(num);
+  flowLayer.appendChild(badge);
+}
+
+function hexA(hex, alpha){
+  const r=parseInt(hex.slice(1,3),16);
+  const g=parseInt(hex.slice(3,5),16);
+  const b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function resetNodes(){
+  Object.entries(DATA.nodes).forEach(([id, node])=>{
+    const isCore = node.group==='core';
+    const gc = DATA.groups[node.group]?.color || '#4a90d9';
+    const body=document.getElementById(`body-${id}`);
+    const label=document.getElementById(`label-${id}`);
+    const desc=document.getElementById(`desc-${id}`);
+    const bar=document.getElementById(`bar-${id}`);
+    if(body){
+      body.setAttribute('opacity','1');
+      body.setAttribute('fill', isCore ? '#161f30' : '#0d1525');
+      body.setAttribute('stroke', isCore ? gc : '#1a2538');
+      body.setAttribute('stroke-width', isCore ? '2' : '1.5');
+    }
+    if(label) label.setAttribute('fill', isCore ? '#3a2800' : '#1e3048');
+    if(desc)  desc.setAttribute('fill','#8090a8');
+    if(bar){  bar.setAttribute('fill', gc); bar.setAttribute('opacity', isCore?'1':'0.6'); }
+  });
+  flowLayer.innerHTML = '';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════════════════════
+function buildSidebar(){
+  const list = document.getElementById('flowList');
+  list.innerHTML = '';
+  DATA.flows.forEach(flow=>{
+    const btn = document.createElement('button');
+    btn.className = 'flow-btn';
+    btn.dataset.id = flow.id;
+    btn.style.setProperty('--fc', flow.color);
+    btn.innerHTML = `
+      <span class="flow-icon">${flow.icon}</span>
+      <span class="flow-name">${flow.name}</span>
+      <span class="flow-dot" style="background:${flow.color}"></span>`;
+    btn.addEventListener('click', ()=>selectFlow(flow.id));
+    list.appendChild(btn);
+  });
+}
+
+function selectFlow(flowId){
+  document.querySelectorAll('.flow-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.id===flowId);
+  });
+  if(activeFlowId === flowId){ resetNodes(); activeFlowId=null; buildDetailPanel(null); return; }
+  const flow = DATA.flows.find(f=>f.id===flowId);
+  if(!flow) return;
+  renderFlow(flowId);
+  buildDetailPanel(flow);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DETAIL PANEL
+// ═══════════════════════════════════════════════════════════════
+function buildDetailPanel(flow){
+  const hdr = document.getElementById('detailHdr');
+  const row = document.getElementById('stepsRow');
+  if(!flow){
+    hdr.innerHTML = `<div><div class="detail-title" style="color:#253548">Select a workflow from the sidebar</div><div class="detail-desc">Click any flow to highlight component interactions and see step-by-step annotations</div></div>`;
+    row.innerHTML = `<div class="empty"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#253548" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg><p>// no flow selected</p></div>`;
+    return;
+  }
+  hdr.innerHTML = `
+    <span style="font-size:20px">${flow.icon}</span>
+    <div>
+      <div class="detail-title" style="color:${flow.color}">${flow.name}</div>
+      <div class="detail-desc">${flow.description}</div>
+    </div>
+    <span class="step-count">${flow.steps.length} steps</span>`;
+  row.innerHTML = '';
+  flow.steps.forEach((step, i)=>{
+    const card = document.createElement('div');
+    card.className = 'step-card';
+    card.style.setProperty('--fc', flow.color);
+    card.innerHTML = `
+      <div class="step-badge" style="background:${flow.color}">${i+1}</div>
+      <div class="step-route" style="color:${flow.color}">${step.from} → ${step.to}</div>
+      <div class="step-label" style="color:${flow.color}">${step.label}</div>
+      <div class="step-note">${step.note}</div>`;
+    card.addEventListener('click', ()=>{ 
+      row.querySelectorAll('.step-card').forEach((c,j)=>c.classList.toggle('active',j===i));
+    });
+    row.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// JSON EDITOR MODAL
+// ═══════════════════════════════════════════════════════════════
+const modal = document.getElementById('modalOverlay');
+const textarea = document.getElementById('jsonEditor');
+let errTip;
+
+document.getElementById('editJsonBtn').addEventListener('click',()=>{
+  textarea.value = JSON.stringify(DATA, null, 2);
+  modal.classList.add('open');
+});
+document.getElementById('modalClose').addEventListener('click', ()=>modal.classList.remove('open'));
+document.getElementById('cancelBtn').addEventListener('click', ()=>modal.classList.remove('open'));
+document.getElementById('applyBtn').addEventListener('click',()=>{
+  try{
+    DATA = JSON.parse(textarea.value);
+    activeFlowId = null;
+    buildGraph();
+    buildSidebar();
+    buildDetailPanel(null);
+    modal.classList.remove('open');
+  } catch(e){
+    textarea.style.outline = '1.5px solid #ff6b6b';
+    setTimeout(()=>textarea.style.outline='',1500);
+    alert('JSON parse error: ' + e.message);
+  }
+});
+modal.addEventListener('click', e=>{ if(e.target===modal) modal.classList.remove('open'); });
+
+// Responsive SVG sizing
+function sizeSvg(){
+  const wrap = document.getElementById('graphWrap');
+  const { width: ww, height: wh } = wrap.getBoundingClientRect();
+  const VW=1210, VH=645;
+  const scale = Math.min(ww/VW, wh/VH, 1);
+  svg.style.width = Math.round(VW*scale)+'px';
+  svg.style.height = Math.round(VH*scale)+'px';
+  svg.setAttribute('viewBox','0 0 1210 645');
+}
+window.addEventListener('resize', sizeSvg);
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+buildGraph();
+buildSidebar();
+buildDetailPanel(null);
+sizeSvg();
+</script>
+</body>
+</html>

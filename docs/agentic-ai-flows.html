@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ImportExcel Agentic AI Flow Map</title>
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --panel: #ffffff;
+      --ink: #172033;
+      --muted: #5f6b7a;
+      --line: #d8dee8;
+      --accent: #146c94;
+      --accent-2: #1c7c54;
+      --warn: #9b5a12;
+      --code: #101827;
+      --soft-blue: #e8f3f8;
+      --soft-green: #e9f6ef;
+      --soft-amber: #fff4df;
+      --shadow: 0 18px 40px rgba(21, 31, 47, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 15px/1.5 "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 22px 56px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #ffffff 0%, #eef7fb 55%, #edf8f2 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: clamp(30px, 5vw, 52px);
+      line-height: 1.02;
+      margin: 0 0 12px;
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      max-width: 770px;
+      color: var(--muted);
+      font-size: 17px;
+      margin: 0;
+    }
+
+    .meta {
+      min-width: 260px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .meta div {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .meta div:last-child {
+      border-bottom: 0;
+    }
+
+    .meta span:first-child {
+      color: var(--muted);
+    }
+
+    .section {
+      margin-top: 28px;
+    }
+
+    .section h2 {
+      font-size: 22px;
+      margin: 0 0 12px;
+      letter-spacing: 0;
+    }
+
+    .section > p {
+      margin-top: 0;
+      color: var(--muted);
+      max-width: 860px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid.cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(21, 31, 47, 0.05);
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+    }
+
+    .card p {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 12px;
+      color: var(--muted);
+      background: #fafbfc;
+      margin-bottom: 10px;
+    }
+
+    .flow-map {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(140px, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .node {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      min-height: 126px;
+    }
+
+    .node:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -10px;
+      width: 10px;
+      border-top: 2px solid var(--accent);
+    }
+
+    .node .num {
+      width: 26px;
+      height: 26px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--soft-blue);
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .node strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .node span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .flow-card {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+
+    .flow-side {
+      background: var(--soft-blue);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .flow-side h3 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .flow-side p {
+      color: #31505d;
+      margin: 0;
+    }
+
+    .flow-body {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .mini h4 {
+      margin: 0 0 7px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    li {
+      margin: 4px 0;
+      color: var(--muted);
+    }
+
+    code, pre {
+      font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+    }
+
+    pre {
+      margin: 14px 0 0;
+      white-space: pre-wrap;
+      background: var(--code);
+      color: #e8eef7;
+      border-radius: 8px;
+      padding: 14px;
+      overflow: auto;
+      font-size: 13px;
+    }
+
+    .intent-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .intent {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .intent:nth-child(1) {
+      border-top: 4px solid var(--accent);
+    }
+
+    .intent:nth-child(2) {
+      border-top: 4px solid var(--accent-2);
+    }
+
+    .intent:nth-child(3) {
+      border-top: 4px solid var(--warn);
+    }
+
+    .contract {
+      background: var(--soft-green);
+      border: 1px solid #cce7d8;
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .contract h3 {
+      margin-top: 0;
+    }
+
+    .note {
+      background: var(--soft-amber);
+      border: 1px solid #f3d79a;
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: #60410c;
+    }
+
+    .footer {
+      margin-top: 36px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .flow-card,
+      .columns,
+      .grid.cols-3,
+      .grid.cols-2,
+      .intent-list {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-map {
+        grid-template-columns: 1fr;
+      }
+
+      .node:not(:last-child)::after {
+        display: none;
+      }
+
+      .meta {
+        min-width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">ImportExcel AI reporting layer</div>
+        <h1>Agentic Flow Map</h1>
+        <p>This page documents the main flows added around ImportExcel: profile data, translate prompts into plans, render workbooks, generate reusable scripts, and run the agent workflow with deterministic fallback and guardrails.</p>
+      </div>
+      <aside class="meta" aria-label="Document metadata">
+        <div><span>Generated</span><strong>2026-05-12</strong></div>
+        <div><span>Data file</span><strong><a href="agentic-ai-flows.json">JSON</a></strong></div>
+        <div><span>Primary branch</span><strong>codex/agentic-importexcel-ai</strong></div>
+        <div><span>Scope</span><strong>AIReports module slice</strong></div>
+      </aside>
+    </section>
+
+    <section class="section">
+      <h2>System Map</h2>
+      <p>The module works best when AI is treated as planner and narrator while ImportExcel and deterministic PowerShell helpers remain the source of truth.</p>
+      <div class="flow-map" aria-label="Flow sequence">
+        <div class="node"><div class="num">1</div><strong>Profile</strong><span>Get-ExcelDatasetSummary</span></div>
+        <div class="node"><div class="num">2</div><strong>Plan</strong><span>New-ExcelReportPlan</span></div>
+        <div class="node"><div class="num">3</div><strong>Render</strong><span>Invoke-ExcelReportPlan</span></div>
+        <div class="node"><div class="num">4</div><strong>Prompt</strong><span>Invoke-ExcelPrompt</span></div>
+        <div class="node"><div class="num">5</div><strong>Script</strong><span>New-ExcelReportScript</span></div>
+        <div class="node"><div class="num">6</div><strong>Agent</strong><span>Invoke-ExcelAgent</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Public Entry Points</h2>
+      <div class="grid cols-3">
+        <article class="card"><span class="tag">Profiler</span><h3>Get-ExcelDatasetSummary</h3><p>Reads CSV, TSV, or workbook sources and returns compact metadata, sample rows, inferred types, roles, and suggested formats.</p></article>
+        <article class="card"><span class="tag">Planner</span><h3>New-ExcelReportPlan</h3><p>Creates a constrained plan from a prompt and dataset summary using PSAISuite or local deterministic defaults.</p></article>
+        <article class="card"><span class="tag">Renderer</span><h3>Invoke-ExcelReportPlan</h3><p>Builds the workbook from the plan: data tables, charts, pivots, analysis sheets, summaries, and formatting.</p></article>
+        <article class="card"><span class="tag">Prompt workflow</span><h3>Invoke-ExcelPrompt</h3><p>One-call path for prompt to workbook. It profiles, plans, and renders.</p></article>
+        <article class="card"><span class="tag">Script generator</span><h3>New-ExcelReportScript</h3><p>Creates a reusable PowerShell script, validates it, and falls back to deterministic script generation when needed.</p></article>
+        <article class="card"><span class="tag">Agent workflow</span><h3>Invoke-ExcelAgent</h3><p>Generates and runs the reusable script, with runtime fallback if model-written code fails.</p></article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Main Flows</h2>
+
+      <article class="flow-card">
+        <div class="flow-side"><h3>1. Dataset Profiling</h3><p>Compact facts for prompts, planning, and deterministic reports.</p></div>
+        <div class="flow-body">
+          <div class="columns">
+            <div class="mini"><h4>Inputs</h4><ul><li>CSV, TSV, or workbook path</li><li>Optional worksheet names</li><li>Sample and analysis row limits</li></ul></div>
+            <div class="mini"><h4>Steps</h4><ul><li>Load sources</li><li>Infer type and role</li><li>Capture counts, samples, formats</li></ul></div>
+            <div class="mini"><h4>Outputs</h4><ul><li>DatasetSummary object</li><li>Optional JSON</li><li>Input to planning and script flows</li></ul></div>
+          </div>
+          <pre>Get-ExcelDatasetSummary -Path .\sales.csv</pre>
+        </div>
+      </article>
+
+      <article class="flow-card">
+        <div class="flow-side"><h3>2. Prompt to Plan</h3><p>Natural language becomes a constrained, executable report plan.</p></div>
+        <div class="flow-body">
+          <div class="columns">
+            <div class="mini"><h4>Inputs</h4><ul><li>DatasetSummary</li><li>Prompt</li><li>Model or -NoAI</li></ul></div>
+            <div class="mini"><h4>Steps</h4><ul><li>Build local default plan</li><li>Ask PSAISuite for JSON if enabled</li><li>Apply prompt intent defaults</li></ul></div>
+            <div class="mini"><h4>Outputs</h4><ul><li>Tables</li><li>Charts and pivots</li><li>Conditional formats</li><li>Analysis sheets</li></ul></div>
+          </div>
+          <pre>$summary = Get-ExcelDatasetSummary .\sales.csv
+$plan = New-ExcelReportPlan -DatasetSummary $summary -Prompt "Create a report with data bars and a line chart" -NoAI</pre>
+        </div>
+      </article>
+
+      <article class="flow-card">
+        <div class="flow-side"><h3>3. Plan to Workbook</h3><p>ImportExcel turns the plan into a real .xlsx file.</p></div>
+        <div class="flow-body">
+          <div class="columns">
+            <div class="mini"><h4>Inputs</h4><ul><li>Plan object or JSON</li><li>Source path</li><li>Dataset summary</li><li>Output path</li></ul></div>
+            <div class="mini"><h4>Steps</h4><ul><li>Write data tables first</li><li>Add charts and analysis sheets</li><li>Add pivots and conditional formatting</li><li>Put Summary and Column Profile last</li></ul></div>
+            <div class="mini"><h4>Outputs</h4><ul><li>Workbook path</li><li>Worksheet list</li><li>Plan and dataset summary</li></ul></div>
+          </div>
+          <pre>$plan | Invoke-ExcelReportPlan -Path .\sales-report.xlsx -SourcePath .\sales.csv -DatasetSummary $summary -Force</pre>
+        </div>
+      </article>
+
+      <article class="flow-card">
+        <div class="flow-side"><h3>4. Prompt to Workbook</h3><p>The ergonomic path for creating a report from a plain-language ask.</p></div>
+        <div class="flow-body">
+          <div class="columns">
+            <div class="mini"><h4>Inputs</h4><ul><li>Path</li><li>Prompt</li><li>OutputPath</li><li>-FallbackToDefault or -NoAI</li></ul></div>
+            <div class="mini"><h4>Steps</h4><ul><li>Profile</li><li>Plan</li><li>Render</li></ul></div>
+            <div class="mini"><h4>Outputs</h4><ul><li>Workbook</li><li>Render result</li></ul></div>
+          </div>
+          <pre>Invoke-ExcelPrompt -Path .\sales.csv -Prompt "Create an executive dashboard with a pie chart" -OutputPath .\sales-report.xlsx -FallbackToDefault -Show</pre>
+        </div>
+      </article>
+
+      <article class="flow-card">
+        <div class="flow-side"><h3>5. Prompt to Script</h3><p>Creates reusable automation the user can inspect and rerun.</p></div>
+        <div class="flow-body">
+          <div class="columns">
+            <div class="mini"><h4>Inputs</h4><ul><li>Path</li><li>Prompt</li><li>Workbook output path</li><li>Script path</li></ul></div>
+            <div class="mini"><h4>Guardrails</h4><ul><li>PowerShell parse checks</li><li>Command and parameter validation</li><li>Missing argument detection</li><li>EPPlus direct styling rejection</li></ul></div>
+            <div class="mini"><h4>Outputs</h4><ul><li>Reusable .ps1</li><li>UsedAI flag</li><li>Dataset summary</li></ul></div>
+          </div>
+          <pre>New-ExcelReportScript -Path .\sales.csv -Prompt "Create the data in a table and use data bars" -OutputPath .\sales-agent-report.xlsx -ScriptPath .\build-sales-agent-report.ps1 -FallbackToDefault</pre>
+        </div>
+      </article>
+
+      <article class="flow-card">
+        <div class="flow-side"><h3>6. Agent Workflow</h3><p>Script generation plus execution, with fallback at validation and runtime.</p></div>
+        <div class="flow-body">
+          <div class="columns">
+            <div class="mini"><h4>Inputs</h4><ul><li>Path</li><li>Prompt</li><li>OutputPath</li><li>ScriptPath</li><li>-ScriptOnly optional</li></ul></div>
+            <div class="mini"><h4>Steps</h4><ul><li>Generate script</li><li>Run script</li><li>Regenerate deterministic script if AI code fails</li></ul></div>
+            <div class="mini"><h4>Outputs</h4><ul><li>Workbook</li><li>Reusable script</li><li>Result metadata</li></ul></div>
+          </div>
+          <pre>Invoke-ExcelAgent -Path .\sales.csv -Prompt "Create the data in a table, use data bars, highlight top 3, and create a line chart" -OutputPath .\sales-agent-report.xlsx -ScriptPath .\build-sales-agent-report.ps1 -FallbackToDefault -Show</pre>
+        </div>
+      </article>
+    </section>
+
+    <section class="section">
+      <h2>Data Contracts</h2>
+      <div class="grid cols-3">
+        <div class="contract"><h3>DatasetSummary</h3><p>Path, file name, source list, row and column counts, inferred column metadata, sample rows, and suggested formats.</p></div>
+        <div class="contract"><h3>ReportPlan</h3><p>Workbook title, summary settings, tables, charts, pivots, conditional formats, and optional analysis sheets.</p></div>
+        <div class="contract"><h3>AgentResult</h3><p>Workbook path, script path, source path, UsedAI flag, model, script-only flag, and script execution result.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Prompt Intents</h2>
+      <p>The deterministic fallback understands high-value phrases without becoming a rigid command vocabulary.</p>
+      <div class="intent-list">
+        <div class="intent"><h3>Chart Type</h3><ul><li>pie chart</li><li>doughnut chart</li><li>line chart</li><li>bar chart</li><li>area chart</li></ul></div>
+        <div class="intent"><h3>Formatting</h3><ul><li>data bars</li><li>color scale</li><li>heatmap</li><li>top N</li><li>bottom N</li></ul></div>
+        <div class="intent"><h3>Analysis</h3><ul><li>executive dashboard</li><li>data scientist</li><li>statistics</li><li>correlation</li></ul></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Safety Model</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>AI can try</h3>
+          <p>The model can plan JSON or generate a full PowerShell report script through PSAISuite.</p>
+        </div>
+        <div class="card">
+          <h3>PowerShell decides</h3>
+          <p>Plans and scripts are parsed, constrained, validated, rendered, and when necessary replaced by deterministic fallback behavior.</p>
+        </div>
+      </div>
+      <p class="note">The strongest pattern in this module is not "AI writes arbitrary Excel." It is "AI orchestrates trusted ImportExcel primitives while deterministic functions provide the facts and workbook mechanics."</p>
+    </section>
+
+    <section class="section">
+      <h2>Examples and Validation</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Example scripts</h3>
+          <ul>
+            <li>Examples/AIReports/01-CreateStarterReport.ps1</li>
+            <li>Examples/AIReports/02-InspectPlanAndRender.ps1</li>
+            <li>Examples/AIReports/03-UsePSAISuitePlanner.ps1</li>
+            <li>Examples/AIReports/04-ReportFromExistingWorkbook.ps1</li>
+            <li>Examples/AIReports/05-GenerateReusableScript.ps1</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Test commands</h3>
+          <pre>Invoke-Pester -Path .\__tests__\ImportExcelAI.tests.ps1 -Output Detailed
+Invoke-Pester -Path .\__tests__\Set-Row_Set-Column-SetFormat.tests.ps1 -Output Detailed
+.\Examples\AIReports\05-GenerateReusableScript.ps1 -ShowFallbackWarnings</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Next Flow To Add</h2>
+      <p>The next meaningful layer is a deterministic insight engine: functions such as <code>Get-ExcelInsight</code>, <code>Get-ExcelOutlier</code>, <code>Get-ExcelCorrelation</code>, <code>Get-ExcelTrend</code>, and <code>Get-ExcelSegmentBreakdown</code>. AI should rank and narrate those facts, not invent them.</p>
+    </section>
+
+    <p class="footer">Structured source data for this page is available in <a href="agentic-ai-flows.json">agentic-ai-flows.json</a>.</p>
+  </main>
+</body>
+</html>

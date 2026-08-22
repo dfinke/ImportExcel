@@ -138,6 +138,59 @@ $data | Export-Excel .\salesData.xlsx -AutoNameRange -Show -PivotRows Region -Pi
 
 ![](images/SalesDataChartPivotTable.png)
 
+## Create an AI-assisted report from a prompt
+
+ImportExcel can now use a compact report plan to turn a prompt into a reproducible workbook. The planning layer can call [PSAISuite](https://github.com/dfinke/PSAISuite) for model-backed planning, then ImportExcel renders the workbook deterministically.
+
+```powershell
+Invoke-ExcelPrompt `
+    -Path .\sales.csv `
+    -Prompt "Create an executive sales report with a summary, formatted data table, chart, and pivot table." `
+    -OutputPath .\sales-report.xlsx `
+    -Model openai:gpt-4o-mini
+```
+
+For offline testing or CI, skip the model call and create a starter report plan locally:
+
+```powershell
+Invoke-ExcelPrompt `
+    -Path .\sales.csv `
+    -Prompt "Create an executive sales report." `
+    -OutputPath .\sales-report.xlsx `
+    -NoAI
+```
+
+Prompts can also request different report shapes and formatting. For example, executive/dashboard prompts add an `Executive Dashboard` sheet, data-science/statistical prompts add `Statistical Analysis` and `Correlation Matrix` sheets when numeric columns are available, and chart/formatting phrases such as "pie chart", "line chart", "use data bars", "add a color scale", or "highlight top 10 and bottom 5 values" are honored by the local fallback path.
+
+For AI-first automation, generate a reusable PowerShell script and run it:
+
+```powershell
+Invoke-ExcelAgent `
+    -Path .\sales.csv `
+    -Prompt "Create a polished executive sales workbook and keep the automation script." `
+    -OutputPath .\sales-agent-report.xlsx `
+    -ScriptPath .\build-sales-agent-report.ps1 `
+    -FallbackToDefault
+```
+
+You can also generate only the script:
+
+```powershell
+New-ExcelReportScript `
+    -Path .\sales.csv `
+    -Prompt "Build a reusable data-science report." `
+    -OutputPath .\sales-analysis.xlsx `
+    -ScriptPath .\build-sales-analysis.ps1
+```
+
+The lower-level flow is also available when you want to inspect or save the plan:
+
+```powershell
+$summary = Get-ExcelDatasetSummary .\sales.csv
+$plan = New-ExcelReportPlan -DatasetSummary $summary -Prompt "Highlight regional sales trends." -NoAI
+$plan | Invoke-ExcelReportPlan -Path .\sales-report.xlsx -SourcePath .\sales.csv
+```
+
 # Convert Excel data to other formats
 
 ## Create a separate CSV file for each Excel sheet

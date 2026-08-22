@@ -1,0 +1,300 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-05-12",
+  "title": "ImportExcel Interactive Workflow Map",
+  "description": "Interactive map of how ImportExcel proper and ImportExcel AI flows move data, plans, scripts, and workbook objects between packages and components.",
+  "components": [
+    {
+      "id": "user",
+      "name": "User / Prompt",
+      "package": "Workflow input",
+      "kind": "actor",
+      "description": "The caller provides PowerShell commands, source paths, and natural-language prompts."
+    },
+    {
+      "id": "filesystem",
+      "name": "File System",
+      "package": "Artifacts",
+      "kind": "artifact",
+      "description": "CSV, TSV, XLSX, generated scripts, JSON plans, and report workbooks live here."
+    },
+    {
+      "id": "moduleLoader",
+      "name": "ImportExcel Module",
+      "package": "ImportExcel.psm1 / ImportExcel.psd1",
+      "kind": "package",
+      "description": "Loads Public, Private, Charting, InferData, and Pivot scripts and exposes public commands."
+    },
+    {
+      "id": "publicCmdlets",
+      "name": "Public Cmdlets",
+      "package": "Public/*.ps1",
+      "kind": "package",
+      "description": "User-facing commands such as Export-Excel, Import-Excel, Add-PivotTable, Invoke-ExcelPrompt, and Invoke-ExcelAgent."
+    },
+    {
+      "id": "dataReaders",
+      "name": "Data Readers",
+      "package": "Import-Excel / Import-Csv / worksheet readers",
+      "kind": "component",
+      "description": "Reads tabular source data from CSV, TSV, or Excel worksheets."
+    },
+    {
+      "id": "profiler",
+      "name": "Dataset Profiler",
+      "package": "Get-ExcelDatasetSummary",
+      "kind": "component",
+      "description": "Infers column roles and types, samples rows, and creates the DatasetSummary object."
+    },
+    {
+      "id": "planner",
+      "name": "Report Planner",
+      "package": "New-ExcelReportPlan",
+      "kind": "component",
+      "description": "Builds the constrained ReportPlan object from dataset facts and prompt intent."
+    },
+    {
+      "id": "aiBridge",
+      "name": "PSAISuite Bridge",
+      "package": "Private/ImportExcelAI.Helpers.ps1",
+      "kind": "integration",
+      "description": "Resolves PSAISuite and routes prompt calls through Invoke-ChatCompletion."
+    },
+    {
+      "id": "scriptGenerator",
+      "name": "Script Generator",
+      "package": "New-ExcelReportScript",
+      "kind": "component",
+      "description": "Creates reusable PowerShell scripts and validates model-generated code before saving or running it."
+    },
+    {
+      "id": "renderer",
+      "name": "Report Renderer",
+      "package": "Invoke-ExcelReportPlan / Export-Excel",
+      "kind": "component",
+      "description": "Executes plans and writes data tables, charts, pivots, analysis sheets, and profile sheets."
+    },
+    {
+      "id": "formatting",
+      "name": "Tables & Formatting",
+      "package": "Set-ExcelRange / Add-ExcelTable / styles",
+      "kind": "component",
+      "description": "Applies tables, filters, freeze panes, number formats, colors, borders, widths, and styles."
+    },
+    {
+      "id": "conditionalFormatting",
+      "name": "Conditional Formatting",
+      "package": "Add-ConditionalFormatting",
+      "kind": "component",
+      "description": "Adds data bars, color scales, top/bottom rules, icon sets, and other Excel conditional formats."
+    },
+    {
+      "id": "chartsPivots",
+      "name": "Charts & Pivots",
+      "package": "Add-ExcelChart / Add-PivotTable / Pivot",
+      "kind": "component",
+      "description": "Creates charts, pivot tables, and pivot charts from worksheet ranges."
+    },
+    {
+      "id": "analysisSheets",
+      "name": "Analysis Sheets",
+      "package": "AI analysis renderers",
+      "kind": "component",
+      "description": "Creates Executive Dashboard, Statistical Analysis, Correlation Matrix, Summary, and Column Profile sheets."
+    },
+    {
+      "id": "epplus",
+      "name": "EPPlus Workbook Core",
+      "package": "EPPlus.dll / OfficeOpenXml",
+      "kind": "dependency",
+      "description": "Underlying workbook object model: ExcelPackage, worksheets, ranges, tables, drawings, pivots, and styles."
+    },
+    {
+      "id": "output",
+      "name": "Workbook / Script Output",
+      "package": ".xlsx / .ps1 / .json",
+      "kind": "artifact",
+      "description": "Final user artifacts: reports, generated automation scripts, expanded plans, and diagnostic files."
+    },
+    {
+      "id": "testsExamples",
+      "name": "Tests & Examples",
+      "package": "__tests__ / Examples",
+      "kind": "support",
+      "description": "Pester tests and runnable examples validate and demonstrate the flows."
+    }
+  ],
+  "actions": [
+    {
+      "id": "export-objects",
+      "label": "Export objects to workbook",
+      "group": "ImportExcel proper",
+      "summary": "PowerShell objects flow through Export-Excel into an EPPlus workbook with tables, formatting, and saved output.",
+      "command": "$data | Export-Excel -Path .\\report.xlsx -WorksheetName Data -AutoSize -AutoFilter -TableName SourceData -Show",
+      "participants": ["user", "moduleLoader", "publicCmdlets", "renderer", "formatting", "epplus", "filesystem", "output"],
+      "steps": [
+        {"from": "user", "to": "publicCmdlets", "label": "Call Export-Excel", "passes": "PowerShell objects plus path and formatting parameters", "annotation": "The user controls the workbook surface with switches like -AutoSize, -AutoFilter, -TableName, -BoldTopRow, and -PassThru."},
+        {"from": "publicCmdlets", "to": "renderer", "label": "Normalize export request", "passes": "Rows, worksheet name, table options, style options", "annotation": "Export-Excel handles workbook creation or append behavior and prepares the worksheet write."},
+        {"from": "renderer", "to": "epplus", "label": "Create package and worksheet", "passes": "ExcelPackage, ExcelWorksheet, cell ranges", "annotation": "EPPlus owns the concrete workbook object model."},
+        {"from": "renderer", "to": "formatting", "label": "Apply workbook polish", "passes": "Worksheet ranges and style parameters", "annotation": "Tables, filters, freeze panes, number formats, widths, and colors are applied after values are written."},
+        {"from": "formatting", "to": "epplus", "label": "Mutate workbook styles", "passes": "Range.Style, worksheet tables, autofilter metadata", "annotation": "ImportExcel wraps EPPlus details in PowerShell-friendly commands."},
+        {"from": "epplus", "to": "filesystem", "label": "Save package", "passes": ".xlsx bytes", "annotation": "Close-ExcelPackage or Export-Excel save behavior persists the workbook."},
+        {"from": "filesystem", "to": "output", "label": "Return artifact", "passes": "Workbook path or ExcelPackage with -PassThru", "annotation": "The user receives either a file, an open workbook, or a package object for additional edits."}
+      ]
+    },
+    {
+      "id": "import-data",
+      "label": "Import workbook data",
+      "group": "ImportExcel proper",
+      "summary": "Excel worksheet data is read from disk and returned as PowerShell objects for further processing.",
+      "command": "$rows = Import-Excel -Path .\\workbook.xlsx -WorksheetName Data",
+      "participants": ["user", "filesystem", "publicCmdlets", "dataReaders", "epplus", "output"],
+      "steps": [
+        {"from": "user", "to": "publicCmdlets", "label": "Call Import-Excel", "passes": "Workbook path, worksheet, range/header options", "annotation": "The public command is the user-facing read API."},
+        {"from": "publicCmdlets", "to": "filesystem", "label": "Resolve workbook", "passes": "Path to .xlsx", "annotation": "The workbook is opened from disk."},
+        {"from": "filesystem", "to": "epplus", "label": "Open package", "passes": "Workbook stream", "annotation": "EPPlus loads workbook structure and sheet data."},
+        {"from": "epplus", "to": "dataReaders", "label": "Read worksheet range", "passes": "Cells, headers, values, formulas", "annotation": "The reader maps worksheet rows back to PowerShell objects."},
+        {"from": "dataReaders", "to": "output", "label": "Return objects", "passes": "PSCustomObject rows", "annotation": "Downstream commands can filter, transform, export, or feed AI report planning."}
+      ]
+    },
+    {
+      "id": "pivot-chart",
+      "label": "Add pivot and chart",
+      "group": "ImportExcel proper",
+      "summary": "A source worksheet range is summarized with a pivot table and optionally visualized with a chart.",
+      "command": "Add-PivotTable -ExcelPackage $excel -PivotTableName SalesByRegion -SourceWorksheet $ws -SourceRange $ws.Dimension.Address -PivotRows Region -PivotData @{ Revenue = 'Sum' } -IncludePivotChart",
+      "participants": ["user", "publicCmdlets", "chartsPivots", "epplus", "filesystem", "output"],
+      "steps": [
+        {"from": "user", "to": "publicCmdlets", "label": "Call Add-PivotTable", "passes": "ExcelPackage, source worksheet, source range, rows, data fields", "annotation": "The command can create a new pivot sheet when no explicit destination address is supplied."},
+        {"from": "publicCmdlets", "to": "chartsPivots", "label": "Build pivot definition", "passes": "Pivot rows, columns, filters, data aggregations, chart options", "annotation": "ImportExcel translates friendly PowerShell hashtables into EPPlus pivot fields."},
+        {"from": "chartsPivots", "to": "epplus", "label": "Create pivot table", "passes": "Pivot cache, fields, data fields", "annotation": "The source range must resolve to a valid worksheet range to avoid workbook repair issues."},
+        {"from": "chartsPivots", "to": "epplus", "label": "Add chart if requested", "passes": "Chart type, title, size, position", "annotation": "Pivot charts ride on the pivot table object."},
+        {"from": "epplus", "to": "filesystem", "label": "Save workbook", "passes": "Updated .xlsx", "annotation": "The workbook now contains source data, pivot table, and optional chart."}
+      ]
+    },
+    {
+      "id": "format-data",
+      "label": "Format data and add rules",
+      "group": "ImportExcel proper",
+      "summary": "Ranges are styled and conditional formatting rules are added through PowerShell-friendly wrappers.",
+      "command": "Set-ExcelRange -Address $ws.Cells['A1:G1'] -Bold -BackgroundColor '#4F81BD' -FontColor '#FFFFFF'\nAdd-ConditionalFormatting -Worksheet $ws -Address 'D2:D100' -DataBarColor SteelBlue",
+      "participants": ["user", "publicCmdlets", "formatting", "conditionalFormatting", "epplus", "output"],
+      "steps": [
+        {"from": "user", "to": "publicCmdlets", "label": "Call formatting commands", "passes": "Ranges, colors, fonts, borders, conditional format rule parameters", "annotation": "Recent changes allow #RRGGBB color strings in Set-ExcelRange and Add-ConditionalFormatting."},
+        {"from": "publicCmdlets", "to": "formatting", "label": "Apply static styles", "passes": "Cell ranges and style values", "annotation": "Set-ExcelRange handles font, fill, borders, alignment, formulas, sizes, and visibility."},
+        {"from": "publicCmdlets", "to": "conditionalFormatting", "label": "Apply dynamic rules", "passes": "RuleType, addresses, colors, rank/condition values", "annotation": "Data bars, color scales, top/bottom rules, and icon sets are created here."},
+        {"from": "formatting", "to": "epplus", "label": "Update style model", "passes": "ExcelRange.Style mutations", "annotation": "ImportExcel keeps callers away from most low-level EPPlus calls."},
+        {"from": "conditionalFormatting", "to": "epplus", "label": "Add worksheet rules", "passes": "ConditionalFormatting collection entries", "annotation": "Excel evaluates these rules when the workbook opens."}
+      ]
+    },
+    {
+      "id": "inspect-dataset",
+      "label": "Inspect dataset",
+      "group": "ImportExcel AI",
+      "summary": "A source file is profiled into a compact DatasetSummary used by AI and deterministic planning.",
+      "command": "Get-ExcelDatasetSummary -Path .\\sales.csv -AsJson",
+      "participants": ["user", "filesystem", "publicCmdlets", "dataReaders", "profiler", "output"],
+      "steps": [
+        {"from": "user", "to": "publicCmdlets", "label": "Call Get-ExcelDatasetSummary", "passes": "Path, worksheet names, delimiter, sample size, analysis rows", "annotation": "This is the first AI-layer primitive."},
+        {"from": "publicCmdlets", "to": "dataReaders", "label": "Load tabular sources", "passes": "CSV, TSV, or worksheet rows", "annotation": "Workbook sources can include one or more worksheets."},
+        {"from": "dataReaders", "to": "profiler", "label": "Profile rows", "passes": "Rows per source", "annotation": "The profiler infers types, roles, examples, missing counts, and suggested number formats."},
+        {"from": "profiler", "to": "output", "label": "Return DatasetSummary", "passes": "DatasetSummary object or JSON", "annotation": "This object is compact enough to pass to a planner or script generator."}
+      ]
+    },
+    {
+      "id": "prompt-report",
+      "label": "Create report from prompt",
+      "group": "ImportExcel AI",
+      "summary": "The shortest natural-language path: profile data, plan the report, render the workbook.",
+      "command": "Invoke-ExcelPrompt -Path .\\sales.csv -Prompt \"Create the data in a table, use data bars, and create a line chart\" -OutputPath .\\sales-report.xlsx -FallbackToDefault -Show",
+      "participants": ["user", "publicCmdlets", "profiler", "planner", "aiBridge", "renderer", "formatting", "conditionalFormatting", "chartsPivots", "analysisSheets", "epplus", "filesystem", "output"],
+      "steps": [
+        {"from": "user", "to": "publicCmdlets", "label": "Call Invoke-ExcelPrompt", "passes": "Source path, prompt, output path, model/fallback switches", "annotation": "This wraps the full prompt-to-workbook workflow."},
+        {"from": "publicCmdlets", "to": "profiler", "label": "Summarize dataset", "passes": "Source rows and inferred metadata", "annotation": "Dataset facts ground the plan."},
+        {"from": "profiler", "to": "planner", "label": "Plan report", "passes": "DatasetSummary plus prompt", "annotation": "The deterministic default plan is always available."},
+        {"from": "planner", "to": "aiBridge", "label": "Optional AI planning", "passes": "Constrained JSON request", "annotation": "PSAISuite can produce the ReportPlan; fallback handles failed calls or invalid JSON."},
+        {"from": "planner", "to": "renderer", "label": "Execute ReportPlan", "passes": "Tables, charts, pivots, conditional formats, analysis sheets", "annotation": "Prompt intent defaults survive fallback: chart type, data bars, color scales, top/bottom highlights."},
+        {"from": "renderer", "to": "formatting", "label": "Create data tables", "passes": "Worksheet ranges, table names, styles, filters", "annotation": "Data appears first in the workbook."},
+        {"from": "renderer", "to": "chartsPivots", "label": "Create visuals and summaries", "passes": "Chart definitions and pivot definitions", "annotation": "Chart ranges are address strings to avoid empty charts or #REF!."},
+        {"from": "renderer", "to": "conditionalFormatting", "label": "Apply rule-based formatting", "passes": "DataBar, ThreeColorScale, Top, Bottom rules", "annotation": "Conditional formats target measure columns."},
+        {"from": "renderer", "to": "analysisSheets", "label": "Add analysis tabs", "passes": "Dataset profile and calculated summaries", "annotation": "Executive, statistical, correlation, summary, and column profile sheets are added when requested or useful."},
+        {"from": "epplus", "to": "filesystem", "label": "Save workbook", "passes": ".xlsx bytes", "annotation": "The final workbook is written to OutputPath."}
+      ]
+    },
+    {
+      "id": "render-saved-plan",
+      "label": "Render saved plan",
+      "group": "ImportExcel AI",
+      "summary": "A saved or inspected ReportPlan is rendered later into a workbook.",
+      "command": "$plan = Get-Content .\\sales-plan.json -Raw | ConvertFrom-Json\n$plan | Invoke-ExcelReportPlan -Path .\\sales-report.xlsx -SourcePath .\\sales.csv -DatasetSummary $summary -Force",
+      "participants": ["user", "filesystem", "publicCmdlets", "planner", "renderer", "formatting", "chartsPivots", "conditionalFormatting", "analysisSheets", "epplus", "output"],
+      "steps": [
+        {"from": "filesystem", "to": "planner", "label": "Load plan JSON", "passes": "ReportPlan document", "annotation": "The plan can be inspected, edited, versioned, or generated by AI."},
+        {"from": "user", "to": "publicCmdlets", "label": "Call Invoke-ExcelReportPlan", "passes": "Plan, source path, dataset summary, output path", "annotation": "This skips the prompt planning step."},
+        {"from": "planner", "to": "renderer", "label": "Pass executable plan", "passes": "Tables, charts, pivots, conditional formats, analysis sheets", "annotation": "The renderer treats AI and deterministic plans the same."},
+        {"from": "renderer", "to": "epplus", "label": "Build workbook", "passes": "Worksheet operations and workbook objects", "annotation": "The rendering phase owns workbook layout and artifact creation."},
+        {"from": "epplus", "to": "output", "label": "Return report", "passes": "Saved .xlsx plus worksheet metadata", "annotation": "Useful for CI or repeatable report generation."}
+      ]
+    },
+    {
+      "id": "generate-script",
+      "label": "Generate reusable script",
+      "group": "ImportExcel AI",
+      "summary": "A prompt becomes a reusable .ps1 that can rebuild the report later.",
+      "command": "New-ExcelReportScript -Path .\\sales.csv -Prompt \"Create the data in a table and use data bars\" -OutputPath .\\sales-agent-report.xlsx -ScriptPath .\\build-sales-agent-report.ps1 -FallbackToDefault",
+      "participants": ["user", "publicCmdlets", "profiler", "scriptGenerator", "aiBridge", "filesystem", "output"],
+      "steps": [
+        {"from": "user", "to": "publicCmdlets", "label": "Call New-ExcelReportScript", "passes": "Source path, prompt, workbook path, script path", "annotation": "This flow produces automation, not just a workbook."},
+        {"from": "publicCmdlets", "to": "profiler", "label": "Profile source", "passes": "DatasetSummary", "annotation": "Script generation uses source facts to choose columns, formats, and visuals."},
+        {"from": "profiler", "to": "scriptGenerator", "label": "Build deterministic fallback", "passes": "DatasetSummary and prompt intent", "annotation": "Fallback preserves chart and formatting intent such as pie charts or data bars."},
+        {"from": "scriptGenerator", "to": "aiBridge", "label": "Optional AI script generation", "passes": "Prompt, paths, DatasetSummary, ImportExcel usage rules", "annotation": "The model is asked for a complete PowerShell script only."},
+        {"from": "scriptGenerator", "to": "scriptGenerator", "label": "Validate generated code", "passes": "Script text, AST, command metadata", "annotation": "Checks include parse errors, bad commands, bad parameters, missing non-switch arguments, and unsafe EPPlus SetColor calls."},
+        {"from": "scriptGenerator", "to": "filesystem", "label": "Write script", "passes": ".ps1 text", "annotation": "If validation fails and fallback is enabled, the deterministic script is written instead."},
+        {"from": "filesystem", "to": "output", "label": "Return script metadata", "passes": "ScriptPath, WorkbookPath, UsedAI, Model, DatasetSummary", "annotation": "The script is now a reusable artifact."}
+      ]
+    },
+    {
+      "id": "agent-fallback",
+      "label": "Run agent with fallback",
+      "group": "ImportExcel AI",
+      "summary": "The agent generates a script, runs it, and falls back to deterministic script execution if AI code fails.",
+      "command": "Invoke-ExcelAgent -Path .\\sales.csv -Prompt \"Create the data in a table, use data bars, highlight top 3, and create a line chart\" -OutputPath .\\sales-agent-report.xlsx -ScriptPath .\\build-sales-agent-report.ps1 -FallbackToDefault -Show",
+      "participants": ["user", "publicCmdlets", "scriptGenerator", "aiBridge", "renderer", "formatting", "conditionalFormatting", "chartsPivots", "epplus", "filesystem", "output"],
+      "steps": [
+        {"from": "user", "to": "publicCmdlets", "label": "Call Invoke-ExcelAgent", "passes": "Source path, prompt, output path, script path, fallback switches", "annotation": "This is the AI-first workflow that keeps automation."},
+        {"from": "publicCmdlets", "to": "scriptGenerator", "label": "Generate script", "passes": "Same inputs as New-ExcelReportScript", "annotation": "The script may be AI-generated or deterministic."},
+        {"from": "scriptGenerator", "to": "filesystem", "label": "Save selected script", "passes": ".ps1 file", "annotation": "The saved script is what gets executed."},
+        {"from": "filesystem", "to": "renderer", "label": "Run script", "passes": "SourcePath, OutputPath, Show, Force", "annotation": "The script uses ImportExcel commands to build the workbook."},
+        {"from": "renderer", "to": "epplus", "label": "Create workbook", "passes": "ExcelPackage operations", "annotation": "Tables, charts, pivots, summaries, and formatting are applied."},
+        {"from": "renderer", "to": "publicCmdlets", "label": "Runtime fallback if needed", "passes": "Error record from AI script", "annotation": "If the AI script fails and fallback is enabled, Invoke-ExcelAgent regenerates the deterministic script and runs it."},
+        {"from": "epplus", "to": "output", "label": "Return workbook and script", "passes": ".xlsx plus .ps1 paths", "annotation": "The user gets both the report and automation trail."}
+      ]
+    },
+    {
+      "id": "existing-workbook",
+      "label": "Analyze existing workbook",
+      "group": "ImportExcel AI",
+      "summary": "An existing workbook is profiled, planned against, and rendered into a new report workbook.",
+      "command": "Invoke-ExcelPrompt -Path .\\existing.xlsx -WorksheetName Sales,Inventory -Prompt \"Analyze this workbook and create an executive dashboard\" -OutputPath .\\existing-report.xlsx -FallbackToDefault",
+      "participants": ["user", "filesystem", "publicCmdlets", "dataReaders", "profiler", "planner", "renderer", "analysisSheets", "chartsPivots", "epplus", "output"],
+      "steps": [
+        {"from": "user", "to": "publicCmdlets", "label": "Provide workbook and prompt", "passes": "Workbook path, worksheet names, report prompt", "annotation": "The flow can target specific worksheets."},
+        {"from": "filesystem", "to": "dataReaders", "label": "Read workbook sheets", "passes": "ExcelPackage and worksheet rows", "annotation": "Each selected worksheet can become a separate profiled source."},
+        {"from": "dataReaders", "to": "profiler", "label": "Summarize sheets", "passes": "Per-sheet source data", "annotation": "The summary includes source names so plans can target the right sheet."},
+        {"from": "profiler", "to": "planner", "label": "Plan analysis", "passes": "Multi-source DatasetSummary", "annotation": "Executive and statistical prompt intents can add analysis sheets."},
+        {"from": "planner", "to": "renderer", "label": "Render new report workbook", "passes": "ReportPlan", "annotation": "The source workbook is read; the output workbook is generated separately."},
+        {"from": "renderer", "to": "analysisSheets", "label": "Create interpretation tabs", "passes": "Profile and calculated summaries", "annotation": "This is the current bridge toward workbook analysis and repair workflows."},
+        {"from": "epplus", "to": "output", "label": "Save analyzed report", "passes": ".xlsx workbook", "annotation": "The result is a new report artifact, not an in-place edit."}
+      ]
+    }
+  ],
+  "legend": {
+    "actor": "External caller or human action",
+    "package": "Loaded module/package boundary",
+    "component": "Functional subsystem",
+    "integration": "External integration layer",
+    "dependency": "Third-party/runtime dependency",
+    "artifact": "Files or persistent output",
+    "support": "Tests, examples, and validation assets"
+  }
+}

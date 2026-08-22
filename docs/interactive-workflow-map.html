@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ImportExcel Interactive Workflow Map</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --panel: #ffffff;
+      --ink: #172033;
+      --muted: #637083;
+      --line: #d9e0ea;
+      --active: #126a92;
+      --active-soft: #e5f4fa;
+      --ai: #236b4e;
+      --ai-soft: #e8f5ee;
+      --proper: #7a4e08;
+      --proper-soft: #fff3d8;
+      --shadow: 0 14px 32px rgba(19, 31, 49, 0.08);
+      --code: #111827;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 14px/1.45 "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    a {
+      color: var(--active);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      max-width: 1460px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 22px;
+      align-items: start;
+      background: linear-gradient(135deg, #ffffff 0%, #edf7fb 52%, #edf8f1 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .eyebrow {
+      color: var(--active);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.03;
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 900px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .meta {
+      min-width: 250px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .meta div {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+      padding: 7px 0;
+    }
+
+    .meta div:last-child {
+      border-bottom: 0;
+    }
+
+    .meta span {
+      color: var(--muted);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(19, 31, 49, 0.05);
+    }
+
+    .panel-head {
+      padding: 16px 16px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-head h2 {
+      margin: 0 0 5px;
+      font-size: 18px;
+    }
+
+    .panel-head p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .actions {
+      padding: 12px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .action-btn {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: #fbfcfe;
+      color: var(--ink);
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      transition: 120ms ease;
+    }
+
+    .action-btn:hover {
+      border-color: var(--active);
+      background: var(--active-soft);
+    }
+
+    .action-btn.active {
+      border-color: var(--active);
+      box-shadow: 0 0 0 2px rgba(18, 106, 146, 0.15);
+      background: var(--active-soft);
+    }
+
+    .action-btn strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .action-btn span {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .action-btn .proper {
+      background: var(--proper-soft);
+      color: var(--proper);
+    }
+
+    .action-btn .ai {
+      background: var(--ai-soft);
+      color: var(--ai);
+    }
+
+    .action-btn small {
+      display: block;
+      color: var(--muted);
+    }
+
+    .main {
+      display: grid;
+      gap: 18px;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+    }
+
+    .toolbar input {
+      width: min(380px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 11px;
+    }
+
+    .component-grid {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .component {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 142px;
+      background: #fbfcfe;
+      position: relative;
+      transition: 120ms ease;
+    }
+
+    .component.active {
+      border-color: var(--active);
+      background: var(--active-soft);
+      box-shadow: inset 0 0 0 2px rgba(18, 106, 146, 0.08);
+    }
+
+    .component.dimmed {
+      opacity: 0.46;
+    }
+
+    .component h3 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+
+    .component .pkg {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .component p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      border-radius: 999px;
+      padding: 2px 7px;
+      font-size: 11px;
+      color: var(--muted);
+      background: #eef2f6;
+    }
+
+    .step-num {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      min-width: 24px;
+      height: 24px;
+      display: none;
+      place-items: center;
+      background: var(--active);
+      color: white;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .component.active .step-num {
+      display: grid;
+    }
+
+    .flow-detail {
+      padding: 16px;
+    }
+
+    .selected-title {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    .selected-title h2 {
+      margin: 0 0 5px;
+      font-size: 24px;
+    }
+
+    .selected-title p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .group-pill {
+      border-radius: 999px;
+      padding: 5px 11px;
+      white-space: nowrap;
+      background: var(--ai-soft);
+      color: var(--ai);
+      font-weight: 700;
+    }
+
+    .group-pill.proper {
+      background: var(--proper-soft);
+      color: var(--proper);
+    }
+
+    .handoffs {
+      display: grid;
+      gap: 10px;
+      counter-reset: step;
+    }
+
+    .handoff {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfe;
+    }
+
+    .handoff::before {
+      counter-increment: step;
+      content: counter(step);
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--active);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .handoff h3 {
+      margin: 0 0 5px;
+      font-size: 15px;
+    }
+
+    .handoff p {
+      margin: 4px 0;
+      color: var(--muted);
+    }
+
+    .handoff code {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #eef2f6;
+      color: #233044;
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: 12px;
+    }
+
+    .command {
+      margin-top: 14px;
+      background: var(--code);
+      color: #e8eef8;
+      border-radius: 8px;
+      padding: 14px;
+      white-space: pre-wrap;
+      overflow: auto;
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: 13px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--active);
+      display: inline-block;
+    }
+
+    .notice {
+      padding: 10px 12px;
+      background: #fff7e6;
+      border: 1px solid #efd28e;
+      border-radius: 8px;
+      color: #68440a;
+      margin-top: 10px;
+      display: none;
+    }
+
+    @media (max-width: 1160px) {
+      .layout,
+      .hero,
+      .selected-title {
+        grid-template-columns: 1fr;
+      }
+
+      .component-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .meta {
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .page {
+        padding: 14px;
+      }
+
+      .component-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">ImportExcel proper + ImportExcel AI</div>
+        <h1>Interactive Workflow Map</h1>
+        <p>Pick an action to highlight the packages and components involved, then read the annotated handoffs that explain what moves between each component to complete the workflow.</p>
+        <div id="loadNotice" class="notice">Loaded embedded fallback data because the browser blocked reading the adjacent JSON file from <code>file://</code>. The separate JSON file is still written beside this page.</div>
+      </div>
+      <aside class="meta">
+        <div><span>Data source</span><strong><a href="interactive-workflow-map.json">interactive-workflow-map.json</a></strong></div>
+        <div><span>Components</span><strong id="componentCount">0</strong></div>
+        <div><span>Actions</span><strong id="actionCount">0</strong></div>
+        <div><span>Generated</span><strong>2026-05-12</strong></div>
+      </aside>
+    </section>
+
+    <section class="layout">
+      <aside class="panel">
+        <div class="panel-head">
+          <h2>Actions</h2>
+          <p>Click a workflow to light up its path.</p>
+        </div>
+        <div id="actions" class="actions"></div>
+      </aside>
+
+      <section class="main">
+        <div class="panel">
+          <div class="toolbar">
+            <div>
+              <strong>Components and Packages</strong>
+              <div class="legend">
+                <span><i class="dot"></i> active in selected action</span>
+                <span>dimmed cards are outside the selected path</span>
+              </div>
+            </div>
+            <input id="componentFilter" type="search" placeholder="Filter components">
+          </div>
+          <div id="components" class="component-grid"></div>
+        </div>
+
+        <div class="panel">
+          <div id="flowDetail" class="flow-detail"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const fallbackData = {
+      "schemaVersion": "1.0",
+      "generatedAt": "2026-05-12",
+      "title": "ImportExcel Interactive Workflow Map",
+      "description": "Embedded fallback copy for direct file viewing. The full adjacent JSON file is preferred when the browser allows it.",
+      "components": [
+        {"id":"user","name":"User / Prompt","package":"Workflow input","kind":"actor","description":"The caller provides PowerShell commands, source paths, and natural-language prompts."},
+        {"id":"filesystem","name":"File System","package":"Artifacts","kind":"artifact","description":"CSV, TSV, XLSX, generated scripts, JSON plans, and report workbooks live here."},
+        {"id":"moduleLoader","name":"ImportExcel Module","package":"ImportExcel.psm1 / ImportExcel.psd1","kind":"package","description":"Loads Public, Private, Charting, InferData, and Pivot scripts and exposes public commands."},
+        {"id":"publicCmdlets","name":"Public Cmdlets","package":"Public/*.ps1","kind":"package","description":"User-facing commands such as Export-Excel, Import-Excel, Add-PivotTable, Invoke-ExcelPrompt, and Invoke-ExcelAgent."},
+        {"id":"dataReaders","name":"Data Readers","package":"Import-Excel / Import-Csv / worksheet readers","kind":"component","description":"Reads tabular source data from CSV, TSV, or Excel worksheets."},
+        {"id":"profiler","name":"Dataset Profiler","package":"Get-ExcelDatasetSummary","kind":"component","description":"Infers column roles and types, samples rows, and creates the DatasetSummary object."},
+        {"id":"planner","name":"Report Planner","package":"New-ExcelReportPlan","kind":"component","description":"Builds the constrained ReportPlan object from dataset facts and prompt intent."},
+        {"id":"aiBridge","name":"PSAISuite Bridge","package":"Private/ImportExcelAI.Helpers.ps1","kind":"integration","description":"Resolves PSAISuite and routes prompt calls through Invoke-ChatCompletion."},
+        {"id":"scriptGenerator","name":"Script Generator","package":"New-ExcelReportScript","kind":"component","description":"Creates reusable PowerShell scripts and validates model-generated code before saving or running it."},
+        {"id":"renderer","name":"Report Renderer","package":"Invoke-ExcelReportPlan / Export-Excel","kind":"component","description":"Executes plans and writes data tables, charts, pivots, analysis sheets, and profile sheets."},
+        {"id":"formatting","name":"Tables & Formatting","package":"Set-ExcelRange / Add-ExcelTable / styles","kind":"component","description":"Applies tables, filters, freeze panes, number formats, colors, borders, widths, and styles."},
+        {"id":"conditionalFormatting","name":"Conditional Formatting","package":"Add-ConditionalFormatting","kind":"component","description":"Adds data bars, color scales, top/bottom rules, icon sets, and other Excel conditional formats."},
+        {"id":"chartsPivots","name":"Charts & Pivots","package":"Add-ExcelChart / Add-PivotTable / Pivot","kind":"component","description":"Creates charts, pivot tables, and pivot charts from worksheet ranges."},
+        {"id":"analysisSheets","name":"Analysis Sheets","package":"AI analysis renderers","kind":"component","description":"Creates Executive Dashboard, Statistical Analysis, Correlation Matrix, Summary, and Column Profile sheets."},
+        {"id":"epplus","name":"EPPlus Workbook Core","package":"EPPlus.dll / OfficeOpenXml","kind":"dependency","description":"Underlying workbook object model: ExcelPackage, worksheets, ranges, tables, drawings, pivots, and styles."},
+        {"id":"output","name":"Workbook / Script Output","package":".xlsx / .ps1 / .json","kind":"artifact","description":"Final user artifacts: reports, generated automation scripts, expanded plans, and diagnostic files."},
+        {"id":"testsExamples","name":"Tests & Examples","package":"__tests__ / Examples","kind":"support","description":"Pester tests and runnable examples validate and demonstrate the flows."}
+      ],
+      "actions": [
+        {"id":"export-objects","label":"Export objects to workbook","group":"ImportExcel proper","summary":"PowerShell objects flow through Export-Excel into an EPPlus workbook.","command":"$data | Export-Excel -Path .\\report.xlsx -WorksheetName Data -AutoSize -AutoFilter -TableName SourceData -Show","participants":["user","moduleLoader","publicCmdlets","renderer","formatting","epplus","filesystem","output"],"steps":[{"from":"user","to":"publicCmdlets","label":"Call Export-Excel","passes":"PowerShell objects plus path and formatting parameters","annotation":"The user controls workbook surface switches."},{"from":"publicCmdlets","to":"renderer","label":"Normalize export request","passes":"Rows, worksheet name, table options, style options","annotation":"Export-Excel prepares the worksheet write."},{"from":"renderer","to":"epplus","label":"Create package and worksheet","passes":"ExcelPackage, ExcelWorksheet, cell ranges","annotation":"EPPlus owns the workbook object model."},{"from":"renderer","to":"formatting","label":"Apply workbook polish","passes":"Worksheet ranges and style parameters","annotation":"Tables, filters, number formats, and widths are applied."},{"from":"epplus","to":"filesystem","label":"Save package","passes":".xlsx bytes","annotation":"The workbook is persisted."}]},
+        {"id":"import-data","label":"Import workbook data","group":"ImportExcel proper","summary":"Excel worksheet data is read from disk and returned as PowerShell objects.","command":"$rows = Import-Excel -Path .\\workbook.xlsx -WorksheetName Data","participants":["user","filesystem","publicCmdlets","dataReaders","epplus","output"],"steps":[{"from":"user","to":"publicCmdlets","label":"Call Import-Excel","passes":"Workbook path, worksheet, range/header options","annotation":"The public command is the user-facing read API."},{"from":"filesystem","to":"epplus","label":"Open package","passes":"Workbook stream","annotation":"EPPlus loads workbook structure."},{"from":"epplus","to":"dataReaders","label":"Read worksheet range","passes":"Cells, headers, values, formulas","annotation":"Rows become PowerShell objects."},{"from":"dataReaders","to":"output","label":"Return objects","passes":"PSCustomObject rows","annotation":"Downstream commands can filter, transform, export, or profile."}]},
+        {"id":"pivot-chart","label":"Add pivot and chart","group":"ImportExcel proper","summary":"A source worksheet range is summarized with a pivot table and optional chart.","command":"Add-PivotTable -ExcelPackage $excel -PivotTableName SalesByRegion -SourceWorksheet $ws -SourceRange $ws.Dimension.Address -PivotRows Region -PivotData @{ Revenue = 'Sum' } -IncludePivotChart","participants":["user","publicCmdlets","chartsPivots","epplus","filesystem","output"],"steps":[{"from":"user","to":"publicCmdlets","label":"Call Add-PivotTable","passes":"ExcelPackage, source worksheet, source range, rows, data fields","annotation":"Friendly PowerShell parameters define the pivot."},{"from":"publicCmdlets","to":"chartsPivots","label":"Build pivot definition","passes":"Pivot rows, filters, data aggregations, chart options","annotation":"ImportExcel translates hashtables into pivot fields."},{"from":"chartsPivots","to":"epplus","label":"Create pivot and chart","passes":"Pivot cache, fields, chart metadata","annotation":"The source range must be valid to avoid workbook repair."},{"from":"epplus","to":"filesystem","label":"Save workbook","passes":"Updated .xlsx","annotation":"The workbook contains source data, pivot, and optional chart."}]},
+        {"id":"format-data","label":"Format data and add rules","group":"ImportExcel proper","summary":"Ranges are styled and conditional formatting rules are added.","command":"Set-ExcelRange -Address $ws.Cells['A1:G1'] -Bold -BackgroundColor '#4F81BD' -FontColor '#FFFFFF'\nAdd-ConditionalFormatting -Worksheet $ws -Address 'D2:D100' -DataBarColor SteelBlue","participants":["user","publicCmdlets","formatting","conditionalFormatting","epplus","output"],"steps":[{"from":"user","to":"publicCmdlets","label":"Call formatting commands","passes":"Ranges, colors, fonts, borders, conditional format parameters","annotation":"#RRGGBB color strings are supported."},{"from":"publicCmdlets","to":"formatting","label":"Apply static styles","passes":"Cell ranges and style values","annotation":"Set-ExcelRange handles fonts, fills, borders, formulas, sizes."},{"from":"publicCmdlets","to":"conditionalFormatting","label":"Apply dynamic rules","passes":"RuleType, addresses, colors, rank values","annotation":"Data bars, color scales, top/bottom rules, and icon sets live here."},{"from":"conditionalFormatting","to":"epplus","label":"Add worksheet rules","passes":"ConditionalFormatting collection entries","annotation":"Excel evaluates rules when opened."}]},
+        {"id":"inspect-dataset","label":"Inspect dataset","group":"ImportExcel AI","summary":"A source file is profiled into a compact DatasetSummary.","command":"Get-ExcelDatasetSummary -Path .\\sales.csv -AsJson","participants":["user","filesystem","publicCmdlets","dataReaders","profiler","output"],"steps":[{"from":"user","to":"publicCmdlets","label":"Call Get-ExcelDatasetSummary","passes":"Path, worksheet names, delimiter, sample size, analysis rows","annotation":"This is the first AI-layer primitive."},{"from":"publicCmdlets","to":"dataReaders","label":"Load tabular sources","passes":"CSV, TSV, or worksheet rows","annotation":"Workbook sources can include several worksheets."},{"from":"dataReaders","to":"profiler","label":"Profile rows","passes":"Rows per source","annotation":"The profiler infers types, roles, examples, missing counts, and number formats."},{"from":"profiler","to":"output","label":"Return DatasetSummary","passes":"DatasetSummary object or JSON","annotation":"This object feeds planning and script generation."}]},
+        {"id":"prompt-report","label":"Create report from prompt","group":"ImportExcel AI","summary":"Profile data, plan the report, and render the workbook from one prompt.","command":"Invoke-ExcelPrompt -Path .\\sales.csv -Prompt \"Create the data in a table, use data bars, and create a line chart\" -OutputPath .\\sales-report.xlsx -FallbackToDefault -Show","participants":["user","publicCmdlets","profiler","planner","aiBridge","renderer","formatting","conditionalFormatting","chartsPivots","analysisSheets","epplus","filesystem","output"],"steps":[{"from":"user","to":"publicCmdlets","label":"Call Invoke-ExcelPrompt","passes":"Source path, prompt, output path, model/fallback switches","annotation":"This wraps the full prompt-to-workbook workflow."},{"from":"publicCmdlets","to":"profiler","label":"Summarize dataset","passes":"Source rows and inferred metadata","annotation":"Dataset facts ground the plan."},{"from":"profiler","to":"planner","label":"Plan report","passes":"DatasetSummary plus prompt","annotation":"The deterministic default plan is always available."},{"from":"planner","to":"aiBridge","label":"Optional AI planning","passes":"Constrained JSON request","annotation":"PSAISuite can produce the ReportPlan; fallback handles failed calls."},{"from":"planner","to":"renderer","label":"Execute ReportPlan","passes":"Tables, charts, pivots, conditional formats, analysis sheets","annotation":"Prompt intent defaults survive fallback."},{"from":"renderer","to":"formatting","label":"Create data tables","passes":"Worksheet ranges, table names, styles, filters","annotation":"Data appears first."},{"from":"renderer","to":"chartsPivots","label":"Create visuals and pivots","passes":"Chart definitions and pivot definitions","annotation":"Chart ranges are address strings to avoid #REF!."},{"from":"renderer","to":"conditionalFormatting","label":"Apply rules","passes":"DataBar, ThreeColorScale, Top, Bottom rules","annotation":"Rules target measure columns."},{"from":"renderer","to":"analysisSheets","label":"Add analysis tabs","passes":"Dataset profile and summaries","annotation":"Executive, statistical, correlation, summary, and profile sheets can be added."}]},
+        {"id":"render-saved-plan","label":"Render saved plan","group":"ImportExcel AI","summary":"A saved or inspected ReportPlan is rendered later into a workbook.","command":"$plan = Get-Content .\\sales-plan.json -Raw | ConvertFrom-Json\n$plan | Invoke-ExcelReportPlan -Path .\\sales-report.xlsx -SourcePath .\\sales.csv -DatasetSummary $summary -Force","participants":["user","filesystem","publicCmdlets","planner","renderer","formatting","chartsPivots","conditionalFormatting","analysisSheets","epplus","output"],"steps":[{"from":"filesystem","to":"planner","label":"Load plan JSON","passes":"ReportPlan document","annotation":"Plans can be inspected, edited, or versioned."},{"from":"user","to":"publicCmdlets","label":"Call Invoke-ExcelReportPlan","passes":"Plan, source path, dataset summary, output path","annotation":"This skips prompt planning."},{"from":"planner","to":"renderer","label":"Pass executable plan","passes":"Tables, charts, pivots, conditional formats, analysis sheets","annotation":"AI and deterministic plans render the same way."},{"from":"renderer","to":"epplus","label":"Build workbook","passes":"Worksheet operations and workbook objects","annotation":"The renderer owns workbook layout."},{"from":"epplus","to":"output","label":"Return report","passes":"Saved .xlsx plus worksheet metadata","annotation":"Useful for CI or repeatable reports."}]},
+        {"id":"generate-script","label":"Generate reusable script","group":"ImportExcel AI","summary":"A prompt becomes a reusable .ps1 that can rebuild the report.","command":"New-ExcelReportScript -Path .\\sales.csv -Prompt \"Create the data in a table and use data bars\" -OutputPath .\\sales-agent-report.xlsx -ScriptPath .\\build-sales-agent-report.ps1 -FallbackToDefault","participants":["user","publicCmdlets","profiler","scriptGenerator","aiBridge","filesystem","output"],"steps":[{"from":"user","to":"publicCmdlets","label":"Call New-ExcelReportScript","passes":"Source path, prompt, workbook path, script path","annotation":"This produces automation, not just a workbook."},{"from":"publicCmdlets","to":"profiler","label":"Profile source","passes":"DatasetSummary","annotation":"Script generation uses source facts."},{"from":"profiler","to":"scriptGenerator","label":"Build deterministic fallback","passes":"DatasetSummary and prompt intent","annotation":"Fallback preserves chart and formatting intent."},{"from":"scriptGenerator","to":"aiBridge","label":"Optional AI script generation","passes":"Prompt, paths, DatasetSummary, ImportExcel usage rules","annotation":"The model is asked for a full PowerShell script."},{"from":"scriptGenerator","to":"scriptGenerator","label":"Validate generated code","passes":"Script text, AST, command metadata","annotation":"Checks bad commands, parameters, missing args, and unsafe EPPlus calls."},{"from":"scriptGenerator","to":"filesystem","label":"Write script","passes":".ps1 text","annotation":"If validation fails, fallback script is saved."}]},
+        {"id":"agent-fallback","label":"Run agent with fallback","group":"ImportExcel AI","summary":"Generate a script, run it, and fall back if AI code fails.","command":"Invoke-ExcelAgent -Path .\\sales.csv -Prompt \"Create the data in a table, use data bars, highlight top 3, and create a line chart\" -OutputPath .\\sales-agent-report.xlsx -ScriptPath .\\build-sales-agent-report.ps1 -FallbackToDefault -Show","participants":["user","publicCmdlets","scriptGenerator","aiBridge","renderer","formatting","conditionalFormatting","chartsPivots","epplus","filesystem","output"],"steps":[{"from":"user","to":"publicCmdlets","label":"Call Invoke-ExcelAgent","passes":"Source path, prompt, output path, script path, fallback switches","annotation":"This is the AI-first workflow that keeps automation."},{"from":"publicCmdlets","to":"scriptGenerator","label":"Generate script","passes":"Same inputs as New-ExcelReportScript","annotation":"The script may be AI-generated or deterministic."},{"from":"scriptGenerator","to":"filesystem","label":"Save selected script","passes":".ps1 file","annotation":"The saved script is what runs."},{"from":"filesystem","to":"renderer","label":"Run script","passes":"SourcePath, OutputPath, Show, Force","annotation":"The script uses ImportExcel commands."},{"from":"renderer","to":"epplus","label":"Create workbook","passes":"ExcelPackage operations","annotation":"Tables, charts, pivots, summaries, and formatting are applied."},{"from":"renderer","to":"publicCmdlets","label":"Runtime fallback if needed","passes":"Error record from AI script","annotation":"The agent regenerates deterministic script and runs it."}]},
+        {"id":"existing-workbook","label":"Analyze existing workbook","group":"ImportExcel AI","summary":"An existing workbook is profiled and rendered into a new report workbook.","command":"Invoke-ExcelPrompt -Path .\\existing.xlsx -WorksheetName Sales,Inventory -Prompt \"Analyze this workbook and create an executive dashboard\" -OutputPath .\\existing-report.xlsx -FallbackToDefault","participants":["user","filesystem","publicCmdlets","dataReaders","profiler","planner","renderer","analysisSheets","chartsPivots","epplus","output"],"steps":[{"from":"user","to":"publicCmdlets","label":"Provide workbook and prompt","passes":"Workbook path, worksheet names, report prompt","annotation":"The flow can target specific sheets."},{"from":"filesystem","to":"dataReaders","label":"Read workbook sheets","passes":"ExcelPackage and worksheet rows","annotation":"Each selected worksheet can become a profiled source."},{"from":"dataReaders","to":"profiler","label":"Summarize sheets","passes":"Per-sheet source data","annotation":"Source names let plans target the right sheet."},{"from":"profiler","to":"planner","label":"Plan analysis","passes":"Multi-source DatasetSummary","annotation":"Executive and statistical prompts can add analysis sheets."},{"from":"planner","to":"renderer","label":"Render new report workbook","passes":"ReportPlan","annotation":"The source workbook is read; output workbook is generated separately."},{"from":"renderer","to":"analysisSheets","label":"Create interpretation tabs","passes":"Profile and calculated summaries","annotation":"This is the bridge toward workbook analysis and repair."}]}
+      ]
+    };
+
+    let state = {
+      data: null,
+      selectedActionId: null,
+      filter: ""
+    };
+
+    const byId = (id) => document.getElementById(id);
+
+    async function loadData() {
+      try {
+        const response = await fetch("interactive-workflow-map.json", { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return await response.json();
+      } catch (error) {
+        byId("loadNotice").style.display = "block";
+        return fallbackData;
+      }
+    }
+
+    function componentMap() {
+      return Object.fromEntries(state.data.components.map(component => [component.id, component]));
+    }
+
+    function selectedAction() {
+      return state.data.actions.find(action => action.id === state.selectedActionId) || state.data.actions[0];
+    }
+
+    function renderActions() {
+      const actions = byId("actions");
+      actions.innerHTML = "";
+      state.data.actions.forEach(action => {
+        const button = document.createElement("button");
+        button.className = `action-btn ${action.id === selectedAction().id ? "active" : ""}`;
+        const groupClass = action.group.includes("proper") ? "proper" : "ai";
+        button.innerHTML = `<span class="${groupClass}">${action.group}</span><strong>${action.label}</strong><small>${action.summary}</small>`;
+        button.addEventListener("click", () => {
+          state.selectedActionId = action.id;
+          render();
+        });
+        actions.appendChild(button);
+      });
+    }
+
+    function renderComponents() {
+      const container = byId("components");
+      const action = selectedAction();
+      const active = new Set(action.participants || []);
+      const order = new Map((action.participants || []).map((id, index) => [id, index + 1]));
+      const filter = state.filter.trim().toLowerCase();
+      container.innerHTML = "";
+
+      state.data.components
+        .filter(component => {
+          if (!filter) return true;
+          return `${component.name} ${component.package} ${component.kind} ${component.description}`.toLowerCase().includes(filter);
+        })
+        .forEach(component => {
+          const card = document.createElement("article");
+          card.className = `component ${active.has(component.id) ? "active" : "dimmed"}`;
+          card.innerHTML = `
+            <span class="badge">${component.kind}</span>
+            <h3>${component.name}</h3>
+            <div class="pkg">${component.package}</div>
+            <p>${component.description}</p>
+            <span class="step-num">${order.get(component.id) || ""}</span>
+          `;
+          container.appendChild(card);
+        });
+    }
+
+    function renderFlowDetail() {
+      const detail = byId("flowDetail");
+      const action = selectedAction();
+      const components = componentMap();
+      const groupClass = action.group.includes("proper") ? "proper" : "";
+      const handoffs = (action.steps || []).map(step => {
+        const from = components[step.from]?.name || step.from;
+        const to = components[step.to]?.name || step.to;
+        return `
+          <article class="handoff">
+            <div>
+              <h3>${step.label}</h3>
+              <p><code>${from}</code> to <code>${to}</code></p>
+              <p><strong>Passes:</strong> ${step.passes}</p>
+              <p>${step.annotation}</p>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      detail.innerHTML = `
+        <div class="selected-title">
+          <div>
+            <h2>${action.label}</h2>
+            <p>${action.summary}</p>
+          </div>
+          <span class="group-pill ${groupClass}">${action.group}</span>
+        </div>
+        <div class="handoffs">${handoffs}</div>
+        <pre class="command">${action.command || ""}</pre>
+      `;
+    }
+
+    function renderCounts() {
+      byId("componentCount").textContent = state.data.components.length;
+      byId("actionCount").textContent = state.data.actions.length;
+    }
+
+    function render() {
+      renderCounts();
+      renderActions();
+      renderComponents();
+      renderFlowDetail();
+    }
+
+    byId("componentFilter").addEventListener("input", (event) => {
+      state.filter = event.target.value;
+      renderComponents();
+    });
+
+    loadData().then(data => {
+      state.data = data;
+      state.selectedActionId = data.actions[0]?.id;
+      render();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-05-12",
+  "title": "ImportExcel Agentic AI Flow Map",
+  "moduleScope": "AI-assisted reporting layer added to ImportExcel. This layer profiles tabular files, plans reports from prompts, renders workbooks with ImportExcel, and can generate reusable PowerShell automation scripts.",
+  "sourceFiles": [
+    "Public/Get-ExcelDatasetSummary.ps1",
+    "Public/New-ExcelReportPlan.ps1",
+    "Public/Invoke-ExcelReportPlan.ps1",
+    "Public/Invoke-ExcelPrompt.ps1",
+    "Public/New-ExcelReportScript.ps1",
+    "Public/Invoke-ExcelAgent.ps1",
+    "Private/ImportExcelAI.Helpers.ps1",
+    "Examples/AIReports"
+  ],
+  "entryPoints": [
+    {
+      "name": "Get-ExcelDatasetSummary",
+      "role": "Profiler",
+      "purpose": "Turns CSV, TSV, or workbook sources into compact metadata for planning and prompts."
+    },
+    {
+      "name": "New-ExcelReportPlan",
+      "role": "Planner",
+      "purpose": "Builds a constrained JSON-compatible report plan using PSAISuite or the deterministic fallback."
+    },
+    {
+      "name": "Invoke-ExcelReportPlan",
+      "role": "Renderer",
+      "purpose": "Executes a report plan into an .xlsx workbook with tables, charts, pivots, summaries, and analysis sheets."
+    },
+    {
+      "name": "Invoke-ExcelPrompt",
+      "role": "Prompt workflow",
+      "purpose": "End-to-end path for prompt to workbook: profile, plan, render."
+    },
+    {
+      "name": "New-ExcelReportScript",
+      "role": "Script generator",
+      "purpose": "Creates reusable PowerShell automation from a prompt, with validation and deterministic fallback."
+    },
+    {
+      "name": "Invoke-ExcelAgent",
+      "role": "Agent workflow",
+      "purpose": "Generates a reusable script and optionally runs it to create the workbook."
+    }
+  ],
+  "flows": [
+    {
+      "id": "dataset-summary",
+      "title": "1. Dataset Profiling",
+      "entryPoint": "Get-ExcelDatasetSummary",
+      "summary": "Reads tabular sources and produces the compact facts every other flow depends on.",
+      "whenToUse": "Use this first when inspecting source shape, preparing AI context, or building a deterministic report plan.",
+      "inputs": [
+        "Path to .csv, .tsv, .xlsx, .xlsm, .xltx, or .xltm",
+        "Optional WorksheetName list for workbooks",
+        "SampleSize and AnalyzeRows controls"
+      ],
+      "steps": [
+        "Resolve the source path.",
+        "Load one or more sources from CSV, TSV, or Excel worksheets.",
+        "Infer column type and role: Dimension, Measure, Time, or Boolean.",
+        "Capture row count, column count, column names, sample rows, missing values, distinct values, and suggested number formats."
+      ],
+      "outputs": [
+        "DatasetSummary object",
+        "Optional JSON via -AsJson"
+      ],
+      "downstream": [
+        "New-ExcelReportPlan",
+        "New-ExcelReportScript",
+        "Invoke-ExcelPrompt",
+        "Invoke-ExcelAgent"
+      ],
+      "example": "Get-ExcelDatasetSummary -Path .\\sales.csv"
+    },
+    {
+      "id": "report-plan",
+      "title": "2. Prompt to Report Plan",
+      "entryPoint": "New-ExcelReportPlan",
+      "summary": "Converts a dataset summary and natural-language prompt into an executable report plan.",
+      "whenToUse": "Use when you want to inspect, save, or edit the plan before building the workbook.",
+      "inputs": [
+        "DatasetSummary",
+        "Prompt",
+        "Model and optional PSAISuitePath",
+        "-NoAI for deterministic planning",
+        "-FallbackToDefault for resilient AI planning"
+      ],
+      "steps": [
+        "Build the deterministic default plan first.",
+        "If -NoAI is supplied, return the deterministic plan.",
+        "Otherwise ask PSAISuite to return constrained JSON only.",
+        "Parse and validate the model response.",
+        "Apply deterministic prompt intent defaults for analysis sheets, chart type, and formatting."
+      ],
+      "outputs": [
+        "Report plan object with Tables, Charts, Pivots, ConditionalFormats, AnalysisSheets, and Summary",
+        "Optional JSON via -AsJson"
+      ],
+      "fallback": "If the AI call or JSON parsing fails and -FallbackToDefault is supplied, the deterministic plan is returned.",
+      "example": "$summary = Get-ExcelDatasetSummary .\\sales.csv\n$plan = New-ExcelReportPlan -DatasetSummary $summary -Prompt \"Create a report with data bars and a line chart\" -NoAI"
+    },
+    {
+      "id": "render-plan",
+      "title": "3. Report Plan to Workbook",
+      "entryPoint": "Invoke-ExcelReportPlan",
+      "summary": "Executes a plan into a real Excel workbook using ImportExcel primitives.",
+      "whenToUse": "Use when you already have a plan object or JSON plan and want a workbook artifact.",
+      "inputs": [
+        "Plan object or plan JSON",
+        "SourcePath",
+        "DatasetSummary",
+        "Output workbook Path",
+        "-Force and -Show"
+      ],
+      "steps": [
+        "Write source data sheets first as real Excel tables.",
+        "Apply table style, filters, freeze panes, autosize, and number formats.",
+        "Create charts from plan definitions.",
+        "Add analysis sheets such as Executive Dashboard, Statistical Analysis, and Correlation Matrix.",
+        "Add summary and column profile sheets at the end of the workbook.",
+        "Open the workbook again to add pivots and conditional formatting safely."
+      ],
+      "outputs": [
+        ".xlsx workbook",
+        "Result object with Path, SourcePath, Plan, DatasetSummary, and worksheet names"
+      ],
+      "layoutRule": "User-facing data appears first, pivots and analysis follow, and Summary plus Column Profile stay at the end.",
+      "example": "$plan | Invoke-ExcelReportPlan -Path .\\sales-report.xlsx -SourcePath .\\sales.csv -DatasetSummary $summary -Force"
+    },
+    {
+      "id": "prompt-workflow",
+      "title": "4. End-to-End Prompt Workflow",
+      "entryPoint": "Invoke-ExcelPrompt",
+      "summary": "The shortest path from data and prompt to workbook.",
+      "whenToUse": "Use for normal report generation when you do not need to inspect the intermediate plan.",
+      "inputs": [
+        "Path",
+        "Prompt",
+        "OutputPath",
+        "Model and optional PSAISuitePath",
+        "-NoAI, -FallbackToDefault, -Force, and -Show"
+      ],
+      "steps": [
+        "Profile the dataset with Get-ExcelDatasetSummary.",
+        "Create the plan with New-ExcelReportPlan.",
+        "Render the workbook with Invoke-ExcelReportPlan."
+      ],
+      "outputs": [
+        ".xlsx workbook",
+        "Same render result returned by Invoke-ExcelReportPlan"
+      ],
+      "example": "Invoke-ExcelPrompt -Path .\\sales.csv -Prompt \"Create an executive dashboard with a pie chart\" -OutputPath .\\sales-report.xlsx -FallbackToDefault -Show"
+    },
+    {
+      "id": "script-generation",
+      "title": "5. Prompt to Reusable Script",
+      "entryPoint": "New-ExcelReportScript",
+      "summary": "Creates a reusable PowerShell script that can rebuild the workbook later.",
+      "whenToUse": "Use when the user wants automation they can inspect, rerun, edit, or ship.",
+      "inputs": [
+        "Path",
+        "Prompt",
+        "OutputPath",
+        "ScriptPath",
+        "Model and optional PSAISuitePath",
+        "-NoAI and -FallbackToDefault"
+      ],
+      "steps": [
+        "Profile the dataset.",
+        "Build a deterministic fallback script from dataset facts and prompt intents.",
+        "If AI is enabled, ask PSAISuite for a complete ImportExcel-based PowerShell script.",
+        "Strip markdown fences and parse-check the generated script.",
+        "Validate command names, parameter names, aliases, missing required arguments for non-switch parameters, and disallowed direct EPPlus styling calls.",
+        "Write the selected script to ScriptPath."
+      ],
+      "outputs": [
+        ".ps1 reusable script",
+        "Result object with ScriptPath, WorkbookPath, SourcePath, UsedAI, Model, Script, and DatasetSummary"
+      ],
+      "fallback": "If AI generation, parsing, or command validation fails and -FallbackToDefault is supplied, the deterministic script is saved instead.",
+      "example": "New-ExcelReportScript -Path .\\sales.csv -Prompt \"Create the data in a table and use data bars\" -OutputPath .\\sales-agent-report.xlsx -ScriptPath .\\build-sales-agent-report.ps1 -FallbackToDefault"
+    },
+    {
+      "id": "agent-workflow",
+      "title": "6. Agent Workflow",
+      "entryPoint": "Invoke-ExcelAgent",
+      "summary": "Generates a reusable script and optionally runs it to produce the workbook.",
+      "whenToUse": "Use for the agentic workflow: the workbook is created and the automation script is kept as an artifact.",
+      "inputs": [
+        "Path",
+        "Prompt",
+        "OutputPath",
+        "ScriptPath",
+        "-ScriptOnly when the script should be generated but not run",
+        "-FallbackToDefault for resilient execution"
+      ],
+      "steps": [
+        "Call New-ExcelReportScript.",
+        "If -ScriptOnly is not supplied, execute the generated script.",
+        "If the AI-generated script fails at runtime and -FallbackToDefault is supplied, regenerate the deterministic script and run it.",
+        "Return workbook and script metadata."
+      ],
+      "outputs": [
+        ".ps1 reusable script",
+        ".xlsx workbook unless -ScriptOnly is used",
+        "Result object with Path, ScriptPath, SourcePath, UsedAI, Model, ScriptOnly, and Result"
+      ],
+      "fallback": "Runtime fallback protects the demo and user workflow when model-written code passes static validation but still fails.",
+      "example": "Invoke-ExcelAgent -Path .\\sales.csv -Prompt \"Create the data in a table, use data bars, highlight top 3, and create a line chart\" -OutputPath .\\sales-agent-report.xlsx -ScriptPath .\\build-sales-agent-report.ps1 -FallbackToDefault -Show"
+    }
+  ],
+  "supportingSystems": [
+    {
+      "name": "Prompt Intent Defaults",
+      "description": "Deterministic helpers interpret high-value phrases like pie chart, line chart, data bars, color scale, top N, bottom N, executive dashboard, and data scientist analysis."
+    },
+    {
+      "name": "Deterministic Fallback",
+      "description": "Every AI-dependent flow builds a local fallback first, so offline demos and failed model calls can still produce useful workbooks."
+    },
+    {
+      "name": "Script Guardrails",
+      "description": "Generated scripts are parse-checked and validated against available PowerShell commands and parameters before being saved or executed."
+    },
+    {
+      "name": "PSAISuite Bridge",
+      "description": "AI calls are routed through PSAISuite, resolved from an explicit path, environment variable, sibling repository, or PSModulePath."
+    },
+    {
+      "name": "Workbook Layout Policy",
+      "description": "Data sheets come first, pivots and analysis follow, and profile or summary material is placed at the end."
+    }
+  ],
+  "promptIntents": [
+    {
+      "intent": "Chart type",
+      "phrases": [
+        "pie chart",
+        "doughnut chart",
+        "line chart",
+        "bar chart",
+        "area chart"
+      ],
+      "effect": "Selects the chart type in deterministic plans and fallback scripts."
+    },
+    {
+      "intent": "Conditional formatting",
+      "phrases": [
+        "data bars",
+        "color scale",
+        "heatmap",
+        "top 3",
+        "bottom 5"
+      ],
+      "effect": "Adds DataBar, ThreeColorScale, Top, or Bottom rules to the primary measure column."
+    },
+    {
+      "intent": "Analysis sheets",
+      "phrases": [
+        "executive dashboard",
+        "data scientist",
+        "statistical analysis",
+        "correlation"
+      ],
+      "effect": "Adds Executive Dashboard, Statistical Analysis, and Correlation Matrix sheets where appropriate."
+    }
+  ],
+  "exampleScripts": [
+    {
+      "file": "Examples/AIReports/01-CreateStarterReport.ps1",
+      "flow": "End-to-end deterministic starter report"
+    },
+    {
+      "file": "Examples/AIReports/02-InspectPlanAndRender.ps1",
+      "flow": "Inspect the summary and plan before rendering"
+    },
+    {
+      "file": "Examples/AIReports/03-UsePSAISuitePlanner.ps1",
+      "flow": "AI planner with deterministic fallback"
+    },
+    {
+      "file": "Examples/AIReports/04-ReportFromExistingWorkbook.ps1",
+      "flow": "Profile an existing workbook and render a new report"
+    },
+    {
+      "file": "Examples/AIReports/05-GenerateReusableScript.ps1",
+      "flow": "Agent workflow that keeps and runs a reusable script"
+    }
+  ],
+  "validation": [
+    "Invoke-Pester -Path .\\__tests__\\ImportExcelAI.tests.ps1 -Output Detailed",
+    "Invoke-Pester -Path .\\__tests__\\Set-Row_Set-Column-SetFormat.tests.ps1 -Output Detailed",
+    ".\\Examples\\AIReports\\05-GenerateReusableScript.ps1 -ShowFallbackWarnings"
+  ],
+  "futureFlows": [
+    {
+      "name": "Deterministic Insight Engine",
+      "description": "Add functions like Get-ExcelInsight, Get-ExcelOutlier, Get-ExcelCorrelation, Get-ExcelTrend, and Get-ExcelSegmentBreakdown so AI can rank and narrate grounded facts."
+    },
+    {
+      "name": "Workbook Editing Agent",
+      "description": "Open existing .xlsx files, inspect sheets, propose repairs or enhancements, and apply targeted edits with audit-friendly steps."
+    }
+  ]
+}
