@@ -316,7 +316,7 @@
                                 $ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = '[h]:mm:ss'
                             }
                             elseif ($v -is [System.ValueType]) {
-                                $ws.Cells[$row, $ColumnIndex].Value = $v
+                                $ws.Cells[$row, $ColumnIndex].Value = if ($v -is [char]) {$v.ToString()} else {$v}
                                 if ($setNumformat) { $ws.Cells[$row, $ColumnIndex].Style.Numberformat.Format = $Numberformat }
                             }
                             elseif ($v -is [uri] -and
